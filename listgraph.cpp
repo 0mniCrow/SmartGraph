@@ -5,10 +5,10 @@ ListGraph::ListGraph()
 
 }
 
-void ListGraph::addEdge(int left, int right)
+void ListGraph::addEdge(int source, int destination)
 {
-    adj_graph[left].push_back(right);
-    adj_graph[right].push_back(left);
+    adj_graph[source].push_back(destination);       //true for (source node num)->(destination node num)
+    adj_graph[destination].push_back(source);       //true for (source node num)<-(destination node num) - backtracking for the Undirected graph
     return;
 }
 QString ListGraph::get() const

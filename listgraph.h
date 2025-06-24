@@ -10,7 +10,7 @@ private:
     std::map<int,std::list<int>> adj_graph;
 public:
     ListGraph();
-    void addEdge(int left, int right);
+    void addEdge(int source, int destination);
     QString get() const;
 };
 
