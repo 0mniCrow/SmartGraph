@@ -3,7 +3,7 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),graph(4)
+    : QMainWindow(parent),graph(4),l_graph(3)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -39,7 +39,30 @@ MainWindow::MainWindow(QWidget *parent)
     l_graph.addEdge(1,0);
     l_graph.addEdge(2,0);
     l_graph.addEdge(1,2);
-    ui->textEdit->append(l_graph.get());
+    ui->textEdit->append(QString(l_graph.getAdjacencyList().c_str()));
+
+
+    ListGraph sec_list_graph(6,ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+    sec_list_graph.addEdge(0,1,2);
+    sec_list_graph.addEdge(0,2,3);
+    sec_list_graph.addEdge(1,2,2);
+    sec_list_graph.addEdge(1,3,2);
+    sec_list_graph.addEdge(2,3,2);
+    sec_list_graph.addEdge(3,4,3);
+    sec_list_graph.addEdge(3,5,5);
+    sec_list_graph.addEdge(4,5,2);
+    sec_list_graph.addEdge(5,0,9);
+
+    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
+    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
+
+    sec_list_graph.addVertex(7);
+    sec_list_graph.addEdge(5,7,4);
+    int new_vert=sec_list_graph.addVertex();
+    sec_list_graph.addEdge(7,new_vert,3);
+
+    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
+    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
 }
 
 MainWindow::~MainWindow()
