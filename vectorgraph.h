@@ -21,6 +21,8 @@ public:
     char getParams() const;
     std::string getAdjacencyMatrix() const;
     std::string getEdgeTable() const;
+
+    friend std::string Breadth_first_search(VectorGraph& obj, int root_index);
 };
 
 #endif // VECTORGRAPH_H

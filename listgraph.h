@@ -37,6 +37,8 @@ public:
     char getParams() const;
     std::string getAdjacencyList() const;
     std::string getEdgeTable() const;
+
+    friend std::string Breadth_first_search(ListGraph& obj, int root_index);
 };
 
 #endif // LISTGRAPH_H

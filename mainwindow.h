@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "vectorgraph.h"
 #include "listgraph.h"
+#include "Graph_algorithms.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
