@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     VectorGraph sec_graph(5,VectorGraph::Gr_Directed|VectorGraph::Gr_Weighted);
 
     sec_graph.addEdge(0,4,8);
+    sec_graph.addEdge(0,1,2);
     sec_graph.addEdge(1,0,2);
     sec_graph.addEdge(1,2,3);
     sec_graph.addEdge(2,3,2);
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->textEdit->append(QString(sec_graph.getAdjacencyMatrix().c_str()));
     ui->textEdit->append(QString(sec_graph.getEdgeTable().c_str()));
+    ui->textEdit->append(QString(Breadth_first_search(sec_graph,0).c_str()));
 
 
     l_graph.addEdge(1,0);
