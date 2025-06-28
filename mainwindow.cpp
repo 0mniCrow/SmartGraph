@@ -36,7 +36,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textEdit->append(QString(sec_graph.getAdjacencyMatrix().c_str()));
     ui->textEdit->append(QString(sec_graph.getEdgeTable().c_str()));
     ui->textEdit->append(QString(Breadth_first_search(sec_graph,0).c_str()));
+    ui->textEdit->append(QString(Depth_first_search(sec_graph,0).c_str()));
 
+    //---------------------------------------------------------------------------
+    ui->textEdit->append("\n\n\nList graph:");
 
     l_graph.addEdge(1,0);
     l_graph.addEdge(2,0);
@@ -67,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
 
     ui->textEdit->append(QString(Breadth_first_search(sec_list_graph,0).c_str()));
+    ui->textEdit->append(QString(Depth_first_search(sec_list_graph,3).c_str()));
 }
 
 MainWindow::~MainWindow()

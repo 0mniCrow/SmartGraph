@@ -23,6 +23,7 @@ public:
     std::string getEdgeTable() const;
 
     friend std::string Breadth_first_search(VectorGraph& obj, int root_index);
+    friend std::string Depth_first_search(VectorGraph& obj, int root_index);
 };
 
 #endif // VECTORGRAPH_H

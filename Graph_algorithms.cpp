@@ -71,3 +71,86 @@ std::string Breadth_first_search(VectorGraph& obj, int root_index)
     }
     return answer;
 }
+
+namespace GrAlg
+{
+    //Рэкурсіўная (стэкавая) функцыя для глыбіннага пошуку
+    std::string Deep_search(std::map<int,GraphVertice>& list_graph,
+                            std::unordered_set<int>& visited_vertices,
+                            int cur_index)
+    {
+        std::string answer;                                                     //Радок адказу
+        visited_vertices.insert(cur_index);                                     //Дадаем бягучую вяршыню ў набор наведанных вяршынь
+        answer.append(std::to_string(cur_index)+", ");                          //Дадаем у адказ бягучую вершыню.
+        auto conn = list_graph.at(cur_index)._edges_.begin();                   //Наведваем кожную злучаную вершыню
+        while(conn != list_graph.at(cur_index)._edges_.end())                   //са сьпісу сувязей
+        {
+            if(visited_vertices.find(conn->first)==visited_vertices.end())      //Калі гэта вяршыня не была наведана раней
+            {
+                answer.append("| ("+std::to_string(cur_index)+")-["+            //дадаем у адказ індэкс бягучай вяршыні,
+                              std::to_string(conn->second)+"]->"+               //вагу сувязі паміж вяршынямі,
+                              Deep_search(list_graph,visited_vertices,conn->first));    //і адказ рэкурсіўнага выкліку са злучанай
+            }                                                                   //вяршыняй у якасьці бягучага індэксу.
+            conn++;
+        }
+        return answer;
+    }
+
+    std::string Deep_search(std::vector<std::vector<int>>& adj_matrix,
+                            std::unordered_set<int>& visited_vertices,
+                            int cur_index)
+    {
+        std::string answer;
+        visited_vertices.insert(cur_index);
+        answer.append(std::to_string(cur_index)+", ");
+        int matrix_size = static_cast<int>(adj_matrix.size());
+        for(int i = cur_index; i<matrix_size;i++)
+        {
+            if(adj_matrix.at(cur_index).at(i))
+            {
+                if(visited_vertices.find(i)==visited_vertices.end())
+                {
+                    answer.append("("+std::to_string(cur_index)+")-["+
+                                  std::to_string(adj_matrix.at(cur_index).at(i))+
+                                  "]->"+Deep_search(adj_matrix,visited_vertices,i));
+                }
+            }
+        }
+        return answer;
+    }
+
+}
+//Глыбінны пошук усіх вяршынь графа. У адрозьненні ад пошука ў шырыню,
+//як толькі алгарытм знаходзіць сувязь з наступнай вяршыняй, ён пераскоквае
+//да яе і пачынае шукаць яе сувязі з наступнымі вяршынямі. Гэты алгарытм працуе
+//як пошук у бінарным дрэве.
+std::string Depth_first_search(ListGraph& obj, int root_index)
+{
+    std::string answer("Depth First Search (list-based graph):\nRoot index: "+
+                       std::to_string(root_index)+";\n");
+    if(obj._list_graph_.find(root_index)==obj._list_graph_.end())
+    {
+        answer.append("Index ["+std::to_string(root_index)+"] doesn't exist in the current graph.");
+        return answer;
+    }
+    std::unordered_set<int> visited_vertices;
+    answer.append(GrAlg::Deep_search(obj._list_graph_,visited_vertices,root_index));
+    answer.append("\nDFS end;");
+    return answer;
+}
+
+std::string Depth_first_search(VectorGraph& obj, int root_index)
+{
+    std::string answer("Depth First Search (matrix-based graph):\nRoot index: "+
+                       std::to_string(root_index)+";\n");
+    int matrix_size= static_cast<int>(obj._adj_matrix_.size());
+    if(root_index>=matrix_size)
+    {
+        answer.append("Index ["+std::to_string(root_index)+"] doesn't exist in the current graph.");
+        return answer;
+    }
+    std::unordered_set<int> visited_vertices;
+    answer.append(GrAlg::Deep_search(obj._adj_matrix_,visited_vertices,root_index));
+    answer.append("\nDFS end;");
+    return answer;
+}
