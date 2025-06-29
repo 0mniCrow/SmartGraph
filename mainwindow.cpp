@@ -71,6 +71,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->textEdit->append(QString(Breadth_first_search(sec_list_graph,0).c_str()));
     ui->textEdit->append(QString(Depth_first_search(sec_list_graph,3).c_str()));
+
+    //-----------------------------------------------------------------------------
+    std::vector<std::vector<int>> matrix({{2,1,0,2,1},{1,0,1,2,1},{1,0,0,2,1}});
+    std::vector<std::vector<int>> snd_matrix({{2,1,0,2,1},{0,0,1,2,1},{1,0,0,2,1}});
+    long long time = 0;
+    std::string answer;
+    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_DFS(matrix,time,answer)));
+    ui->textEdit->append("Elapsing time: "+QString::number(time));
+    ui->textEdit->append(QString(answer.c_str()));
+    time = 0;
+    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_DFS(snd_matrix,time,answer)));
+    ui->textEdit->append("Elapsing time: "+QString::number(time));
+    ui->textEdit->append(QString(answer.c_str()));
 }
 
 MainWindow::~MainWindow()

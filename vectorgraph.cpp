@@ -60,6 +60,11 @@ int VectorGraph::getSize() const
     return static_cast<int>(_adj_matrix_.size());
 }
 
+std::vector<std::vector<int>> VectorGraph::getMatrix() const
+{
+    return _adj_matrix_;
+}
+
 std::string VectorGraph::getAdjacencyMatrix() const
 {
     std::string answer("Adjacency Matrix for the Graph:\n");

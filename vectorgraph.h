@@ -19,6 +19,7 @@ public:
     int getSize() const;
     void setParams(char flags);
     char getParams() const;
+    std::vector<std::vector<int>> getMatrix() const;
     std::string getAdjacencyMatrix() const;
     std::string getEdgeTable() const;
 

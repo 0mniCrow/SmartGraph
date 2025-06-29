@@ -154,3 +154,219 @@ std::string Depth_first_search(VectorGraph& obj, int root_index)
     answer.append("\nDFS end;");
     return answer;
 }
+
+
+//___________________________________________________________
+
+
+
+bool szBordCheck(int cur_row, int cur_col, int rows_size, int cols_size)
+{
+    return (0<=cur_row && cur_row<rows_size && 0<=cur_col && cur_col < cols_size);
+}
+
+
+int orangesRotting_iteration(std::vector<std::vector<int>>& matrix, long long &time)
+{
+    if(!matrix.size())
+    {
+        return -2;
+    }
+    int row_size = static_cast<int>(matrix.size());
+    int col_size = static_cast<int>(matrix.at(0).size());
+    bool changed = false;
+    using Clock = std::chrono::high_resolution_clock;
+    auto t0 = Clock::now();
+    int elapsed_time = 0;
+    std::vector<std::vector<int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
+    while(true)
+    {
+        changed = false;
+        for(int i = 0; i<row_size;i++)
+        {
+            for(int j = 0; j<col_size;j++)
+            {
+                if(matrix.at(i).at(j)==elapsed_time+2)
+                {
+                    for(const auto&dir: directions)
+                    {
+                        int row_x = i+dir[0];
+                        int col_y = j+dir[1];
+                        if(szBordCheck(row_x,col_y,row_size,col_size)&&
+                                matrix.at(row_x).at(col_y)==1)
+                        {
+                            matrix.at(row_x).at(col_y) = matrix.at(i).at(j)+1;
+                            changed = true;
+                        }
+                    }
+                }
+            }
+        }
+        if(!changed) break;
+
+        elapsed_time++;
+    }
+
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if(matrix.at(i).at(j)==1)
+            {
+                return -1;
+            }
+        }
+    }
+    auto t1 = Clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1-t0);
+    time = elapsed.count();
+    return elapsed_time;//
+}
+
+std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row, int active_col)
+{
+    std::string answer;
+    int row_size = static_cast<int>(matrix.size());
+    int col_size = static_cast<int>(matrix.at(0).size());
+
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if((i==active_row)&&(j==active_col))
+            {
+                answer.append("(");
+            }
+            else
+            {
+                answer.append("[");
+            }
+            switch(matrix.at(i).at(j))
+            {
+            case -1:
+            {
+                answer.append("?_");
+            }
+                break;
+            case 0:
+            {
+                answer.append("__");
+            }
+                break;
+            case 1:
+            {
+                answer.append("o_");
+            }
+                break;
+            case 2:
+            {
+                answer.append("x_");
+            }
+                break;
+            default:
+            {
+                answer.append("o"+std::to_string(matrix.at(i).at(j)));
+            }
+            }
+
+            if((i==active_row)&&(j==active_col))
+            {
+                answer.append(") ");
+            }
+            else
+            {
+                answer.append("] ");
+            }
+        }
+        answer.append("\n");
+    }
+    answer.append("\n");
+    return answer;
+}
+
+void O_R_DFS(std::vector<std::vector<int>>& matrix, int row, int col, int time,std::string& actions,std::vector<std::vector<int>>& visual_matrix)
+{
+    int row_size = static_cast<int>(matrix.size());
+    int col_size = static_cast<int>(matrix.at(0).size());
+    matrix.at(row).at(col) = time;
+    visual_matrix.at(row).at(col) = time;
+    //actions.append("New elapsed time for row["+std::to_string(row)+"] col["+std::to_string(col)+"] = "+std::to_string(time)+";\n");
+    std::vector<std::vector<int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
+    for(auto dir:directions)
+    {
+        int x = row+dir[0];
+        int y = col+dir[1];
+        //actions.append("Neighbour cell row["+std::to_string(x)+"] col["+std::to_string(y)+"] check for fresh orange;\n");
+        if(szBordCheck(x,y,row_size,col_size))
+        {
+            int prev_val = visual_matrix.at(x).at(y);
+            visual_matrix.at(x).at(y) = -1;
+            actions.append(drawMatrix(visual_matrix,x,y));
+            if(matrix.at(x).at(y)==1)
+            {
+                //actions.append("Cell row["+std::to_string(x)+"] col["+std::to_string(y)+"] has a fresh orange;\n");
+                visual_matrix.at(x).at(y) =  1;
+                actions.append(drawMatrix(visual_matrix,x,y));
+                O_R_DFS(matrix,x,y,time+1,actions,visual_matrix);
+            }
+            else if(matrix.at(x).at(y)>time+1)
+            {
+                visual_matrix.at(x).at(y) = matrix.at(x).at(y);
+                actions.append(drawMatrix(visual_matrix,x,y));
+//                actions.append("Cell row["+std::to_string(x)+"] col["+std::to_string(y)+
+//                               "] has strange elapsed time ["+std::to_string(matrix.at(x).at(y))+
+//                               "] in comp to time+1 ["+std::to_string(time+1)+"];\n");
+                O_R_DFS(matrix,x,y,time+1,actions,visual_matrix);
+            }
+            else
+            {
+                visual_matrix.at(x).at(y) = prev_val;
+            }
+        }
+    }
+
+}
+
+int orangesRotting_DFS(std::vector<std::vector<int>>& matrix, long long &time, std::string& actions)
+{
+    if(!matrix.size())
+    {
+        return -2;
+    }
+    actions.clear();
+    int row_size = static_cast<int>(matrix.size());
+    int col_size = static_cast<int>(matrix.at(0).size());
+    std::vector<std::vector<int>> visual_matrix(row_size,std::vector<int>(col_size,0));
+    int elapsed_time = 0;
+    using Clock = std::chrono::high_resolution_clock;
+    auto t0 = Clock::now();
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if(matrix.at(i).at(j)==2)
+            {
+                //actions.append("Rotten orange found at row["+std::to_string(i)+"] col["+std::to_string(j)+"];\n");
+                visual_matrix.at(i).at(j) = 2;
+                actions.append(drawMatrix(visual_matrix,i,j));
+                O_R_DFS(matrix,i,j,2,actions,visual_matrix);
+            }
+        }
+    }
+
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if(matrix.at(i).at(j)==1)
+            {
+                return -1;
+            }
+            elapsed_time = std::max(elapsed_time,matrix.at(i).at(j)-2);
+        }
+    }
+    auto t1 = Clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1-t0);
+    time = elapsed.count();
+    return elapsed_time;
+}
