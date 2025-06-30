@@ -223,7 +223,7 @@ int orangesRotting_iteration(std::vector<std::vector<int>>& matrix, long long &t
     return elapsed_time;//
 }
 
-std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row, int active_col)
+std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row = -1, int active_col=-1)
 {
     std::string answer;
     int row_size = static_cast<int>(matrix.size());
@@ -243,6 +243,11 @@ std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row, in
             }
             switch(matrix.at(i).at(j))
             {
+            case -2:
+            {
+                answer.append("*_");
+            }
+                break;
             case -1:
             {
                 answer.append("?_");
@@ -369,4 +374,89 @@ int orangesRotting_DFS(std::vector<std::vector<int>>& matrix, long long &time, s
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1-t0);
     time = elapsed.count();
     return elapsed_time;
+}
+
+using std::vector;
+
+int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, std::string& actions)
+{
+    if(!matrix.size())
+    {
+        return -2;
+    }
+    actions.clear();
+    int row_size = static_cast<int>(matrix.size());
+    int col_size = static_cast<int>(matrix.at(0).size());
+    std::vector<std::vector<int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
+    std::vector<std::vector<int>> visual_matrix(row_size,std::vector<int>(col_size,0));
+    using Clock = std::chrono::high_resolution_clock;
+    auto t0 = Clock::now();
+    std::queue<std::vector<int>> q;
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if(matrix.at(i).at(j)==2)
+            {
+                q.push({i,j});
+                visual_matrix.at(i).at(j) = 2;
+            }
+            else if(matrix.at(i).at(j)==1)
+            {
+                visual_matrix.at(i).at(j) = 1;
+            }
+        }
+    }
+    actions.append(drawMatrix(visual_matrix));
+    int elapsed_time = 0;
+    while(!q.empty())
+    {
+        elapsed_time++;
+        int len = q.size();
+        while(len--)
+        {
+            vector<int> cur = q.front();
+            q.pop();
+            int i = cur.at(0);
+            int j = cur.at(1);
+            int cur_val = visual_matrix.at(i).at(j);
+            visual_matrix.at(i).at(j) = -2;
+            actions.append(drawMatrix(visual_matrix,i,j));
+            for(auto dir: directions)
+            {
+                int x = i+dir.at(0);
+                int y = j+dir.at(1);
+                if(szBordCheck(x,y,row_size,col_size))
+                {
+                    int cur_sub_val = visual_matrix.at(x).at(y);
+                    visual_matrix.at(x).at(y) = -1;
+                    actions.append(drawMatrix(visual_matrix,x,y));
+                    if(matrix.at(x).at(y)==1)
+                    {
+                        matrix.at(x).at(y) = 2;
+                        cur_sub_val = 2;
+                        q.push({x,y});
+                    }
+                    visual_matrix.at(x).at(y) = cur_sub_val;
+                    actions.append(drawMatrix(visual_matrix,i,j));
+                }
+            }
+            visual_matrix.at(i).at(j) = cur_val;
+        }
+    }
+    for(int i = 0; i<row_size;i++)
+    {
+        for(int j = 0; j<col_size;j++)
+        {
+            if(matrix.at(i).at(j)==1)
+            {
+                return -1;
+            }
+        }
+    }
+    actions.append(drawMatrix(visual_matrix));
+    auto t1 = Clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(t1-t0);
+    time = elapsed.count();
+    return std::max(0,elapsed_time-1);
 }

@@ -77,11 +77,12 @@ MainWindow::MainWindow(QWidget *parent)
     std::vector<std::vector<int>> snd_matrix({{2,1,0,2,1},{0,0,1,2,1},{1,0,0,2,1}});
     long long time = 0;
     std::string answer;
-    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_DFS(matrix,time,answer)));
+    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(matrix,time,answer)));
     ui->textEdit->append("Elapsing time: "+QString::number(time));
     ui->textEdit->append(QString(answer.c_str()));
     time = 0;
-    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_DFS(snd_matrix,time,answer)));
+    answer.clear();
+    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(snd_matrix,time,answer)));
     ui->textEdit->append("Elapsing time: "+QString::number(time));
     ui->textEdit->append(QString(answer.c_str()));
 }
