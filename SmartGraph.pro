@@ -13,12 +13,14 @@ SOURCES += \
     listgraph.cpp \
     main.cpp \
     mainwindow.cpp \
+    matrixmodel.cpp \
     vectorgraph.cpp
 
 HEADERS += \
     Graph_algorithms.h \
     listgraph.h \
     mainwindow.h \
+    matrixmodel.h \
     vectorgraph.h
 
 FORMS += \

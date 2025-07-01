@@ -77,16 +77,25 @@ MainWindow::MainWindow(QWidget *parent)
     std::vector<std::vector<int>> snd_matrix({{2,1,0,2,1},{0,0,1,2,1},{1,0,0,2,1}});
     long long time = 0;
     std::string answer;
-    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(matrix,time,answer)));
+    std::vector<PlayAction> actions;
+    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(matrix,time,answer,actions)));
     ui->textEdit->append("Elapsing time: "+QString::number(time));
     ui->textEdit->append(QString(answer.c_str()));
-    time = 0;
-    answer.clear();
-    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(snd_matrix,time,answer)));
-    ui->textEdit->append("Elapsing time: "+QString::number(time));
-    ui->textEdit->append(QString(answer.c_str()));
+//    time = 0;
+//    answer.clear();
+//    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(snd_matrix,time,answer,actions)));
+//    ui->textEdit->append("Elapsing time: "+QString::number(time));
+//    ui->textEdit->append(QString(answer.c_str()));
+    model = new MatrixModel(matrix);
+    ui->tableView->setModel(model);
+    model->setActions(actions);
+    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
 }
-
+void MainWindow::setProgressBar(int val, int max)
+{
+    ui->progressBar->setValue(val*100/max);
+}
 MainWindow::~MainWindow()
 {
     delete ui;

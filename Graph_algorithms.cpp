@@ -1,4 +1,5 @@
 #include "Graph_algorithms.h"
+#include "matrixmodel.h"
 
 std::string Breadth_first_search(ListGraph& obj, int root_index)            //Паслядоўнасць "Пошук ў шырыню"
 {                                                                           //Адлюстроўвае ўсе выключныя вузы графа.
@@ -223,6 +224,49 @@ int orangesRotting_iteration(std::vector<std::vector<int>>& matrix, long long &t
     return elapsed_time;//
 }
 
+void addAction(std::vector<std::vector<int> > &matrix,
+               int active_row, int active_col,
+               std::vector<PlayAction>& actions)
+{
+    PlayAction action;
+    action.row = active_row;
+    action.column = active_col;
+    switch(matrix.at(active_row).at(active_col))
+    {
+    case -2:
+    {
+        action.value ="*";
+    }
+        break;
+    case -1:
+    {
+        action.value ="?";
+    }
+        break;
+    case 0:
+    {
+        action.value ="_";
+    }
+        break;
+    case 1:
+    {
+        action.value ="o";
+    }
+        break;
+    case 2:
+    {
+        action.value ="x";
+    }
+        break;
+    default:
+    {
+        action.value =("o"+std::to_string(matrix.at(active_row).at(active_col)));
+    }
+    }
+    actions.push_back(action);
+    return;
+}
+
 std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row = -1, int active_col=-1)
 {
     std::string answer;
@@ -378,13 +422,16 @@ int orangesRotting_DFS(std::vector<std::vector<int>>& matrix, long long &time, s
 
 using std::vector;
 
-int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, std::string& actions)
+int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
+                       long long& time, std::string& actions,
+                       std::vector<PlayAction> &vec_actions)
 {
     if(!matrix.size())
     {
         return -2;
     }
     actions.clear();
+    vec_actions.clear();
     int row_size = static_cast<int>(matrix.size());
     int col_size = static_cast<int>(matrix.at(0).size());
     std::vector<std::vector<int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
@@ -422,6 +469,7 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, s
             int cur_val = visual_matrix.at(i).at(j);
             visual_matrix.at(i).at(j) = -2;
             actions.append(drawMatrix(visual_matrix,i,j));
+            addAction(matrix,i,j,vec_actions);
             for(auto dir: directions)
             {
                 int x = i+dir.at(0);
@@ -431,6 +479,7 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, s
                     int cur_sub_val = visual_matrix.at(x).at(y);
                     visual_matrix.at(x).at(y) = -1;
                     actions.append(drawMatrix(visual_matrix,x,y));
+                    addAction(matrix,x,y,vec_actions);
                     if(matrix.at(x).at(y)==1)
                     {
                         matrix.at(x).at(y) = 2;
@@ -439,6 +488,7 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, s
                     }
                     visual_matrix.at(x).at(y) = cur_sub_val;
                     actions.append(drawMatrix(visual_matrix,i,j));
+                    addAction(matrix,i,j,vec_actions);
                 }
             }
             visual_matrix.at(i).at(j) = cur_val;
@@ -460,3 +510,6 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix, long long& time, s
     time = elapsed.count();
     return std::max(0,elapsed_time-1);
 }
+
+
+//______________________________________________________________________________
