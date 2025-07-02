@@ -30,4 +30,115 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
                        long long& time, std::string& actions,
                        std::vector<PlayAction>& vec_actions);
 
+struct LandNode
+{
+    char _land_type_;
+    bool _visited_;
+    LandNode()
+    {
+        _land_type_ = 0;
+        _visited_ = false;
+    }
+};
+
+
+template <typename T> class Vector2D
+{
+private:
+    std::vector<std::vector<T>> _data_;
+public:
+    Vector2D()
+    {
+        return;
+    }
+    Vector2D(unsigned int r, unsigned int c, const T& val = T()):_data_(r,std::vector<T>(c,val))
+    {
+        return;
+    }
+    int rowCount() const
+    {
+        return static_cast<int>(_data_.size());
+    }
+    int colCount()const
+    {
+        if(rowCount())
+        {
+            return static_cast<int>(_data_.at(0).size());
+        }
+        return 0;
+    }
+    void resize(unsigned int r, unsigned int c)
+    {
+        _data_.resize(r);
+        for(std::vector<T>& row:_data_)
+        {
+            row.resize(c);
+        }
+        return;
+    }
+    void clear()
+    {
+        _data_.clear();
+        return;
+    }
+    T& operator()(int i, int j)
+    {
+        return _data_.at(i).at(j);
+    }
+    const std::vector<T>& operator[](int r)
+    {
+        return _data_.at(r);
+    }
+    void fill(const T& value)
+    {
+        for(auto row:_data_)
+            for(T& cell:row)
+                cell = value;
+    }
+    void fill(const std::vector<std::vector<T>>& data)
+    {
+        if(data.size()!=_data_.size())
+        {
+            _data_.resize(data.size());
+            for(auto i = 0; i<data.size();i++)
+            {
+                if(_data_.at(i).size()!=data.at(i).size())
+                {
+                    _data_.at(i).resize(data.at(i).size());
+                }
+            }
+        }
+        for(auto i = 0; i<data.size();i++)
+        {
+            for(auto j = 0; j<data.at(i).size();j++)
+            {
+                _data_.at(i).at(j) = data.at(i).at(j);
+            }
+        }
+        return;
+    }
+    bool find(const T& val, int& row, int& col)
+    {
+        int r_size = static_cast<int>(_data_.size());
+        if(r_size)
+        {
+            int c_size = static_cast<int>(_data_.at(0).size());
+            if(c_size)
+            {
+                for(int i = 0; i<r_size;i++)
+                    for(int j = 0; j<c_size;j++)
+                        if(_data_.at(i).at(j)==val)
+                        {
+                            row = i;
+                            col = j;
+                            return true;
+                        }
+            }
+        }
+        return false;
+    }
+};
+
+void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col);
+int countIslands(Vector2D<LandNode>& matrix);
 #endif // GRAPH_ALGORITHMS_H

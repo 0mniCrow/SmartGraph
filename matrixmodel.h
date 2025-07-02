@@ -9,6 +9,8 @@
 #define DEFAULT_ROW_COUNT 6
 #define DEFAULT_COL_COUNT 6
 #define DEFAULT_TIMER 2000
+#define INTEGER_MATRIX
+//#define CHAR_MATRIX
 
 using std::vector;
 using std::string;
@@ -24,7 +26,11 @@ class MatrixModel:public QAbstractTableModel
 {
 private:
     Q_OBJECT
+#ifdef INTEGER_MATRIX
     vector<vector<int>> _visual_data_;
+#elif CHAR_MATRIX
+    vector<vector<char>> _visual_data_;
+#endif
     vector<PlayAction> _actions_;
     vector<PlayAction>::iterator _cur_action_,_next_action_;
     bool _play_flag_;
@@ -32,7 +38,13 @@ private:
 public:
     MatrixModel(QObject* tata = nullptr);
     MatrixModel(int rows, int cols, QObject* tata = nullptr);
+
+#ifdef INTEGER_MATRIX
     MatrixModel(const vector<vector<int>>& model, QObject* tata = nullptr);
+#elif CHAR_MATRIX
+    MatrixModel(const vector<vector<char>>& model, QObject* tata = nullptr);
+#endif
+
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex& index,int role = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
@@ -43,7 +55,13 @@ public:
     bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
     bool removeColumns(int column, int count, const QModelIndex& parent = QModelIndex()) override;
+
+#ifdef INTEGER_MATRIX
     bool setData(const vector<vector<int>>& data);
+#elif CHAR_MATRIX
+    bool setData(const vector<vector<char>>& data);
+#endif
+
     bool setActions(const vector<PlayAction>& actions);
 private slots:
     bool play();

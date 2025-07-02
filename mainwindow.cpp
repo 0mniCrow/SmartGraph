@@ -73,24 +73,47 @@ MainWindow::MainWindow(QWidget *parent)
     ui->textEdit->append(QString(Depth_first_search(sec_list_graph,3).c_str()));
 
     //-----------------------------------------------------------------------------
-    std::vector<std::vector<int>> matrix({{2,1,0,2,1},{1,0,1,2,1},{1,0,0,2,1}});
-    std::vector<std::vector<int>> snd_matrix({{2,1,0,2,1},{0,0,1,2,1},{1,0,0,2,1}});
-    long long time = 0;
-    std::string answer;
-    std::vector<PlayAction> actions;
-    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(matrix,time,answer,actions)));
-    ui->textEdit->append("Elapsing time: "+QString::number(time));
-    ui->textEdit->append(QString(answer.c_str()));
+    //-----------Rotten Orange problem-------------------------------------------
+//    std::vector<std::vector<int>> matrix({{2,1,0,2,1},{1,0,1,2,1},{1,0,0,2,1}});
+//    std::vector<std::vector<int>> snd_matrix({{2,1,0,2,1},{0,0,1,2,1},{1,0,0,2,1}});
+//    long long time = 0;
+//    std::string answer;
+//    std::vector<PlayAction> actions;
+//    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(matrix,time,answer,actions)));
+//    ui->textEdit->append("Elapsing time: "+QString::number(time));
+//    ui->textEdit->append(QString(answer.c_str()));
 //    time = 0;
 //    answer.clear();
 //    ui->textEdit->append("Elapsing iterations: "+QString::number(orangesRotting_BFS(snd_matrix,time,answer,actions)));
 //    ui->textEdit->append("Elapsing time: "+QString::number(time));
 //    ui->textEdit->append(QString(answer.c_str()));
-    model = new MatrixModel(matrix);
-    ui->tableView->setModel(model);
-    model->setActions(actions);
-    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
-    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+//    model = new MatrixModel(matrix);
+//    ui->tableView->setModel(model);
+//    model->setActions(actions);
+    vector<vector<char>> grid({{'L','L','W','W','W'},
+                               {'W','L','W','W','L'},
+                               {'L','W','W','L','L'},
+                               {'W','W','W','W','W'},
+                               {'L','W','L','L','W'}});
+    vector<vector<char>> grid2({{'W','L','L','L','W','W','W'},
+                                {'W','W','L','L','W','L','W'}});
+    vector<vector<char>> matrix({ { 'L', 'W', 'W', 'W', 'W' },
+                                  { 'W', 'L', 'W', 'W', 'L' },
+                                  { 'L', 'W', 'W', 'L', 'L' },
+                                  { 'W', 'W', 'W', 'W', 'W' },
+                                  { 'L', 'W', 'L', 'L', 'W' } });
+    Vector2D<LandNode> pro_matrix;
+    pro_matrix.resize(matrix.size(),matrix.at(0).size());
+    for(int i = 0;i<pro_matrix.rowCount();i++)
+    {
+        for(int j = 0; j<pro_matrix.colCount();j++)
+        {
+            pro_matrix(i,j)._land_type_=matrix.at(i).at(j);
+        }
+    }
+    ui->textEdit->append("Number of islands: "+QString::number(countIslands(pro_matrix)));
+//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
 }
 void MainWindow::setProgressBar(int val, int max)
 {

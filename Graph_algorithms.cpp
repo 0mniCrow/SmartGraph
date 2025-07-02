@@ -513,3 +513,57 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
 
 
 //______________________________________________________________________________
+
+bool countIslands_szCheck(Vector2D<LandNode>& matrix,int row, int col)
+{
+    int row_count = matrix.rowCount();
+    int col_count = matrix.colCount();
+    bool answer = true;
+    answer = answer&&(row>=0);
+    answer = answer&&(row<row_count);
+    answer = answer&&(col>=0);
+    answer = answer&&(col<col_count);
+    answer = answer&&(matrix(row,col)._land_type_=='L');
+    answer = answer&&(!matrix(row,col)._visited_);
+    return answer;
+}
+
+void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col)
+{
+    vector<std::pair<int,int>> neighbours({
+                                              {-1,-1},  {-1,0},  {-1,1},
+                                              { 0,-1},           { 0,1},
+                                              { 1,-1},  { 1,0},  { 1,1}});
+    matrix(row,col)._visited_ = true;
+    int neigh_size = static_cast<int>(neighbours.size());
+    for(auto neigh = 0; neigh<neigh_size; neigh++)
+    {
+        int neigh_row = row+neighbours.at(neigh).first;
+        int neigh_col = col+neighbours.at(neigh).second;
+        if(countIslands_szCheck(matrix,neigh_row,neigh_col))
+        {
+            countIslands_DFS(matrix,neigh_row,neigh_col);
+        }
+    }
+    return;
+}
+
+int countIslands(Vector2D<LandNode>& matrix)
+{
+    int r_count = matrix.rowCount();
+    int c_count = matrix.colCount();
+    int count = 0;
+    for(int i = 0; i<r_count;i++)
+    {
+        for(int j = 0; j<c_count;j++)
+        {
+            if((matrix(i,j)._land_type_ == 'L')&&
+                    (!matrix(i,j)._visited_))
+            {
+                countIslands_DFS(matrix,i,j);
+                count++;
+            }
+        }
+    }
+    return count;
+}

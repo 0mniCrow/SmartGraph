@@ -286,7 +286,9 @@ bool MatrixModel::play()
     }
     if(_play_flag_)
     {
+        QModelIndex prew_index = this->index(_cur_action_->row,_cur_action_->column);
         _cur_action_ = _next_action_;
+        emit dataChanged(prew_index,prew_index);
         if(_cur_action_==_actions_.end())
         {
             return true;
