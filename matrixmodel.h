@@ -9,8 +9,8 @@
 #define DEFAULT_ROW_COUNT 6
 #define DEFAULT_COL_COUNT 6
 #define DEFAULT_TIMER 2000
-#define INTEGER_MATRIX
-//#define CHAR_MATRIX
+//#define INTEGER_MATRIX
+#define CHAR_MATRIX
 
 using std::vector;
 using std::string;
@@ -28,7 +28,7 @@ private:
     Q_OBJECT
 #ifdef INTEGER_MATRIX
     vector<vector<int>> _visual_data_;
-#elif CHAR_MATRIX
+#elif defined(CHAR_MATRIX)
     vector<vector<char>> _visual_data_;
 #endif
     vector<PlayAction> _actions_;
@@ -41,7 +41,7 @@ public:
 
 #ifdef INTEGER_MATRIX
     MatrixModel(const vector<vector<int>>& model, QObject* tata = nullptr);
-#elif CHAR_MATRIX
+#elif defined(CHAR_MATRIX)
     MatrixModel(const vector<vector<char>>& model, QObject* tata = nullptr);
 #endif
 
@@ -58,7 +58,7 @@ public:
 
 #ifdef INTEGER_MATRIX
     bool setData(const vector<vector<int>>& data);
-#elif CHAR_MATRIX
+#elif defined(CHAR_MATRIX)
     bool setData(const vector<vector<char>>& data);
 #endif
 

@@ -267,6 +267,17 @@ void addAction(std::vector<std::vector<int> > &matrix,
     return;
 }
 
+void addAction(int active_row, int active_col,
+               std::vector<PlayAction>& actions, std::string info)
+{
+    PlayAction action;
+    action.row = active_row;
+    action.column = active_col;
+    action.value =info;
+    actions.push_back(action);
+    return;
+}
+
 std::string drawMatrix(std::vector<std::vector<int>>& matrix, int active_row = -1, int active_col=-1)
 {
     std::string answer;
@@ -528,7 +539,7 @@ bool countIslands_szCheck(Vector2D<LandNode>& matrix,int row, int col)
     return answer;
 }
 
-void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col)
+void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col, std::vector<PlayAction> &actions)
 {
     vector<std::pair<int,int>> neighbours({
                                               {-1,-1},  {-1,0},  {-1,1},
@@ -540,16 +551,26 @@ void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col)
     {
         int neigh_row = row+neighbours.at(neigh).first;
         int neigh_col = col+neighbours.at(neigh).second;
+        if(szBordCheck(neigh_row,neigh_col,matrix.rowCount(),matrix.colCount()))
+        {
+            addAction(neigh_row,neigh_col,actions,"?");
+        }
         if(countIslands_szCheck(matrix,neigh_row,neigh_col))
         {
-            countIslands_DFS(matrix,neigh_row,neigh_col);
+            addAction(neigh_row,neigh_col,actions,"Neighbourland!");
+            countIslands_DFS(matrix,neigh_row,neigh_col, actions);
+        }
+        if(szBordCheck(neigh_row,neigh_col,matrix.rowCount(),matrix.colCount()))
+        {
+            addAction(row,col,actions,"Back to prew neigh.");
         }
     }
     return;
 }
 
-int countIslands(Vector2D<LandNode>& matrix)
+int countIslands(Vector2D<LandNode>& matrix, std::vector<PlayAction> &actions)
 {
+    actions.clear();
     int r_count = matrix.rowCount();
     int c_count = matrix.colCount();
     int count = 0;
@@ -560,7 +581,9 @@ int countIslands(Vector2D<LandNode>& matrix)
             if((matrix(i,j)._land_type_ == 'L')&&
                     (!matrix(i,j)._visited_))
             {
-                countIslands_DFS(matrix,i,j);
+                addAction(i,j,actions,"Base Land!");
+                countIslands_DFS(matrix,i,j,actions);
+                addAction(i,j,actions,"Back to baseland");
                 count++;
             }
         }

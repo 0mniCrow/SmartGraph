@@ -24,6 +24,8 @@ void addAction(std::vector<std::vector<int>>& matrix,
                int active_row, int active_col,
                std::vector<PlayAction>& actions);
 
+
+
 int orangesRotting_iteration(std::vector<std::vector<int>>& matrix, long long &time);
 int orangesRotting_DFS(std::vector<std::vector<int>>& matrix, long long &time, std::string& actions);
 int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
@@ -139,6 +141,10 @@ public:
     }
 };
 
-void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col);
-int countIslands(Vector2D<LandNode>& matrix);
+void addAction(int active_row, int active_col,
+               std::vector<PlayAction>& actions,
+               std::string info);
+
+void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col, std::vector<PlayAction>& actions);
+int countIslands(Vector2D<LandNode>& matrix, std::vector<PlayAction>& actions);
 #endif // GRAPH_ALGORITHMS_H

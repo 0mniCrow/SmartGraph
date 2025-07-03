@@ -111,9 +111,13 @@ MainWindow::MainWindow(QWidget *parent)
             pro_matrix(i,j)._land_type_=matrix.at(i).at(j);
         }
     }
-    ui->textEdit->append("Number of islands: "+QString::number(countIslands(pro_matrix)));
-//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
-//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+    model = new MatrixModel(matrix);
+    ui->tableView->setModel(model);
+    std::vector<PlayAction> actions;
+    ui->textEdit->append("Number of islands: "+QString::number(countIslands(pro_matrix,actions)));
+    model->setActions(actions);
+    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
 }
 void MainWindow::setProgressBar(int val, int max)
 {
