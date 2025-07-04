@@ -102,19 +102,23 @@ MainWindow::MainWindow(QWidget *parent)
                                   { 'L', 'W', 'W', 'L', 'L' },
                                   { 'W', 'W', 'W', 'W', 'W' },
                                   { 'L', 'W', 'L', 'L', 'W' } });
-    Vector2D<LandNode> pro_matrix;
-    pro_matrix.resize(matrix.size(),matrix.at(0).size());
+//   Vector2D<LandNode> pro_matrix;
+//    pro_matrix.resize(matrix.size(),matrix.at(0).size());
+    Vector2D<char> pro_matrix;
+    pro_matrix.resize(grid.size(),grid.at(0).size());
     for(int i = 0;i<pro_matrix.rowCount();i++)
     {
         for(int j = 0; j<pro_matrix.colCount();j++)
         {
-            pro_matrix(i,j)._land_type_=matrix.at(i).at(j);
+            //pro_matrix(i,j)._land_type_=matrix.at(i).at(j);
+            pro_matrix(i,j) = grid.at(i).at(j);
         }
     }
-    model = new MatrixModel(matrix);
+
+    model = new MatrixModel(grid/*matrix*/);
     ui->tableView->setModel(model);
     std::vector<PlayAction> actions;
-    ui->textEdit->append("Number of islands: "+QString::number(countIslands(pro_matrix,actions)));
+    ui->textEdit->append("Number of islands: "+QString::number(/*countIslands(pro_matrix,actions)*/countLand_OPT(pro_matrix,actions)));
     model->setActions(actions);
     connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
     connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));

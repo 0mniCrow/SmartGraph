@@ -93,7 +93,27 @@ QVariant MatrixModel::data(const QModelIndex& index,int role) const
                 if((_cur_action_->row==index.row())&&
                         (_cur_action_->column==index.column()))
                 {
-                    return QColor(180,249,196);
+                    QColor color;
+                    switch(_cur_action_->actionType)
+                    {
+                    case PlayAction::PAct_Safe:
+                    {
+                        color.setRgb(180,249,196);
+                    }
+                        break;
+                    case PlayAction::PAct_Warn:
+                    {
+                        color.setRgb(253,242,145);
+                    }
+                        break;
+                    case PlayAction::PAct_Err:
+                    {
+                        color.setRgb(253,148,145);
+                    }
+                        break;
+                    }
+
+                    return color;//QColor(180,249,196);
                 }
             }
         }

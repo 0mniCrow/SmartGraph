@@ -17,9 +17,11 @@ using std::string;
 
 struct PlayAction
 {
+    enum PlayActionsType{ PAct_Safe = 0, PAct_Warn = 1, PAct_Err = 2 };
     int row;
     int column;
     string value;
+    PlayActionsType actionType;
 };
 
 class MatrixModel:public QAbstractTableModel

@@ -268,12 +268,14 @@ void addAction(std::vector<std::vector<int> > &matrix,
 }
 
 void addAction(int active_row, int active_col,
-               std::vector<PlayAction>& actions, std::string info)
+               std::vector<PlayAction>& actions, std::string info,
+               PlayAction::PlayActionsType actionType = PlayAction::PAct_Safe)
 {
     PlayAction action;
     action.row = active_row;
     action.column = active_col;
     action.value =info;
+    action.actionType = actionType;
     actions.push_back(action);
     return;
 }
@@ -585,6 +587,74 @@ int countIslands(Vector2D<LandNode>& matrix, std::vector<PlayAction> &actions)
                 countIslands_DFS(matrix,i,j,actions);
                 addAction(i,j,actions,"Back to baseland");
                 count++;
+            }
+        }
+    }
+    return count;
+}
+
+bool countLand_brdrChck(Vector2D<char>& matrix, int row, int col)
+{
+    int rows_size = matrix.rowCount();
+    int cols_size = matrix.colCount();
+    if(szBordCheck(row,col,rows_size,cols_size)&&(matrix(row,col)=='L'))
+    {
+        return true;
+    }
+    return false;
+}
+void countLand_OPT_DFS(Vector2D<char>& matrix, int row, int col, std::vector<PlayAction>& actions)
+{
+    matrix(row,col) = 'W';
+    vector<std::pair<int,int>> neighbours({
+                                              {-1,-1},  {-1,0},  {-1,1},
+                                              { 0,-1},           { 0,1},
+                                              { 1,-1},  { 1,0},  { 1,1}});
+    for(std::pair<int,int>& neigh: neighbours)
+    {
+        int neigh_x = row+ neigh.first;
+        int neigh_y = col+ neigh.second;
+        if(szBordCheck(neigh_x, neigh_y,matrix.rowCount(),matrix.colCount()))
+        {
+            addAction(neigh_x,neigh_y,actions,"CheckNeigh",PlayAction::PAct_Warn);
+        }
+        if(countLand_brdrChck(matrix,neigh_x,neigh_y))
+        {
+            addAction(neigh_x,neigh_y,actions,"LandFound",PlayAction::PAct_Safe);
+            countLand_OPT_DFS(matrix,neigh_x,neigh_y,actions);
+        }
+        else if(szBordCheck(neigh_x, neigh_y,matrix.rowCount(),matrix.colCount()))
+        {
+            addAction(neigh_x,neigh_y,actions,"Water",PlayAction::PAct_Err);
+        }
+        if(szBordCheck(neigh_x, neigh_y,matrix.rowCount(),matrix.colCount()))
+        {
+            addAction(row,col,actions,"Back2Prew",PlayAction::PAct_Safe);
+        }
+    }
+    return;
+}
+
+int countLand_OPT(Vector2D<char>& matrix, std::vector<PlayAction>& actions)
+{
+    int rows_size = matrix.rowCount();
+    int cols_size = matrix.colCount();
+    int count = 0;
+    for(int x = 0; x<rows_size; x++)
+    {
+        for(int y = 0; y<cols_size;y++)
+        {
+            addAction(x,y,actions,"Search",PlayAction::PAct_Warn);
+            if(matrix(x,y)=='L')
+            {
+                count++;
+                addAction(x,y,actions,"Base\"L\"Found",PlayAction::PAct_Safe);
+                countLand_OPT_DFS(matrix, x, y,actions);
+                addAction(x,y,actions,"Back2BaseLand",PlayAction::PAct_Safe);
+            }
+            else
+            {
+                addAction(x,y,actions,"Water",PlayAction::PAct_Err);
             }
         }
     }

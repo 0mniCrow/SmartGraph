@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <chrono>
 #include "listgraph.h"
+#include "matrixmodel.h"
 #include "vectorgraph.h"
 
 struct PlayAction;
@@ -143,8 +144,12 @@ public:
 
 void addAction(int active_row, int active_col,
                std::vector<PlayAction>& actions,
-               std::string info);
+               std::string info, PlayAction::PlayActionsType actionType);
 
 void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col, std::vector<PlayAction>& actions);
 int countIslands(Vector2D<LandNode>& matrix, std::vector<PlayAction>& actions);
+
+void countLand_OPT_DFS(Vector2D<char>& matrix, int row, int col, std::vector<PlayAction>& actions);
+int countLand_OPT(Vector2D<char>& matrix, std::vector<PlayAction>& actions);
+
 #endif // GRAPH_ALGORITHMS_H
