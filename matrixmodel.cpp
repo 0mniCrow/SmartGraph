@@ -117,6 +117,34 @@ QVariant MatrixModel::data(const QModelIndex& index,int role) const
                 }
             }
         }
+#ifdef COLOR_DEPENDENT_INT
+        int dat = data(index,Qt::DisplayRole).toInt();
+        QColor color;
+        switch(dat)
+        {
+        case 0:
+        {
+
+            color.setNamedColor("aqua");
+        }
+            break;
+        case 1:
+        {
+            color.setNamedColor("burlywood");
+        }
+            break;
+        case 2:
+        {
+            color.setNamedColor("deeppink");
+        }
+            break;
+        default:
+        {
+            color.setNamedColor("gainsboro");
+        }
+        }
+        return color;
+#endif
     }
     return QVariant();
 }
@@ -396,6 +424,14 @@ bool MatrixModel::play()
         {
             QModelIndex cur_index = this->index(_cur_action_->row,_cur_action_->column);
             emit dataChanged(cur_index,cur_index);
+#ifdef COLOR_DEPENDENT_INT
+            if(_cur_action_->to_change)
+            {
+                _visual_data_.at(_cur_action_->row).
+                        at(_cur_action_->column) =
+                        _cur_action_->val_to_change;
+            }
+#endif
             int dist = std::distance(_actions_.begin(),_cur_action_);
             int whole = static_cast<int>(_actions_.size())-1;
             emit updateBar(dist,whole);

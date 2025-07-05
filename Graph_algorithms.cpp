@@ -268,14 +268,26 @@ void addAction(std::vector<std::vector<int> > &matrix,
 }
 
 void addAction(int active_row, int active_col,
-               std::vector<PlayAction>& actions, std::string info,
-               PlayAction::PlayActionsType actionType = PlayAction::PAct_Safe)
+               std::vector<PlayAction>& actions,
+               std::string info,
+               PlayAction::PlayActionsType actionType,
+               bool is_changing, int new_val)
 {
     PlayAction action;
     action.row = active_row;
     action.column = active_col;
     action.value =info;
     action.actionType = actionType;
+    if(is_changing)
+    {
+        action.to_change = true;
+        action.val_to_change = new_val;
+    }
+    else
+    {
+        action.to_change = false;
+        action.val_to_change = 0;
+    }
     actions.push_back(action);
     return;
 }
@@ -659,4 +671,205 @@ int countLand_OPT(Vector2D<char>& matrix, std::vector<PlayAction>& actions)
         }
     }
     return count;
+}
+
+
+void countLand_BFS(Vector2D<LandNode>&matrix, int row, int col, std::vector<PlayAction>& actions)
+{
+    vector<std::pair<int,int>> neighbours({
+                                              {-1,-1},  {-1,0},  {-1,1},
+                                              { 0,-1},           { 0,1},
+                                              { 1,-1},  { 1,0},  { 1,1}});
+    std::queue<std::pair<int,int>> q;
+    q.push({row,col});
+    matrix(row,col)._visited_=true;
+    while(!q.empty())
+    {
+        int cur_row = q.front().first;
+        int cur_col = q.front().second;
+        q.pop();
+        addAction(cur_row,cur_col,actions,"CurrLand",PlayAction::PAct_Safe);
+        for(std::pair<int,int>& neigh: neighbours)
+        {
+            int neigh_row = cur_row+neigh.first;
+            int neigh_col = cur_col+neigh.second;
+            if(szBordCheck(neigh_row, neigh_col,matrix.rowCount(),matrix.colCount()))
+            {
+                addAction(neigh_row,neigh_col,actions,"CheckNeigh",PlayAction::PAct_Warn);
+                if(matrix(neigh_row,neigh_col)._land_type_=='L')
+                {
+                    if(matrix(neigh_row,neigh_col)._visited_)
+                    {
+                        addAction(neigh_row,neigh_col,actions,"Land Visited",PlayAction::PAct_Err);
+                    }
+                    else
+                    {
+                        addAction(neigh_row,neigh_col,actions,"LandFound",PlayAction::PAct_Safe);
+                        matrix(neigh_row,neigh_col)._visited_ = true;
+                        q.push({neigh_row,neigh_col});
+                    }
+                }
+                else
+                {
+                    addAction(neigh_row,neigh_col,actions,"Water",PlayAction::PAct_Err);
+                }
+                addAction(cur_row,cur_col,actions,"Back2Prew",PlayAction::PAct_Safe);
+            }
+        }
+    }
+    return;
+}
+int countLand_BFS_based(Vector2D<LandNode>&matrix, std::vector<PlayAction>& actions)
+{
+    int res = 0;
+    for(int row = 0; row<matrix.rowCount();row++)
+    {
+        for(int col = 0; col<matrix.colCount();col++)
+        {
+            addAction(row,col,actions,"Search",PlayAction::PAct_Warn);
+            if(countIslands_szCheck(matrix,row,col))
+            {
+                addAction(row,col,actions,"Base\"L\"Found",PlayAction::PAct_Safe);
+                countLand_BFS(matrix,row,col,actions);
+                addAction(row,col,actions,"Back2BaseLand",PlayAction::PAct_Safe);
+                res++;
+            }
+            else if(matrix(row,col)._land_type_ =='W')
+            {
+                addAction(row,col,actions,"Water",PlayAction::PAct_Err);
+            }
+            else if((matrix(row,col)._land_type_=='L')&&
+                    matrix(row,col)._visited_)
+            {
+                addAction(row,col,actions,"Visited",PlayAction::PAct_Err);
+            }
+        }
+    }
+    return res;
+}
+
+void countLand_BFS_OPT(Vector2D<char>&matrix, int row, int col, std::vector<PlayAction>& actions)
+{
+    vector<std::pair<int,int>> neighbours({
+                                              {-1,-1},  {-1,0},  {-1,1},
+                                              { 0,-1},           { 0,1},
+                                              { 1,-1},  { 1,0},  { 1,1}});
+
+    std::queue<std::pair<int,int>> q;
+    q.push({row,col});
+    matrix(row,col)='V';
+    while(!q.empty())
+    {
+        int cur_row = q.front().first;
+        int cur_col = q.front().second;
+        q.pop();
+        addAction(cur_row,cur_col,actions,"CurrLand",PlayAction::PAct_Safe);
+        for(std::pair<int,int>& neigh: neighbours)
+        {
+            int neigh_row = cur_row+neigh.first;
+            int neigh_col = cur_col+neigh.second;
+            if(szBordCheck(neigh_row, neigh_col,matrix.rowCount(),matrix.colCount()))
+            {
+                addAction(neigh_row,neigh_col,actions,"CheckNeigh",PlayAction::PAct_Warn);
+                if(matrix(neigh_row,neigh_col)=='L')
+                {
+                    addAction(neigh_row,neigh_col,actions,"LandFound",PlayAction::PAct_Safe);
+                    matrix(neigh_row,neigh_col)= 'V';
+                    q.push({neigh_row,neigh_col});
+                }
+                else if(matrix(neigh_row,neigh_col)=='W')
+                {
+                    addAction(neigh_row,neigh_col,actions,"Water",PlayAction::PAct_Err);
+                }
+                else if(matrix(neigh_row,neigh_col)=='V')
+                {
+                    addAction(neigh_row,neigh_col,actions,"Land Visited",PlayAction::PAct_Err);
+                }
+                addAction(cur_row,cur_col,actions,"Back2Prew",PlayAction::PAct_Safe);
+            }
+        }
+    }
+    return;
+}
+
+int countLand_BFS_OPT_based(Vector2D<char>&matrix, std::vector<PlayAction>& actions)
+{
+    int islands = 0;
+    for(int x = 0; x<matrix.rowCount();x++)
+    {
+        for(int y = 0; y<matrix.colCount();y++)
+        {
+            addAction(x,y,actions,"Search",PlayAction::PAct_Warn);
+            if(matrix(x,y)=='L')
+            {
+                addAction(x,y,actions,"NewLandFound!",PlayAction::PAct_Safe);
+                countLand_BFS_OPT(matrix,x,y,actions);
+                islands++;
+            }
+            else if(matrix(x,y)=='W')
+            {
+                addAction(x,y,actions,"Water",PlayAction::PAct_Err);
+            }
+            else if(matrix(x,y)=='V')
+            {
+                addAction(x,y,actions,"Visited",PlayAction::PAct_Err);
+            }
+        }
+    }
+    return islands;
+}
+
+//______________________________________________________________________________________________________
+//_________________________________Flood Fill__________________________________________________________
+
+using std::pair;
+
+void floodFill_DFS(Vector2D<int>& matrix, int row, int col,
+                   int oldColour, int newColour,
+                   std::vector<PlayAction>& actions)
+{
+    if(!szBordCheck(row,col,matrix.rowCount(),matrix.colCount()))
+    {
+        return;
+    }
+    addAction(row,col,actions,"Colour check",PlayAction::PAct_Warn);
+    if(matrix(row,col)!=oldColour)
+    {
+        addAction(row,col,actions,"Non-base colour",PlayAction::PAct_Err);
+        return;
+    }
+    matrix(row,col) = newColour;
+    addAction(row,col,actions,"Base colour!",PlayAction::PAct_Safe,true,newColour);
+    vector<pair<int,int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
+    for(pair<int,int>& dir: directions)
+    {
+        int neigh_row = row+dir.first;
+        int neigh_col = col+dir.second;
+        floodFill_DFS(matrix,neigh_row,neigh_col,oldColour,newColour,actions);
+        addAction(row,col,actions,"Back2prev",PlayAction::PAct_Safe);
+    }
+}
+
+void floodFill_DFS_Base(Vector2D<int>& matrix,
+                        int row, int col, int newColour,
+                        std::vector<PlayAction>& actions)
+{
+    if(szBordCheck(row,col,matrix.rowCount(),matrix.colCount()))
+    {
+        if(matrix(row,col)==newColour)
+            return;
+    }
+    else
+    {
+        return;
+    }
+    int oldColour = matrix(row,col);
+    addAction(row,col,actions,"Base colour ["+
+              std::to_string(oldColour)+"]",
+              PlayAction::PAct_Safe);
+    floodFill_DFS(matrix,row,col,oldColour,newColour,actions);
+    addAction(row,col,actions,"Colour ["+
+              std::to_string(newColour)+"] filled",
+              PlayAction::PAct_Safe);
+    return;
 }

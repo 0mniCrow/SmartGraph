@@ -5,9 +5,11 @@
 #include <queue>
 #include <unordered_set>
 #include <chrono>
+#include <QColor>
 #include "listgraph.h"
 #include "matrixmodel.h"
 #include "vectorgraph.h"
+
 
 struct PlayAction;
 
@@ -44,6 +46,26 @@ struct LandNode
     }
 };
 
+template <typename T> struct OptNode
+{
+    int _id_;
+    T _data_;
+    OptNode()
+    {
+        _id_ = 0;
+        _data_ = T();
+    }
+    OptNode(int id)
+    {
+        _id_=id;
+        _data_ = T();
+    }
+    OptNode(int id,const T& data)
+    {
+        _id_ = id;
+        _data_ = data;
+    }
+};
 
 template <typename T> class Vector2D
 {
@@ -100,10 +122,12 @@ public:
     }
     void fill(const std::vector<std::vector<T>>& data)
     {
-        if(data.size()!=_data_.size())
+        int data_size = static_cast<int>(data.size());
+        int loc_data_size = static_cast<int>(_data_.size());
+        if(data_size!=loc_data_size)
         {
-            _data_.resize(data.size());
-            for(auto i = 0; i<data.size();i++)
+            _data_.resize(data_size);
+            for(int i = 0; i<data_size;i++)
             {
                 if(_data_.at(i).size()!=data.at(i).size())
                 {
@@ -111,9 +135,10 @@ public:
                 }
             }
         }
-        for(auto i = 0; i<data.size();i++)
+        for(int i = 0; i<data_size;i++)
         {
-            for(auto j = 0; j<data.at(i).size();j++)
+            int col_size = static_cast<int>(data.at(i).size());
+            for(int j = 0; j<col_size;j++)
             {
                 _data_.at(i).at(j) = data.at(i).at(j);
             }
@@ -144,12 +169,25 @@ public:
 
 void addAction(int active_row, int active_col,
                std::vector<PlayAction>& actions,
-               std::string info, PlayAction::PlayActionsType actionType);
+               std::string info,
+               PlayAction::PlayActionsType actionType =
+        PlayAction::PAct_Safe,
+               bool is_changing = false,
+               int new_val = 0);
 
 void countIslands_DFS(Vector2D<LandNode>& matrix, int row, int col, std::vector<PlayAction>& actions);
 int countIslands(Vector2D<LandNode>& matrix, std::vector<PlayAction>& actions);
 
 void countLand_OPT_DFS(Vector2D<char>& matrix, int row, int col, std::vector<PlayAction>& actions);
 int countLand_OPT(Vector2D<char>& matrix, std::vector<PlayAction>& actions);
+
+void countLand_BFS(Vector2D<LandNode>&matrix, int row, int col, std::vector<PlayAction>& actions);
+int countLand_BFS_based(Vector2D<LandNode>&matrix, std::vector<PlayAction>& actions);
+
+void countLand_BFS_OPT(Vector2D<char>&matrix, int row, int col, std::vector<PlayAction>& actions);
+int countLand_BFS_OPT_based(Vector2D<char>&matrix, std::vector<PlayAction>& actions);
+
+void floodFill_DFS(Vector2D<int>& matrix, int row, int col, int oldColour, int newColour, std::vector<PlayAction>& actions);
+void floodFill_DFS_Base(Vector2D<int>& matrix, int row, int col, int newColour, std::vector<PlayAction>& actions);
 
 #endif // GRAPH_ALGORITHMS_H

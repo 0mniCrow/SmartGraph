@@ -90,35 +90,60 @@ MainWindow::MainWindow(QWidget *parent)
 //    model = new MatrixModel(matrix);
 //    ui->tableView->setModel(model);
 //    model->setActions(actions);
-    vector<vector<char>> grid({{'L','L','W','W','W'},
-                               {'W','L','W','W','L'},
-                               {'L','W','W','L','L'},
-                               {'W','W','W','W','W'},
-                               {'L','W','L','L','W'}});
-    vector<vector<char>> grid2({{'W','L','L','L','W','W','W'},
-                                {'W','W','L','L','W','L','W'}});
-    vector<vector<char>> matrix({ { 'L', 'W', 'W', 'W', 'W' },
-                                  { 'W', 'L', 'W', 'W', 'L' },
-                                  { 'L', 'W', 'W', 'L', 'L' },
-                                  { 'W', 'W', 'W', 'W', 'W' },
-                                  { 'L', 'W', 'L', 'L', 'W' } });
-//   Vector2D<LandNode> pro_matrix;
-//    pro_matrix.resize(matrix.size(),matrix.at(0).size());
-    Vector2D<char> pro_matrix;
-    pro_matrix.resize(grid.size(),grid.at(0).size());
-    for(int i = 0;i<pro_matrix.rowCount();i++)
-    {
-        for(int j = 0; j<pro_matrix.colCount();j++)
-        {
+    //________________________Land_Finding______________________________
+//    vector<vector<char>> grid({{'L','L','W','W','W'},
+//                               {'W','L','W','W','L'},
+//                               {'L','W','W','L','L'},
+//                               {'W','W','W','W','W'},
+//                               {'L','W','L','L','W'}});
+//    vector<vector<char>> grid2({{'W','L','L','L','W','W','W'},
+//                                {'W','W','L','L','W','L','W'}});
+//    vector<vector<char>> matrix({ { 'L', 'W', 'W', 'W', 'W' },
+//                                  { 'W', 'L', 'W', 'W', 'L' },
+//                                  { 'L', 'W', 'W', 'L', 'L' },
+//                                  { 'W', 'W', 'W', 'W', 'W' },
+//                                  { 'L', 'W', 'L', 'L', 'W' } });
+    //Vector2D<LandNode> pro_matrix;
+    //pro_matrix.resize(matrix.size(),matrix.at(0).size());
+    //Vector2D<char> pro_matrix;
+    //pro_matrix.resize(grid.size(),grid.at(0).size());
+    //pro_matrix.resize(grid2.size(),grid2.at(0).size());
+//    for(int i = 0;i<pro_matrix.rowCount();i++)
+//    {
+//        for(int j = 0; j<pro_matrix.colCount();j++)
+//        {
             //pro_matrix(i,j)._land_type_=matrix.at(i).at(j);
-            pro_matrix(i,j) = grid.at(i).at(j);
-        }
-    }
+            //pro_matrix(i,j) = grid.at(i).at(j);
+            //pro_matrix(i,j) = grid2.at(i).at(j);
+            //pro_matrix(i,j)._land_type_=grid.at(i).at(j);
+//        }
+//    }
 
-    model = new MatrixModel(grid/*matrix*/);
+//    model = new MatrixModel(/*grid*/grid2/*matrix*/);
+//    ui->tableView->setModel(model);
+//    std::vector<PlayAction> actions;
+//    ui->textEdit->append("Number of islands: "+QString::number(/*countIslands(pro_matrix,actions)*/
+//                                                               /*countLand_OPT(pro_matrix,actions)*/
+//                                                               countLand_BFS_OPT_based(pro_matrix,actions)));
+//    model->setActions(actions);
+
+    //_______________________________Flood_Fill_______________________________________
+
+    vector<vector<int>> matrix({
+                                   {1,1,1,0,0,1},
+                                   {0,1,1,1,0,1},
+                                   {1,0,1,1,0,0},
+                                   {1,0,0,0,0,1}
+                               });
+    int start_row = 1,start_col = 2;
+    int new_color = 2;
+    Vector2D<int> pro_matrix;
+    pro_matrix.fill(matrix);
+    model = new MatrixModel(matrix);
     ui->tableView->setModel(model);
     std::vector<PlayAction> actions;
-    ui->textEdit->append("Number of islands: "+QString::number(/*countIslands(pro_matrix,actions)*/countLand_OPT(pro_matrix,actions)));
+    floodFill_DFS_Base(pro_matrix,start_row,start_col,new_color,actions);
+    ui->textEdit->append("FloodFill is ready;");
     model->setActions(actions);
     connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
     connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
