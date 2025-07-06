@@ -142,8 +142,15 @@ MainWindow::MainWindow(QWidget *parent)
     model = new MatrixModel(matrix);
     ui->tableView->setModel(model);
     std::vector<PlayAction> actions;
-    floodFill_DFS_Base(pro_matrix,start_row,start_col,new_color,actions);
-    ui->textEdit->append("FloodFill is ready;");
+    //floodFill_DFS_Base(pro_matrix,start_row,start_col,new_color,actions);
+    //ui->textEdit->append("FloodFill is ready;");
+    ui->textEdit->append("Flood fill managed to fill ["+
+                         QString::number(floodFill_BFS(pro_matrix,
+                                                       start_row,
+                                                       start_col,
+                                                       new_color,
+                                                       actions))
+                         +"] cells");
     model->setActions(actions);
     connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
     connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));

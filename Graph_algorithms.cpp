@@ -873,3 +873,51 @@ void floodFill_DFS_Base(Vector2D<int>& matrix,
               PlayAction::PAct_Safe);
     return;
 }
+
+
+int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::vector<PlayAction>& actions)
+{
+    if(matrix(row,col)==newColour)
+    {
+        return 0;
+    }
+    vector<pair<int,int>> directions({{1,0},{0,1},{-1,0},{0,-1}});
+    std::queue<pair<int,int>>q;
+    int old_colour = matrix(row,col);
+    q.push({row,col});
+    matrix(row,col) = newColour;
+    addAction(row,col,actions,"StartPt",PlayAction::PAct_Safe,true,newColour);
+    addAction(row,col,actions,"Base colour ["+
+              std::to_string(old_colour)+"]",
+              PlayAction::PAct_Safe);
+    int count = 1;
+    while(!q.empty())
+    {
+        int cur_row = q.front().first;
+        int cur_col = q.front().second;
+        addAction(cur_row,cur_col,actions,"CurrCell",PlayAction::PAct_Safe);
+        q.pop();
+        for(const pair<int,int>& dir: directions)
+        {
+            int neigh_row = cur_row+dir.first;
+            int neigh_col = cur_col+dir.second;
+            if(szBordCheck(neigh_row,neigh_col,matrix.rowCount(),matrix.colCount()))
+            {
+                addAction(neigh_row,neigh_col,actions,"Colour check",PlayAction::PAct_Warn);
+                if(matrix(neigh_row,neigh_col)== old_colour)
+                {
+                    addAction(neigh_row,neigh_col,actions,"Base colour!",PlayAction::PAct_Safe,true,newColour);
+                    matrix(neigh_row,neigh_col) = newColour;
+                    q.push({neigh_row,neigh_col});
+                    count++;
+                }
+                else
+                {
+                    addAction(neigh_row,neigh_col,actions,"Non-base colour",PlayAction::PAct_Err);
+                }
+            }
+        }
+        addAction(cur_row,cur_col,actions,"Back2Curr",PlayAction::PAct_Safe);
+    }
+    return count;
+}

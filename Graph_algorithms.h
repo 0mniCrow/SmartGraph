@@ -190,4 +190,6 @@ int countLand_BFS_OPT_based(Vector2D<char>&matrix, std::vector<PlayAction>& acti
 void floodFill_DFS(Vector2D<int>& matrix, int row, int col, int oldColour, int newColour, std::vector<PlayAction>& actions);
 void floodFill_DFS_Base(Vector2D<int>& matrix, int row, int col, int newColour, std::vector<PlayAction>& actions);
 
+int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::vector<PlayAction>& actions);
+
 #endif // GRAPH_ALGORITHMS_H
