@@ -9,6 +9,7 @@
 struct GraphVertice
 {
     unsigned int _id_;
+    int _value_;
     std::map<int,int> _edges_;
     GraphVertice()
     {
@@ -31,6 +32,9 @@ public:
     void addEdge(int source, int destination, int weight = 1);
     void setWeight(int source, int destination, int weight);
     int addVertex(int id = -1);
+    bool setValue(int vertex_id,int val);
+    int getValue(int vertex_id);
+    int& operator()(int vertex_id);
     void removeVertex(int id);
     int getSize() const;
     void setParams(GraphParams flags);

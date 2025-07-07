@@ -921,3 +921,23 @@ int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::v
     }
     return count;
 }
+
+
+//___________________________________________________________________________________________________________________
+//__________________________________________________Bipartite-check----------------
+
+//bool isBipartite_BFS(int V, Vector2D<int>& edges, std::vector<PlayAction>& actions)
+//{
+//    vector<int> color(V,-1);
+//    auto constructadj = [](int vert, Vector2D<int> edg)
+//    {
+//        vector<vector<int>> adj(vert);
+//        for(int i = 0:edg)
+//        {
+//            adj[it[0]].push_back(it[1]);
+//            adj[it[1]].push_back(it[0]);
+//        }
+//        return
+//    };
+//    vector<vector<int>> adj =
+//}
