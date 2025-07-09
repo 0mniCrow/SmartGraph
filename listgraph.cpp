@@ -1,13 +1,15 @@
 #include "listgraph.h"
 
-using IntVertex = ListVertex<int>;
-using IntVertIter = std::map<int,ListVertex<int>>::iterator;
-using CharVertex = ListVertex<char>;
-using CharVertIter = std::map<int,ListVertex<char>>::iterator;
+//using IntVertex = ListVertex<int>;
+//using IntVertIter = std::map<int,ListVertex<int>>::iterator;
+//using CharVertex = ListVertex<char>;
+//using CharVertIter = std::map<int,ListVertex<char>>::iterator;
 using EdgeIter = std::map<int,int>::iterator;
+using EdgeCIter = std::map<int,int>::const_iterator;
 
-using CurVertex = IntVertex;
-using CurVertexIter = IntVertIter;
+using CurVertex = ListVertex<cur_type>;                             //IntVertex;
+using CurVertexIter = std::map<int,ListVertex<cur_type>>::iterator; //IntVertIter;
+using CurVertexCIter = std::map<int,ListVertex<cur_type>>::const_iterator;
 
 ListGraph::ListGraph():_flags_(Gr_Unweighted_Undirected)
 {
@@ -17,6 +19,14 @@ ListGraph::ListGraph():_flags_(Gr_Unweighted_Undirected)
 ListGraph::ListGraph(int size, char params):_flags_(params)
 {
     readjustGraph(size);
+    return;
+}
+
+ListGraph::ListGraph(int size, cur_type def_val,
+                     char params):_flags_(params)
+{
+    readjustGraph(size);
+    fill(def_val);
     return;
 }
 
@@ -145,6 +155,16 @@ bool ListGraph::setValue(int vertex_id, cur_type val)
     return false;
 }
 
+bool ListGraph::isExists(int vertex_id)
+{
+    CurVertexIter it = _list_graph_.find(vertex_id);
+    if(it==_list_graph_.end())
+    {
+        return false;
+    }
+    return true;
+}
+
 cur_type ListGraph::value(int vertex_id)
 {
     CurVertexIter it = _list_graph_.find(vertex_id);
@@ -199,6 +219,30 @@ const std::map<int,int>& ListGraph::getConnections(int vertex_id)
     }
 }
 
+int ListGraph::edgesCount(int vertex_id) const
+{
+    CurVertexCIter it = _list_graph_.find(vertex_id);
+    if(it==_list_graph_.cend())
+    {
+        return 0;
+    }
+    return it->second._edges_.size();
+}
+
+int ListGraph::edgeWeightAt(int vertex_id, int edge_id) const
+{
+    CurVertexCIter it = _list_graph_.find(vertex_id);
+    if(it==_list_graph_.cend())
+    {
+        return 0;
+    }
+    EdgeCIter edge = it->second._edges_.find(edge_id);
+    if(edge==it->second._edges_.cend())
+    {
+        return 0;
+    }
+    return edge->second;
+}
 
 void ListGraph::removeVertex(int vertex_id)
 {
@@ -219,6 +263,23 @@ int ListGraph::size() const
 {
     return static_cast<int>(_list_graph_.size());
 }
+
+void ListGraph::clear()
+{
+    _list_graph_.clear();
+}
+
+void ListGraph::fill(cur_type val)
+{
+    CurVertexIter it = _list_graph_.begin();
+    while(it!=_list_graph_.end())
+    {
+        it->second._value_ = val;
+        it++;
+    }
+    return;
+}
+
 void ListGraph::setParams(GraphParams flags)
 {
     _flags_ = flags;
@@ -255,6 +316,7 @@ std::string ListGraph::getAdjacencyList() const
     }
     return answer;
 }
+
 std::string ListGraph::getEdgeTable() const
 {
     std::string answer("Edge Table for the Graph:\n");

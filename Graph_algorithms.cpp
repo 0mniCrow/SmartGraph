@@ -6,30 +6,45 @@ std::string Breadth_first_search(ListGraph& obj, int root_index)            //П
     std::string answer;                                                     //Радок адказу
     std::queue<int> BFS_queue;                                              //Чарга "па-узроўневага" праходу праз граф
     std::unordered_set<int> visited_vertices;                               //Ненакіраваны набор значэнняў, захоўвае ўжо наведаныя вузы графу
-    std::map<int,GraphVertice>& cur_graph = obj._list_graph_;               //Выцягваем кантэйнер графа з аб'екта графа-спіса
-    auto it = cur_graph.find(root_index);                                   //Шукаем пачатковую вузу, з якой пачнем абыход
-    if(it==cur_graph.end())
+//    std::map<int,GraphVertice>& cur_graph = obj._list_graph_;               //Выцягваем кантэйнер графа з аб'екта графа-спіса
+//    auto it = cur_graph.find(root_index);                                   //Шукаем пачатковую вузу, з якой пачнем абыход
+//    if(it==cur_graph.end())
+//    {
+//        return answer;
+//    }
+    if(!obj.isExists(root_index))
     {
         return answer;
     }
     answer.append("Breadth first search (list-based graph):\n");
     answer.append("Root index: "+std::to_string(root_index)+";\n");
-    visited_vertices.insert(it->first);                                     //Дадаем каранёвую вузу ў "наведаныя"
+    //visited_vertices.insert(it->first);                                     //Дадаем каранёвую вузу ў "наведаныя"
+    visited_vertices.insert(root_index);
     BFS_queue.push(root_index);                                             //Уцісківаем каранувую вузу ва ў чаргу
     while(!BFS_queue.empty())                                               //Пакуль у чарзе застаюцца "ненаведаныя" вузы,
     {                                                                       //Мы наведваем ды адзначаем іх
         int cur_index = BFS_queue.front();                                  //Выцягваем індэкс бягучай вузы з чаргі
         BFS_queue.pop();                                                    //Выдаляем індэкс з чаргі
-        auto connected_indexes = cur_graph.at(cur_index)._edges_.begin();   //Ствараем ітэратар са сьпісу ўсіх злучаных вузаў графа.
+//      auto connected_indexes = cur_graph.at(cur_index)._edges_.begin();   //Ствараем ітэратар са сьпісу ўсіх злучаных вузаў графа.
         answer.append("Visited["+std::to_string(cur_index)+"], ");          //Адзначаем ў адказе індэкс наведанай вузы
-        while(connected_indexes!=cur_graph.at(cur_index)._edges_.end())
+//        while(connected_indexes!=cur_graph.at(cur_index)._edges_.end())
+//        {
+//            if(visited_vertices.find(connected_indexes->first)==visited_vertices.end())
+//            {                                                               //Калі гэты індэкс не сустракаўся раней(не знаходзіцца ў наборы наведаных)
+//                visited_vertices.insert(connected_indexes->first);          //Дадаем яго ў набор наведаных
+//                BFS_queue.push(connected_indexes->first);                   //Уціскваем яго ў канец чаргі
+//            }
+//            connected_indexes++;                                            //Наступная злучаная вуза.
+//        }
+
+        auto connections = obj.getEdges(cur_index);
+        for(int edge: connections)
         {
-            if(visited_vertices.find(connected_indexes->first)==visited_vertices.end())
-            {                                                               //Калі гэты індэкс не сустракаўся раней(не знаходзіцца ў наборы наведаных)
-                visited_vertices.insert(connected_indexes->first);          //Дадаем яго ў набор наведаных
-                BFS_queue.push(connected_indexes->first);                   //Уціскваем яго ў канец чаргі
+            if(visited_vertices.find(edge)==visited_vertices.end())
+            {
+                visited_vertices.insert(edge);
+                BFS_queue.push((edge));
             }
-            connected_indexes++;                                            //Наступная злучаная вуза.
         }
     }
     answer.append("\nSearch finished.");
@@ -76,23 +91,33 @@ std::string Breadth_first_search(VectorGraph& obj, int root_index)
 namespace GrAlg
 {
     //Рэкурсіўная (стэкавая) функцыя для глыбіннага пошуку
-    std::string Deep_search(std::map<int,GraphVertice>& list_graph,
+    std::string Deep_search(ListGraph& obj,//std::map<int,GraphVertice>& list_graph,
                             std::unordered_set<int>& visited_vertices,
                             int cur_index)
     {
         std::string answer;                                                     //Радок адказу
         visited_vertices.insert(cur_index);                                     //Дадаем бягучую вяршыню ў набор наведанных вяршынь
         answer.append(std::to_string(cur_index)+", ");                          //Дадаем у адказ бягучую вершыню.
-        auto conn = list_graph.at(cur_index)._edges_.begin();                   //Наведваем кожную злучаную вершыню
-        while(conn != list_graph.at(cur_index)._edges_.end())                   //са сьпісу сувязей
+//        auto conn = list_graph.at(cur_index)._edges_.begin();                   //Наведваем кожную злучаную вершыню
+//        while(conn != list_graph.at(cur_index)._edges_.end())                   //са сьпісу сувязей
+//        {
+//            if(visited_vertices.find(conn->first)==visited_vertices.end())      //Калі гэта вяршыня не была наведана раней
+//            {
+//                answer.append("| ("+std::to_string(cur_index)+")-["+            //дадаем у адказ індэкс бягучай вяршыні,
+//                              std::to_string(conn->second)+"]->"+               //вагу сувязі паміж вяршынямі,
+//                              Deep_search(list_graph,visited_vertices,conn->first));    //і адказ рэкурсіўнага выкліку са злучанай
+//            }                                                                   //вяршыняй у якасьці бягучага індэксу.
+//            conn++;
+//        }
+        auto connections = obj.getEdges(cur_index);
+        for(int edge:connections)
         {
-            if(visited_vertices.find(conn->first)==visited_vertices.end())      //Калі гэта вяршыня не была наведана раней
+            if(visited_vertices.find(edge)==visited_vertices.end())
             {
-                answer.append("| ("+std::to_string(cur_index)+")-["+            //дадаем у адказ індэкс бягучай вяршыні,
-                              std::to_string(conn->second)+"]->"+               //вагу сувязі паміж вяршынямі,
-                              Deep_search(list_graph,visited_vertices,conn->first));    //і адказ рэкурсіўнага выкліку са злучанай
-            }                                                                   //вяршыняй у якасьці бягучага індэксу.
-            conn++;
+                answer.append("| ("+std::to_string(cur_index)+")-["+
+                                              std::to_string(obj.edgeWeightAt(cur_index,edge))+"]->"+
+                                              Deep_search(/*list_graph*/obj,visited_vertices,/*conn->first*/edge));
+            }
         }
         return answer;
     }
@@ -135,7 +160,7 @@ std::string Depth_first_search(ListGraph& obj, int root_index)
         return answer;
     }
     std::unordered_set<int> visited_vertices;
-    answer.append(GrAlg::Deep_search(obj._list_graph_,visited_vertices,root_index));
+    answer.append(GrAlg::Deep_search(obj/*._list_graph_*/,visited_vertices,root_index));
     answer.append("\nDFS end;");
     return answer;
 }
@@ -926,18 +951,131 @@ int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::v
 //___________________________________________________________________________________________________________________
 //__________________________________________________Bipartite-check----------------
 
-//bool isBipartite_BFS(int V, Vector2D<int>& edges, std::vector<PlayAction>& actions)
-//{
-//    vector<int> color(V,-1);
-//    auto constructadj = [](int vert, Vector2D<int> edg)
-//    {
-//        vector<vector<int>> adj(vert);
-//        for(int i = 0:edg)
+
+bool isBipartite_BFS(ListGraph& obj, std::string& actions)
+{
+    actions.clear();
+    actions.append("BFS_check if the list-based graph is bipartite;\n");
+    for(int i = 0; i<obj.size();i++)
+    {
+        obj.at(i) = -1;
+    }
+    std::queue<int> BFS_queue;
+    for(int i = 0; i<obj.size();i++)
+    {
+        if(obj.at(i)==-1)
+        {
+            actions.append("Vertex at ["+std::to_string(i)+
+                           "] has default value ("+
+                           std::to_string(obj.at(i))+");\n");
+            obj.at(i)= 0;
+            BFS_queue.push(i);
+            while(!BFS_queue.empty())
+            {
+                int cur_vertex = BFS_queue.front();
+                BFS_queue.pop();
+                actions.append("Vertex ["+std::to_string(cur_vertex)+
+                               "] is a current vertex;\n");
+                vector<int> adjustments(obj.getEdges(cur_vertex));
+                for(int edged_vertex:adjustments)
+                {
+                    actions.append("Vertex ["+std::to_string(edged_vertex)+
+                                   "] has value ("+std::to_string(obj(edged_vertex))+
+                                   ");\n");
+                    if(obj.at(edged_vertex)==-1)
+                    {
+
+                        obj.at(edged_vertex) = 1 - obj.at(cur_vertex);
+                        BFS_queue.push(edged_vertex);
+                        actions.append("Vertex ["+std::to_string(edged_vertex)+
+                                       "] vas recolorased to ("+
+                                       std::to_string(obj(edged_vertex))+");\n");
+                    }
+                    else if(obj.at(edged_vertex)==obj.at(cur_vertex))
+                    {
+                        actions.append("Vertex ["+std::to_string(edged_vertex)+
+                                       "] has the same coloration "
+                                       "as vertex at["+std::to_string(cur_vertex)+"];\n");
+                        actions.append("Graph isn't bipartite;");
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    for(int i = 0; i<obj.size();i++)
+    {
+        actions.append("ver["+std::to_string(i)+"]val("+std::to_string(obj(i))+")|");
+    }
+    actions.append("\nGraph is bipartite;");
+    return true;
+}
+
+bool isBipartite_DFS(int cur_index,int cur_val, ListGraph& obj, string& actions)
+{
+    actions.append("Vertex ["+std::to_string(cur_index)+
+                   "] is a current vertex;\n");
+    obj(cur_index) = cur_val;
+    actions.append("Vertex ["+std::to_string(cur_index)+
+                   "] vas recolorased to ("+
+                   std::to_string(obj(cur_index))+");\n");
+    vector<int> adjustments(obj.getEdges(cur_index));
+    for(int edged_vertex: adjustments)
+    {
+        actions.append("Connected vertex["+std::to_string(edged_vertex)+
+                       "] value ("+std::to_string(obj(edged_vertex))+
+                       ");\n");
+        if(obj.at(edged_vertex)==-1)
+        {
+            if(!isBipartite_DFS(edged_vertex,1-cur_val,obj,actions))
+            {
+                return false;
+            }
+            actions.append("Back to cur Vertex ["+std::to_string(cur_index)+"]\n");
+        }
+        else if(obj.at(edged_vertex)==obj.at(cur_index))
+        {
+            actions.append("Vertex ["+std::to_string(edged_vertex)+
+                           "] has the same coloration "
+                           "as vertex at["+std::to_string(cur_index)+"];\n");
+            actions.append("Graph isn't bipartite;");
+            return false;
+        }
+//        else
 //        {
-//            adj[it[0]].push_back(it[1]);
-//            adj[it[1]].push_back(it[0]);
+//            actions.append("Src vert ["+std::to_string(cur_index)+"] clr ("+
+//                           std::to_string(obj.at(cur_index))+
+//                           ") =/= dest vert ["+
+//                           std::to_string(edged_vertex)+
+//                           "] clr ("+std::to_string(obj.at(edged_vertex))+");\n");
 //        }
-//        return
-//    };
-//    vector<vector<int>> adj =
-//}
+    }
+    return true;
+}
+
+bool isBipartite_DFS_Base(ListGraph& obj, string& actions)
+{
+    actions.clear();
+    actions.append("DFS_check if the list-based graph is bipartite;\n");
+    obj.fill(-1);
+    for(int i = 0; i<obj.size();i++)
+    {
+        if(obj.at(i)==-1)
+        {
+            actions.append("Vertex at ["+std::to_string(i)+
+                           "] has default value ("+
+                           std::to_string(obj.at(i))+");\n");
+            if(!isBipartite_DFS(i,0,obj,actions))
+            {
+                return false;
+            }
+        }
+    }
+    for(int i = 0; i<obj.size();i++)
+    {
+        actions.append("ver["+std::to_string(i)+"]val("+std::to_string(obj(i))+")|");
+    }
+    actions.append("\nGraph is bipartite;");
+    return true;
+}
+

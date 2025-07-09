@@ -193,6 +193,10 @@ void floodFill_DFS_Base(Vector2D<int>& matrix, int row, int col, int newColour, 
 int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::vector<PlayAction>& actions);
 
 
-bool isBipartite_BFS(int V, Vector2D<int>& edges, std::vector<PlayAction>& actions);
+bool isBipartite_BFS(ListGraph& obj, string &actions);
+
+bool isBipartite_DFS(int cur_index,int cur_val, ListGraph& obj, string& actions);
+bool isBipartite_DFS_Base(ListGraph& obj, string& actions);
+
 
 #endif // GRAPH_ALGORITHMS_H

@@ -7,70 +7,72 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    graph.addEdge(0,1);
-    graph.addEdge(0,2);
-    graph.addEdge(1,3);
-    graph.addEdge(2,3);
-    ui->textEdit->append(QString(graph.getAdjacencyMatrix().c_str()));
-    ui->textEdit->append(QString(graph.getEdgeTable().c_str()));
+//___________________________________Matrix graph__________________________
 
-    VectorGraph sec_graph(5,VectorGraph::Gr_Directed|VectorGraph::Gr_Weighted);
+//    graph.addEdge(0,1);
+//    graph.addEdge(0,2);
+//    graph.addEdge(1,3);
+//    graph.addEdge(2,3);
+//    ui->textEdit->append(QString(graph.getAdjacencyMatrix().c_str()));
+//    ui->textEdit->append(QString(graph.getEdgeTable().c_str()));
 
-    sec_graph.addEdge(0,4,8);
-    sec_graph.addEdge(0,1,2);
-    sec_graph.addEdge(1,0,2);
-    sec_graph.addEdge(1,2,3);
-    sec_graph.addEdge(2,3,2);
-    sec_graph.addEdge(2,0,5);
-    sec_graph.addEdge(2,4,3);
-    sec_graph.addEdge(3,1,6);
-    sec_graph.addEdge(3,4,1);
-    sec_graph.addEdge(4,2,7);
-    sec_graph.addEdge(4,1,1);
+//    VectorGraph sec_graph(5,VectorGraph::Gr_Directed|VectorGraph::Gr_Weighted);
 
-    int next_vertex(sec_graph.addVertex());
+//    sec_graph.addEdge(0,4,8);
+//    sec_graph.addEdge(0,1,2);
+//    sec_graph.addEdge(1,0,2);
+//    sec_graph.addEdge(1,2,3);
+//    sec_graph.addEdge(2,3,2);
+//    sec_graph.addEdge(2,0,5);
+//    sec_graph.addEdge(2,4,3);
+//    sec_graph.addEdge(3,1,6);
+//    sec_graph.addEdge(3,4,1);
+//    sec_graph.addEdge(4,2,7);
+//    sec_graph.addEdge(4,1,1);
 
-    sec_graph.addEdge(next_vertex,4,2);
-    sec_graph.addEdge(1,next_vertex,6);
+//    int next_vertex(sec_graph.addVertex());
 
-    ui->textEdit->append(QString(sec_graph.getAdjacencyMatrix().c_str()));
-    ui->textEdit->append(QString(sec_graph.getEdgeTable().c_str()));
-    ui->textEdit->append(QString(Breadth_first_search(sec_graph,0).c_str()));
-    ui->textEdit->append(QString(Depth_first_search(sec_graph,0).c_str()));
+//    sec_graph.addEdge(next_vertex,4,2);
+//    sec_graph.addEdge(1,next_vertex,6);
 
-    //---------------------------------------------------------------------------
-    ui->textEdit->append("\n\n\nList graph:");
+//    ui->textEdit->append(QString(sec_graph.getAdjacencyMatrix().c_str()));
+//    ui->textEdit->append(QString(sec_graph.getEdgeTable().c_str()));
+//    ui->textEdit->append(QString(Breadth_first_search(sec_graph,0).c_str()));
+//    ui->textEdit->append(QString(Depth_first_search(sec_graph,0).c_str()));
 
-    l_graph.addEdge(1,0);
-    l_graph.addEdge(2,0);
-    l_graph.addEdge(1,2);
-    ui->textEdit->append(QString(l_graph.getAdjacencyList().c_str()));
-    ui->textEdit->append(QString(Breadth_first_search(l_graph,0).c_str()));
+    //-----------------------------------List graph----------------------------------------
+//    ui->textEdit->append("\n\n\nList graph:");
 
-    ListGraph sec_list_graph(6,ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
-    sec_list_graph.addEdge(0,1,2);
-    sec_list_graph.addEdge(0,2,3);
-    sec_list_graph.addEdge(1,2,2);
-    sec_list_graph.addEdge(1,3,2);
-    sec_list_graph.addEdge(2,3,2);
-    sec_list_graph.addEdge(3,4,3);
-    sec_list_graph.addEdge(3,5,5);
-    sec_list_graph.addEdge(4,5,2);
-    sec_list_graph.addEdge(5,0,9);
+//    l_graph.addEdge(1,0);
+//    l_graph.addEdge(2,0);
+//    l_graph.addEdge(1,2);
+//    ui->textEdit->append(QString(l_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append(QString(Breadth_first_search(l_graph,0).c_str()));
 
-    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
-    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
+//    ListGraph sec_list_graph(6,ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+//    sec_list_graph.addEdge(0,1,2);
+//    sec_list_graph.addEdge(0,2,3);
+//    sec_list_graph.addEdge(1,2,2);
+//    sec_list_graph.addEdge(1,3,2);
+//    sec_list_graph.addEdge(2,3,2);
+//    sec_list_graph.addEdge(3,4,3);
+//    sec_list_graph.addEdge(3,5,5);
+//    sec_list_graph.addEdge(4,5,2);
+//    sec_list_graph.addEdge(5,0,9);
 
-    sec_list_graph.addVertex(7);
-    sec_list_graph.addEdge(5,7,4);
-    int new_vert=sec_list_graph.addVertex();
-    sec_list_graph.addEdge(7,new_vert,3);
+//    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
 
-    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
-    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
+//    sec_list_graph.addVertex(7);
+//    sec_list_graph.addEdge(5,7,4);
+//    int new_vert=sec_list_graph.addVertex();
+//    sec_list_graph.addEdge(7,new_vert,3);
 
-    ui->textEdit->append(QString(Breadth_first_search(sec_list_graph,0).c_str()));
-    ui->textEdit->append(QString(Depth_first_search(sec_list_graph,3).c_str()));
+//    ui->textEdit->append(QString(sec_list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append(QString(sec_list_graph.getEdgeTable().c_str()));
+
+//    ui->textEdit->append(QString(Breadth_first_search(sec_list_graph,0).c_str()));
+//    ui->textEdit->append(QString(Depth_first_search(sec_list_graph,3).c_str()));
 
     //-----------------------------------------------------------------------------
     //-----------Rotten Orange problem-------------------------------------------
@@ -129,31 +131,71 @@ MainWindow::MainWindow(QWidget *parent)
 
     //_______________________________Flood_Fill_______________________________________
 
-    vector<vector<int>> matrix({
-                                   {1,1,1,0,0,1},
-                                   {0,1,1,1,0,1},
-                                   {1,0,1,1,0,0},
-                                   {1,0,0,0,0,1}
-                               });
-    int start_row = 1,start_col = 2;
-    int new_color = 2;
-    Vector2D<int> pro_matrix;
-    pro_matrix.fill(matrix);
-    model = new MatrixModel(matrix);
-    ui->tableView->setModel(model);
-    std::vector<PlayAction> actions;
-    //floodFill_DFS_Base(pro_matrix,start_row,start_col,new_color,actions);
-    //ui->textEdit->append("FloodFill is ready;");
-    ui->textEdit->append("Flood fill managed to fill ["+
-                         QString::number(floodFill_BFS(pro_matrix,
-                                                       start_row,
-                                                       start_col,
-                                                       new_color,
-                                                       actions))
-                         +"] cells");
-    model->setActions(actions);
-    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
-    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+//    vector<vector<int>> matrix({
+//                                   {1,1,1,0,0,1},
+//                                   {0,1,1,1,0,1},
+//                                   {1,0,1,1,0,0},
+//                                   {1,0,0,0,0,1}
+//                               });
+//    int start_row = 1,start_col = 2;
+//    int new_color = 2;
+//    Vector2D<int> pro_matrix;
+//    pro_matrix.fill(matrix);
+//    model = new MatrixModel(matrix);
+//    ui->tableView->setModel(model);
+//    std::vector<PlayAction> actions;
+//    //floodFill_DFS_Base(pro_matrix,start_row,start_col,new_color,actions);
+//    //ui->textEdit->append("FloodFill is ready;");
+//    ui->textEdit->append("Flood fill managed to fill ["+
+//                         QString::number(floodFill_BFS(pro_matrix,
+//                                                       start_row,
+//                                                       start_col,
+//                                                       new_color,
+//                                                       actions))
+//                         +"] cells");
+//    model->setActions(actions);
+//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+
+    //_________________________________Bipartite check___________________________________
+
+    ListGraph listgraph;
+    listgraph.addVertex(0);
+    listgraph.addVertex(1);
+    listgraph.addVertex(2);
+    listgraph.addVertex(3);
+    listgraph.addEdge(0,1);
+    listgraph.addEdge(0,2);
+    listgraph.addEdge(1,2);
+    listgraph.addEdge(2,3);
+    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
+    std::string actions;
+    //isBipartite_BFS(listgraph,actions);
+    isBipartite_DFS_Base(listgraph, actions);
+    ui->textEdit->append(QString(actions.c_str()));
+
+    listgraph.clear();
+    listgraph.addVertex(0);
+    listgraph.addVertex(1);
+    listgraph.addVertex(2);
+    listgraph.addVertex(3);
+    listgraph.addVertex(4);
+    listgraph.addVertex(5);
+
+    listgraph.addEdge(0,1);
+    listgraph.addEdge(0,3);
+    listgraph.addEdge(0,5);
+    listgraph.addEdge(1,2);
+    listgraph.addEdge(1,4);
+    listgraph.addEdge(2,3);
+    listgraph.addEdge(2,5);
+    listgraph.addEdge(3,4);
+    listgraph.addEdge(4,5);
+    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
+    ui->textEdit->append(QString(listgraph.getEdgeTable().c_str()));
+    //isBipartite_BFS(listgraph,actions);
+    isBipartite_DFS_Base(listgraph, actions);
+    ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
 {
