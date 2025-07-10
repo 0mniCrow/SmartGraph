@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <chrono>
 #include <QColor>
+#include <climits>
 #include "listgraph.h"
 #include "matrixmodel.h"
 #include "vectorgraph.h"
@@ -46,26 +47,26 @@ struct LandNode
     }
 };
 
-template <typename T> struct OptNode
-{
-    int _id_;
-    T _data_;
-    OptNode()
-    {
-        _id_ = 0;
-        _data_ = T();
-    }
-    OptNode(int id)
-    {
-        _id_=id;
-        _data_ = T();
-    }
-    OptNode(int id,const T& data)
-    {
-        _id_ = id;
-        _data_ = data;
-    }
-};
+//template <typename T> struct OptNode
+//{
+//    int _id_;
+//    T _data_;
+//    OptNode()
+//    {
+//        _id_ = 0;
+//        _data_ = T();
+//    }
+//    OptNode(int id)
+//    {
+//        _id_=id;
+//        _data_ = T();
+//    }
+//    OptNode(int id,const T& data)
+//    {
+//        _id_ = id;
+//        _data_ = data;
+//    }
+//};
 
 template <typename T> class Vector2D
 {
@@ -198,5 +199,7 @@ bool isBipartite_BFS(ListGraph& obj, string &actions);
 bool isBipartite_DFS(int cur_index,int cur_val, ListGraph& obj, string& actions);
 bool isBipartite_DFS_Base(ListGraph& obj, string& actions);
 
+int wordLadder_Backtrack(string& start, string& target, vector<string>& variants, string &actions);
+int wordLadder_BFS(string& start, string& target, vector<string>& variants, string& actions);
 
 #endif // GRAPH_ALGORITHMS_H

@@ -159,42 +159,54 @@ MainWindow::MainWindow(QWidget *parent)
 
     //_________________________________Bipartite check___________________________________
 
-    ListGraph listgraph;
-    listgraph.addVertex(0);
-    listgraph.addVertex(1);
-    listgraph.addVertex(2);
-    listgraph.addVertex(3);
-    listgraph.addEdge(0,1);
-    listgraph.addEdge(0,2);
-    listgraph.addEdge(1,2);
-    listgraph.addEdge(2,3);
-    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
-    std::string actions;
-    //isBipartite_BFS(listgraph,actions);
-    isBipartite_DFS_Base(listgraph, actions);
-    ui->textEdit->append(QString(actions.c_str()));
+//    ListGraph listgraph;
+//    listgraph.addVertex(0);
+//    listgraph.addVertex(1);
+//    listgraph.addVertex(2);
+//    listgraph.addVertex(3);
+//    listgraph.addEdge(0,1);
+//    listgraph.addEdge(0,2);
+//    listgraph.addEdge(1,2);
+//    listgraph.addEdge(2,3);
+//    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
+//    std::string actions;
+//    //isBipartite_BFS(listgraph,actions);
+//    isBipartite_DFS_Base(listgraph, actions);
+//    ui->textEdit->append(QString(actions.c_str()));
 
-    listgraph.clear();
-    listgraph.addVertex(0);
-    listgraph.addVertex(1);
-    listgraph.addVertex(2);
-    listgraph.addVertex(3);
-    listgraph.addVertex(4);
-    listgraph.addVertex(5);
+//    listgraph.clear();
+//    listgraph.addVertex(0);
+//    listgraph.addVertex(1);
+//    listgraph.addVertex(2);
+//    listgraph.addVertex(3);
+//    listgraph.addVertex(4);
+//    listgraph.addVertex(5);
 
-    listgraph.addEdge(0,1);
-    listgraph.addEdge(0,3);
-    listgraph.addEdge(0,5);
-    listgraph.addEdge(1,2);
-    listgraph.addEdge(1,4);
-    listgraph.addEdge(2,3);
-    listgraph.addEdge(2,5);
-    listgraph.addEdge(3,4);
-    listgraph.addEdge(4,5);
-    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
-    ui->textEdit->append(QString(listgraph.getEdgeTable().c_str()));
-    //isBipartite_BFS(listgraph,actions);
-    isBipartite_DFS_Base(listgraph, actions);
+//    listgraph.addEdge(0,1);
+//    listgraph.addEdge(0,3);
+//    listgraph.addEdge(0,5);
+//    listgraph.addEdge(1,2);
+//    listgraph.addEdge(1,4);
+//    listgraph.addEdge(2,3);
+//    listgraph.addEdge(2,5);
+//    listgraph.addEdge(3,4);
+//    listgraph.addEdge(4,5);
+//    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
+//    ui->textEdit->append(QString(listgraph.getEdgeTable().c_str()));
+//    //isBipartite_BFS(listgraph,actions);
+//    isBipartite_DFS_Base(listgraph, actions);
+//    ui->textEdit->append(QString(actions.c_str()));
+
+
+    //_________________________________Word ladder___________________________________
+
+    vector<string> arr = {"poon", "plee", "same",
+                             "poie", "plie", "poin", "plea"};
+    string start = "toon";
+    string target = "plea";
+    string actions;
+    //ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_Backtrack(start,target,arr,actions)));
+    ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_BFS(start,target,arr,actions)));
     ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)

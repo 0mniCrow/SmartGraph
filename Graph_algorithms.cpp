@@ -1079,3 +1079,104 @@ bool isBipartite_DFS_Base(ListGraph& obj, string& actions)
     return true;
 }
 
+
+
+//________________________________________________________________________________________________________________________
+//_________________________________________________Word_ladder____________________________________________________________
+
+int minWordTransform(string& start, string& target, std::map<string,int>& dictionary, string& actions)
+{
+    if(start == target)
+    {
+        actions.append("Maching found ["+start+"] = ["+target+"];\n");
+        return 1;
+    }
+    int min = INT_MAX;
+    dictionary[start] = 1;
+    actions.append("Current word ["+start+"];\n");
+    for(int i = 0; i<static_cast<int>(start.size());i++)
+    {
+        char orig_char = start[i];
+        for(char c = 'a'; c <='z';c++)
+        {
+            start[i] = c;
+            if((dictionary.find(start)!=dictionary.end())&&(dictionary[start]==0))
+            {
+                actions.append("According word found ["+start+"] in dictionary;\n");
+                min = std::min(min,1+minWordTransform(start,target,dictionary,actions));
+            }
+        }
+        start[i] = orig_char;
+    }
+
+    dictionary[start] = 0;
+    return min;
+}
+
+int wordLadder_Backtrack(string& start, string& target, vector<string>& variants, string& actions)
+{
+    std::map<string,int> dictionary;
+    for(const string& word: variants)
+    {
+        dictionary.insert({word,0});
+    }
+    actions.append("WordLadder with backtracking;\n");
+    int result = minWordTransform(start,target,dictionary,actions);
+    if(result == INT_MAX)
+        result = 0;
+    return result;
+}
+
+
+int wordLadder_BFS(string& start, string& target, vector<string>& variants, string& actions)
+{
+    actions.clear();
+    actions.append("WordLadder with BFS;\n");
+    std::unordered_set<string> dict_set(variants.begin(),variants.end());
+    actions.append("Trying to transform word ["+start+"] to word ["+target+"];\n");
+    actions.append("We have following dictionary:\n");
+    for(string& st: variants)
+    {
+        actions.append("\t"+st+";\n");
+    }
+    int steps = 0;
+    int base_word_size = static_cast<int>(start.length());
+    std::queue<string> words;
+    words.push(start);
+    while(!words.empty())
+    {
+        steps++;
+        int cur_word_size = static_cast<int>(words.size());
+        for(int i = 0; i<cur_word_size;i++)
+        {
+            string cur_word(words.front());
+            actions.append("Current word ["+cur_word+"]\n");
+            words.pop();
+            for(int j = 0; j < base_word_size;j++)
+            {
+                char orig_char = cur_word[j];
+                actions.append("Trying to change the ["+std::to_string(j)+"]'th symbol\n characters:");
+                for(char c = 'a';c<='z';c++)
+                {
+                    actions.append(string(1,c)+",");
+                    cur_word[j] = c;
+                    if(cur_word == target)
+                    {
+                        actions.append("\nThe target word ["+cur_word+"] found;\n");
+                        return steps+1;
+                    }
+                    else if(dict_set.find(cur_word)!=dict_set.end())
+                    {
+                        actions.append("\nThe new word ["+cur_word+"] found in the dictionary;\n");
+                        dict_set.erase(cur_word);
+                        words.push(cur_word);
+                    }
+                }
+                actions.append("\n");
+                cur_word[j] = orig_char;
+            }
+        }
+    }
+    actions.append("Word can't be created with obtained dictionary;\n");
+    return 0;
+}
