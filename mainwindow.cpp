@@ -200,14 +200,58 @@ MainWindow::MainWindow(QWidget *parent)
 
     //_________________________________Word ladder___________________________________
 
-    vector<string> arr = {"poon", "plee", "same",
-                             "poie", "plie", "poin", "plea"};
-    string start = "toon";
-    string target = "plea";
+//    vector<string> arr = {"poon", "plee", "same",
+//                             "poie", "plie", "poin", "plea"};
+//    string start = "toon";
+//    string target = "plea";
+//    string actions;
+//    //ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_Backtrack(start,target,arr,actions)));
+//    ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_BFS(start,target,arr,actions)));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+    //__________________________________Snakes and laddes_______________________________________
+
+    ListGraph snek_n_ladder(30, false, ListGraph::Gr_Directed);
+    for(int i = 0; i < 30; i++ )
+    {
+        for(int j = 1; j < 7; j++)
+        {
+            if((i+j)<30)
+            {
+                snek_n_ladder.addEdge(i,i+j);
+            }
+        }
+    }
+
+    //Drabiny:
+
+    snek_n_ladder.getConnControl(2).clear();
+    snek_n_ladder.getConnControl(2).insert({21,1});
+    snek_n_ladder.getConnControl(4).clear();
+    snek_n_ladder.getConnControl(4).insert({7,1});
+    snek_n_ladder.getConnControl(10).clear();
+    snek_n_ladder.getConnControl(10).insert({25,1});
+    snek_n_ladder.getConnControl(19).clear();
+    snek_n_ladder.getConnControl(19).insert({28,1});
+
+    //Zmeji
+
+    snek_n_ladder.getConnControl(26).clear();
+    snek_n_ladder.getConnControl(26).insert({0,1});
+    snek_n_ladder.getConnControl(20).clear();
+    snek_n_ladder.getConnControl(20).insert({8,1});
+    snek_n_ladder.getConnControl(18).clear();
+    snek_n_ladder.getConnControl(18).insert({6,1});
+    snek_n_ladder.getConnControl(16).clear();
+    snek_n_ladder.getConnControl(16).insert({3,1});
+    //ui->textEdit->append(QString(snek_n_ladder.getAdjacencyList().c_str()));
+    //ui->textEdit->append(QString(snek_n_ladder.getEdgeTable().c_str()));
     string actions;
-    //ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_Backtrack(start,target,arr,actions)));
-    ui->textEdit->append("The amount of steps: "+QString::number(wordLadder_BFS(start,target,arr,actions)));
+    ui->textEdit->append("The amount of rolls: "+ QString::number(
+                             SnakesNLadders_minDiceThrow_BFS(
+                                 snek_n_ladder,actions)));
     ui->textEdit->append(QString(actions.c_str()));
+    ui->textEdit->append(QString(snek_n_ladder.getValueTable().c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
 {

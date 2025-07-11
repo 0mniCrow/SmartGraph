@@ -1,9 +1,5 @@
 #include "listgraph.h"
 
-//using IntVertex = ListVertex<int>;
-//using IntVertIter = std::map<int,ListVertex<int>>::iterator;
-//using CharVertex = ListVertex<char>;
-//using CharVertIter = std::map<int,ListVertex<char>>::iterator;
 using EdgeIter = std::map<int,int>::iterator;
 using EdgeCIter = std::map<int,int>::const_iterator;
 
@@ -219,6 +215,19 @@ const std::map<int,int>& ListGraph::getConnections(int vertex_id)
     }
 }
 
+std::map<int,int>& ListGraph::getConnControl(int vertex_id)
+{
+    CurVertexIter it = _list_graph_.find(vertex_id);
+    if(it!=_list_graph_.end())
+    {
+        return it->second._edges_;
+    }
+    else
+    {
+        throw "Graph index id is out of border";
+    }
+}
+
 int ListGraph::edgesCount(int vertex_id) const
 {
     CurVertexCIter it = _list_graph_.find(vertex_id);
@@ -344,6 +353,31 @@ std::string ListGraph::getEdgeTable() const
         }
         answer.append("\n");
         it++;
+    }
+    return answer;
+}
+
+
+std::string ListGraph::getValueTable(int row_count) const
+{
+    std::string answer("Value table:\n");
+    int counter = 0;
+    CurVertexCIter it = _list_graph_.cbegin();
+    while(it!= _list_graph_.cend())
+    {
+        answer.append("["+std::to_string(it->first)+"](");
+        //answer.append(static_cast<std::string>(it->second._value_));  //hypotetical
+        //answer.append(std::to_string(it->second._value_));            // for integer
+        //answer.append(std::string(1,it->second._value_));             // for character
+        answer.append(it->second._value_?"True":"False");               // for boolean
+        answer.append("), ");
+        it++;
+        counter++;
+        if(counter==row_count)
+        {
+            answer.append("\n");
+            counter = 0;
+        }
     }
     return answer;
 }

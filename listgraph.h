@@ -8,7 +8,8 @@
 #define DEF_VAL -1
 #define DEF_WEIGHT 0
 
-using cur_type = int;
+//using cur_type = int //default
+using cur_type = bool;
 
 template <typename T>
 struct ListVertex
@@ -50,6 +51,7 @@ public:
     cur_type& at(int vertex_id);
     std::vector<int> getEdges(int vertex_id);
     const std::map<int,int>& getConnections(int vertex_id);
+    std::map<int,int>& getConnControl(int vertex_id);
     int edgesCount(int vertex_id) const;
     int edgeWeightAt(int vertex_id, int edge_id) const;
     void removeVertex(int vertex_id);
@@ -60,6 +62,7 @@ public:
     char getParams() const;
     std::string getAdjacencyList() const;
     std::string getEdgeTable() const;
+    std::string getValueTable(int row_count = 4) const;
 
     friend std::string Breadth_first_search(ListGraph& obj, int root_index);
     friend std::string Depth_first_search(ListGraph& obj, int root_index);

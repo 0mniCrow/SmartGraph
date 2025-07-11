@@ -1180,3 +1180,52 @@ int wordLadder_BFS(string& start, string& target, vector<string>& variants, stri
     actions.append("Word can't be created with obtained dictionary;\n");
     return 0;
 }
+
+
+//________________________________________________SnakesNLadders___________________________________________________________
+
+int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions)
+{
+    actions.clear();
+    actions.append("Finding min dice rolls count 4 snakes&ladders;\n");
+    std::queue<std::pair<int,int>> BFS_queue;
+    obj.at(0) = true;
+    BFS_queue.push({0,0});
+    while(!BFS_queue.empty())
+    {
+        std::pair<int,int> cur_pos = BFS_queue.front();
+        int cur_vertex = cur_pos.first;
+        int cur_dist = cur_pos.second;
+        actions.append("Cur vertex ["+std::to_string(cur_vertex)+
+                       "] with dist ["+std::to_string(cur_dist)+"];\n");
+        if(cur_vertex == (obj.size()-1))
+        {
+            actions.append("End of bord with ["+
+                           std::to_string(cur_dist)+"] dice rolls;\n");
+            return cur_dist;
+        }
+        BFS_queue.pop();
+        actions.append("Vertices from ["+
+                       std::to_string(cur_vertex)+"] to reach:\n\t::");
+        vector<int> rolls = obj.getEdges(cur_vertex);
+        for(int next_pos:rolls)
+        {
+            if(!obj.at(next_pos))
+            {
+                actions.append("["+std::to_string(next_pos)+
+                               "], ");
+                obj.at(next_pos) = true;
+                int next_dist = cur_dist;
+                if(rolls.size()!=1)                 //Калі мы трапляем на драбіны,
+                {                                   //Пазіцыя аўтаматычна пераносіцца на наступную
+                    next_dist+=1;                   //Таму
+                }                                   //Колькасьць кідаў не павялічваецца
+                BFS_queue.push({next_pos,next_dist});
+            }
+
+        }
+        actions.append(";\n");
+    }
+    actions.append("The algorithm can't reach the end of the borad;");
+    return -1;
+}
