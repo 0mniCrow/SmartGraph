@@ -211,7 +211,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //__________________________________Snakes and laddes_______________________________________
 
-    ListGraph snek_n_ladder(30, false, ListGraph::Gr_Directed);
+    ListGraph snek_n_ladder(30, /*false*/-1, ListGraph::Gr_Directed);
     for(int i = 0; i < 30; i++ )
     {
         for(int j = 1; j < 7; j++)
@@ -248,10 +248,10 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->textEdit->append(QString(snek_n_ladder.getEdgeTable().c_str()));
     string actions;
     ui->textEdit->append("The amount of rolls: "+ QString::number(
-                             SnakesNLadders_minDiceThrow_BFS(
+                             SnakesNLadders_minDiceThrow_DFS(
                                  snek_n_ladder,actions)));
     ui->textEdit->append(QString(actions.c_str()));
-    ui->textEdit->append(QString(snek_n_ladder.getValueTable().c_str()));
+    //ui->textEdit->append(QString(snek_n_ladder.getValueTable().c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
 {

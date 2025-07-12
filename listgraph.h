@@ -8,8 +8,8 @@
 #define DEF_VAL -1
 #define DEF_WEIGHT 0
 
-//using cur_type = int //default
-using cur_type = bool;
+using cur_type = int; //default
+//using cur_type = bool;
 
 template <typename T>
 struct ListVertex

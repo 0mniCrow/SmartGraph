@@ -1191,13 +1191,18 @@ int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions)
     std::queue<std::pair<int,int>> BFS_queue;
     obj.at(0) = true;
     BFS_queue.push({0,0});
+    std::queue<string> rolls_queue;
+    rolls_queue.push("0");
     while(!BFS_queue.empty())
     {
         std::pair<int,int> cur_pos = BFS_queue.front();
         int cur_vertex = cur_pos.first;
         int cur_dist = cur_pos.second;
-        actions.append("Cur vertex ["+std::to_string(cur_vertex)+
+        string cur_rolls = rolls_queue.front();
+        rolls_queue.pop();
+        actions.append("Cur vert ["+std::to_string(cur_vertex)+
                        "] with dist ["+std::to_string(cur_dist)+"];\n");
+        actions.append(cur_rolls+";\n");
         if(cur_vertex == (obj.size()-1))
         {
             actions.append("End of bord with ["+
@@ -1205,27 +1210,169 @@ int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions)
             return cur_dist;
         }
         BFS_queue.pop();
-        actions.append("Vertices from ["+
-                       std::to_string(cur_vertex)+"] to reach:\n\t::");
+        actions.append("Unmarked vertices from ["+
+                       std::to_string(cur_vertex)+"] to reach: ");
         vector<int> rolls = obj.getEdges(cur_vertex);
-        for(int next_pos:rolls)
+        int rolls_size = static_cast<int>(rolls.size());
+        string reachable;
+        for(int i = 0; i<rolls_size;i++)//next_pos:rolls)
         {
+            string next_rolls = cur_rolls;
+            int next_pos = rolls.at(i);
             if(!obj.at(next_pos))
             {
-                actions.append("["+std::to_string(next_pos)+
-                               "], ");
-                obj.at(next_pos) = true;
                 int next_dist = cur_dist;
-                if(rolls.size()!=1)                 //Калі мы трапляем на драбіны,
-                {                                   //Пазіцыя аўтаматычна пераносіцца на наступную
-                    next_dist+=1;                   //Таму
-                }                                   //Колькасьць кідаў не павялічваецца
+                if(rolls_size ==1 && next_pos!=obj.size()-2)
+                {
+                    if(cur_vertex>next_pos)
+                    {
+                        reachable.append("Vert ["+std::to_string(cur_vertex)+
+                                       "] is snake head, leads to ["+
+                                       std::to_string(next_pos)+"] ");
+                    }
+                    else
+                    {
+                        reachable.append("Vert ["+std::to_string(cur_vertex)+
+                                       "] is ladder, leads to ["+
+                                       std::to_string(next_pos)+"] ");
+                    }
+                    next_rolls.erase(next_rolls.find_last_of('>')+1);
+                    next_rolls.append(std::to_string(next_pos));
+                }
+                else
+                {
+                    reachable.append(" ["+std::to_string(next_pos)+
+                               "],");
+                    next_dist+=1;
+                    next_rolls.append("-("+std::to_string(i+1)+")->"+std::to_string(next_pos));
+                }
+                obj.at(next_pos) = true;
+
+//                if(rolls.size()!=1||next_pos==obj.size()-2)                 //Калі мы трапляем на драбіны,
+//                {                                                           //Пазіцыя аўтаматычна пераносіцца на наступную
+//                                                                            //Таму
+//                }                                                           //Колькасьць кідаў не павялічваецца
+
+                rolls_queue.push(next_rolls);
                 BFS_queue.push({next_pos,next_dist});
             }
 
         }
-        actions.append(";\n");
+        if(!reachable.empty())
+        {
+            reachable.pop_back();
+            actions.append(reachable+";\n");
+        }
+        else
+        {
+            actions.append("none;\n");
+        }
     }
     actions.append("The algorithm can't reach the end of the borad;");
     return -1;
+}
+
+void SnL_algorithm_DFS(int cur_vertex, int cur_roll_count, int& rolls, ListGraph& obj, string& actions, vector<int> prev_rolls)
+{
+    if(cur_roll_count>=rolls)
+    {
+        return;
+    }
+    if((obj.at(cur_vertex)>=0)&&obj.at(cur_vertex)<=cur_roll_count)
+    {
+        return;
+    }
+    if(cur_vertex==obj.size()-1)
+    {
+        actions.append("________|||End of bord with ["+
+                       std::to_string(cur_roll_count)+"] dice rolls: (");
+        actions.append("(");
+        for(int i: prev_rolls)
+        {
+            actions.append(std::to_string(i)+"->");
+        }
+        actions.pop_back();
+        actions.pop_back();
+        actions.append(")|||_______\n");
+        rolls = cur_roll_count;
+        return;
+    }
+
+    obj.at(cur_vertex) = cur_roll_count;
+    actions.append("Cur vertex ["+std::to_string(cur_vertex)+
+                   "] with roll count ["+std::to_string(cur_roll_count)+"];\n");
+    actions.append("Previous rolls: ");
+    if(prev_rolls.size())
+    {
+        actions.append("(");
+        for(int i: prev_rolls)
+        {
+            actions.append(std::to_string(i)+"->");
+        }
+        actions.pop_back();
+        actions.pop_back();
+        actions.append(")");
+    }
+    else
+    {
+        actions.append("none;");
+    }
+    actions.append("\n");
+
+    vector<int> diceroll_options(obj.getEdges(cur_vertex));
+    int diceroll_size = static_cast<int>(diceroll_options.size());
+    for(int i = 0; i<diceroll_size; i++)//edge: diceroll_options)
+    {
+        vector<int> cur_rolls = prev_rolls;
+        int next_roll_count = cur_roll_count;
+        if(diceroll_size!=1 || cur_vertex==obj.size()-2)
+        {
+            actions.append("\tFrom vert ["+std::to_string(cur_vertex)+
+                           "] Dice result ("+
+                           std::to_string(i+1)+") means go to vert ["+
+                           std::to_string(diceroll_options.at(i))+
+                           "];\n");
+            next_roll_count+=1;
+            cur_rolls.push_back(diceroll_options.at(i));
+        }
+        else
+        {
+            if(diceroll_options.at(i)<cur_vertex)
+            {
+                actions.append("\t["+std::to_string(cur_vertex)+
+                               "] is snake head. Index["+
+                               std::to_string(cur_vertex)+
+                               "] changed to ["+
+                               std::to_string(diceroll_options.at(i))+
+                               "];\n");
+                cur_rolls.pop_back();
+                cur_rolls.push_back(diceroll_options.at(i));
+            }
+            else
+            {
+                actions.append("\t["+std::to_string(cur_vertex)+
+                               "] is ladder. Index["+std::to_string(cur_vertex)+
+                               "] changed to: ["+std::to_string(diceroll_options.at(i))+
+                               "];\n");
+
+                cur_rolls.pop_back();
+                cur_rolls.push_back(diceroll_options.at(i));
+            }
+        }
+        SnL_algorithm_DFS(diceroll_options.at(i),next_roll_count,rolls,obj,actions,cur_rolls);
+    }
+    return;
+ }
+
+int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions)
+{
+    actions.clear();
+    actions.append("Finding min dice roll count S&L with DFS;\n");
+    int rolls = INT_MAX;
+    vector<int> prev_rolls;
+    prev_rolls.push_back(0);
+    SnL_algorithm_DFS(0,0,rolls,obj,actions,prev_rolls);
+    actions.append("The minumal number of rolls: ["+std::to_string(rolls)+
+                   "];\n");
+    return rolls==INT_MAX?-1:rolls;
 }

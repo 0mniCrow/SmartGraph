@@ -184,4 +184,6 @@ int wordLadder_BFS(string& start, string& target, vector<string>& variants, stri
 
 int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions);
 
+int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions);
+
 #endif // GRAPH_ALGORITHMS_H
