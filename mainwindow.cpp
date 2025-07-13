@@ -211,47 +211,54 @@ MainWindow::MainWindow(QWidget *parent)
 
     //__________________________________Snakes and laddes_______________________________________
 
-    ListGraph snek_n_ladder(30, /*false*/-1, ListGraph::Gr_Directed);
-    for(int i = 0; i < 30; i++ )
-    {
-        for(int j = 1; j < 7; j++)
-        {
-            if((i+j)<30)
-            {
-                snek_n_ladder.addEdge(i,i+j);
-            }
-        }
-    }
+//    ListGraph snek_n_ladder(30, /*false*/-1, ListGraph::Gr_Directed);
+//    for(int i = 0; i < 30; i++ )
+//    {
+//        for(int j = 1; j < 7; j++)
+//        {
+//            if((i+j)<30)
+//            {
+//                snek_n_ladder.addEdge(i,i+j);
+//            }
+//        }
+//    }
 
-    //Drabiny:
+//    //Drabiny:
 
-    snek_n_ladder.getConnControl(2).clear();
-    snek_n_ladder.getConnControl(2).insert({21,1});
-    snek_n_ladder.getConnControl(4).clear();
-    snek_n_ladder.getConnControl(4).insert({7,1});
-    snek_n_ladder.getConnControl(10).clear();
-    snek_n_ladder.getConnControl(10).insert({25,1});
-    snek_n_ladder.getConnControl(19).clear();
-    snek_n_ladder.getConnControl(19).insert({28,1});
+//    snek_n_ladder.getConnControl(2).clear();
+//    snek_n_ladder.getConnControl(2).insert({21,1});
+//    snek_n_ladder.getConnControl(4).clear();
+//    snek_n_ladder.getConnControl(4).insert({7,1});
+//    snek_n_ladder.getConnControl(10).clear();
+//    snek_n_ladder.getConnControl(10).insert({25,1});
+//    snek_n_ladder.getConnControl(19).clear();
+//    snek_n_ladder.getConnControl(19).insert({28,1});
 
-    //Zmeji
+//    //Zmeji
 
-    snek_n_ladder.getConnControl(26).clear();
-    snek_n_ladder.getConnControl(26).insert({0,1});
-    snek_n_ladder.getConnControl(20).clear();
-    snek_n_ladder.getConnControl(20).insert({8,1});
-    snek_n_ladder.getConnControl(18).clear();
-    snek_n_ladder.getConnControl(18).insert({6,1});
-    snek_n_ladder.getConnControl(16).clear();
-    snek_n_ladder.getConnControl(16).insert({3,1});
-    //ui->textEdit->append(QString(snek_n_ladder.getAdjacencyList().c_str()));
-    //ui->textEdit->append(QString(snek_n_ladder.getEdgeTable().c_str()));
+//    snek_n_ladder.getConnControl(26).clear();
+//    snek_n_ladder.getConnControl(26).insert({0,1});
+//    snek_n_ladder.getConnControl(20).clear();
+//    snek_n_ladder.getConnControl(20).insert({8,1});
+//    snek_n_ladder.getConnControl(18).clear();
+//    snek_n_ladder.getConnControl(18).insert({6,1});
+//    snek_n_ladder.getConnControl(16).clear();
+//    snek_n_ladder.getConnControl(16).insert({3,1});
+//    //ui->textEdit->append(QString(snek_n_ladder.getAdjacencyList().c_str()));
+//    //ui->textEdit->append(QString(snek_n_ladder.getEdgeTable().c_str()));
+//    string actions;
+//    ui->textEdit->append("The amount of rolls: "+ QString::number(
+//                             SnakesNLadders_minDiceThrow_DFS(
+//                                 snek_n_ladder,actions)));
+//    ui->textEdit->append(QString(actions.c_str()));
+//    //ui->textEdit->append(QString(snek_n_ladder.getValueTable().c_str()));
+
+//_______________________________Pouring Jugs___________________________________
+
+    int m =4, n = 3, d = 2;
     string actions;
-    ui->textEdit->append("The amount of rolls: "+ QString::number(
-                             SnakesNLadders_minDiceThrow_DFS(
-                                 snek_n_ladder,actions)));
+    ui->textEdit->append("Steps to reach ["+QString::number(d)+"] liters in one of jugs is: "+QString::number(waterJigProblem_BFS(m,n,d,actions)));
     ui->textEdit->append(QString(actions.c_str()));
-    //ui->textEdit->append(QString(snek_n_ladder.getValueTable().c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
 {

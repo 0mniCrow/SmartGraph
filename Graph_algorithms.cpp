@@ -1376,3 +1376,122 @@ int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions)
                    "];\n");
     return rolls==INT_MAX?-1:rolls;
 }
+
+
+//___________________________________________________WaterJigProblem________________________________________________________
+
+void printCurState(vector<vector<bool>>& visited, string& actions)
+{
+    actions.append("\n");
+    for(int i = 0; i<visited.size();i++)
+    {
+        for(int j = 0; j<visited.at(i).size();j++)
+        {
+            actions.append("["+std::to_string(i)+"]["+
+                           std::to_string(j)+"]("+
+                           (visited.at(i).at(j)?"true":"false")+"), ");
+        }
+        actions.pop_back();
+        actions.pop_back();
+        actions.append("\n");
+    }
+}
+
+
+int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string& actions)
+{
+    actions.append("Water jig solution using BFS-based algorithm;\n");
+    if(desirable_value>std::max(right_jig,left_jig))
+    {
+        actions.append("Desirable value of water ["+
+                       std::to_string(desirable_value)+
+                       "] is above the value of both jigs: r:["+
+                       std::to_string(right_jig)+"],l:["+
+                       std::to_string(left_jig)+"]\n");
+        return -1;
+    }
+    std::queue<vector<int>> BFS_queue;  // [r-jig,l-jig,step]
+    vector<vector<bool>> visited(right_jig+1,vector<bool>(left_jig+1,false)); //matrix-based graph
+    actions.append("Trying to get ["+
+                   std::to_string(desirable_value)+
+                   "] liters of water, using 2 jigs: right:["+
+                   std::to_string(right_jig)+"],left:["+
+                   std::to_string(left_jig)+"]\n");
+
+    printCurState(visited,actions);
+    BFS_queue.push({0,0,0});
+    visited.at(0).at(0) = true;
+    while(!BFS_queue.empty())
+    {
+        vector<int> cur_state = BFS_queue.front();
+        BFS_queue.pop();
+        int cur_r_jig = cur_state.at(0);
+        int cur_l_jig = cur_state.at(1);
+        int steps = cur_state.at(2);
+        actions.append("\tCurrent step is ["+
+                       std::to_string(steps)+
+                       "], right jig:["+
+                       std::to_string(cur_r_jig)+
+                       "],left jig:["+
+                       std::to_string(cur_l_jig)+"]\n");
+        if(cur_r_jig == desirable_value || cur_l_jig == desirable_value)
+        {
+            actions.append("Solution is found;\n");
+            printCurState(visited,actions);
+            return steps;
+        }
+
+        if(!visited.at(right_jig).at(cur_l_jig))
+        {
+            actions.append("\tFilling right jig;\n");
+            visited.at(right_jig).at(cur_l_jig) = true;
+            BFS_queue.push({right_jig,cur_l_jig,steps+1});
+            printCurState(visited,actions);
+        }
+
+        if(!visited.at(cur_r_jig).at(left_jig))
+        {
+            actions.append("\tFilling left jig;\n");
+            visited.at(cur_r_jig).at(left_jig) = true;
+            BFS_queue.push({cur_r_jig,left_jig,steps+1});
+            printCurState(visited,actions);
+        }
+
+        if(!visited.at(0).at(cur_l_jig))
+        {
+            actions.append("\tEmpty right jig;\n");
+            visited.at(0).at(cur_l_jig) = true;
+            BFS_queue.push({0,cur_l_jig,steps+1});
+            printCurState(visited,actions);
+        }
+
+        if(!visited.at(cur_r_jig).at(0))
+        {
+            actions.append("\nEmpty left jig;\n");
+            visited.at(cur_r_jig).at(0) = true;
+            BFS_queue.push({cur_r_jig,0,steps+1});
+            printCurState(visited,actions);
+        }
+
+        int pour_r_to_l = std::min(cur_r_jig,left_jig-cur_l_jig);
+        if(!visited.at(cur_r_jig-pour_r_to_l).at(cur_l_jig+pour_r_to_l))
+        {
+            actions.append("\nPour right jig to left jig;\n");
+            visited.at(cur_r_jig-pour_r_to_l).at(cur_l_jig+pour_r_to_l) = true;
+            BFS_queue.push({cur_r_jig-pour_r_to_l,cur_l_jig+pour_r_to_l,steps+1});
+            printCurState(visited,actions);
+        }
+
+        int pour_l_to_r = std::min(cur_l_jig,right_jig-cur_r_jig);
+        if(!visited.at(cur_r_jig+pour_l_to_r).at(cur_l_jig-pour_l_to_r))
+        {
+            actions.append("\nPour left jig to right jig;\n");
+            visited.at(cur_r_jig+pour_l_to_r).at(cur_l_jig-pour_l_to_r) = true;
+            BFS_queue.push({cur_r_jig+pour_l_to_r,cur_l_jig-pour_l_to_r,steps+1});
+            printCurState(visited,actions);
+        }
+
+    }
+    actions.append("Algorithm can't reach the solution;\n");
+    return -1;
+}

@@ -186,4 +186,7 @@ int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions);
 
 int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions);
 
+int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string& actions);
+
+
 #endif // GRAPH_ALGORITHMS_H
