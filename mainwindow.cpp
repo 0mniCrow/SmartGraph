@@ -255,10 +255,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 //_______________________________Pouring Jugs___________________________________
 
-    int m =4, n = 3, d = 2;
-    string actions;
-    ui->textEdit->append("Steps to reach ["+QString::number(d)+"] liters in one of jugs is: "+QString::number(waterJigProblem_BFS(m,n,d,actions)));
-    ui->textEdit->append(QString(actions.c_str()));
+    int m =5, n = 4, d = 2;
+    vector<vector<int>> matrix(m+1,vector<int>(n+1,0));
+    model = new MatrixModel(matrix);
+    ui->tableView->setModel(model);
+    std::vector<PlayAction> actions;
+    string str_actions;
+    ui->textEdit->append("Steps to reach ["+QString::number(d)+"] liters in one of jugs is: "+QString::number(waterJigProblem_BFS(m,n,d,str_actions,actions)));
+    ui->textEdit->append(QString(str_actions.c_str()));
+    model->setActions(actions);
+    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
 }
 void MainWindow::setProgressBar(int val, int max)
 {
