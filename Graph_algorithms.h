@@ -38,8 +38,9 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
 
 struct LandNode
 {
-    char _land_type_;
+    int _land_type_;
     bool _visited_;
+
     LandNode()
     {
         _land_type_ = 0;
@@ -47,6 +48,14 @@ struct LandNode
     }
 };
 
+struct Atl_Pac_Node:public LandNode
+{
+    bool _visited_sec_;
+    Atl_Pac_Node():LandNode()
+    {
+        _visited_sec_ = false;
+    }
+};
 
 template <typename T> class Vector2D
 {
@@ -188,5 +197,6 @@ int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions);
 
 int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string& actions, vector<PlayAction>& act_st);
 
+int twoWayWaterFlow(Vector2D<Atl_Pac_Node>& matrix, vector<PlayAction>& actions);
 
 #endif // GRAPH_ALGORITHMS_H

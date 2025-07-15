@@ -57,7 +57,7 @@ std::string Breadth_first_search(VectorGraph& obj, int root_index)
     std::string answer;
     std::queue<int> BFS_queue;
     std::unordered_set<int> visited_vertices;
-    std::vector<std::vector<int>>& graph_matrix = obj._adj_matrix_;
+    std::vector<std::vector<cur_type>>& graph_matrix = obj._adj_matrix_;
     int matrix_size = static_cast<int>(graph_matrix.size());
     if(matrix_size<=root_index) return answer;
 
@@ -70,7 +70,7 @@ std::string Breadth_first_search(VectorGraph& obj, int root_index)
     {
         int cur_index = BFS_queue.front();
         BFS_queue.pop();
-        std::vector<int>& node = graph_matrix.at(cur_index);
+        std::vector<cur_type>& node = graph_matrix.at(cur_index);
         int node_size = static_cast<int>(node.size());
         answer.append("Visited["+std::to_string(cur_index)+"], ");
         for(int i = 0; i<node_size;i++)
@@ -1570,4 +1570,43 @@ int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string
     addAction(0,0,act_st,"Impossible",PlayAction::PAct_Err);
     actions.append("Algorithm can't reach the solution;\n");
     return -1;
+}
+
+//________________________________Atlantic-Pacific Waterflow________________________________
+
+
+void twoWayWaterFlow_BFS(Vector2D<Atl_Pac_Node>& matrix,
+                         std::queue<pair<int,int>>& BFS_connection,
+                         vector<PlayAction>& actions, int pac_atl)
+{
+    vector<std::vector<int>> directions({{0,1},{0,-1},{-1,0},{1,0}});
+}
+
+int twoWayWaterFlow(Vector2D<Atl_Pac_Node> &matrix, vector<PlayAction>& actions)
+{
+    std::queue<pair<int,int>> BFS_queue_atlantic, BFS_queue_pacific;
+    for(int i = 0; i <matrix.colCount();i++)
+    {
+        BFS_queue_pacific.push({0,i});
+        BFS_queue_atlantic.push({matrix.rowCount()-1,i});
+    }
+    for(int j = 0; j < matrix.rowCount()-1;j++)
+    {
+        BFS_queue_pacific.push({j+1,0});
+        BFS_queue_atlantic.push({j,matrix.colCount()-1});
+    }
+    int answer = 0;
+    twoWayWaterFlow_BFS(matrix,BFS_queue_pacific,actions,1);
+    twoWayWaterFlow_BFS(matrix,BFS_queue_atlantic,actions,2);
+    for(int i = 0; i < matrix.rowCount();i++)
+    {
+        for(int j = 0; j<matrix.colCount();j++)
+        {
+            if(matrix(i,j)._visited_&&matrix(i,j)._visited_sec_)
+            {
+                answer++;
+            }
+        }
+    }
+    return answer;
 }
