@@ -1576,34 +1576,96 @@ int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string
 
 
 void twoWayWaterFlow_BFS(Vector2D<Atl_Pac_Node>& matrix,
-                         std::queue<pair<int,int>>& BFS_connection,
-                         vector<PlayAction>& actions, int pac_atl)
+                         vector<std::queue<pair<int,int>>> BFS_queues,
+                         vector<PlayAction>& actions)
 {
-    vector<std::vector<int>> directions({{0,1},{0,-1},{-1,0},{1,0}});
+    vector<pair<int,int>> directions({{0,1},{0,-1},{-1,0},{1,0}});
+    for(int shores = 0; shores<static_cast<int>(BFS_queues.size());shores++)
+    {
+        while(!BFS_queues.at(shores).empty())
+        {
+            pair<int,int> cur_coord = BFS_queues.at(shores).front();
+            BFS_queues.at(shores).pop();
+            int cur_row = cur_coord.first;
+            int cur_col = cur_coord.second;
+            addAction(cur_row,cur_col,actions,"Cur land",PlayAction::PAct_Safe);
+
+            matrix(cur_row,cur_col)._visited_.at(shores) = true;
+            for(pair<int,int>& dir:directions)
+            {
+                int next_row = cur_row+dir.first;
+                int next_col = cur_col+dir.second;
+                if(szBordCheck(next_row,next_col,matrix.rowCount(),matrix.colCount()))
+                {
+                    addAction(next_row,next_col,actions,"?Check",PlayAction::PAct_Warn);
+                    if(matrix(next_row,next_col)._value_>=matrix(cur_row,cur_col)._value_)
+                    {
+                        if(!matrix(next_row,next_col)._visited_.at(shores))
+                        {
+                            BFS_queues.at(shores).push({next_row,next_col});
+                            matrix(next_row,next_col)._visited_.at(shores)=true;
+                            addAction(next_row,next_col,actions,"High land!",PlayAction::PAct_Safe);
+                        }
+                        else
+                        {
+                            addAction(next_row,next_col,actions,"Land visited",PlayAction::PAct_Err);
+                        }
+                    }
+                    else
+                    {
+                        addAction(next_row,next_col,actions,"Land is low",PlayAction::PAct_Err);
+                    }
+                    addAction(cur_row,cur_col,actions,"Back 2 base;",PlayAction::PAct_Safe);
+                }
+            }
+        }
+    }
 }
 
 int twoWayWaterFlow(Vector2D<Atl_Pac_Node> &matrix, vector<PlayAction>& actions)
 {
-    std::queue<pair<int,int>> BFS_queue_atlantic, BFS_queue_pacific;
+    vector<std::queue<pair<int,int>>> BFS_queues(2,std::queue<pair<int,int>>());
+    for(int i = 0; i<matrix.rowCount();i++)
+    {
+        for( int j = 0; j<matrix.colCount();j++)
+        {
+            matrix(i,j)._visited_.resize(2,false);
+        }
+    }
+    int atlantic_q = 1, pacific_q=0;
     for(int i = 0; i <matrix.colCount();i++)
     {
-        BFS_queue_pacific.push({0,i});
-        BFS_queue_atlantic.push({matrix.rowCount()-1,i});
+        addAction(0,i,actions,"pacific shore",PlayAction::PAct_Warn);
+        addAction(matrix.rowCount()-1,i,actions,"atlant shore",PlayAction::PAct_Warn);
+        BFS_queues.at(pacific_q).push({0,i});
+        matrix(0,i)._visited_.at(pacific_q) = true;
+        BFS_queues.at(atlantic_q).push({matrix.rowCount()-1,i});
+        matrix(matrix.rowCount()-1,i)._visited_.at(atlantic_q) = true;
     }
     for(int j = 0; j < matrix.rowCount()-1;j++)
     {
-        BFS_queue_pacific.push({j+1,0});
-        BFS_queue_atlantic.push({j,matrix.colCount()-1});
+        addAction(j+1,0,actions,"pacific shore",PlayAction::PAct_Warn);
+        addAction(j,matrix.rowCount()-1,actions,"atlant shore",PlayAction::PAct_Warn);
+        BFS_queues.at(pacific_q).push({j+1,0});
+        matrix(j+1,0)._visited_.at(pacific_q) = true;
+        BFS_queues.at(atlantic_q).push({j,matrix.colCount()-1});
+        matrix(j,matrix.colCount()-1)._visited_.at(atlantic_q) = true;
     }
     int answer = 0;
-    twoWayWaterFlow_BFS(matrix,BFS_queue_pacific,actions,1);
-    twoWayWaterFlow_BFS(matrix,BFS_queue_atlantic,actions,2);
+    twoWayWaterFlow_BFS(matrix,BFS_queues,actions);
+
     for(int i = 0; i < matrix.rowCount();i++)
     {
         for(int j = 0; j<matrix.colCount();j++)
         {
-            if(matrix(i,j)._visited_&&matrix(i,j)._visited_sec_)
+            bool cross = true;
+            for(int l = 0; l<static_cast<int>(matrix(i,j)._visited_.size());l++)
             {
+                cross=cross&&matrix(i,j)._visited_.at(l);
+            }
+            if(cross)
+            {
+                addAction(i,j,actions,"Crossing!",PlayAction::PAct_Warn);
                 answer++;
             }
         }

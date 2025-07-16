@@ -8,10 +8,10 @@
 
 #define DEFAULT_ROW_COUNT 6
 #define DEFAULT_COL_COUNT 6
-#define DEFAULT_TIMER 2000
+#define DEFAULT_TIMER 1200
 #define INTEGER_MATRIX
 //#define CHAR_MATRIX
-#define COLOR_DEPENDENT_INT
+//#define COLOR_DEPENDENT_INT
 
 using std::vector;
 using std::string;

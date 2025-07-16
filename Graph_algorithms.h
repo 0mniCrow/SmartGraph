@@ -48,12 +48,13 @@ struct LandNode
     }
 };
 
-struct Atl_Pac_Node:public LandNode
+struct Atl_Pac_Node
 {
-    bool _visited_sec_;
-    Atl_Pac_Node():LandNode()
+    int _value_;
+    vector<bool> _visited_;
+    Atl_Pac_Node()
     {
-        _visited_sec_ = false;
+       _value_=0;
     }
 };
 

@@ -255,17 +255,42 @@ MainWindow::MainWindow(QWidget *parent)
 
 //_______________________________Pouring Jugs___________________________________
 
-    int m =5, n = 4, d = 2;
-    vector<vector<int>> matrix(m+1,vector<int>(n+1,0));
+//    int m =5, n = 4, d = 2;
+//    vector<vector<int>> matrix(m+1,vector<int>(n+1,0));
+//    model = new MatrixModel(matrix);
+//    ui->tableView->setModel(model);
+//    std::vector<PlayAction> actions;
+//    string str_actions;
+//    ui->textEdit->append("Steps to reach ["+QString::number(d)+"] liters in one of jugs is: "+QString::number(waterJigProblem_BFS(m,n,d,str_actions,actions)));
+//    ui->textEdit->append(QString(str_actions.c_str()));
+//    model->setActions(actions);
+//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+
+//_______________________________Pacific-Atlantic waterflow___________________________
+
+
+    vector<vector<int>> matrix({{1,2,2,3,5},
+                                {3,2,3,4,4},
+                                {2,4,5,3,1},
+                                {6,7,1,4,5},
+                                {5,1,1,2,4}});
+    Vector2D<Atl_Pac_Node> pro_matrix(matrix.size(),matrix.at(0).size());
+    for(int i = 0; i<pro_matrix.rowCount();i++)
+    {
+        for(int j=0;j<pro_matrix.colCount();j++)
+        {
+            pro_matrix(i,j)._value_ = matrix.at(i).at(j);
+        }
+    }
     model = new MatrixModel(matrix);
     ui->tableView->setModel(model);
     std::vector<PlayAction> actions;
-    string str_actions;
-    ui->textEdit->append("Steps to reach ["+QString::number(d)+"] liters in one of jugs is: "+QString::number(waterJigProblem_BFS(m,n,d,str_actions,actions)));
-    ui->textEdit->append(QString(str_actions.c_str()));
+    ui->textEdit->append("Coordinates of lands with two way flows ["+QString::number(twoWayWaterFlow(pro_matrix,actions))+"]");
     model->setActions(actions);
     connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
     connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+
 }
 void MainWindow::setProgressBar(int val, int max)
 {
