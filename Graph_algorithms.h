@@ -3,8 +3,11 @@
 
 #include <string>
 #include <queue>
+#include <stack>
 #include <unordered_set>
 #include <chrono>
+#include <cstdlib>
+#include <ctime>
 #include <QColor>
 #include <climits>
 #include "listgraph.h"
@@ -199,5 +202,8 @@ int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions);
 int waterJigProblem_BFS(int right_jig, int left_jig, int desirable_value, string& actions, vector<PlayAction>& act_st);
 
 int twoWayWaterFlow(Vector2D<Atl_Pac_Node>& matrix, vector<PlayAction>& actions);
+
+int shortPathLength_DFS(Vector2D<LandNode>& matrix, int start_row, int start_col, int finish_row, int finish_col, vector<PlayAction>& actions);
+int shortPathLength_BFS(Vector2D<LandNode>& matrix, int start_row, int start_col, int finish_row, int finish_col, vector<PlayAction>& actions);
 
 #endif // GRAPH_ALGORITHMS_H

@@ -270,27 +270,59 @@ MainWindow::MainWindow(QWidget *parent)
 //_______________________________Pacific-Atlantic waterflow___________________________
 
 
-    vector<vector<int>> matrix({{1,2,2,3,5},
-                                {3,2,3,4,4},
-                                {2,4,5,3,1},
-                                {6,7,1,4,5},
-                                {5,1,1,2,4}});
-    Vector2D<Atl_Pac_Node> pro_matrix(matrix.size(),matrix.at(0).size());
+//    vector<vector<int>> matrix({{1,2,2,3,5},
+//                                {3,2,3,4,4},
+//                                {2,4,5,3,1},
+//                                {6,7,1,4,5},
+//                                {5,1,1,2,4}});
+//    Vector2D<Atl_Pac_Node> pro_matrix(matrix.size(),matrix.at(0).size());
+//    for(int i = 0; i<pro_matrix.rowCount();i++)
+//    {
+//        for(int j=0;j<pro_matrix.colCount();j++)
+//        {
+//            pro_matrix(i,j)._value_ = matrix.at(i).at(j);
+//        }
+//    }
+//    model = new MatrixModel(matrix);
+//    ui->tableView->setModel(model);
+//    std::vector<PlayAction> actions;
+//    ui->textEdit->append("Coordinates of lands with two way flows ["+QString::number(twoWayWaterFlow(pro_matrix,actions))+"]");
+//    model->setActions(actions);
+//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+
+//_________________________________Labyrinth pathfinder___________________________________
+
+    vector<vector<int>> matrix({{1,0,1,1,1,1,0,1,1,1},
+                                {1,0,1,0,1,1,1,0,1,1},
+                                {1,1,1,0,1,1,0,1,0,1},
+                                {0,0,0,0,1,0,0,0,0,1},
+                                {1,1,1,0,1,1,1,0,1,0},
+                                {1,0,1,1,1,1,0,1,0,0},
+                                {1,0,0,0,0,0,0,0,0,1},
+                                {1,0,1,1,1,1,0,1,1,1},
+                                {1,1,0,0,0,0,1,0,0,1}});
+    Vector2D<LandNode> pro_matrix(matrix.size(),matrix.at(0).size());
     for(int i = 0; i<pro_matrix.rowCount();i++)
     {
-        for(int j=0;j<pro_matrix.colCount();j++)
+        for(int j = 0; j<pro_matrix.colCount();j++)
         {
-            pro_matrix(i,j)._value_ = matrix.at(i).at(j);
+            pro_matrix(i,j)._land_type_ = matrix.at(i).at(j);
         }
     }
     model = new MatrixModel(matrix);
     ui->tableView->setModel(model);
+    pair<int,int> start = std::make_pair(0,0);
+    pair<int,int> finish = std::make_pair(3,4);
     std::vector<PlayAction> actions;
-    ui->textEdit->append("Coordinates of lands with two way flows ["+QString::number(twoWayWaterFlow(pro_matrix,actions))+"]");
+    ui->textEdit->append("Steps in labyrinth to reach goal ["+
+                         QString::number(/*shortPathLength_DFS*/shortPathLength_BFS(pro_matrix,
+                                                             start.first,start.second,
+                                                             finish.first,finish.second,
+                                                             actions))+"]");
     model->setActions(actions);
     connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
     connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
-
 }
 void MainWindow::setProgressBar(int val, int max)
 {

@@ -1672,3 +1672,193 @@ int twoWayWaterFlow(Vector2D<Atl_Pac_Node> &matrix, vector<PlayAction>& actions)
     }
     return answer;
 }
+
+//________________________________Labyrinth pathfinding______________________________________
+
+
+bool shortPathCore_DFS(Vector2D<LandNode>& matrix,
+                       int cur_row, int cur_col,
+                       int finish_row,int finish_col,
+                       int& min_distance, int cur_distance,
+                       vector<PlayAction>& actions,
+                       std::stack<pair<int,int>>& result_path)
+{
+    if(cur_row==finish_row && cur_col==finish_col)
+    {
+        addAction(finish_row,finish_col,actions,"Destination!",PlayAction::PAct_Safe);
+        if(min_distance>cur_distance)
+        {
+            std::stack<pair<int,int>> empty;
+            std::swap(result_path,empty);
+            min_distance = cur_distance;
+        }
+        result_path.push({finish_row,finish_col});
+        return true;
+    }
+    vector<pair<int,int>> directions({{0,1},{0,-1},{-1,0},{1,0}});
+    matrix(cur_row,cur_col)._visited_ = true;
+    addAction(cur_row,cur_col,actions,"Cur pos",PlayAction::PAct_Safe);
+    //for(pair<int,int>& dir:directions)
+    while(directions.size())
+    {
+        int pos = std::rand()%directions.size();
+
+        int neigh_row = cur_row+directions.at(pos).first;//dir.first;
+        int neigh_col = cur_col+directions.at(pos).second;//dir.second;
+        directions.erase(directions.begin()+pos);
+        if(szBordCheck(neigh_row,neigh_col,matrix.rowCount(),matrix.colCount()))
+        {
+            if(matrix(neigh_row,neigh_col)._land_type_==1)
+            {
+                addAction(neigh_row,neigh_col,actions,"?PathCheck",PlayAction::PAct_Warn);
+                if(!matrix(neigh_row,neigh_col)._visited_)
+                {
+                    addAction(neigh_row,neigh_col,actions,"A new way!",PlayAction::PAct_Safe);
+                    shortPathCore_DFS(matrix,
+                                      neigh_row,neigh_col,
+                                      finish_row,finish_col,
+                                      min_distance,cur_distance+1,
+                                      actions,result_path);
+
+                    result_path.push(std::make_pair(cur_row,cur_col));
+
+                }
+                else
+                {
+                    addAction(neigh_row,neigh_col,actions,"Visited_path",PlayAction::PAct_Err);
+                }
+                addAction(cur_row,cur_col,actions,"Back2Prev",PlayAction::PAct_Safe);
+            }
+        }
+    }
+    return false;
+
+}
+
+int shortPathLength_DFS(Vector2D<LandNode>& matrix,
+                        int start_row, int start_col,
+                        int finish_row, int finish_col,
+                        vector<PlayAction>& actions)
+{
+    if(!szBordCheck(start_row,start_col,matrix.rowCount(),matrix.colCount())||
+       !szBordCheck(finish_row,finish_col,matrix.rowCount(),matrix.colCount()))
+    {
+        return -1;
+    }
+    std::srand(std::time(0));
+    std::stack<pair<int,int>> result_path;
+    int distance = INT_MAX;
+    shortPathCore_DFS(matrix,
+                      start_row, start_col,
+                      finish_row,finish_col,
+                      distance,0,actions,
+                      result_path);
+    while(!result_path.empty())
+    {
+        addAction(result_path.top().first,
+                  result_path.top().second,
+                  actions,"Fin step",
+                  PlayAction::PAct_Warn,
+                  true,2);
+        result_path.pop();
+    }
+    if(distance<0)
+    {
+        return -1;
+    }
+    return distance;
+}
+
+
+int shortPathLength_BFS(Vector2D<LandNode>& matrix,
+                        int start_row, int start_col,
+                        int finish_row, int finish_col,
+                        vector<PlayAction>& actions)
+{
+    if(!szBordCheck(start_row,start_col,matrix.rowCount(),matrix.colCount())||
+       !szBordCheck(finish_row,finish_col,matrix.rowCount(),matrix.colCount()))
+    {
+        return -1;
+    }
+    if(matrix(start_row,start_col)._land_type_==0 ||
+            matrix(finish_row,finish_col)._land_type_ == 0)
+    {
+        return -1;
+    }
+    struct Trinity
+    {
+        int _row_;
+        int _col_;
+        int _distance_;
+        vector<pair<int,int>> _prev_steps_;
+        Trinity():_row_(0),_col_(0),_distance_(0){}
+        Trinity(int row,int col, int dist):
+            _row_(row),_col_(col),_distance_(dist){}
+        Trinity(const Trinity& t):
+            _row_(t._row_),_col_(t._col_),
+            _distance_(t._distance_),
+            _prev_steps_(t._prev_steps_){}
+    };
+    std::srand(std::time(0));
+    std::queue<Trinity> BFS_queue;
+    BFS_queue.push(Trinity(start_row,start_col,0));
+    matrix(start_row,start_col)._visited_ = true;
+    while(!BFS_queue.empty())
+    {
+        Trinity cur_data(BFS_queue.front());
+        int cur_row = cur_data._row_;
+        int cur_col = cur_data._col_;
+        int distance = cur_data._distance_;
+        BFS_queue.pop();
+        addAction(cur_row,cur_col,actions,"Cur step["+std::to_string(distance)+"]");
+        if(cur_row == finish_row && cur_col == finish_col)
+        {
+            addAction(cur_row,cur_col,actions,"Destination!");
+            vector<pair<int,int>> prev_steps = cur_data._prev_steps_;
+            int prev_st_size = static_cast<int>(prev_steps.size());
+            for(int i = 0; i<prev_st_size;i++)
+            {
+                addAction(prev_steps.at(i).first,
+                          prev_steps.at(i).second,
+                          actions,
+                          "Res step ["/*+
+                          std::to_string(
+                              prev_steps.at(i)._distance_)
+                          +*/"]",PlayAction::PAct_Warn);
+            }
+            addAction(cur_row,cur_col,actions,"Find!");
+            return distance;
+        }
+        vector<pair<int,int>> directions({{0,1},{0,-1},{-1,0},{1,0}});
+        while(directions.size())
+        {
+            int pos = std::rand()%directions.size();
+            int neigh_row = cur_row+directions.at(pos).first;
+            int neigh_col = cur_col+directions.at(pos).second;
+            directions.erase(directions.begin()+pos);
+            if(szBordCheck(neigh_row,neigh_col,matrix.rowCount(),matrix.colCount()))
+            {
+                if(matrix(neigh_row,neigh_col)._land_type_==1)
+                {
+                    addAction(neigh_row,neigh_col,actions,"?CheckPath",PlayAction::PAct_Warn);
+                    if(matrix(neigh_row,neigh_col)._visited_)
+                    {
+                        addAction(neigh_row,neigh_col,actions,"Visited!",PlayAction::PAct_Err);
+                    }
+                    else
+                    {
+                        addAction(neigh_row,neigh_col,actions,"New path!",PlayAction::PAct_Safe);
+                        matrix(neigh_row,neigh_col)._visited_ = true;
+                        Trinity t(neigh_row,neigh_col,distance+1);
+                        t._prev_steps_ = cur_data._prev_steps_;
+                        t._prev_steps_.push_back(std::make_pair(cur_row,cur_col));
+                        BFS_queue.push(t);
+                    }
+                    addAction(cur_row,cur_col,actions,"Back2Prev",PlayAction::PAct_Safe);
+                }
+            }
+        }
+    }
+    addAction(start_row,start_col,actions,"Imposible2find",PlayAction::PAct_Err);
+    return -1;
+}
