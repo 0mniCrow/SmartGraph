@@ -293,36 +293,67 @@ MainWindow::MainWindow(QWidget *parent)
 
 //_________________________________Labyrinth pathfinder___________________________________
 
-    vector<vector<int>> matrix({{1,0,1,1,1,1,0,1,1,1},
-                                {1,0,1,0,1,1,1,0,1,1},
-                                {1,1,1,0,1,1,0,1,0,1},
-                                {0,0,0,0,1,0,0,0,0,1},
-                                {1,1,1,0,1,1,1,0,1,0},
-                                {1,0,1,1,1,1,0,1,0,0},
-                                {1,0,0,0,0,0,0,0,0,1},
-                                {1,0,1,1,1,1,0,1,1,1},
-                                {1,1,0,0,0,0,1,0,0,1}});
-    Vector2D<LandNode> pro_matrix(matrix.size(),matrix.at(0).size());
-    for(int i = 0; i<pro_matrix.rowCount();i++)
-    {
-        for(int j = 0; j<pro_matrix.colCount();j++)
-        {
-            pro_matrix(i,j)._land_type_ = matrix.at(i).at(j);
-        }
-    }
-    model = new MatrixModel(matrix);
-    ui->tableView->setModel(model);
-    pair<int,int> start = std::make_pair(0,0);
-    pair<int,int> finish = std::make_pair(3,4);
-    std::vector<PlayAction> actions;
-    ui->textEdit->append("Steps in labyrinth to reach goal ["+
-                         QString::number(/*shortPathLength_DFS*/shortPathLength_BFS(pro_matrix,
-                                                             start.first,start.second,
-                                                             finish.first,finish.second,
-                                                             actions))+"]");
-    model->setActions(actions);
-    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
-    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+//    vector<vector<int>> matrix({{1,0,1,1,1,1,0,1,1,1},
+//                                {1,0,1,0,1,1,1,0,1,1},
+//                                {1,1,1,0,1,1,0,1,0,1},
+//                                {0,0,0,0,1,0,0,0,0,1},
+//                                {1,1,1,0,1,1,1,0,1,0},
+//                                {1,0,1,1,1,1,0,1,0,0},
+//                                {1,0,0,0,0,0,0,0,0,1},
+//                                {1,0,1,1,1,1,0,1,1,1},
+//                                {1,1,0,0,0,0,1,0,0,1}});
+//    Vector2D<LandNode> pro_matrix(matrix.size(),matrix.at(0).size());
+//    for(int i = 0; i<pro_matrix.rowCount();i++)
+//    {
+//        for(int j = 0; j<pro_matrix.colCount();j++)
+//        {
+//            pro_matrix(i,j)._land_type_ = matrix.at(i).at(j);
+//        }
+//    }
+//    model = new MatrixModel(matrix);
+//    ui->tableView->setModel(model);
+//    pair<int,int> start = std::make_pair(0,0);
+//    pair<int,int> finish = std::make_pair(3,4);
+//    std::vector<PlayAction> actions;
+//    ui->textEdit->append("Steps in labyrinth to reach goal ["+
+//                         QString::number(/*shortPathLength_DFS*/shortPathLength_BFS(pro_matrix,
+//                                                             start.first,start.second,
+//                                                             finish.first,finish.second,
+//                                                             actions))+"]");
+//    model->setActions(actions);
+//    connect(ui->pushButton_play,SIGNAL(clicked(bool)),model,SLOT(startActions()));
+//    connect(model,SIGNAL(updateBar(int, int)),this,SLOT(setProgressBar(int,int)));
+
+//_________________________________Clone graph_______________________________________________
+
+    Snode * basic = new Snode(); basic->_value_ = 0;
+    Snode * child1 = new Snode(); child1->_value_ = 1;
+    Snode * child2 = new Snode(); child2->_value_ = 2;
+    Snode * child3 = new Snode(); child3->_value_ = 3;
+    basic->_connections_ = {child1, child2};
+    child1->_connections_ = {basic,child2};
+    child2->_connections_ = {basic, child1, child3};
+    child3->_connections_ = {child2};
+
+    Snode * compact = new Snode(); compact->_value_ = 0;
+    Snode * compact1 = new Snode(); compact1->_value_ = 1;
+    Snode * compact2 = new Snode(); compact2->_value_ = 2;
+    compact->_connections_ = {compact1, compact2};
+    compact1->_connections_ = {compact};
+    compact2->_connections_ = {compact};
+
+    Snode * clone = nullptr;
+    string actions;
+    clone = cloneGraph_BFS(basic,actions);
+    std::unordered_map<Snode*,Snode*> visited;
+    ui->textEdit->append(QString(actions.c_str()));
+    ui->textEdit->append("Is \"basic\" graph equial to \"clone\" graph? :"
+                         +QString(compareSnodeGraphs(basic,clone,visited)?"True":"False"));
+    ui->textEdit->append("Is \"compact\" graph equial to \"clone\" graph? :"
+                         +QString(compareSnodeGraphs(compact,clone,visited)?"True":"False"));
+
+    delete basic; delete child1; delete child2; delete child3;
+    delete compact; delete compact1; delete compact2;
 }
 void MainWindow::setProgressBar(int val, int max)
 {

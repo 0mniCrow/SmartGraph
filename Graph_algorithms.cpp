@@ -1862,3 +1862,110 @@ int shortPathLength_BFS(Vector2D<LandNode>& matrix,
     addAction(start_row,start_col,actions,"Imposible2find",PlayAction::PAct_Err);
     return -1;
 }
+
+
+//________________________________Clone Graph_______________________________________________
+
+
+
+Snode * cloneGraph_BFS(Snode * original, string&actions)
+{
+    actions.append("Trying to clone graph using BFS;\n");
+    if(!original)
+    {
+        actions.append("Input data is empty;\n");
+        return nullptr;
+    }
+    std::map<Snode*,Snode*> cloned_map;
+    std::queue<Snode*> BFS_queue;
+
+    Snode * clone_core = new Snode;
+    clone_core->_value_ = original->_value_;
+    cloned_map.insert({original,clone_core});
+    BFS_queue.push(original);
+    int counter =1;
+    actions.append("The core node with value ["+
+                   std::to_string(original->_value_)+"] "
+                   "has been cloned. Element count ["+
+                   std::to_string(counter)+"];\n");
+    while(!BFS_queue.empty())
+    {
+        int conn_count = 0;
+        Snode * cur_node = BFS_queue.front();
+        BFS_queue.pop();
+        actions.append("Current element value ["+
+                       std::to_string(cur_node->_value_)+"] "
+                       "Element count ["+
+                       std::to_string(counter)+"];\n");
+        auto it = cur_node->_connections_.begin();
+        while(it!=cur_node->_connections_.end())
+        {
+            if(!(cloned_map.count(*it)))
+            {
+                actions.append("The node with value ["+
+                               std::to_string((*it)->_value_)+"] "
+                               "has been cloned. Element count ["+
+                               std::to_string(++counter)+"]\n");
+                Snode * cur_copy = new Snode;
+                cur_copy->_value_ = (*it)->_value_;
+                cloned_map.insert({*it,cur_copy});
+                BFS_queue.push(*it);
+            }
+            actions.append("The node with value ["+
+                           std::to_string(cloned_map.at(*it)->_value_)+"] "
+                           "has been added as edged to the node "
+                           "with value ["+std::to_string(
+                               cloned_map.at(cur_node)->_value_)+
+                           "], current connection count ["+
+                           std::to_string(++conn_count)+"]\n");
+            cloned_map.at(cur_node)->_connections_.push_back(cloned_map.at(*it));
+            it++;
+        }
+    }
+
+    return clone_core;
+}
+
+
+bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode *, Snode *> &visited)
+{
+    if((!first_node)||(!sec_node))
+    {
+        return false;
+    }
+    if(first_node->_value_!=sec_node->_value_)
+    {
+        return false;
+    }
+    if(first_node->_connections_.size()!=sec_node->_connections_.size())
+    {
+        return false;
+    }
+    visited.insert({first_node,sec_node});
+    auto r_it = first_node->_connections_.begin(),
+         l_it = sec_node->_connections_.begin();
+
+
+    while(r_it!=first_node->_connections_.end())
+    {
+        Snode * r_node = *r_it;
+        Snode * l_node = *l_it;
+        if(visited.count(r_node))
+        {
+            if(visited.at(r_node)!=l_node)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if(!compareSnodeGraphs(r_node,l_node,visited))
+            {
+                return false;
+            }
+        }
+        r_it++;
+        l_it++;
+    }
+    return true;
+}

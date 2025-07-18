@@ -5,6 +5,7 @@
 #include <queue>
 #include <stack>
 #include <unordered_set>
+#include <unordered_map>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
@@ -205,5 +206,19 @@ int twoWayWaterFlow(Vector2D<Atl_Pac_Node>& matrix, vector<PlayAction>& actions)
 
 int shortPathLength_DFS(Vector2D<LandNode>& matrix, int start_row, int start_col, int finish_row, int finish_col, vector<PlayAction>& actions);
 int shortPathLength_BFS(Vector2D<LandNode>& matrix, int start_row, int start_col, int finish_row, int finish_col, vector<PlayAction>& actions);
+
+template<typename T>
+struct ListNode
+{
+    T _value_;
+    std::list<ListNode*> _connections_;
+    ListNode():_value_(T()){}
+    ListNode(const T& t):_value_(t){}
+};
+using Snode = ListNode<cur_type>;
+
+Snode * cloneGraph_BFS(Snode * original, string&actions);
+
+bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode*,Snode*>& visited);
 
 #endif // GRAPH_ALGORITHMS_H
