@@ -14,6 +14,7 @@
 #include "listgraph.h"
 #include "matrixmodel.h"
 #include "vectorgraph.h"
+#include "nodegraph.h"
 
 
 struct PlayAction;

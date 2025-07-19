@@ -14,6 +14,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     matrixmodel.cpp \
+    nodegraph.cpp \
     vectorgraph.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     listgraph.h \
     mainwindow.h \
     matrixmodel.h \
+    nodegraph.h \
     vectorgraph.h
 
 FORMS += \
