@@ -2,39 +2,87 @@
 #define NODEGRAPH_H
 #include <memory>
 #include <vector>
+#include <queue>
+#include <algorithm>
+
+#define DEFAULT_NODE_VAL 0
 
 using cur_node_type = int;
 using cur_id_type = int;
+
 using std::vector;
+using std::pair;
+using std::queue;
 
 template< typename I,typename T>
 struct GraphNode
 {
     I _id_;
     T _value_;
-    vector<std::weak_ptr<GraphNode>> _edges_;
-    GraphNode():_value_(T()){}
-    GraphNode(T t):_value_(t){}
+    vector<std::pair<std::weak_ptr<GraphNode>,int>> _edges_;
+    GraphNode():_id_(I()),_value_(T()){}
+    GraphNode(I i):_id_(i),_value_(T()){}
+    GraphNode(I i, T t):_id_(i),_value_(t){}
 };
 
-using nodevector = vector<std::shared_ptr<GraphNode<cur_id_type,cur_node_type>>>;
-using nodepointer = std::weak_ptr<GraphNode<cur_id_type, cur_node_type>>;
+using ref_node = GraphNode<cur_id_type,cur_node_type>;
+using shar_r_node = std::shared_ptr<ref_node>;
+using nodevector = vector<shar_r_node>;
+using nodepointer = std::weak_ptr<ref_node>;
 
+class NodeIterator;
 
 class NodeGraph
 {
 private:
     nodevector _nodes_;
     nodepointer _core_node_;
+    char _flags_;
     bool BFS_search(cur_id_type& id, nodepointer& container);
+    bool BFS_copy(const NodeGraph& other);
+    void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
+    void idSort();
 public:
-    NodeGraph();
-    NodeGraph(const vector<vector<cur_node_type>>& matrix);
+    enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02, Gr_SortingById};
+    NodeGraph(char flags = Gr_Unweighted_Undirected);
+    NodeGraph(const vector<vector<cur_node_type>>& matrix, char flags = Gr_Unweighted_Undirected);
+    NodeGraph(const NodeGraph& other);
+    NodeGraph& operator=(const NodeGraph& other);
+    NodeGraph& operator=(const vector<vector<cur_node_type>>& matrix);
     ~NodeGraph();
-    bool addVertex(cur_id_type& id);
-    bool addEdge(cur_id_type& from, cur_id_type& to);
-    void removeVertex(cur_id_type& id);
-    void removeEdge(cur_id_type& from, cur_id_type& to);
+
+    bool addVertex(const cur_id_type& id, cur_node_type val = DEFAULT_NODE_VAL);
+    bool addEdge(const cur_id_type& from, const cur_id_type& to, int weight = 1);
+
+    void removeVertex(const cur_id_type& id);
+    void removeVertex(NodeIterator& it);
+    void removeEdge(const cur_id_type& from, const cur_id_type& to);
+
+    bool isExists(const cur_id_type& id) const;
+
+
+    cur_node_type getValue(const cur_id_type& id) const;
+    void getIDList(vector<cur_id_type>& container);
+    bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const;
+    bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container) const;
+
+    bool setValue(const cur_id_type& id, cur_node_type& value);
+    void fill(const cur_node_type& def_val);
+    bool fill(const vector<vector<cur_node_type>>& matrix);
+
+    cur_node_type& operator()(const cur_id_type& id);
+    cur_node_type& at(const cur_id_type& id);
+    nodepointer& begin();
+    nodepointer& find(const cur_id_type& id);
+
+    int size() const;
+    int findFreeID() const;
+
+    void clear();
+
+    char flags() const;
+    void setFlags(char flags);
+
 
 
     friend class NodeIterator;
@@ -47,16 +95,25 @@ private:
 public:
     NodeIterator();
     NodeIterator(NodeGraph& graph);
-    NodeIterator(NodeIterator& iter);
+    NodeIterator(NodeIterator& other);
     NodeIterator(nodepointer& pointer);
     ~NodeIterator();
     bool isValid() const;
     bool initiate(NodeGraph& graph);
-    bool moveTo(cur_id_type& id);
-    bool edges(vector<cur_id_type>& container);
+    bool moveToID(const cur_id_type& id);
+    bool moveToNum(int number);
+    int edgesCount() const;
+    bool getEdgesIDs(vector<cur_id_type>& container) const;
+    bool getEdgesList(vector<pair<cur_id_type,int>>& container) const;
+    bool hasLinkTo(const cur_id_type& id);
     cur_node_type& val();
-    bool operator()(cur_id_type& id);
-    cur_node_type& operator[](cur_id_type& id);
+    cur_id_type id() const;
+    int weight(const cur_id_type& linked_id) const;
+    nodepointer& operator->();
+    NodeIterator& operator()(int number);
+    NodeIterator& operator[](const cur_id_type& id);
+    NodeIterator& operator=(NodeIterator& other);
+    NodeIterator& operator=(nodepointer& other);
 
 };
 
