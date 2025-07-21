@@ -6,6 +6,7 @@
 #include <algorithm>
 
 #define DEFAULT_NODE_VAL 0
+#define DEFAULT_ID_VAL 0
 
 using cur_node_type = int;
 using cur_id_type = int;
@@ -42,8 +43,10 @@ private:
     bool BFS_copy(const NodeGraph& other);
     void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
     void idSort();
+    shar_r_node find_node(const cur_id_type& id);
+
 public:
-    enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02, Gr_SortingById};
+    enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02, Gr_SortingById =0x04};
     NodeGraph(char flags = Gr_Unweighted_Undirected);
     NodeGraph(const vector<vector<cur_node_type>>& matrix, char flags = Gr_Unweighted_Undirected);
     NodeGraph(const NodeGraph& other);
@@ -62,9 +65,9 @@ public:
 
 
     cur_node_type getValue(const cur_id_type& id) const;
-    void getIDList(vector<cur_id_type>& container);
-    bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const;
-    bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container) const;
+    void getIDList(vector<cur_id_type>& container) const;
+    bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container);
+    bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container);
 
     bool setValue(const cur_id_type& id, cur_node_type& value);
     void fill(const cur_node_type& def_val);
@@ -73,7 +76,7 @@ public:
     cur_node_type& operator()(const cur_id_type& id);
     cur_node_type& at(const cur_id_type& id);
     nodepointer& begin();
-    nodepointer& find(const cur_id_type& id);
+    nodepointer find(const cur_id_type& id);
 
     int size() const;
     int findFreeID() const;

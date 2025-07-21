@@ -67,28 +67,108 @@ bool NodeGraph::addVertex(const cur_id_type& id,cur_node_type val)
         return false;
     }
     _nodes_.push_back(std::make_shared<ref_node>(id,val));
-    idSort();
+    if(_flags_&Gr_SortingById)
+    {
+        idSort();
+    }
     return true;
 }
 
 bool NodeGraph::addEdge(const cur_id_type& from, const cur_id_type& to, int weight)
 {
-
+    if(!isExists(from)||!isExists(to))
+    {
+        return false;
+    }
+    nodepointer node_from(find(from));
+    node_from.lock()->_edges_.push_back({find(to),weight});
+    if(!(_flags_&Gr_Directed))
+    {
+        nodepointer node_to(find(to));
+        node_to.lock()->_edges_.push_back({find(from),weight});
+    }
+    return true;
 }
 
 void NodeGraph::removeVertex(const cur_id_type& id)
 {
-
+    auto it = _nodes_.begin();
+    while(it!=_nodes_.end())
+    {
+        if((*it)->_id_==id)
+        {
+            break;
+        }
+        it++;
+    }
+    if(it!=_nodes_.end())
+    {
+        if(!_core_node_.expired()&& _core_node_.lock()->_id_==id)
+        {
+            _nodes_.erase(it);
+            if(_nodes_.size())
+            {
+                _core_node_ = _nodes_.at(0);
+            }
+        }
+        else
+        {
+            _nodes_.erase(it);
+        }
+        for(it = _nodes_.begin();it!=_nodes_.end();it++)
+        {
+            for(auto jt = (*it)->_edges_.begin(); jt!=(*it)->_edges_.end();jt++)
+            {
+                if(jt->first.expired())
+                {
+                    (*it)->_edges_.erase(jt);
+                    break;
+                }
+            }
+        }
+    }
+    return;
 }
 
 void NodeGraph::removeVertex(NodeIterator& it)
 {
-
+    removeVertex(it.id());
+    return;
 }
+
+
 void NodeGraph::removeEdge(const cur_id_type& from, const cur_id_type& to)
 {
-
+    if(!isExists(from) || !isExists(to))
+    {
+        return;
+    }
+    auto node_from(find(from).lock());
+    auto node_iter (std::find_if(
+                        node_from->_edges_.begin(),
+                        node_from->_edges_.end(),
+                        [to](std::pair<nodepointer,int>& val)
+                    { return val.first.lock()->_id_==to;}));
+    if(node_iter!=node_from->_edges_.end())
+    {
+        node_from->_edges_.erase(node_iter);
+    }
+    if(!(_flags_&Gr_Directed))
+    {
+        auto node_to(find(to).lock());
+        node_iter = (std::find_if(
+                         node_to->_edges_.begin(),
+                         node_to->_edges_.end(),
+                         [from](std::pair<nodepointer,int>& val)
+                     { return val.first.lock()->_id_==from;}));
+        if(node_iter!=node_to->_edges_.end())
+        {
+            node_to->_edges_.erase(node_iter);
+        }
+    }
+    return;
 }
+
 
 bool NodeGraph::isExists(const cur_id_type& id) const
 {
@@ -107,33 +187,80 @@ bool NodeGraph::isExists(const cur_id_type& id) const
 
 cur_node_type NodeGraph::getValue(const cur_id_type& id) const
 {
-
+    if(!isExists(id))
+    {
+        return DEFAULT_NODE_VAL;
+    }
+    for(const shar_r_node& node: _nodes_)
+    {
+        if(node->_id_==id)
+        {
+            return node->_value_;
+        }
+    }
+    return DEFAULT_NODE_VAL;
 }
 
-void NodeGraph::getIDList(vector<cur_id_type>& container)
+void NodeGraph::getIDList(vector<cur_id_type>& container) const
 {
-
+    container.clear();
+    for(const shar_r_node& node:_nodes_)
+    {
+        container.push_back(node->_id_);
+    }
+    return;
 }
 
-bool NodeGraph::getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const
+bool NodeGraph::getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container)
 {
-
+    if(!isExists(id))
+    {
+        return false;
+    }
+    container.clear();
+    auto node(find_node(id));
+    for(auto& edge: node->_edges_)
+    {
+        container.push_back(edge.first.lock()->_id_);
+    }
+    return true;
 }
 
-bool NodeGraph::getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container) const
+bool NodeGraph::getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container)
 {
-
+    if(!isExists(id))
+    {
+        return false;
+    }
+    container.clear();
+    auto node(find_node(id));
+    for(auto& edge: node->_edges_)
+    {
+        container.push_back({edge.first.lock()->_id_,edge.second});
+    }
+    return true;
 }
 
 bool NodeGraph::setValue(const cur_id_type& id, cur_node_type& value)
 {
-
+    if(!isExists(id))
+    {
+        return false;
+    }
+    auto node(find_node(id));
+    node->_value_ = value;
+    return true;
 }
 
 void NodeGraph::fill(const cur_node_type& def_val)
 {
-
+    for(shar_r_node& node:_nodes_)
+    {
+        node->_value_ = def_val;
+    }
+    return;
 }
+
 bool NodeGraph::fill(const vector<vector<cur_node_type>>& matrix)
 {
     clear();
@@ -147,40 +274,60 @@ bool NodeGraph::fill(const vector<vector<cur_node_type>>& matrix)
 
 cur_node_type& NodeGraph::operator()(const cur_id_type& id)
 {
-
+    if(!isExists(id))
+    {
+        throw "Node-graph can't find recieved id";
+    }
+    return find_node(id)->_value_;
 }
+
 cur_node_type& NodeGraph::at(const cur_id_type& id)
 {
-
+    return operator()(id);
 }
+
 nodepointer& NodeGraph::begin()
 {
-
+    return _core_node_;
 }
-nodepointer& NodeGraph::find(const cur_id_type& id)
-{
 
+nodepointer NodeGraph::find(const cur_id_type& id)
+{
+    return find_node(id);
+}
+
+shar_r_node NodeGraph::find_node(const cur_id_type& id)
+{
+    return *std::find_if(_nodes_.begin(),_nodes_.end(),[id](shar_r_node& node){return node->_id_==id;});
 }
 
 int NodeGraph::size() const
 {
-
+    return static_cast<int>(_nodes_.size());
 }
+
 int NodeGraph::findFreeID() const
 {
-
+    cur_id_type counter = DEFAULT_ID_VAL;
+    while(isExists(counter))
+    {
+        counter++;
+    }
+    return counter;
 }
 
 void NodeGraph::clear()
 {
-
+    _core_node_.reset();
+    _nodes_.clear();
 }
 
 char NodeGraph::flags() const
 {
-
+    return _flags_;
 }
 void NodeGraph::setFlags(char flags)
 {
-
+    _flags_ = flags;
+    return;
 }
