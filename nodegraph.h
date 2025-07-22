@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <queue>
+#include <unordered_set>
 #include <algorithm>
 
 #define DEFAULT_NODE_VAL 0
@@ -40,6 +41,8 @@ private:
     nodepointer _core_node_;
     char _flags_;
     bool BFS_search(cur_id_type& id, nodepointer& container);
+    int BFS_SegmentCount();
+    int BFS_SegmentSize(const cur_id_type& id);
     bool BFS_copy(const NodeGraph& other);
     void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
     void idSort();

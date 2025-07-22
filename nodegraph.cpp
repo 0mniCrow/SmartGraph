@@ -2,12 +2,84 @@
 
 bool NodeGraph::BFS_search(cur_id_type& id, nodepointer& container)
 {
+    // тут магчыма стварыць пошук, шырынны ці глыбінны, дзе шукаецца, якія вяршыні маюць сувязь з гэтым аб'ектам.
+    // ці ёсць сэнс рабіць двунакіраваныя ноды, не толькі з наступнымі, але і з якімі мелі папярэднюю сувязь?
     return true;
 }
 
 bool NodeGraph::BFS_copy(const NodeGraph& other)
 {
+    this->clear();
+    for(const std::shared_ptr<GraphNode<cur_id_type,cur_node_type>>& node: other._nodes_)
+    {
+        shar_r_node new_node = std::make_shared<ref_node>(node->_id_,node->_value_);
+        _nodes_.push_back(new_node);
+        //ненене, зараз магчыма стварыць Глыбінны пошук з логіцай "Ствараеш новы нод, глядзіш яго грані і калі не знаходзіш такі ў сьпісе, ствараеш яго. О.о.о!
+    }
     return true;
+}
+
+int NodeGraph::BFS_SegmentCount()
+{
+    if(!_nodes_.size())
+    {
+        return 0;
+    }
+    vector<std::unordered_set<cur_id_type>> graphs;
+    for(shar_r_node& node: _nodes_)
+    {
+        std::unordered_set<cur_id_type> cur_graph;
+        std::queue<cur_id_type> BFS_queue;
+        BFS_queue.push(node->_id_);
+        while(!BFS_queue.empty())
+        {
+            cur_id_type cur_id = BFS_queue.front();
+            BFS_queue.pop();
+            cur_graph.insert(cur_id);
+            auto cur_node = find_node(cur_id);
+            for(size_t i = 0; i<cur_node->_edges_.size();i++)
+            {
+                cur_id_type edged_node = cur_node->_edges_.at(i).first.lock()->_id_;
+                if(!cur_graph.count(edged_node))
+                {
+                    BFS_queue.push(edged_node);
+                }
+            }
+        }
+        graphs.push_back(cur_graph);
+    }
+
+    for(size_t i = 0; i<graphs.size();i++)
+    {
+        for(size_t j = i+1; j<graphs.size();j++)
+        {
+            auto it = graphs.at(i).begin();
+            while(it!=graphs.at(i).end())
+            {
+                if(graphs.at(j).count(*it))
+                {
+                    graphs.at(i).merge(graphs.at(j));
+                    graphs.at(j).clear();
+                    break;
+                }
+                it++;
+            }
+        }
+    }
+
+    auto g_it = graphs.begin();
+    while(g_it!=graphs.end())
+    {
+        if(g_it->empty())
+        {
+            g_it = graphs.erase(g_it);
+        }
+        else
+        {
+            g_it++;
+        }
+    }
+    return graphs.size();
 }
 
 void NodeGraph::DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num)
