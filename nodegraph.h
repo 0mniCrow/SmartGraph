@@ -40,25 +40,31 @@ private:
     nodevector _nodes_;
     nodepointer _core_node_;
     char _flags_;
+
     bool BFS_search(cur_id_type& id, nodepointer& container);
-    int BFS_SegmentCount();
+    void BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list);
     int BFS_SegmentSize(const cur_id_type& id);
-    bool BFS_copy(const NodeGraph& other);
+    void DFS_copy(const NodeGraph& other, cur_id_type& id, std::unordered_set<cur_id_type>& visited);
+    void Object_complete_copy(NodeGraph& other);
+    void Object_separated_copies(vector<NodeGraph>& container);
+
     void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
     void idSort();
     shar_r_node find_node(const cur_id_type& id);
+    const shar_r_node& find_node(const cur_id_type& id) const;
 
 public:
     enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02, Gr_SortingById =0x04};
     NodeGraph(char flags = Gr_Unweighted_Undirected);
     NodeGraph(const vector<vector<cur_node_type>>& matrix, char flags = Gr_Unweighted_Undirected);
-    NodeGraph(const NodeGraph& other);
-    NodeGraph& operator=(const NodeGraph& other);
+    NodeGraph(NodeGraph &other);
+    NodeGraph& operator=(NodeGraph& other);
     NodeGraph& operator=(const vector<vector<cur_node_type>>& matrix);
     ~NodeGraph();
 
     bool addVertex(const cur_id_type& id, cur_node_type val = DEFAULT_NODE_VAL);
     bool addEdge(const cur_id_type& from, const cur_id_type& to, int weight = 1);
+    bool setCoreVertex(const cur_id_type& id);
 
     void removeVertex(const cur_id_type& id);
     void removeVertex(NodeIterator& it);
@@ -82,6 +88,7 @@ public:
     nodepointer find(const cur_id_type& id);
 
     int size() const;
+    int segmentCount();
     int findFreeID() const;
 
     void clear();
