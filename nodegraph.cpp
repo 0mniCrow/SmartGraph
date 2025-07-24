@@ -1,9 +1,19 @@
 #include "nodegraph.h"
 
-bool NodeGraph::BFS_search(cur_id_type& id, nodepointer& container)
+bool NodeGraph::BFS_revert_conn_search(cur_id_type& id, std::vector<cur_id_type> &container) const
 {
-    // тут магчыма стварыць пошук, шырынны ці глыбінны, дзе шукаецца, якія вяршыні маюць сувязь з гэтым аб'ектам.
-    // ці ёсць сэнс рабіць двунакіраваныя ноды, не толькі з наступнымі, але і з якімі мелі папярэднюю сувязь?
+    for(const shar_r_node& vertex: _nodes_)
+    {
+        auto it = vertex->_edges_.cbegin();
+        while(it!= vertex->_edges_.cend())
+        {
+            cur_id_type cur_id = it->first.lock()->_id_;
+            if(cur_id == id)
+            {
+                container.push_back(cur_id);
+            }
+        }
+    }
     return true;
 }
 
@@ -26,7 +36,7 @@ void NodeGraph::DFS_copy(const NodeGraph &other, cur_id_type& id, std::unordered
     return;
 }
 
-void NodeGraph::Object_complete_copy(NodeGraph &other)
+void NodeGraph::Object_complete_copy(const NodeGraph &other)
 {
     if(other._nodes_.empty())
     {
@@ -50,6 +60,40 @@ void NodeGraph::Object_complete_copy(NodeGraph &other)
     {
         _core_node_ = find_node(other._core_node_.lock()->_id_);
     }
+    if(_flags_&Gr_SortingById)
+    {
+        idSort();
+    }
+    return;
+}
+
+void NodeGraph::DFS_separated_copy(NodeGraph& cur_graph, cur_id_type& id,
+                        std::unordered_set<cur_id_type>& visited) const
+{
+    auto cur_main_node = find_node(id);
+    visited.insert(id);
+    cur_graph.addVertex(cur_main_node->_id_,cur_main_node->_value_);
+    for(std::pair<nodepointer,int>& linked_node: cur_main_node->_edges_)
+    {
+        cur_id_type linked_id = linked_node.first.lock()->_id_;
+        if(!visited.count(linked_id))
+        {
+            DFS_separated_copy(cur_graph,linked_id,visited);
+        }
+        cur_graph.addEdge(id,linked_id,linked_node.second);
+    }
+}
+
+void NodeGraph::loadSubGraph(NodeGraph& res_graph, std::unordered_set<cur_id_type>& source) const
+{
+    std::unordered_set<cur_id_type> cur_visited;
+    for(cur_id_type id:source)
+    {
+        if(!cur_visited.count(id))
+        {
+            DFS_separated_copy(res_graph,id,cur_visited);
+        }
+    }
     return;
 }
 
@@ -64,34 +108,44 @@ void NodeGraph::Object_separated_copies(vector<NodeGraph>& container)
     BFS_Separation(segments_list);
     for(std::unordered_set<cur_id_type>& segment: segments_list)
     {
-        //Пазней можна зьмяніць гэта на глыбінны пошук, проста ўжывай "маючыяся" замест "наведаных"
-        NodeGraph new_graph(_flags_);
-        for(cur_id_type id: segment)
+        if(segment.empty())
         {
-            shar_r_node cur_node(find_node(id));
-            new_graph.addVertex(id,cur_node->_value_);
+            continue;
         }
-        for(cur_id_type id: segment)
+        NodeGraph new_graph(_flags_);
+        loadSubGraph(new_graph,segment);
+        if(_flags_&Gr_SortingById)
         {
-            shar_r_node cur_node(find_node(id));
-            for(size_t i = 0; i<cur_node->_edges_.size();i++)
-            {
-                new_graph.addEdge(id,cur_node->_edges_.at(i).first.lock()->_id_,cur_node->_edges_.at(i).second);
-            }
+            new_graph.idSort();
         }
         container.push_back(new_graph);
+//        NodeGraph new_graph(_flags_);
+//        for(cur_id_type id: segment)
+//        {
+//            shar_r_node cur_node(find_node(id));
+//            new_graph.addVertex(id,cur_node->_value_);
+//        }
+//        for(cur_id_type id: segment)
+//        {
+//            shar_r_node cur_node(find_node(id));
+//            for(size_t i = 0; i<cur_node->_edges_.size();i++)
+//            {
+//                new_graph.addEdge(id,cur_node->_edges_.at(i).first.lock()->_id_,cur_node->_edges_.at(i).second);
+//            }
+//        }
+//        container.push_back(new_graph);
     }
     return;
 }
 
-void NodeGraph::BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list)
+void NodeGraph::BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list) const
 {
     segment_list.clear();
     if(!_nodes_.size())
     {
         return;
     }
-    for(shar_r_node& node: _nodes_)
+    for(const shar_r_node& node: _nodes_)
     {
         std::unordered_set<cur_id_type> cur_graph;
         std::queue<cur_id_type> BFS_queue;
@@ -147,7 +201,21 @@ void NodeGraph::BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_
     return;
 }
 
-int NodeGraph::segmentCount()
+int NodeGraph::BFS_SegmentSize(const cur_id_type& id)
+{
+    vector<std::unordered_set<cur_id_type>> segment_list;
+    BFS_Separation(segment_list);
+    for(std::unordered_set<cur_id_type>& segment:segment_list)
+    {
+        if(segment.count(id))
+        {
+            return static_cast<int>(segment.size());
+        }
+    }
+    return 0;
+}
+
+int NodeGraph::segmentCount() const
 {
     vector<std::unordered_set<cur_id_type>> segment_list;
     BFS_Separation(segment_list);
@@ -193,7 +261,7 @@ NodeGraph::NodeGraph(const vector<vector<cur_node_type>>& matrix, char flags):_f
     return;
 }
 
-NodeGraph& NodeGraph::operator=(NodeGraph& other)
+NodeGraph& NodeGraph::operator=(const NodeGraph &other)
 {
     Object_complete_copy(other);
     return *this;
@@ -205,7 +273,7 @@ NodeGraph& NodeGraph::operator=(const vector<vector<cur_node_type>>& matrix)
     return *this;
 }
 
-NodeGraph::NodeGraph(NodeGraph& other):_flags_(other._flags_)
+NodeGraph::NodeGraph(const NodeGraph &other):_flags_(other._flags_)
 {
     Object_complete_copy(other);
     return;
@@ -407,6 +475,26 @@ bool NodeGraph::getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int
     return true;
 }
 
+NodeGraph NodeGraph::getSubGraph(const cur_id_type& id) const
+{
+    NodeGraph new_graph(_flags_);
+    vector<std::unordered_set<cur_id_type>> segments_list;
+    BFS_Separation(segments_list);
+    for(std::unordered_set<cur_id_type>& segment: segments_list)
+    {
+        if(segment.count(id))
+        {
+            loadSubGraph(new_graph,segment);
+            break;
+        }
+    }
+    if(_flags_&Gr_SortingById)
+    {
+        new_graph.idSort();
+    }
+    return new_graph;
+}
+
 bool NodeGraph::setValue(const cur_id_type& id, cur_node_type& value)
 {
     if(!isExists(id))
@@ -502,3 +590,6 @@ void NodeGraph::setFlags(char flags)
     _flags_ = flags;
     return;
 }
+
+
+//_____________Node iterator___________________

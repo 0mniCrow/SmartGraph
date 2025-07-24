@@ -41,13 +41,16 @@ private:
     nodepointer _core_node_;
     char _flags_;
 
-    bool BFS_search(cur_id_type& id, nodepointer& container);
-    void BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list);
+    bool BFS_revert_conn_search(cur_id_type& id, vector<cur_id_type>& container) const;
+    void BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list) const;
     int BFS_SegmentSize(const cur_id_type& id);
     void DFS_copy(const NodeGraph& other, cur_id_type& id, std::unordered_set<cur_id_type>& visited);
-    void Object_complete_copy(NodeGraph& other);
+    void Object_complete_copy(const NodeGraph& other);
+    void DFS_separated_copy(NodeGraph& cur_graph, cur_id_type& id,
+                            std::unordered_set<cur_id_type>& visited) const;
     void Object_separated_copies(vector<NodeGraph>& container);
 
+    void loadSubGraph(NodeGraph& res_graph, std::unordered_set<cur_id_type>& source) const;
     void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
     void idSort();
     shar_r_node find_node(const cur_id_type& id);
@@ -57,8 +60,8 @@ public:
     enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02, Gr_SortingById =0x04};
     NodeGraph(char flags = Gr_Unweighted_Undirected);
     NodeGraph(const vector<vector<cur_node_type>>& matrix, char flags = Gr_Unweighted_Undirected);
-    NodeGraph(NodeGraph &other);
-    NodeGraph& operator=(NodeGraph& other);
+    NodeGraph(const NodeGraph &other);
+    NodeGraph& operator=(const NodeGraph& other);
     NodeGraph& operator=(const vector<vector<cur_node_type>>& matrix);
     ~NodeGraph();
 
@@ -77,6 +80,7 @@ public:
     void getIDList(vector<cur_id_type>& container) const;
     bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container);
     bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container);
+    NodeGraph getSubGraph(const cur_id_type& id) const;
 
     bool setValue(const cur_id_type& id, cur_node_type& value);
     void fill(const cur_node_type& def_val);
@@ -88,7 +92,7 @@ public:
     nodepointer find(const cur_id_type& id);
 
     int size() const;
-    int segmentCount();
+    int segmentCount() const;
     int findFreeID() const;
 
     void clear();
