@@ -109,6 +109,7 @@ class NodeIterator
 {
 private:
     nodepointer _cur_node_;
+    nodepointer findConn(const cur_id_type& id);
 public:
     NodeIterator();
     NodeIterator(NodeGraph& graph);

@@ -593,3 +593,235 @@ void NodeGraph::setFlags(char flags)
 
 
 //_____________Node iterator___________________
+
+
+nodepointer NodeIterator::findConn(const cur_id_type& id)
+{
+    if(_cur_node_.expired())
+    {
+        return nodepointer();
+    }
+    for(std::pair<nodepointer,int>& edge: _cur_node_.lock()->_edges_)
+    {
+        if(edge.first.lock()->_id_==id)
+        {
+            return edge.first;
+        }
+    }
+    return nodepointer();
+}
+
+NodeIterator::NodeIterator()
+{
+    return;
+}
+
+NodeIterator::NodeIterator(NodeGraph& graph)
+{
+    initiate(graph);
+    return;
+}
+
+NodeIterator::NodeIterator(NodeIterator& other)
+{
+    if(!other._cur_node_.expired())
+    {
+        _cur_node_ = other._cur_node_;
+    }
+    return;
+}
+
+NodeIterator::NodeIterator(nodepointer& pointer)
+{
+    if(!pointer.expired())
+    {
+        _cur_node_ = pointer;
+    }
+    return;
+}
+
+NodeIterator::~NodeIterator()
+{
+
+}
+
+bool NodeIterator::isValid() const
+{
+    return !_cur_node_.expired();
+}
+
+bool NodeIterator::initiate(NodeGraph& graph)
+{
+    if(graph._core_node_.expired())
+    {
+        if(graph._nodes_.size())
+        {
+            _cur_node_ = graph._nodes_.at(0);
+            return true;
+        }
+    }
+    else
+    {
+        _cur_node_ = graph._core_node_;
+        return true;
+    }
+    return false;
+}
+
+bool NodeIterator::moveToID(const cur_id_type& id)
+{
+    if(_cur_node_.expired())
+    {
+        return false;
+    }
+    nodepointer next_pointer = findConn(id);
+    if(!next_pointer.expired())
+    {
+        _cur_node_ = next_pointer;
+        return true;
+    }
+    return false;
+}
+
+bool NodeIterator::moveToNum(int number)
+{
+    if(_cur_node_.expired())
+    {
+        return false;
+    }
+    auto & edges = _cur_node_.lock()->_edges_;
+    if(number>=0 && number<static_cast<int>(edges.size()))
+    {
+        _cur_node_ = edges.at(number).first;
+        return true;
+    }
+    return false;
+}
+
+int NodeIterator::edgesCount() const
+{
+    if(_cur_node_.expired())
+    {
+        return 0;
+    }
+    return static_cast<int>(_cur_node_.lock()->_edges_.size());
+}
+
+bool NodeIterator::getEdgesIDs(vector<cur_id_type>& container) const
+{
+    container.clear();
+    if(_cur_node_.expired())
+    {
+        return false;
+    }
+    auto & edges = _cur_node_.lock()->_edges_;
+    for(std::pair<nodepointer,int>& edge:edges)
+    {
+        container.push_back(edge.first.lock()->_id_);
+    }
+    return true;
+}
+
+bool NodeIterator::getEdgesList(vector<pair<cur_id_type,int>>& container) const
+{
+    container.clear();
+    if(_cur_node_.expired())
+    {
+        return false;
+    }
+    auto & edges = _cur_node_.lock()->_edges_;
+    for(std::pair<nodepointer,int>& edge:edges)
+    {
+        container.push_back(std::make_pair(edge.first.lock()->_id_,edge.second));
+    }
+    return true;
+}
+
+bool NodeIterator::hasLinkTo(const cur_id_type& id)
+{
+    if(_cur_node_.expired())
+    {
+        return false;
+    }
+    nodepointer pt = findConn(id);
+    if(!pt.expired())
+    {
+        return true;
+    }
+    return false;
+}
+
+cur_node_type& NodeIterator::val()
+{
+    if(_cur_node_.expired())
+    {
+        throw "NodeIterator uninitialized value access error!";
+    }
+    return _cur_node_.lock()->_value_;
+}
+
+cur_id_type NodeIterator::id() const
+{
+    if(_cur_node_.expired())
+    {
+        throw "NodeIterator uninitialized id access error!";
+    }
+    return _cur_node_.lock()->_id_;
+}
+
+int NodeIterator::weight(const cur_id_type& linked_id) const
+{
+    if(_cur_node_.expired())
+    {
+        return -1;
+    }
+    for(std::pair<nodepointer,int>& edge: _cur_node_.lock()->_edges_)
+    {
+        if(edge.first.lock()->_id_==linked_id)
+        {
+            return edge.second;
+        }
+    }
+    return -1;
+}
+
+nodepointer& NodeIterator::operator->()
+{
+    return _cur_node_;
+}
+
+NodeIterator& NodeIterator::operator()(int number)
+{
+    moveToNum(number);
+    return *this;
+}
+NodeIterator& NodeIterator::operator[](const cur_id_type& id)
+{
+    moveToID(id);
+    return *this;
+}
+NodeIterator& NodeIterator::operator=(NodeIterator& other)
+{
+    if(other._cur_node_.expired())
+    {
+        _cur_node_.reset();
+    }
+    else
+    {
+        _cur_node_ = other._cur_node_;
+    }
+    return *this;
+}
+
+NodeIterator& NodeIterator::operator=(nodepointer& other)
+{
+    if(other.expired())
+    {
+        _cur_node_.reset();
+    }
+    else
+    {
+        _cur_node_ = other;
+    }
+    return *this;
+}
