@@ -1,5 +1,29 @@
 #include "nodegraph.h"
 
+void NodeGraph::BFS_id_search(const cur_id_type& id, std::unordered_set<cur_id_type>& visited) const
+{
+
+    std::queue<cur_id_type> BFS_queue;
+    visited.insert(id);
+    BFS_queue.push(id);
+    while(!BFS_queue.empty())
+    {
+        cur_id_type cur_id = BFS_queue.front();
+        BFS_queue.pop();
+        vector<cur_id_type> linked_vertices;
+        getEdgeIDsAt(cur_id,linked_vertices);
+        for(size_t i = 0; i< linked_vertices.size();i++)
+        {
+            if(!visited.count(linked_vertices.at(i)))
+            {
+                visited.insert(linked_vertices.at(i));
+                BFS_queue.push(linked_vertices.at(i));
+            }
+        }
+    }
+    return;
+}
+
 bool NodeGraph::BFS_revert_conn_search(cur_id_type& id, std::vector<cur_id_type> &container) const
 {
     for(const shar_r_node& vertex: _nodes_)
@@ -445,7 +469,7 @@ void NodeGraph::getIDList(vector<cur_id_type>& container) const
     return;
 }
 
-bool NodeGraph::getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container)
+bool NodeGraph::getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const
 {
     if(!isExists(id))
     {
@@ -493,6 +517,28 @@ NodeGraph NodeGraph::getSubGraph(const cur_id_type& id) const
         new_graph.idSort();
     }
     return new_graph;
+}
+
+cur_id_type NodeGraph::findCoreId() const
+{
+    if(_nodes_.empty())
+    {
+        return -1;
+    }
+    vector<cur_id_type> id_vector;
+    getIDList(id_vector);
+    std::unordered_set<cur_id_type> id_set(id_vector.cbegin(),id_vector.cend());
+    vector<std::unordered_set<cur_id_type>> marchroutes;
+    for(size_t i = 0; i< id_vector.size();i++)
+    {
+        std::unordered_set<cur_id_type> cur_set;
+        BFS_id_search(id_vector.at(i),cur_set);
+        if(id_set == cur_set)
+        {
+            return id_vector.at(i);
+        }
+    }
+    return -1;
 }
 
 bool NodeGraph::setValue(const cur_id_type& id, cur_node_type& value)

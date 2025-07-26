@@ -41,6 +41,7 @@ private:
     nodepointer _core_node_;
     char _flags_;
 
+    void BFS_id_search(const cur_id_type& id, std::unordered_set<cur_id_type>& visited) const;
     bool BFS_revert_conn_search(cur_id_type& id, vector<cur_id_type>& container) const;
     void BFS_Separation(vector<std::unordered_set<cur_id_type>>& segment_list) const;
     int BFS_SegmentSize(const cur_id_type& id);
@@ -78,9 +79,10 @@ public:
 
     cur_node_type getValue(const cur_id_type& id) const;
     void getIDList(vector<cur_id_type>& container) const;
-    bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container);
+    bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const;
     bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container);
     NodeGraph getSubGraph(const cur_id_type& id) const;
+    cur_id_type findCoreId() const;
 
     bool setValue(const cur_id_type& id, cur_node_type& value);
     void fill(const cur_node_type& def_val);
