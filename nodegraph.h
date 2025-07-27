@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <queue>
+#include <string>
 #include <unordered_set>
 #include <algorithm>
 
@@ -49,7 +50,7 @@ private:
     void Object_complete_copy(const NodeGraph& other);
     void DFS_separated_copy(NodeGraph& cur_graph, cur_id_type& id,
                             std::unordered_set<cur_id_type>& visited) const;
-    void Object_separated_copies(vector<NodeGraph>& container);
+    void Object_separated_copies(vector<NodeGraph>& container) const;
 
     void loadSubGraph(NodeGraph& res_graph, std::unordered_set<cur_id_type>& source) const;
     void DFS_fill(const vector<vector<cur_node_type>>& matrix, int node_num);
@@ -82,6 +83,7 @@ public:
     bool getEdgeIDsAt(const cur_id_type& id, vector<cur_id_type>& container) const;
     bool getEdgesListAt(const cur_id_type& id,vector<pair<cur_id_type,int>>& container);
     NodeGraph getSubGraph(const cur_id_type& id) const;
+    vector<NodeGraph> getSubGraphs() const;
     cur_id_type findCoreId() const;
 
     bool setValue(const cur_id_type& id, cur_node_type& value);
@@ -103,7 +105,7 @@ public:
     void setFlags(char flags);
 
 
-
+    std::string graphReport() const;
     friend class NodeIterator;
 };
 

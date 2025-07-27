@@ -121,7 +121,7 @@ void NodeGraph::loadSubGraph(NodeGraph& res_graph, std::unordered_set<cur_id_typ
     return;
 }
 
-void NodeGraph::Object_separated_copies(vector<NodeGraph>& container)
+void NodeGraph::Object_separated_copies(vector<NodeGraph>& container) const
 {
     container.clear();
     if(_nodes_.empty())
@@ -519,6 +519,13 @@ NodeGraph NodeGraph::getSubGraph(const cur_id_type& id) const
     return new_graph;
 }
 
+vector<NodeGraph> NodeGraph::getSubGraphs() const
+{
+    vector<NodeGraph> graphs;
+    Object_separated_copies(graphs);
+    return graphs;
+}
+
 cur_id_type NodeGraph::findCoreId() const
 {
     if(_nodes_.empty())
@@ -637,6 +644,47 @@ void NodeGraph::setFlags(char flags)
     return;
 }
 
+std::string NodeGraph::graphReport() const
+{
+    if(_nodes_.empty())
+    {
+        return "Current graph object is empty";
+    }
+    std::string answer("Node-based graph report.\n");
+    if(!_core_node_.expired())
+    {
+        answer.append("Current core node id:["+
+                      std::to_string(_core_node_.lock()->_id_)+"].\n");
+    }
+    for(const shar_r_node& node: _nodes_)
+    {
+        answer.append("Node id ["+
+                      std::to_string(node->_id_)+
+                      "] with value ["+
+                      std::to_string(node->_value_)+
+                      "];\n");
+        if(node->_edges_.size())
+        {
+            answer.append("\tlinks:");
+            for(std::pair<nodepointer,int>& edge:node->_edges_)
+            {
+                answer.append(" ["+std::to_string(node->_id_)+"]-");
+                if(_flags_&Gr_Weighted)
+                {
+                    answer.append("("+std::to_string(edge.second)+")-");
+                }
+                answer.append(">["+std::to_string(edge.first.lock()->_id_)+"],");
+            }
+            answer.pop_back();
+            answer.append(";\n");
+        }
+        else
+        {
+            answer.append("\tno links;\n");
+        }
+    }
+    return answer;
+}
 
 //_____________Node iterator___________________
 
