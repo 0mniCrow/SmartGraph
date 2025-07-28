@@ -1926,6 +1926,50 @@ Snode * cloneGraph_BFS(Snode * original, string&actions)
     return clone_core;
 }
 
+void DFS_cloning(Snode * cur_node, std::unordered_map<Snode*,Snode*>& copied, string& actions)
+{
+    if(!cur_node)
+    {
+        return;
+    }
+    if(copied.find(cur_node)== copied.end())
+    {
+        actions.append("New node with value ["+
+                       std::to_string(cur_node->_value_)+"] "
+                       "has been cloned;\n");
+        Snode* clone = new Snode(cur_node->_value_);
+        copied.insert({cur_node,clone});
+        auto it = cur_node->_connections_.begin();
+        while(it!= cur_node->_connections_.end())
+        {
+            if(!copied.count(*it))
+            {
+                DFS_cloning(*it,copied,actions);
+            }
+            actions.append("The node with value ["+
+                           std::to_string((*it)->_value_)+"] "
+                           "has been added as edged to the node "
+                           "with value ["+std::to_string(
+                               clone->_value_)+
+                           "];\n");
+            clone->_connections_.push_back(copied.at(*it));
+            it++;
+        }
+    }
+    return;
+}
+
+Snode * cloneGraph_DFS(Snode * original, string& actions)
+{
+    if(!original)
+    {
+        return nullptr;
+    }
+    actions.append("Trying to clone graph using DFS;\n");
+    std::unordered_map<Snode*,Snode*> copied;
+    DFS_cloning(original,copied,actions);
+    return copied.at(original);
+}
 
 bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode *, Snode *> &visited)
 {

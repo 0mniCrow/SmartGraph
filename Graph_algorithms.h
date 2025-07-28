@@ -219,6 +219,9 @@ struct ListNode
 using Snode = ListNode<cur_type>;
 
 Snode * cloneGraph_BFS(Snode * original, string&actions);
+void DFS_cloning(Snode * cur_node, std::unordered_map<Snode*,Snode*>& copied, string& actions);
+Snode * cloneGraph_DFS(Snode * original, string& actions);
+
 
 bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode*,Snode*>& visited);
 

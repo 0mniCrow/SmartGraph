@@ -326,95 +326,96 @@ MainWindow::MainWindow(QWidget *parent)
 
 //_________________________________Clone graph_______________________________________________
 
-//    Snode * basic = new Snode(); basic->_value_ = 0;
-//    Snode * child1 = new Snode(); child1->_value_ = 1;
-//    Snode * child2 = new Snode(); child2->_value_ = 2;
-//    Snode * child3 = new Snode(); child3->_value_ = 3;
-//    basic->_connections_ = {child1, child2};
-//    child1->_connections_ = {basic,child2};
-//    child2->_connections_ = {basic, child1, child3};
-//    child3->_connections_ = {child2};
+    Snode * basic = new Snode(); basic->_value_ = 0;
+    Snode * child1 = new Snode(); child1->_value_ = 1;
+    Snode * child2 = new Snode(); child2->_value_ = 2;
+    Snode * child3 = new Snode(); child3->_value_ = 3;
+    basic->_connections_ = {child1, child2};
+    child1->_connections_ = {basic,child2};
+    child2->_connections_ = {basic, child1, child3};
+    child3->_connections_ = {child2};
 
-//    Snode * compact = new Snode(); compact->_value_ = 0;
-//    Snode * compact1 = new Snode(); compact1->_value_ = 1;
-//    Snode * compact2 = new Snode(); compact2->_value_ = 2;
-//    compact->_connections_ = {compact1, compact2};
-//    compact1->_connections_ = {compact};
-//    compact2->_connections_ = {compact};
+    Snode * compact = new Snode(); compact->_value_ = 0;
+    Snode * compact1 = new Snode(); compact1->_value_ = 1;
+    Snode * compact2 = new Snode(); compact2->_value_ = 2;
+    compact->_connections_ = {compact1, compact2};
+    compact1->_connections_ = {compact};
+    compact2->_connections_ = {compact};
 
-//    Snode * clone = nullptr;
-//    string actions;
+    Snode * clone = nullptr;
+    string actions;
+    clone = cloneGraph_DFS(basic,actions);
 //    clone = cloneGraph_BFS(basic,actions);
-//    std::unordered_map<Snode*,Snode*> visited;
-//    ui->textEdit->append(QString(actions.c_str()));
-//    ui->textEdit->append("Is \"basic\" graph equial to \"clone\" graph? :"
-//                         +QString(compareSnodeGraphs(basic,clone,visited)?"True":"False"));
-//    ui->textEdit->append("Is \"compact\" graph equial to \"clone\" graph? :"
-//                         +QString(compareSnodeGraphs(compact,clone,visited)?"True":"False"));
+    std::unordered_map<Snode*,Snode*> visited;
+    ui->textEdit->append(QString(actions.c_str()));
+    ui->textEdit->append("Is \"basic\" graph equial to \"clone\" graph? :"
+                         +QString(compareSnodeGraphs(basic,clone,visited)?"True":"False"));
+    ui->textEdit->append("Is \"compact\" graph equial to \"clone\" graph? :"
+                         +QString(compareSnodeGraphs(compact,clone,visited)?"True":"False"));
 
-//    delete basic; delete child1; delete child2; delete child3;
-//    delete compact; delete compact1; delete compact2;
+    delete basic; delete child1; delete child2; delete child3;
+    delete compact; delete compact1; delete compact2;
 
 
 //_______________________________Node-based custom graph test_____________________________________
 
-    NodeGraph graph(NodeGraph::Gr_Directed|NodeGraph::Gr_SortingById);
-    graph.addVertex(0,4);
-    graph.addVertex(1,3);
-    graph.addVertex(2,7);
-    graph.addVertex(3,5);
-    graph.addVertex(4,8);
-    graph.addVertex(5,9);
-    graph.addVertex(6,13);
-    graph.addVertex(7,11);
-    graph.addVertex(9,6);
+//    NodeGraph graph(NodeGraph::Gr_Directed|NodeGraph::Gr_SortingById);
+//    graph.addVertex(0,4);
+//    graph.addVertex(1,3);
+//    graph.addVertex(2,7);
+//    graph.addVertex(3,5);
+//    graph.addVertex(4,8);
+//    graph.addVertex(5,9);
+//    graph.addVertex(6,13);
+//    graph.addVertex(7,11);
+//    graph.addVertex(9,6);
 
-    graph.addEdge(0,1);
-    graph.addEdge(0,3);
-    graph.addEdge(1,2);
-    graph.addEdge(1,4);
-    graph.addEdge(2,4);
-    graph.addEdge(3,5);
-    graph.addEdge(5,6);
-    graph.addEdge(5,9);
-    graph.addEdge(6,7);
-    graph.addEdge(7,9);
-    graph.addEdge(9,0);
+//    graph.addEdge(0,1);
+//    graph.addEdge(0,3);
+//    graph.addEdge(1,2);
+//    graph.addEdge(1,4);
+//    graph.addEdge(2,4);
+//    graph.addEdge(3,5);
+//    graph.addEdge(5,6);
+//    graph.addEdge(5,9);
+//    graph.addEdge(6,7);
+//    graph.addEdge(7,9);
+//    graph.addEdge(9,0);
 
-    graph.setCoreVertex(0);
-    NodeIterator main_iter(graph);
-    ui->textEdit->append("Current segment count: " + QString::number(graph.segmentCount()));
-    ui->textEdit->append(QString("Main iterator is ")+(main_iter.isValid()?"Valid":"Invalid"));
-    ui->textEdit->append(QString(graph.graphReport().c_str()));
-    cur_id_type new_id = graph.findFreeID();
-    ui->textEdit->append("New element id:"+QString::number(new_id));
-    graph.addVertex(new_id,0);
-    graph.removeEdge(7,9);
-    graph.addEdge(7,new_id);
-    graph.addEdge(new_id,9);
-    ui->textEdit->append(QString(graph.graphReport().c_str()));
-    graph.removeVertex(0);
-    ui->textEdit->append(QString("Main iterator is ")+(main_iter.isValid()?"Valid":"Invalid"));
-    ui->textEdit->append("Current segment count: " + QString::number(graph.segmentCount()));
-    ui->textEdit->append(QString(graph.graphReport().c_str()));
-    vector<NodeGraph> graphs(graph.getSubGraphs());
-    graph.clear();
-    ui->textEdit->append(QString(graph.graphReport().c_str()));
-    for(size_t i = 0; i < graphs.size();i++)
-    {
+//    graph.setCoreVertex(0);
+//    NodeIterator main_iter(graph);
+//    ui->textEdit->append("Current segment count: " + QString::number(graph.segmentCount()));
+//    ui->textEdit->append(QString("Main iterator is ")+(main_iter.isValid()?"Valid":"Invalid"));
+//    ui->textEdit->append(QString(graph.graphReport().c_str()));
+//    cur_id_type new_id = graph.findFreeID();
+//    ui->textEdit->append("New element id:"+QString::number(new_id));
+//    graph.addVertex(new_id,0);
+//    graph.removeEdge(7,9);
+//    graph.addEdge(7,new_id);
+//    graph.addEdge(new_id,9);
+//    ui->textEdit->append(QString(graph.graphReport().c_str()));
+//    graph.removeVertex(0);
+//    ui->textEdit->append(QString("Main iterator is ")+(main_iter.isValid()?"Valid":"Invalid"));
+//    ui->textEdit->append("Current segment count: " + QString::number(graph.segmentCount()));
+//    ui->textEdit->append(QString(graph.graphReport().c_str()));
+//    vector<NodeGraph> graphs(graph.getSubGraphs());
+//    graph.clear();
+//    ui->textEdit->append(QString(graph.graphReport().c_str()));
+//    for(size_t i = 0; i < graphs.size();i++)
+//    {
 
-        ui->textEdit->append("Current subgraph N:"+QString::number(i+1)+
-                             ", subgraphs count: "+
-                             QString::number(graphs.at(i).segmentCount()));
-        cur_id_type new_core_id = graphs.at(i).findCoreId();
-        ui->textEdit->append("New core id for subgraph: "+QString::number(new_core_id));
-        if(new_core_id>=0)
-        {
-            graphs.at(i).setCoreVertex(new_core_id);
-        }
-        ui->textEdit->append(QString(graphs.at(i).graphReport().c_str()));
+//        ui->textEdit->append("Current subgraph N:"+QString::number(i+1)+
+//                             ", subgraphs count: "+
+//                             QString::number(graphs.at(i).segmentCount()));
+//        cur_id_type new_core_id = graphs.at(i).findCoreId();
+//        ui->textEdit->append("New core id for subgraph: "+QString::number(new_core_id));
+//        if(new_core_id>=0)
+//        {
+//            graphs.at(i).setCoreVertex(new_core_id);
+//        }
+//        ui->textEdit->append(QString(graphs.at(i).graphReport().c_str()));
 
-    }
+//    }
 }
 void MainWindow::setProgressBar(int val, int max)
 {
