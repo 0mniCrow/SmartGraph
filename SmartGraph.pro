@@ -19,6 +19,7 @@ SOURCES += \
 
 HEADERS += \
     Graph_algorithms.h \
+    Graph_algorithms_supply.h \
     listgraph.h \
     mainwindow.h \
     matrixmodel.h \

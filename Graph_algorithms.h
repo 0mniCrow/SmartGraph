@@ -16,6 +16,8 @@
 #include "vectorgraph.h"
 #include "nodegraph.h"
 
+#include "Graph_algorithms_supply.h"
+
 
 struct PlayAction;
 
@@ -41,127 +43,6 @@ int orangesRotting_BFS(std::vector<std::vector<int>>& matrix,
                        long long& time, std::string& actions,
                        std::vector<PlayAction>& vec_actions);
 
-struct LandNode
-{
-    int _land_type_;
-    bool _visited_;
-
-    LandNode()
-    {
-        _land_type_ = 0;
-        _visited_ = false;
-    }
-};
-
-struct Atl_Pac_Node
-{
-    int _value_;
-    vector<bool> _visited_;
-    Atl_Pac_Node()
-    {
-       _value_=0;
-    }
-};
-
-template <typename T> class Vector2D
-{
-private:
-    std::vector<std::vector<T>> _data_;
-public:
-    Vector2D()
-    {
-        return;
-    }
-    Vector2D(unsigned int r, unsigned int c, const T& val = T()):_data_(r,std::vector<T>(c,val))
-    {
-        return;
-    }
-    int rowCount() const
-    {
-        return static_cast<int>(_data_.size());
-    }
-    int colCount()const
-    {
-        if(rowCount())
-        {
-            return static_cast<int>(_data_.at(0).size());
-        }
-        return 0;
-    }
-    void resize(unsigned int r, unsigned int c)
-    {
-        _data_.resize(r);
-        for(std::vector<T>& row:_data_)
-        {
-            row.resize(c);
-        }
-        return;
-    }
-    void clear()
-    {
-        _data_.clear();
-        return;
-    }
-    T& operator()(int i, int j)
-    {
-        return _data_.at(i).at(j);
-    }
-    const std::vector<T>& operator[](int r)
-    {
-        return _data_.at(r);
-    }
-    void fill(const T& value)
-    {
-        for(auto row:_data_)
-            for(T& cell:row)
-                cell = value;
-    }
-    void fill(const std::vector<std::vector<T>>& data)
-    {
-        int data_size = static_cast<int>(data.size());
-        int loc_data_size = static_cast<int>(_data_.size());
-        if(data_size!=loc_data_size)
-        {
-            _data_.resize(data_size);
-            for(int i = 0; i<data_size;i++)
-            {
-                if(_data_.at(i).size()!=data.at(i).size())
-                {
-                    _data_.at(i).resize(data.at(i).size());
-                }
-            }
-        }
-        for(int i = 0; i<data_size;i++)
-        {
-            int col_size = static_cast<int>(data.at(i).size());
-            for(int j = 0; j<col_size;j++)
-            {
-                _data_.at(i).at(j) = data.at(i).at(j);
-            }
-        }
-        return;
-    }
-    bool find(const T& val, int& row, int& col)
-    {
-        int r_size = static_cast<int>(_data_.size());
-        if(r_size)
-        {
-            int c_size = static_cast<int>(_data_.at(0).size());
-            if(c_size)
-            {
-                for(int i = 0; i<r_size;i++)
-                    for(int j = 0; j<c_size;j++)
-                        if(_data_.at(i).at(j)==val)
-                        {
-                            row = i;
-                            col = j;
-                            return true;
-                        }
-            }
-        }
-        return false;
-    }
-};
 
 void addAction(int active_row, int active_col,
                std::vector<PlayAction>& actions,
@@ -222,7 +103,8 @@ Snode * cloneGraph_BFS(Snode * original, string&actions);
 void DFS_cloning(Snode * cur_node, std::unordered_map<Snode*,Snode*>& copied, string& actions);
 Snode * cloneGraph_DFS(Snode * original, string& actions);
 
-
 bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode*,Snode*>& visited);
+
+
 
 #endif // GRAPH_ALGORITHMS_H

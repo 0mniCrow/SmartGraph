@@ -326,35 +326,35 @@ MainWindow::MainWindow(QWidget *parent)
 
 //_________________________________Clone graph_______________________________________________
 
-    Snode * basic = new Snode(); basic->_value_ = 0;
-    Snode * child1 = new Snode(); child1->_value_ = 1;
-    Snode * child2 = new Snode(); child2->_value_ = 2;
-    Snode * child3 = new Snode(); child3->_value_ = 3;
-    basic->_connections_ = {child1, child2};
-    child1->_connections_ = {basic,child2};
-    child2->_connections_ = {basic, child1, child3};
-    child3->_connections_ = {child2};
+//    Snode * basic = new Snode(); basic->_value_ = 0;
+//    Snode * child1 = new Snode(); child1->_value_ = 1;
+//    Snode * child2 = new Snode(); child2->_value_ = 2;
+//    Snode * child3 = new Snode(); child3->_value_ = 3;
+//    basic->_connections_ = {child1, child2};
+//    child1->_connections_ = {basic,child2};
+//    child2->_connections_ = {basic, child1, child3};
+//    child3->_connections_ = {child2};
 
-    Snode * compact = new Snode(); compact->_value_ = 0;
-    Snode * compact1 = new Snode(); compact1->_value_ = 1;
-    Snode * compact2 = new Snode(); compact2->_value_ = 2;
-    compact->_connections_ = {compact1, compact2};
-    compact1->_connections_ = {compact};
-    compact2->_connections_ = {compact};
+//    Snode * compact = new Snode(); compact->_value_ = 0;
+//    Snode * compact1 = new Snode(); compact1->_value_ = 1;
+//    Snode * compact2 = new Snode(); compact2->_value_ = 2;
+//    compact->_connections_ = {compact1, compact2};
+//    compact1->_connections_ = {compact};
+//    compact2->_connections_ = {compact};
 
-    Snode * clone = nullptr;
-    string actions;
-    clone = cloneGraph_DFS(basic,actions);
-//    clone = cloneGraph_BFS(basic,actions);
-    std::unordered_map<Snode*,Snode*> visited;
-    ui->textEdit->append(QString(actions.c_str()));
-    ui->textEdit->append("Is \"basic\" graph equial to \"clone\" graph? :"
-                         +QString(compareSnodeGraphs(basic,clone,visited)?"True":"False"));
-    ui->textEdit->append("Is \"compact\" graph equial to \"clone\" graph? :"
-                         +QString(compareSnodeGraphs(compact,clone,visited)?"True":"False"));
+//    Snode * clone = nullptr;
+//    string actions;
+//    clone = cloneGraph_DFS(basic,actions);
+////    clone = cloneGraph_BFS(basic,actions);
+//    std::unordered_map<Snode*,Snode*> visited;
+//    ui->textEdit->append(QString(actions.c_str()));
+//    ui->textEdit->append("Is \"basic\" graph equial to \"clone\" graph? :"
+//                         +QString(compareSnodeGraphs(basic,clone,visited)?"True":"False"));
+//    ui->textEdit->append("Is \"compact\" graph equial to \"clone\" graph? :"
+//                         +QString(compareSnodeGraphs(compact,clone,visited)?"True":"False"));
 
-    delete basic; delete child1; delete child2; delete child3;
-    delete compact; delete compact1; delete compact2;
+//    delete basic; delete child1; delete child2; delete child3;
+//    delete compact; delete compact1; delete compact2;
 
 
 //_______________________________Node-based custom graph test_____________________________________
@@ -416,6 +416,20 @@ MainWindow::MainWindow(QWidget *parent)
 //        ui->textEdit->append(QString(graphs.at(i).graphReport().c_str()));
 
 //    }
+
+//______________________________________transitive graph closure_________________________________
+
+    TCGraph gr(4);
+    gr.addEdge(0,1);
+    gr.addEdge(0,2);
+    gr.addEdge(1,2);
+    gr.addEdge(2,0);
+    gr.addEdge(2,3);
+    //gr.addEdge(3,3);
+    string actions;
+    gr.transitiveClosure(actions);
+    ui->textEdit->append(QString(actions.c_str()));
+
 }
 void MainWindow::setProgressBar(int val, int max)
 {
