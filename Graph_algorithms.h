@@ -105,6 +105,6 @@ Snode * cloneGraph_DFS(Snode * original, string& actions);
 
 bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<Snode*,Snode*>& visited);
 
-
+bool hasCycles_DFS(ListGraph& graph, string& actions);
 
 #endif // GRAPH_ALGORITHMS_H

@@ -419,17 +419,34 @@ MainWindow::MainWindow(QWidget *parent)
 
 //______________________________________transitive graph closure_________________________________
 
-    TCGraph gr(4);
-    gr.addEdge(0,1);
-    gr.addEdge(0,2);
-    gr.addEdge(1,2);
-    gr.addEdge(2,0);
-    gr.addEdge(2,3);
-    //gr.addEdge(3,3);
-    string actions;
-    gr.transitiveClosure(actions);
-    ui->textEdit->append(QString(actions.c_str()));
+//    TCGraph gr(4);
+//    gr.addEdge(0,1);
+//    gr.addEdge(0,2);
+//    gr.addEdge(1,2);
+//    gr.addEdge(2,0);
+//    gr.addEdge(2,3);
+//    //gr.addEdge(3,3);
+//    string actions;
+//    gr.transitiveClosure(actions);
+//    ui->textEdit->append(QString(actions.c_str()));
 
+//______________________________________searching for cycles______________________________________
+
+    ListGraph list_graph(ListGraph::Gr_Directed);
+    list_graph.addVertex();     //0
+    list_graph.addVertex();     //1
+    list_graph.addVertex();     //2
+    list_graph.addVertex();     //3
+
+    list_graph.addEdge(0,1);
+    list_graph.addEdge(0,2);
+    list_graph.addEdge(1,2);
+    list_graph.addEdge(2,0);
+    list_graph.addEdge(2,3);
+    string actions;
+    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+    ui->textEdit->append("Current graph "+QString(hasCycles_DFS(list_graph,actions)?"has a cycle;":"has no cycles"));
+    ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
 {

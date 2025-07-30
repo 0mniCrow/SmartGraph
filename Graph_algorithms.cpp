@@ -2013,3 +2013,73 @@ bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<
     }
     return true;
 }
+
+
+//_______________________________Find cycles________________________________________________
+
+namespace CyclSearch
+{
+    bool CycleSearch_DFS(ListGraph& graph, int cur_id, vector<pair<bool,bool>>& track_control,string& actions)
+    {
+        actions.append("Current vertex id ["+std::to_string(cur_id)+"];\n");
+        if(track_control.at(cur_id).second)
+        {
+            actions.append("Cycle is found;\n");
+            return true;
+        }
+        else if(track_control.at(cur_id).first)
+        {
+            actions.append("Vertex was previously visited without folowing cycling;\n");
+            return false;
+        }
+        track_control.at(cur_id).first = track_control.at(cur_id).second = true;
+        vector<int> linked_vertices(graph.getEdges(cur_id));
+        actions.append("Current vertex has");
+        if(linked_vertices.size())
+        {
+            actions.append("edges with vertices: ");
+            for(int i: linked_vertices)
+            {
+                actions.append(std::to_string(i)+", ");
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+        }
+        for(int linked_vertex: linked_vertices)
+        {
+            if(CycleSearch_DFS(graph,linked_vertex,track_control,actions))
+            {
+                return true;
+            }
+            actions.append("Back to vertex ["+std::to_string(cur_id)+"];\n");
+        }
+        return track_control.at(cur_id).second = false;
+    }
+
+}
+
+bool hasCycles_DFS(ListGraph& graph, string& actions)
+{
+    actions.clear();
+    actions.append("Searching for cycles in a list-based graph with DFS-based method;\n");
+    if(!graph.size())
+    {
+        actions.append("Graph is empty;\n");
+        return false;
+    }
+    vector<pair<bool,bool>> control_tracker(graph.size(),std::make_pair(false,false));
+    for(int vertex = 0; vertex<graph.size();vertex++)
+    {
+        if(control_tracker.at(vertex).first)
+        {
+            actions.append("Vertex ["+std::to_string(vertex)+"] has been visited;\n");
+        }
+        else if(CyclSearch::CycleSearch_DFS(graph,vertex,control_tracker,actions))
+        {
+            return true;
+        }
+    }
+    actions.append("Graph doesn't have cycles;\n");
+    return false;
+}

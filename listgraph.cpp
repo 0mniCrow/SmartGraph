@@ -7,9 +7,10 @@ using CurVertex = ListVertex<cur_type>;                             //IntVertex;
 using CurVertexIter = std::map<int,ListVertex<cur_type>>::iterator; //IntVertIter;
 using CurVertexCIter = std::map<int,ListVertex<cur_type>>::const_iterator;
 
-ListGraph::ListGraph():_flags_(Gr_Unweighted_Undirected)
+ListGraph::ListGraph(GraphParams params):_flags_(params)
 {
-
+    _flags_ = params;
+    return;
 }
 
 ListGraph::ListGraph(int size, char params):_flags_(params)
@@ -125,14 +126,21 @@ int ListGraph::addVertex(int vert_id, cur_type val)
 //            return a.first<b.first;
 //        });
 //        vert_id = max_index->first+1;
-        for(CurVertexIter it = _list_graph_.begin(); it!=_list_graph_.end();it++)
+        if(_list_graph_.empty())
         {
-            CurVertexIter next = it;
-            next++;
-            if((next==_list_graph_.end())||(next->first!=(it->first+1)))
+            vert_id = 0;
+        }
+        else
+        {
+            for(CurVertexIter it = _list_graph_.begin(); it!=_list_graph_.end();it++)
             {
-                vert_id = it->first+1;
-                break;
+                CurVertexIter next = it;
+                next++;
+                if((next==_list_graph_.end())||(next->first!=(it->first+1)))
+                {
+                    vert_id = it->first+1;
+                    break;
+                }
             }
         }
     }
