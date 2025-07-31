@@ -24,8 +24,8 @@ public:
 public slots:
     void setProgressBar(int val, int max);
 private:
-    VectorGraph graph;
-    ListGraph l_graph;
+//    VectorGraph graph;
+//    ListGraph l_graph;
     MatrixModel * model;
     Ui::MainWindow *ui;
 };

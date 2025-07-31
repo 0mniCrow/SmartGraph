@@ -3,12 +3,13 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),graph(4),l_graph(3)
+    : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 //___________________________________Matrix graph__________________________
 
+//    graph(4),l_graph(3);
 //    graph.addEdge(0,1);
 //    graph.addEdge(0,2);
 //    graph.addEdge(1,3);
@@ -432,20 +433,47 @@ MainWindow::MainWindow(QWidget *parent)
 
 //______________________________________searching for cycles______________________________________
 
-    ListGraph list_graph(ListGraph::Gr_Directed);
-    list_graph.addVertex();     //0
-    list_graph.addVertex();     //1
-    list_graph.addVertex();     //2
-    list_graph.addVertex();     //3
+//    ListGraph list_graph(ListGraph::Gr_Directed);
+//    list_graph.addVertex();     //0
+//    list_graph.addVertex();     //1
+//    list_graph.addVertex();     //2
+//    list_graph.addVertex();     //3
 
-    list_graph.addEdge(0,1);
-    list_graph.addEdge(0,2);
-    list_graph.addEdge(1,2);
-    list_graph.addEdge(2,0);
-    list_graph.addEdge(2,3);
+//    list_graph.addEdge(0,1);
+//    list_graph.addEdge(0,2);
+//    list_graph.addEdge(1,2);
+//    list_graph.addEdge(2,0);
+//    list_graph.addEdge(2,3);
+//    string actions;
+//    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycles_DFS(list_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_BFS_Kahn_alg(list_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+
+    ListGraph NC_l_graph(ListGraph::Gr_Directed);
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+    NC_l_graph.addVertex();
+
+    NC_l_graph.addEdge(0,1);
+    NC_l_graph.addEdge(0,2);
+    NC_l_graph.addEdge(1,2);
+    NC_l_graph.addEdge(2,3);
+    NC_l_graph.addEdge(3,4);
+    NC_l_graph.addEdge(3,5);
+    NC_l_graph.addEdge(4,5);
+    NC_l_graph.addEdge(5,3);
+    NC_l_graph.addEdge(6,2);
     string actions;
-    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
-    ui->textEdit->append("Current graph "+QString(hasCycles_DFS(list_graph,actions)?"has a cycle;":"has no cycles"));
+    ui->textEdit->append(QString(NC_l_graph.getAdjacencyList().c_str()));
+    //ui->textEdit->append("Current graph "+QString(hasCycles_DFS(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
+    ui->textEdit->append("Current graph "+QString(hasCycle_BFS_Kahn_alg(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
     ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)

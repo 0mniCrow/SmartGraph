@@ -2046,6 +2046,10 @@ namespace CyclSearch
             actions.pop_back();
             actions.append(";\n");
         }
+        else
+        {
+            actions.append(" no edges;\n");
+        }
         for(int linked_vertex: linked_vertices)
         {
             if(CycleSearch_DFS(graph,linked_vertex,track_control,actions))
@@ -2081,5 +2085,89 @@ bool hasCycles_DFS(ListGraph& graph, string& actions)
         }
     }
     actions.append("Graph doesn't have cycles;\n");
+    return false;
+}
+
+
+bool hasCycle_BFS_Kahn_alg(ListGraph& graph, string& actions)
+{
+    actions.append("Searching for cycles in a list-based graph with Khan's BFS-based alhorythm;\n");
+    if(!graph.size())
+    {
+        actions.append("Graph is empty;\n");
+        return false;
+    }
+    vector<int> income_count(graph.size(),0);
+    std::queue<int> BFS_queue;
+
+    for(int i = 0; i<graph.size();i++)
+    {
+        vector<int> edges(graph.getEdges(i));
+        for(int edge: edges)
+        {
+            actions.append("Vertex ["+std::to_string(i)+
+                           "] has an edge with vertex["
+                           +std::to_string(edge)+"];\n");
+            income_count.at(edge)++;
+            actions.append("Vertex ["+std::to_string(edge)+"] has ["+
+                           std::to_string(income_count.at(edge))+
+                           "] incomes;\n");
+        }
+    }
+    for(size_t i = 0; i < income_count.size();i++)
+    {
+        if(!income_count.at(i))
+        {
+            actions.append("Vertex ["+std::to_string(i)+"] has zero input-degree, hense it is starting vertex;\n");
+            BFS_queue.push(static_cast<int>(i));
+        }
+    }
+    if(BFS_queue.empty())
+    {
+        actions.append("Graph has no zero-input-degree vertices, hense it has a circle;\n");
+        return true;
+    }
+    int visited = 0;
+    int last_visited =0;
+    while(!BFS_queue.empty())
+    {
+        int cur_vertex = BFS_queue.front();
+        BFS_queue.pop();
+        actions.append("Current vertex id ["+std::to_string(cur_vertex)+"];\n");
+        visited++;
+        vector<int> edges(graph.getEdges(cur_vertex));
+        if(edges.size())
+        {
+            actions.append("Current vertex has edges with vertices: ");
+            for(int edge:edges)
+            {
+                actions.append(std::to_string(edge)+", ");
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+        }
+        for(int edge:edges)
+        {
+            income_count.at(edge)--;
+            actions.append("Vertex ["+std::to_string(edge)+"] reduced input-degree to ["+
+                           std::to_string(income_count.at(edge))+
+                           "];\n");
+            if(!income_count.at(edge))
+            {
+                actions.append("Vertex ["+std::to_string(edge)+"] goes into queue;\n");
+                BFS_queue.push(edge);
+            }
+            last_visited = edge;
+        }
+    }
+    if(graph.size()!=visited)
+    {
+        actions.append("Algorithm couldn't continue at vertex ["+
+                       std::to_string(last_visited)+
+                       "] - there is a cycle link;\n");
+        return true;
+    }
+    actions.append("Algorithm didn't find a cycle");
     return false;
 }

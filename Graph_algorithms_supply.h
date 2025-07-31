@@ -130,6 +130,16 @@ public:
     }
 };
 
+template<typename T>
+struct ListNode
+{
+    T _value_;
+    std::list<ListNode*> _connections_;
+    ListNode():_value_(T()){}
+    ListNode(const T& t):_value_(t){}
+};
+
+
 class TCGraph
 {
     int size;
