@@ -452,28 +452,82 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append(QString(actions.c_str()));
 
 
-    ListGraph NC_l_graph(ListGraph::Gr_Directed);
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
-    NC_l_graph.addVertex();
+//    ListGraph NC_l_graph(ListGraph::Gr_Directed);
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
+//    NC_l_graph.addVertex();
 
-    NC_l_graph.addEdge(0,1);
-    NC_l_graph.addEdge(0,2);
-    NC_l_graph.addEdge(1,2);
-    NC_l_graph.addEdge(2,3);
-    NC_l_graph.addEdge(3,4);
-    NC_l_graph.addEdge(3,5);
-    NC_l_graph.addEdge(4,5);
-    NC_l_graph.addEdge(5,3);
-    NC_l_graph.addEdge(6,2);
+//    NC_l_graph.addEdge(0,1);
+//    NC_l_graph.addEdge(0,2);
+//    NC_l_graph.addEdge(1,2);
+//    NC_l_graph.addEdge(2,3);
+//    NC_l_graph.addEdge(3,4);
+//    NC_l_graph.addEdge(3,5);
+//    NC_l_graph.addEdge(4,5);
+//    NC_l_graph.addEdge(5,3);
+//    NC_l_graph.addEdge(6,2);
+//    string actions;
+//    ui->textEdit->append(QString(NC_l_graph.getAdjacencyList().c_str()));
+//    //ui->textEdit->append("Current graph "+QString(hasCycles_DFS(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_BFS_Kahn_alg(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+
+//____________________________________Searching cycles in an undirected graph____________________________________________
+
+//    ListGraph list_graph;
+//    list_graph.addVertex(0);
+//    list_graph.addVertex(4);
+//    list_graph.addVertex(2);
+//    list_graph.addVertex(3);
+//    list_graph.addVertex(1);
+
+//    list_graph.addEdge(0,1);
+//    list_graph.addEdge(0,2);
+//    list_graph.addEdge(0,3);
+//    list_graph.addEdge(1,2);
+//    list_graph.addEdge(3,4);
+
+
+//    ListGraph n_list_graph;
+//    n_list_graph.addVertex();
+//    n_list_graph.addVertex();
+//    n_list_graph.addVertex();
+//    n_list_graph.addVertex();
+
+//    n_list_graph.addEdge(0,1);
+//    n_list_graph.addEdge(1,2);
+//    n_list_graph.addEdge(2,3);
+//    string actions;
+//    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_Undirected_BFS(list_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+//    actions.clear();
+//    ui->textEdit->append(QString(n_list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_Undirected_BFS(n_list_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+
+    ListGraph d_list;
+    d_list.addVertex(0);
+    d_list.addVertex(1);
+    d_list.addVertex(2);
+    d_list.addVertex(3);
+    d_list.addVertex(5);
+
+    d_list.addEdge(0,1);
+    //d_list.addEdge(0,2);
+    d_list.addEdge(0,3);
+    d_list.addEdge(1,2);
+    d_list.addEdge(3,5);
+
     string actions;
-    ui->textEdit->append(QString(NC_l_graph.getAdjacencyList().c_str()));
-    //ui->textEdit->append("Current graph "+QString(hasCycles_DFS(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
-    ui->textEdit->append("Current graph "+QString(hasCycle_BFS_Kahn_alg(NC_l_graph,actions)?"has a cycle;":"has no cycles"));
+    ui->textEdit->append(QString(d_list.getAdjacencyList().c_str()));
+    ui->textEdit->append("Current graph "+QString(hasCycle_Undirected_DFS(d_list,actions)?"has a cycle;":"has no cycles"));
     ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)

@@ -2171,3 +2171,195 @@ bool hasCycle_BFS_Kahn_alg(ListGraph& graph, string& actions)
     actions.append("Algorithm didn't find a cycle");
     return false;
 }
+
+//___________________________________Cycle detection for undirected graphs_____________________________
+
+namespace CyclSearch
+{
+    using pair_id_parent = std::pair<int,int>;
+    bool Cycl_Undir_BFS(ListGraph& graph, int start_id,
+                        std::unordered_set<int>& visited,
+                        string& actions)
+    {
+        std::queue<pair_id_parent> BFS_queue;
+        BFS_queue.push(std::make_pair(start_id,-1));
+        visited.insert(start_id);
+        while(!BFS_queue.empty())
+        {
+            int cur_id = BFS_queue.front().first;
+            int parent_id = BFS_queue.front().second;
+            BFS_queue.pop();
+            actions.append("Current vertex: ["+
+                           std::to_string(cur_id)+
+                           "], parent is "+
+                           (parent_id>=0?"["+std::to_string(parent_id)+"]":"none")+
+                           string(";\n"));
+            auto edges = graph.getEdges(cur_id);
+            if(edges.empty())
+            {
+               actions.append("Current vertex has no edges");
+            }
+            else
+            {
+                actions.append("Current vertex has links to: ");
+                for(int edge:edges)
+                {
+                    actions.append(std::to_string(edge)+", ");
+                }
+                actions.pop_back();
+                actions.pop_back();
+                actions.append(";\n");
+            }
+            for(int edge:edges)
+            {
+                if(!visited.count(edge))
+                {
+                    actions.append("Unvisited vertex id ["+
+                                   std::to_string(edge)+
+                                   "] has been found;\n");
+                    visited.insert(edge);
+                    BFS_queue.push(std::make_pair(edge,cur_id));
+                }
+                else if(edge == parent_id)
+                {
+                    actions.append("Vertex ["+std::to_string(edge)+
+                                   "] is a part of undirected "
+                                   "linkedge with current ["+
+                                   std::to_string(cur_id)+"];\n");
+                }
+                else
+                {
+                    actions.append("Vertex id ["+
+                                   std::to_string(edge)+
+                                   "] had been processed before - a cycle found;\n");
+                    return true;
+                }
+            }
+        }
+        actions.append("No cycles has been found"
+                       "with entering vetex ["+
+                       std::to_string(start_id)+
+                       "];\n");
+        return false;
+    }
+
+    bool Cycl_Undir_DFS(ListGraph& graph, int cur_id,
+                        int parent_id,
+                        std::unordered_set<int>& visited,
+                        string& actions)
+    {
+        actions.append("Current vertex: ["+
+                       std::to_string(cur_id)+
+                       "], parent is "+
+                       (parent_id>=0?"["+std::to_string(parent_id)+"]":"none")+
+                       string(";\n"));
+        visited.insert(cur_id);
+        auto edges = graph.getEdges(cur_id);
+        if(edges.empty())
+        {
+           actions.append("Current vertex has no edges");
+        }
+        else
+        {
+            actions.append("Current vertex has links to: ");
+            for(int edge:edges)
+            {
+                actions.append(std::to_string(edge)+", ");
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+        }
+        for(int edge: edges)
+        {
+            if(!visited.count(edge))
+            {
+                actions.append("Unvisited vertex id ["+
+                               std::to_string(edge)+
+                               "] has been found;\n");
+                if(Cycl_Undir_DFS(graph,edge,cur_id,visited,actions))
+                {
+                    return true;
+                }
+            }
+            else if(edge == parent_id)
+            {
+                actions.append("Vertex ["+std::to_string(edge)+
+                               "] is a part of undirected "
+                               "linkedge with current ["+
+                               std::to_string(cur_id)+"];\n");
+            }
+            else
+            {
+                actions.append("Vertex id ["+
+                               std::to_string(edge)+
+                               "] had been processed before - a cycle found;\n");
+                return true;
+            }
+        }
+        return false;
+    }
+
+}
+
+//пераважны метад для пошука цыклаў
+bool hasCycle_Undirected_BFS(ListGraph& graph, string& actions)
+{
+    actions.append("Searching for cycles in an undirected list-based graph using BFS;\n");
+    if(!graph.size())
+    {
+        actions.append("Graph is empty;\n");
+        return false;
+    }
+    std::unordered_set<int> visited;
+    int size = 0,i = 0;
+    while(size<graph.size())
+    {
+        if(graph.isExists(i))
+        {
+            size++;
+            if(!visited.count(i))
+            {
+                if(CyclSearch::Cycl_Undir_BFS(graph,i,visited,actions))
+                {
+                    return true;
+                }
+            }
+        }
+        i++;
+    }
+    return false;
+}
+
+//Падыходзіць для малых графаў
+bool hasCycle_Undirected_DFS(ListGraph& graph, string& actions)
+{
+    actions.append("Searching for cycles in an undirected list-based graph using DFS;\n");
+    if(!graph.size())
+    {
+        actions.append("Graph is empty;\n");
+        return false;
+    }
+    std::unordered_set<int> visited;
+    int size = 0,i = 0;
+    while(size<graph.size())
+    {
+        if(graph.isExists(i))
+        {
+            size++;
+            if(!visited.count(i))
+            {
+                if(CyclSearch::Cycl_Undir_DFS(graph,i,-1,visited,actions))
+                {
+                    return true;
+                }
+            }
+        }
+        i++;
+    }
+    actions.append("No cycles has been found"
+                   " within current graph;\n");
+    return false;
+}
+
+

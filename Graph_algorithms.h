@@ -100,4 +100,7 @@ bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<
 bool hasCycles_DFS(ListGraph& graph, string& actions);
 bool hasCycle_BFS_Kahn_alg(ListGraph& graph, string& actions);
 
+bool hasCycle_Undirected_BFS(ListGraph& graph, string& actions);
+bool hasCycle_Undirected_DFS(ListGraph& graph, string& actions);
+
 #endif // GRAPH_ALGORITHMS_H
