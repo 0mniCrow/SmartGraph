@@ -38,8 +38,8 @@ private:
     void setEdge(int vert_id_src, int vert_id_dest);
 public:
     enum GraphParams{ Gr_Unweighted_Undirected=0x00, Gr_Directed = 0x01, Gr_Weighted=0x02};
-    ListGraph(GraphParams params = Gr_Unweighted_Undirected);
-    explicit ListGraph(int size, char params=Gr_Unweighted_Undirected);
+    ListGraph(char params = Gr_Unweighted_Undirected);
+    ListGraph(int size, char params);
     ListGraph(int size, cur_type def_val, char params = Gr_Unweighted_Undirected);
     bool addEdge(int vert_id_src, int vert_id_dest, int weight = 1);
     bool setWeight(int  vert_id_src, int vert_id_dest, int weight);
@@ -54,6 +54,7 @@ public:
     std::map<int,int>& getConnControl(int vertex_id);
     int edgesCount(int vertex_id) const;
     int edgeWeightAt(int vertex_id, int edge_id) const;
+    std::vector<int> getIDlist() const;
     void removeVertex(int vertex_id);
     int size() const;
     void clear();

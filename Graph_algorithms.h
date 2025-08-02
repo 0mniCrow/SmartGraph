@@ -103,4 +103,8 @@ bool hasCycle_BFS_Kahn_alg(ListGraph& graph, string& actions);
 bool hasCycle_Undirected_BFS(ListGraph& graph, string& actions);
 bool hasCycle_Undirected_DFS(ListGraph& graph, string& actions);
 
+bool hasCycle_Colour(ListGraph& graph, string& actions);
+
+bool hasNegCycle(ListGraph& graph, int start_id, string& actions);
+
 #endif // GRAPH_ALGORITHMS_H

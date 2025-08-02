@@ -7,7 +7,7 @@ using CurVertex = ListVertex<cur_type>;                             //IntVertex;
 using CurVertexIter = std::map<int,ListVertex<cur_type>>::iterator; //IntVertIter;
 using CurVertexCIter = std::map<int,ListVertex<cur_type>>::const_iterator;
 
-ListGraph::ListGraph(GraphParams params):_flags_(params)
+ListGraph::ListGraph(char params):_flags_(params)
 {
     _flags_ = params;
     return;
@@ -259,6 +259,20 @@ int ListGraph::edgeWeightAt(int vertex_id, int edge_id) const
         return 0;
     }
     return edge->second;
+}
+
+std::vector<int> ListGraph::getIDlist() const
+{
+    std::vector<int> answer(_list_graph_.size());
+    int i = 0;
+    std::map<int,ListVertex<cur_type>>::const_iterator it = _list_graph_.cbegin();
+    while(it!=_list_graph_.cend())
+    {
+        answer.at(i) = it->first;
+        it++;
+        i++;
+    }
+    return answer;
 }
 
 void ListGraph::removeVertex(int vertex_id)

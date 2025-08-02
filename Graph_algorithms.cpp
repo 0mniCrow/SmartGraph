@@ -2300,6 +2300,162 @@ namespace CyclSearch
         return false;
     }
 
+    const int white_colour = 0;
+    const int gray_colour  = 1;
+    const int black_colour = 2;
+    bool Cycl_Colour_DFS(ListGraph& graph, int cur_id, string& actions)
+    {
+        actions.append("Current vertex: ["+
+                       std::to_string(cur_id)+
+                       "];\n");
+        graph.at(cur_id) = gray_colour;
+        auto edges = graph.getEdges(cur_id);
+        if(edges.empty())
+        {
+           actions.append("Current vertex has no edges");
+        }
+        else
+        {
+            actions.append("Current vertex has links to: ");
+            for(int edge:edges)
+            {
+                actions.append(std::to_string(edge)+", ");
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+        }
+        for(int edge:edges)
+        {
+            if(graph.at(edge)==gray_colour)
+            {
+                actions.append("Vertex id ["+
+                               std::to_string(edge)+
+                               "] has \"gray\" colour "
+                               "value - a cycle found;\n");
+                return true;
+            }
+            else if(graph.at(edge)==white_colour)
+            {
+                actions.append("Vertex id ["+
+                               std::to_string(edge)+
+                               "] has \"white\" colour "
+                               "value - proceeding;\n");
+                if(Cycl_Colour_DFS(graph,edge,actions))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                actions.append("Vertex id ["+
+                               std::to_string(edge)+
+                               "] has \"black\" colour "
+                               "value - ignoring;\n");
+            }
+        }
+        actions.append("Current vertex: ["+
+                       std::to_string(cur_id)+
+                       "] was processed, marking value \"black\";\n");
+        graph.at(cur_id) = black_colour;
+        return false;
+    }
+
+
+    bool NegCycle_BellmanFord(ListGraph& graph, int start_id, std::map<int,int>& distance, string& actions)
+    {
+        actions.append("Starting vertex: ["+
+                       std::to_string(start_id)+
+                       "];\n");
+        vector<int> id_s(graph.getIDlist());
+        for(int i = 0; i<static_cast<int>(id_s.size());i++)
+        {
+            distance[i] = INT_MAX;
+        }
+        distance.at(start_id) = 0;
+        for(int i = 0; i<graph.size()-1; i++)
+        {
+            actions.append("\t Relaxing iteration N["+
+                           std::to_string(i+1)+
+                           "];\n");
+            for(int id:id_s)
+            {
+                actions.append("\t\t Cur id["+
+                               std::to_string(id)+
+                               "];\n");
+                if(graph.edgesCount(id))
+                {
+                    const std::map<int,int>& edges = graph.getConnections(id);
+                    auto it = edges.cbegin();
+                    while(it!=edges.cend())
+                    {
+                        actions.append("\t\t Cur edge["+
+                                       std::to_string(it->first)+
+                                       "], weight ["+
+                                       std::to_string(it->second)+
+                                       "];\n");
+                        if(distance.at(id)!=INT_MAX)
+                        {
+                            if(distance.at(id)+it->second<distance.at(it->first))
+                            {
+                                actions.append("\t\t Dist fr ["+
+                                               std::to_string(start_id)+
+                                               "] to ["+
+                                               std::to_string(it->first)+
+                                               "];\n");
+                                actions.append("\t\t Changed from ["+
+                                               (
+                                                   distance.at(it->first) !=INT_MAX?
+                                                    std::to_string(distance.at(it->first)):
+                                                    string("INF"))
+                                               +
+                                               "] to ["+
+                                                std::to_string(distance.at(id)+it->second)+
+                                               "];\n");
+                                distance.at(it->first) = distance.at(id)+it->second;
+
+                            }
+                        }
+                        it++;
+                    }
+                }
+            }
+        }
+        actions.append("Checking for negative-weight cycles;\n");
+        for(int id:id_s)
+        {
+            actions.append("\t\t Cur id["+
+                           std::to_string(id)+
+                           "];\n");
+            if(graph.edgesCount(id))
+            {
+                const std::map<int,int>& edges = graph.getConnections(id);
+                auto it = edges.cbegin();
+                while(it!= edges.cend())
+                {
+                    actions.append("\t\t Cur edge["+
+                                   std::to_string(it->first)+
+                                   "], distance [");
+                    if(distance.at(id)!=INT_MAX)
+                    {
+                        actions.append(std::to_string(distance.at(id))+"];\n");
+                        if(distance.at(id)+it->second<distance.at(it->first))
+                        {
+                            actions.append("Negative weight cycle is found;\n");
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        actions.append("INF];\n");
+                    }
+                    it++;
+                }
+            }
+        }
+        actions.append("Negative-weight cycles didn't found;\n");
+        return false;
+    }
 }
 
 //пераважны метад для пошука цыклаў
@@ -2362,4 +2518,73 @@ bool hasCycle_Undirected_DFS(ListGraph& graph, string& actions)
     return false;
 }
 
+// Выкарыстоўваючы "колер" глыбінны пошук
+bool hasCycle_Colour(ListGraph& graph, string& actions)
+{
+    actions.append("Searching for cycles in an undirected list-based graph using colour + DFS;\n");
+    if(!graph.size())
+    {
+        actions.append("Graph is empty;\n");
+        return false;
+    }
+    //Выкарыстоўваем значэнне нода як прыкмету "колеру"
+    graph.fill(CyclSearch::white_colour);
+    int size = 0,i = 0;
+    while(size<graph.size())
+    {
+        if(graph.isExists(i))
+        {
+            size++;
+            if(graph.at(i)==CyclSearch::white_colour)
+            {
+                if(CyclSearch::Cycl_Colour_DFS(graph,i,actions))
+                {
+                    return true;
+                }
+            }
+        }
+        i++;
+    }
+    actions.append("No cycles has been found"
+                   " within current graph;\n");
+    return false;
+}
 
+
+bool hasNegCycle(ListGraph& graph, int start_id, string& actions)
+{
+    actions.append("Search negative cycles in dir. weigh. list-based graph using Bellman-Ford algorithm;\n");
+    if(!graph.size()||!graph.isExists(start_id))
+    {
+        actions.append("Unappropriate input data;\n");
+        return false;
+    }
+    std::unordered_set<int> visited;
+    std::map<int,int> distances;
+    int size = 0,i = 0;
+    while(size<graph.size())
+    {
+        if(graph.isExists(i))
+        {
+            size++;
+            if(!visited.count(i))
+            {
+                if(CyclSearch::NegCycle_BellmanFord(graph,i,distances,actions))
+                {
+                    return true;
+                }
+                for(int j = 0; j<static_cast<int>(distances.size());j++)
+                {
+                    if(distances.at(j)!= INT_MAX)
+                    {
+                        visited.insert(j);
+                    }
+                }
+            }
+        }
+        i++;
+    }
+    actions.append("No negative cycles has been found"
+                   " within current graph;\n");
+    return false;
+}

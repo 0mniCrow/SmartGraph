@@ -512,22 +512,78 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append(QString(actions.c_str()));
 
 
-    ListGraph d_list;
-    d_list.addVertex(0);
-    d_list.addVertex(1);
-    d_list.addVertex(2);
-    d_list.addVertex(3);
-    d_list.addVertex(5);
+//    ListGraph d_list;
+//    d_list.addVertex(0);
+//    d_list.addVertex(1);
+//    d_list.addVertex(2);
+//    d_list.addVertex(3);
+//    d_list.addVertex(5);
 
-    d_list.addEdge(0,1);
-    //d_list.addEdge(0,2);
-    d_list.addEdge(0,3);
-    d_list.addEdge(1,2);
-    d_list.addEdge(3,5);
+//    d_list.addEdge(0,1);
+//    //d_list.addEdge(0,2);
+//    d_list.addEdge(0,3);
+//    d_list.addEdge(1,2);
+//    d_list.addEdge(3,5);
 
+//    string actions;
+//    ui->textEdit->append(QString(d_list.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_Undirected_DFS(d_list,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+//_______________________________________Detecting cycles using "colour" value +DFS __________________________________________
+
+//    ListGraph list_graph(ListGraph::Gr_Directed);
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+
+//    list_graph.addEdge(0,1);
+//    list_graph.addEdge(0,2);
+//    list_graph.addEdge(1,2);
+//    list_graph.addEdge(2,0);
+//    list_graph.addEdge(2,3);
+
+//    string actions;
+////    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+////    ui->textEdit->append("Current graph "+QString(hasCycle_Colour(list_graph,actions)?"has a cycle;":"has no cycles"));
+////    ui->textEdit->append(QString(actions.c_str()));
+
+//    actions.clear();
+//    ListGraph s_graph(ListGraph::Gr_Directed);
+//    s_graph.addVertex();
+//    s_graph.addVertex();
+//    s_graph.addVertex();
+//    s_graph.addVertex();
+//    s_graph.addVertex();
+
+//    s_graph.addEdge(0,1);
+//    s_graph.addEdge(0,2);
+//    s_graph.addEdge(1,2);
+//    s_graph.addEdge(2,3);
+//    s_graph.addEdge(4,2);
+//    ui->textEdit->append(QString(s_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph "+QString(hasCycle_Colour(s_graph,actions)?"has a cycle;":"has no cycles"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
+
+    list_graph.addEdge(0,1,-1);
+    list_graph.addEdge(0,2,4);
+    list_graph.addEdge(1,2,3);
+    list_graph.addEdge(1,3,2);
+    list_graph.addEdge(1,4,2);
+    list_graph.addEdge(3,2,5);
+    list_graph.addEdge(3,1,1);
+    list_graph.addEdge(4,3,-3);
     string actions;
-    ui->textEdit->append(QString(d_list.getAdjacencyList().c_str()));
-    ui->textEdit->append("Current graph "+QString(hasCycle_Undirected_DFS(d_list,actions)?"has a cycle;":"has no cycles"));
+    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+    ui->textEdit->append("Current graph" + QString(hasNegCycle(list_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
     ui->textEdit->append(QString(actions.c_str()));
 }
 void MainWindow::setProgressBar(int val, int max)
