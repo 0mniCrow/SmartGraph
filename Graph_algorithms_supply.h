@@ -43,6 +43,10 @@ public:
     {
         return;
     }
+    Vector2D(const std::vector<std::vector<T>>& data)
+    {
+        _data_ = data;
+    }
     int rowCount() const
     {
         return static_cast<int>(_data_.size());
@@ -70,6 +74,10 @@ public:
         return;
     }
     T& operator()(int i, int j)
+    {
+        return _data_.at(i).at(j);
+    }
+    T val(int i, int j)
     {
         return _data_.at(i).at(j);
     }

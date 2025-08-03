@@ -11,6 +11,13 @@
 using cur_type = int; //default
 //using cur_type = bool;
 
+struct ListEdge
+{
+    int src;
+    int dest;
+    int wght;
+};
+
 template <typename T>
 struct ListVertex
 {
@@ -50,6 +57,7 @@ public:
     cur_type& operator()(int vertex_id);
     cur_type& at(int vertex_id);
     std::vector<int> getEdges(int vertex_id);
+    std::vector<ListEdge> getEdges() const;
     const std::map<int,int>& getConnections(int vertex_id);
     std::map<int,int>& getConnControl(int vertex_id);
     int edgesCount(int vertex_id) const;

@@ -2361,6 +2361,87 @@ namespace CyclSearch
         return false;
     }
 
+    const int BellFord_inf = 10000000;
+
+    bool NegCycle_BellmanFord(ListGraph& graph, string& actions)
+    {
+        vector distance(graph.size(),0);
+        vector destination(graph.size(),-1);
+        vector<ListEdge> edges = graph.getEdges();
+        int control = 0;
+        for(int i = 0; i< graph.size();i++)
+        {
+            actions.append("\t\tRelaxing iteration N["+
+                           std::to_string(i+1)+
+                           "];\n");
+            control = -1;
+            for(ListEdge& edge:edges)
+            {
+                actions.append("\tCur edge(dist["+
+                               std::to_string(distance.at(edge.src))+
+                               "]): ["+
+                               std::to_string(edge.src)+
+                               "] -("+
+                               std::to_string(edge.wght)+
+                               ")-> ["+
+                               std::to_string(edge.dest)+
+                               "];\n");
+                if(distance.at(edge.src)+edge.wght<distance.at(edge.dest))
+                {
+                    actions.append("\tId ["+
+                                   std::to_string(edge.src)+"]: dist("+
+                                   std::to_string(distance.at(edge.src))+
+                                   ") + weight("+
+                                   std::to_string(edge.wght)+
+                                   ") < (less than) id["+
+                                   std::to_string(edge.dest)+
+                                   "]: dist ("+
+                                   std::to_string(distance.at(edge.dest))+
+                                   ");\n");
+
+                    distance.at(edge.dest) = std::max(-BellFord_inf,distance.at(edge.src)+edge.wght);
+                    destination.at(edge.dest) = edge.src;
+                    control = edge.dest;
+                    actions.append("\tNew dist for id ["+
+                                   std::to_string(edge.dest)+
+                                   "] = ("+
+                                   std::to_string(distance.at(edge.dest))+
+                                   ");\n");
+                }
+            }
+        }
+        if(control == -1)
+        {
+            actions.append("Negative-weight cycles weren't found;\n");
+            return false;
+        }
+        else
+        {
+            for(int i = 0; i<graph.size();i++)
+            {
+                control = destination.at(control);
+            }
+            vector<int> cycle;
+            for(int link = control;;link = destination.at(link))
+            {
+                cycle.push_back(link);
+                if(link == control && cycle.size()>1)
+                {
+                    break;
+                }
+            }
+            std::reverse(cycle.begin(),cycle.end());
+            actions.append("Negative cycle found: ");
+            for(int vert:cycle)
+            {
+                actions.append("["+std::to_string(vert)+"]->");
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+            return true;
+        }
+    }
 
     bool NegCycle_BellmanFord(ListGraph& graph, int start_id, std::map<int,int>& distance, string& actions)
     {
@@ -2559,32 +2640,100 @@ bool hasNegCycle(ListGraph& graph, int start_id, string& actions)
         actions.append("Unappropriate input data;\n");
         return false;
     }
-    std::unordered_set<int> visited;
-    std::map<int,int> distances;
-    int size = 0,i = 0;
-    while(size<graph.size())
+//    std::unordered_set<int> visited;
+//    std::map<int,int> distances;
+//    int size = 0,i = 0;
+//    while(size<graph.size())
+//    {
+//        if(graph.isExists(i))
+//        {
+//            size++;
+//            if(!visited.count(i))
+//            {
+//                if(CyclSearch::NegCycle_BellmanFord(graph,i,distances,actions))
+//                {
+//                    return true;
+//                }
+//                for(int j = 0; j<static_cast<int>(distances.size());j++)
+//                {
+//                    if(distances.at(j)!= INT_MAX)
+//                    {
+//                        visited.insert(j);
+//                    }
+//                }
+//            }
+//        }
+//        i++;
+//    }
+//    actions.append("No negative cycles has been found"
+//                   " within current graph;\n");
+
+
+    return CyclSearch::NegCycle_BellmanFord(graph,actions);
+}
+
+
+namespace CyclSearch
+{
+    void n_sizeCycleSearch_DFS(Vector2D<bool>& graph,
+                               int size, int& count,
+                               int start_id, int cur_id,
+                               std::unordered_set<int>& visited,
+                               string& actions)
     {
-        if(graph.isExists(i))
+        visited.insert(cur_id);
+        actions.append("Cur id ["+std::to_string(cur_id)+
+                       "], start id["+std::to_string(start_id)+
+                       "], steps left ["+std::to_string(size)+"];\n");
+        if(!size)
         {
-            size++;
+            visited.erase(cur_id);
+            if(graph.val(start_id,cur_id) && graph.val(cur_id,start_id))
+            {
+                actions.append("Cur_id == start_id with zero steps left - cycle found;\n");
+                count++;
+                return;
+            }
+            else
+            {
+                actions.append("Cur_id != start_id on the last step - cycle isn't found;\n");
+                return;
+            }
+        }
+        for( int i = 0 ;i< graph.rowCount();i++)
+        {
             if(!visited.count(i))
             {
-                if(CyclSearch::NegCycle_BellmanFord(graph,i,distances,actions))
+                if(graph.val(cur_id,i))
                 {
-                    return true;
-                }
-                for(int j = 0; j<static_cast<int>(distances.size());j++)
-                {
-                    if(distances.at(j)!= INT_MAX)
-                    {
-                        visited.insert(j);
-                    }
+                    actions.append("Edge to vertex["+
+                                   std::to_string(i)+"];\n");
+                    n_sizeCycleSearch_DFS(graph, size-1, count, start_id, i,visited,actions);
+                    actions.append("Back to vertex["+
+                                   std::to_string(cur_id)+"];\n");
                 }
             }
         }
-        i++;
+        visited.erase(cur_id);
+        return;
     }
-    actions.append("No negative cycles has been found"
-                   " within current graph;\n");
-    return false;
+}
+
+int n_sizeCyclesSearch(Vector2D<bool> &graph, int size, string& actions)
+{
+    actions.append("DFS Search for simple cycles with size["+
+                   std::to_string(size)+"] in matrix-based graph;\n");
+    if(!graph.rowCount())
+    {
+        actions.append("Graph is empty;\n");
+        return 0;
+    }
+    std::unordered_set<int> visited;
+    int count = 0;
+    for(int i = 0; i < graph.rowCount()-(size-1);i++)
+    {
+        CyclSearch::n_sizeCycleSearch_DFS(graph,size-1,count,i,i,visited,actions);
+        visited.insert(i);
+    }
+    return count/2;
 }

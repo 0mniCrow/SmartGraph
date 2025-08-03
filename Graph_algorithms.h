@@ -107,4 +107,6 @@ bool hasCycle_Colour(ListGraph& graph, string& actions);
 
 bool hasNegCycle(ListGraph& graph, int start_id, string& actions);
 
+int n_sizeCyclesSearch(Vector2D<bool> &graph, int size, string& actions);
+
 #endif // GRAPH_ALGORITHMS_H

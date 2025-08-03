@@ -566,25 +566,63 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append("Current graph "+QString(hasCycle_Colour(s_graph,actions)?"has a cycle;":"has no cycles"));
 //    ui->textEdit->append(QString(actions.c_str()));
 
-    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
+//_____________________________________Finding negative cycles________________________________________________________
 
-    list_graph.addEdge(0,1,-1);
-    list_graph.addEdge(0,2,4);
-    list_graph.addEdge(1,2,3);
-    list_graph.addEdge(1,3,2);
-    list_graph.addEdge(1,4,2);
-    list_graph.addEdge(3,2,5);
-    list_graph.addEdge(3,1,1);
-    list_graph.addEdge(4,3,-3);
+//    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+
+//    list_graph.addEdge(0,1,-1);
+//    list_graph.addEdge(0,2,4);
+//    list_graph.addEdge(1,2,3);
+//    list_graph.addEdge(1,3,2);
+//    list_graph.addEdge(1,4,2);
+//    list_graph.addEdge(3,2,5);
+//    list_graph.addEdge(3,1,1);
+//    list_graph.addEdge(4,3,-3);
+//    string actions;
+//    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph" + QString(hasNegCycle(list_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+//    ListGraph n_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+//    n_graph.addVertex();
+//    n_graph.addVertex();
+//    n_graph.addVertex();
+//    n_graph.addVertex();
+
+//    n_graph.addEdge(0,1,1);
+//    n_graph.addEdge(0,2,4);
+//    n_graph.addEdge(1,2,-3);
+//    n_graph.addEdge(1,3,2);
+//    n_graph.addEdge(2,3,3);
+//    n_graph.addEdge(3,1,-5);
+//    string actions;
+//    ui->textEdit->append(QString(n_graph.getAdjacencyList().c_str()));
+//    ui->textEdit->append("Current graph" + QString(hasNegCycle(n_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
+//    ui->textEdit->append(QString(actions.c_str()));
+
+
+//_________________________________________________Searching for n-sized cycles in directed graph_________________________________
+
+    vector<vector<bool>> graph({{0,1,0,1,0},
+                                {1,0,1,0,1},
+                                {0,1,0,1,0},
+                                {1,0,1,0,1},
+                                {0,1,0,1,0}});
+    Vector2D<bool> pro_graph(graph);
+    int cyc_length = 4;
     string actions;
-    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
-    ui->textEdit->append("Current graph" + QString(hasNegCycle(list_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
+    ui->textEdit->append("Current graph has [" +
+                         QString::number(
+                             n_sizeCyclesSearch(pro_graph,cyc_length,actions)
+                             )+"] "+QString::number(cyc_length)+"-length cycles;");
     ui->textEdit->append(QString(actions.c_str()));
+
+
 }
 void MainWindow::setProgressBar(int val, int max)
 {

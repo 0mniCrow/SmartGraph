@@ -210,6 +210,27 @@ std::vector<int> ListGraph::getEdges(int vertex_id)
     return edges;
 }
 
+std::vector<ListEdge> ListGraph::getEdges() const
+{
+    std::vector<ListEdge> edges;
+    auto it = _list_graph_.cbegin();
+    while(it!=_list_graph_.cend())
+    {
+        auto s_it = it->second._edges_.cbegin();
+        while(s_it!=it->second._edges_.cend())
+        {
+            ListEdge edge;
+            edge.src = it->first;
+            edge.dest = s_it->first;
+            edge.wght = s_it->second;
+            edges.push_back(edge);
+            s_it++;
+        }
+        it++;
+    }
+    return edges;
+}
+
 const std::map<int,int>& ListGraph::getConnections(int vertex_id)
 {
     CurVertexIter it = _list_graph_.find(vertex_id);
