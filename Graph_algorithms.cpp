@@ -2679,9 +2679,12 @@ namespace CyclSearch
                                int size, int& count,
                                int start_id, int cur_id,
                                std::unordered_set<int>& visited,
+                               std::vector<std::list<int>>& loops,
+                               std::list<int>& cur_loop,
                                string& actions)
     {
         visited.insert(cur_id);
+        cur_loop.push_back(cur_id);
         actions.append("Cur id ["+std::to_string(cur_id)+
                        "], start id["+std::to_string(start_id)+
                        "], steps left ["+std::to_string(size)+"];\n");
@@ -2690,13 +2693,17 @@ namespace CyclSearch
             visited.erase(cur_id);
             if(graph.val(start_id,cur_id) && graph.val(cur_id,start_id))
             {
+
+                loops.push_back(cur_loop);
                 actions.append("Cur_id == start_id with zero steps left - cycle found;\n");
                 count++;
+                cur_loop.pop_back();
                 return;
             }
             else
             {
                 actions.append("Cur_id != start_id on the last step - cycle isn't found;\n");
+                cur_loop.pop_back();
                 return;
             }
         }
@@ -2708,13 +2715,14 @@ namespace CyclSearch
                 {
                     actions.append("Edge to vertex["+
                                    std::to_string(i)+"];\n");
-                    n_sizeCycleSearch_DFS(graph, size-1, count, start_id, i,visited,actions);
+                    n_sizeCycleSearch_DFS(graph, size-1, count, start_id, i,visited,loops,cur_loop,actions);
                     actions.append("Back to vertex["+
                                    std::to_string(cur_id)+"];\n");
                 }
             }
         }
         visited.erase(cur_id);
+        cur_loop.pop_back();
         return;
     }
 }
@@ -2729,11 +2737,52 @@ int n_sizeCyclesSearch(Vector2D<bool> &graph, int size, string& actions)
         return 0;
     }
     std::unordered_set<int> visited;
+    std::vector<std::list<int>> loops;
     int count = 0;
     for(int i = 0; i < graph.rowCount()-(size-1);i++)
     {
-        CyclSearch::n_sizeCycleSearch_DFS(graph,size-1,count,i,i,visited,actions);
+        std::list<int> cur_loop;
+        CyclSearch::n_sizeCycleSearch_DFS(graph,size-1,count,i,i,visited,loops,cur_loop,actions);
         visited.insert(i);
     }
+    std::vector<std::unordered_set<int>> to_compare;
+    for(size_t i = 0; i<loops.size();i++)
+    {
+        std::unordered_set<int> set(loops.at(i).begin(),loops.at(i).end());
+        to_compare.push_back(set);
+    }
+    std::unordered_set<size_t> copies;
+    for(size_t i = 0; i<loops.size();i++)
+    {
+        for(size_t j = i+1; j<loops.size();j++)
+        {
+            if(to_compare.at(i)==to_compare.at(j))
+            {
+                copies.insert(j);
+            }
+        }
+    }
+    if(loops.size())
+    {
+        actions.append("Following loops were found:\n");
+    }
+    for(size_t i = 0; i< loops.size();i++)
+    {
+
+        if(!copies.count(i))
+        {
+
+            auto it = loops.at(i).begin();
+            while(it!=loops.at(i).end())
+            {
+                actions.append("("+std::to_string(*it)+")->");
+                it++;
+            }
+            actions.pop_back();
+            actions.pop_back();
+            actions.append(";\n");
+        }
+    }
+
     return count/2;
 }
