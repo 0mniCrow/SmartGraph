@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QWheelEvent>
 #include "vectorgraph.h"
 #include "listgraph.h"
 #include "Graph_algorithms.h"
@@ -17,16 +20,28 @@ using std::string;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+protected:
+    virtual void mousePressEvent    (QMouseEvent* m_event) override;
+    virtual void mouseReleaseEvent  (QMouseEvent* m_event) override;
+    virtual void mouseMoveEvent     (QMouseEvent* m_event) override;
+    virtual void wheelEvent         (QWheelEvent* w_event) override;
 
+    void eventQueue         (QMouseEvent* m_event, const QString& msg);
+    QString modifiersInfo   (QMouseEvent* m_event);
+    QString buttonsInfo     (QMouseEvent* m_event);
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
     void setProgressBar(int val, int max);
+private slots:
+    void execute();
 private:
 //    VectorGraph graph;
 //    ListGraph l_graph;
     MatrixModel * model;
+    void keyPressEvent(QKeyEvent* pe) override;
+
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

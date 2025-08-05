@@ -7,7 +7,17 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-//___________________________________Matrix graph__________________________
+    connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
+    ui->line_MouseStatus->setAlignment(Qt::AlignCenter);    ui->line_MouseStatus->setText("(mouse actions require)");
+    ui->line_ButtonsPressed->setAlignment(Qt::AlignCenter); ui->line_ButtonsPressed->setText("(mouse actions require)");
+    ui->line_LocalX->setAlignment(Qt::AlignCenter);         ui->line_LocalX->setText("(mouse actions require)");
+    ui->line_LocalY->setAlignment(Qt::AlignCenter);         ui->line_LocalY->setText("(mouse actions require)");
+    ui->line_GlobalX->setAlignment(Qt::AlignCenter);        ui->line_GlobalX->setText("(mouse actions require)");
+    ui->line_GlobalY->setAlignment(Qt::AlignCenter);        ui->line_GlobalY->setText("(mouse actions require)");
+    ui->line_Modifiers->setAlignment(Qt::AlignCenter);      ui->line_Modifiers->setText("(mouse actions require)");
+    ui->line_WheelAngle->setAlignment(Qt::AlignCenter);     ui->line_WheelAngle->setText("(wheel actions require)");
+
+    //___________________________________Matrix graph__________________________
 
 //    graph(4),l_graph(3);
 //    graph.addEdge(0,1);
@@ -606,24 +616,32 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append(QString(actions.c_str()));
 
 
-//_________________________________________________Searching for n-sized cycles in directed graph_________________________________
-
-    vector<vector<bool>> graph({{0,1,0,1,0},
-                                {1,0,1,0,1},
-                                {0,1,0,1,0},
-                                {1,0,1,0,1},
-                                {0,1,0,1,0}});
-    Vector2D<bool> pro_graph(graph);
-    int cyc_length = 4;
-    string actions;
-    ui->textEdit->append("Current graph has [" +
-                         QString::number(
-                             n_sizeCyclesSearch(pro_graph,cyc_length,actions)
-                             )+"] "+QString::number(cyc_length)+"-length cycles;");
-    ui->textEdit->append(QString(actions.c_str()));
-
-
+    execute();
 }
+
+void MainWindow::execute()
+{
+    ui->textEdit->clear();
+    //_________________________________________________Searching for n-sized cycles in directed graph_________________________________
+
+        vector<vector<bool>> graph({{0,1,0,1,0},
+                                    {1,0,1,0,1},
+                                    {0,1,0,1,0},
+                                    {1,0,1,0,1},
+                                    {0,1,0,1,0}});
+        Vector2D<bool> pro_graph(graph);
+        int cyc_length = 4;
+        string actions;
+        ui->textEdit->append("Current graph has [" +
+                             QString::number(
+                                 n_sizeCyclesSearch(pro_graph,cyc_length,actions)
+                                 )+"] "+QString::number(cyc_length)+"-length cycles;");
+        ui->textEdit->append(QString(actions.c_str()));
+
+
+    return;
+}
+
 void MainWindow::setProgressBar(int val, int max)
 {
     ui->progressBar->setValue(val*100/max);
@@ -633,3 +651,121 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent* pe)
+{
+    switch(pe->key())
+    {
+    case Qt::Key_Q:
+    {
+        if(pe->modifiers()&Qt::ControlModifier)
+        {
+            this->close();
+        }
+        else
+        {
+            QMainWindow::keyPressEvent(pe);
+        }
+    }
+        break;
+    case Qt::Key_E:
+    {
+        if(pe->modifiers()&Qt::ControlModifier)
+        {
+            execute();
+        }
+        else
+        {
+            QMainWindow::keyPressEvent(pe);
+        }
+    }
+        break;
+    default:
+    {
+        QMainWindow::keyPressEvent(pe);
+    }
+    }
+    return;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* m_event)
+{
+    eventQueue(m_event,"Mouse button pressed");
+    return;
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent* m_event)
+{
+    eventQueue(m_event,"Mouse button released");
+    return;
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent* m_event)
+{
+    eventQueue(m_event,"Mouse is moving");
+    return;
+}
+
+void MainWindow::eventQueue(QMouseEvent* m_event, const QString& msg)
+{
+    ui->line_MouseStatus->setText(msg);
+    ui->line_ButtonsPressed->setText(buttonsInfo(m_event));
+    ui->line_LocalX->setText(QString::number(m_event->position().x()));
+    ui->line_LocalY->setText(QString::number(m_event->position().y()));
+    ui->line_GlobalX->setText(QString::number(m_event->globalPosition().x()));
+    ui->line_GlobalY->setText(QString::number(m_event->globalPosition().y()));
+    ui->line_Modifiers->setText(modifiersInfo(m_event));
+    m_event->accept();
+    return;
+}
+
+QString MainWindow::modifiersInfo(QMouseEvent* m_event)
+{
+    QString answer;
+    if(m_event->modifiers()&Qt::ShiftModifier)
+    {
+        answer.append("Shift ");
+    }
+    if(m_event->modifiers()&Qt::ControlModifier)
+    {
+        answer.append("Ctrl ");
+    }
+    if(m_event->modifiers()&Qt::AltModifier)
+    {
+        answer.append("Alt");
+    }
+    return answer;
+}
+
+QString MainWindow::buttonsInfo(QMouseEvent* m_event)
+{
+    QString answer;
+    if(m_event->buttons()&Qt::LeftButton)
+    {
+        answer.append("Left ");
+    }
+    if(m_event->buttons()&Qt::RightButton)
+    {
+        answer.append("Right ");
+    }
+    if(m_event->buttons()&Qt::MiddleButton)
+    {
+        answer.append("Middle");
+    }
+    return answer;
+}
+
+void MainWindow::wheelEvent(QWheelEvent* w_event)
+{
+    QPoint wheel_angle = w_event->angleDelta();
+    QPoint touchpad_pixels = w_event->pixelDelta();
+    if(!wheel_angle.isNull())
+    {
+        ui->line_WheelAngle->setText(QString::number(wheel_angle.y()));
+    }
+    else if(!touchpad_pixels.isNull())
+    {
+        ui->line_WheelAngle->setText(QString::number(touchpad_pixels.y()));
+    }
+    w_event->accept();
+    return;
+}
