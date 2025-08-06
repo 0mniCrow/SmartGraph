@@ -3,11 +3,14 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+    : QMainWindow(parent),touchform(new TouchForm())
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
+    setAttribute(Qt::WA_AcceptTouchEvents, true);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
+    connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
     ui->line_MouseStatus->setAlignment(Qt::AlignCenter);    ui->line_MouseStatus->setText("(mouse actions require)");
     ui->line_ButtonsPressed->setAlignment(Qt::AlignCenter); ui->line_ButtonsPressed->setText("(mouse actions require)");
     ui->line_LocalX->setAlignment(Qt::AlignCenter);         ui->line_LocalX->setText("(mouse actions require)");
@@ -16,6 +19,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->line_GlobalY->setAlignment(Qt::AlignCenter);        ui->line_GlobalY->setText("(mouse actions require)");
     ui->line_Modifiers->setAlignment(Qt::AlignCenter);      ui->line_Modifiers->setText("(mouse actions require)");
     ui->line_WheelAngle->setAlignment(Qt::AlignCenter);     ui->line_WheelAngle->setText("(wheel actions require)");
+    ui->line_WindowWidth->setAlignment(Qt::AlignCenter);    ui->line_WindowWidth->setText("(window resize require)");
+    ui->line_WindowHeight->setAlignment(Qt::AlignCenter);   ui->line_WindowHeight->setText("(window resize require)");
+    ui->line_MouseStatus->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_ButtonsPressed->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_LocalX->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_LocalY->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_GlobalX->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_GlobalY->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_Modifiers->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->line_WheelAngle->setAttribute(Qt::WA_TransparentForMouseEvents);
+    //ui->tableView->setAttribute(Qt::WA_TransparentForMouseEvents);
+    //ui->textEdit->setAttribute(Qt::WA_TransparentForMouseEvents);
 
     //___________________________________Matrix graph__________________________
 
@@ -648,6 +663,11 @@ void MainWindow::setProgressBar(int val, int max)
 }
 MainWindow::~MainWindow()
 {
+    if(touchform)
+    {
+        touchform->close();
+        delete touchform;
+    }
     delete ui;
 }
 
@@ -767,5 +787,48 @@ void MainWindow::wheelEvent(QWheelEvent* w_event)
         ui->line_WheelAngle->setText(QString::number(touchpad_pixels.y()));
     }
     w_event->accept();
+    return;
+}
+
+void MainWindow::enterEvent(QEnterEvent* e_event)
+{
+    ui->label_EnterLeave->setText("Mouse entered window");
+    e_event->accept();
+}
+void MainWindow::leaveEvent(QEvent* l_event)
+{
+    ui->label_EnterLeave->setText("Mouse left window");
+    l_event->accept();
+}
+
+void MainWindow::closeEvent(QCloseEvent*  cl_event)
+{
+    QMessageBox mbx;
+    mbx.setText("Вы ўпэўнены што жадаеце закрыць акно?");
+    mbx.setInformativeText("Тут немагчымы зьмяненьні!");
+    mbx.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+    mbx.setDefaultButton(QMessageBox::Yes);
+    mbx.setIcon(QMessageBox::Critical);
+    int vynik =mbx.exec();
+    switch(vynik)
+    {
+        case QMessageBox::Yes:
+    {
+        cl_event->accept();
+    }
+        break;
+    case QMessageBox::No:
+    {
+        cl_event->ignore();
+    }
+    }
+    return;
+}
+
+
+void MainWindow::resizeEvent(QResizeEvent* rsz_event)
+{
+    ui->line_WindowWidth->setText(QString::number(rsz_event->size().width()));
+    ui->line_WindowHeight->setText(QString::number(rsz_event->size().height()));
     return;
 }
