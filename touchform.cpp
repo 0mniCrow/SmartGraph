@@ -44,7 +44,7 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
 
 bool TouchForm::event (QEvent * reg_event)
 {
-    qDebug()<<"Event type: " << reg_event->type();
+    //qDebug()<<"Event type: " << reg_event->type();
     switch(reg_event->type())
     {
     case QEvent::TouchBegin:

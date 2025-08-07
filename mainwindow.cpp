@@ -10,6 +10,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setAttribute(Qt::WA_AcceptTouchEvents, true);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
+    grabGesture(Qt::TapGesture);
+    grabGesture(Qt::TapAndHoldGesture);
+    grabGesture(Qt::PanGesture);
+    grabGesture(Qt::PinchGesture);
+    grabGesture(Qt::SwipeGesture);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
     ui->line_MouseStatus->setAlignment(Qt::AlignCenter);    ui->line_MouseStatus->setText("(mouse actions require)");
     ui->line_ButtonsPressed->setAlignment(Qt::AlignCenter); ui->line_ButtonsPressed->setText("(mouse actions require)");
@@ -814,7 +819,12 @@ void MainWindow::closeEvent(QCloseEvent*  cl_event)
     {
         case QMessageBox::Yes:
     {
+        if(touchform)
+        {
+            touchform->close();
+        }
         cl_event->accept();
+
     }
         break;
     case QMessageBox::No:
@@ -831,4 +841,131 @@ void MainWindow::resizeEvent(QResizeEvent* rsz_event)
     ui->line_WindowWidth->setText(QString::number(rsz_event->size().width()));
     ui->line_WindowHeight->setText(QString::number(rsz_event->size().height()));
     return;
+}
+
+bool MainWindow::event(QEvent* reg_event)
+{
+//    qDebug()<<"Event type: " << reg_event->type();
+    if(reg_event->type()==QEvent::Gesture)
+    {
+        return gestureEvent(dynamic_cast<QGestureEvent*>(reg_event));
+    }
+    return QWidget::event(reg_event);
+}
+
+bool MainWindow::gestureEvent(QGestureEvent* g_event)
+{
+    if(QGesture* swipe = g_event->gesture(Qt::SwipeGesture))
+    {
+        ui->label_gesture_event->setText("Swipe gesture");
+        swipeGesture(static_cast<QSwipeGesture*>(swipe));
+    }
+    else if(QGesture* pan = g_event->gesture(Qt::PanGesture))
+    {
+        ui->label_gesture_event->setText("Swipe gesture");
+        panGesture(static_cast<QPanGesture*>(pan));
+    }
+    else if(QGesture* pinch = g_event->gesture(Qt::PinchGesture))
+    {
+        ui->label_gesture_event->setText("Swipe gesture");
+        pinchGesture(static_cast<QPinchGesture*>(pinch));
+    }
+    else if(QGesture* tapNhold = g_event->gesture(Qt::TapAndHoldGesture))
+    {
+        ui->label_gesture_event->setText("Swipe gesture");
+        tapNholdGesture(static_cast<QTapAndHoldGesture*>(tapNhold));
+    }
+    else if(QGesture* tap = g_event->gesture(Qt::TapGesture))
+    {
+        ui->label_gesture_event->setText("Swipe gesture");
+        tapGesture(static_cast<QTapGesture*>(tap));
+    }
+    g_event->accept();
+    return true;
+}
+
+
+void MainWindow::swipeGesture(QSwipeGesture* sw_gesture)
+{
+    if(sw_gesture->state()==Qt::GestureFinished)
+    {
+        QString dir("Direction: ");
+        if(sw_gesture->horizontalDirection()==QSwipeGesture::Left)
+        {
+            dir.append("Left ");
+        }
+        else if(sw_gesture->horizontalDirection()==QSwipeGesture::Right)
+        {
+            dir.append("Right ");
+        }
+        if(sw_gesture->verticalDirection()==QSwipeGesture::Up)
+        {
+            dir.append("Up ");
+        }
+        else if(sw_gesture->verticalDirection()==QSwipeGesture::Down)
+        {
+            dir.append("Down ");
+        }
+        dir.append(QString::number(sw_gesture->swipeAngle()));
+        ui->label_gesture_type->setText(dir);
+        update();
+    }
+    return;
+}
+void MainWindow::panGesture(QPanGesture* p_gesture)
+{
+    QString dir("Acseleration: ");
+    dir.append(QString::number(p_gesture->acceleration())+";\n");
+    dir.append("Previous point offset: x="+
+               QString::number(p_gesture->offset().x())+
+               " y="+
+               QString::number(p_gesture->offset().y())+";\n");
+    dir.append("Last point offset: x="+
+               QString::number(p_gesture->lastOffset().x())+
+               " y="+
+               QString::number(p_gesture->lastOffset().y())+";\n");
+    dir.append("Delta: x="+
+               QString::number(p_gesture->delta().x())+" y="+
+               QString::number(p_gesture->delta().y())+";\n");
+    ui->label_gesture_type->setText(dir);
+    update();
+}
+void MainWindow::pinchGesture(QPinchGesture* p_gesture)
+{
+    QString dir;
+    if(p_gesture->changeFlags()==QPinchGesture::ScaleFactorChanged)
+    {
+        dir.append("Scale factor: "+QString::number(p_gesture->scaleFactor())+";\n");
+    }
+    else if(p_gesture->changeFlags()==QPinchGesture::RotationAngleChanged)
+    {
+        dir.append("Rotation angle: "+QString::number(p_gesture->rotationAngle())+";\n");
+    }
+    else if(p_gesture->changeFlags()==QPinchGesture::CenterPointChanged)
+    {
+        dir.append("Central point new coordinates: x="+
+                   QString::number(p_gesture->centerPoint().x())+
+                   " y="+QString::number(p_gesture->centerPoint().y())+";\n");
+    }
+    ui->label_gesture_type->setText(dir);
+    update();
+}
+void MainWindow::tapNholdGesture(QTapAndHoldGesture* tnh_gesture)
+{
+    QString dir;
+    dir.append("Tap and hold triggered after: "+
+               QString::number(tnh_gesture->timeout())+
+               " milliseconds;\n");
+    ui->label_gesture_type->setText(dir);
+    update();
+}
+void MainWindow::tapGesture(QTapGesture* t_gesture)
+{
+    QString dir;
+    dir.append("Tap was made at: x="+
+               QString::number(t_gesture->position().x())+
+               " y="+
+               QString::number(t_gesture->position().y())+";\n");
+    ui->label_gesture_type->setText(dir);
+    update();
 }

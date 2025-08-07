@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QMessageBox>
+#include <QGesture>
 #include "vectorgraph.h"
 #include "listgraph.h"
 #include "Graph_algorithms.h"
@@ -31,6 +32,13 @@ protected:
     virtual void leaveEvent         (QEvent* l_event) override;
     virtual void closeEvent         (QCloseEvent*  cl_event) override;
     virtual void resizeEvent        (QResizeEvent* rsz_event) override;
+    virtual bool event              (QEvent* reg_event) override;
+    bool gestureEvent       (QGestureEvent* g_event);
+    void swipeGesture       (QSwipeGesture* sw_gesture);
+    void panGesture         (QPanGesture* p_gesture);
+    void pinchGesture       (QPinchGesture* p_gesture);
+    void tapNholdGesture    (QTapAndHoldGesture* tnh_gesture);
+    void tapGesture         (QTapGesture* t_gesture);
     void eventQueue         (QMouseEvent* m_event, const QString& msg);
     QString modifiersInfo   (QMouseEvent* m_event);
     QString buttonsInfo     (QMouseEvent* m_event);
