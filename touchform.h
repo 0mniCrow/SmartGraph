@@ -18,11 +18,13 @@ class TouchForm : public QWidget
 public:
     explicit TouchForm(QWidget *parent = nullptr);
     ~TouchForm();
-
+public slots:
+    void paintState(int state);
 private:
     QList<QColor> _color_list_;
     QList<QTouchEvent::TouchPoint> _touchpoint_list_;
     Ui::TouchForm *ui;
+    int _paint_state_;
 protected:
     virtual void paintEvent(QPaintEvent* p_event) override;
     virtual bool event (QEvent * reg_event) override;
