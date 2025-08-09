@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    touchform->paintState(4);
+    touchform->paintState(6);
     setAttribute(Qt::WA_AcceptTouchEvents, true);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     grabGesture(Qt::TapGesture);
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     grabGesture(Qt::PinchGesture);
     grabGesture(Qt::SwipeGesture);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
+    connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&TouchForm::wgt_show);
     ui->line_MouseStatus->setAlignment(Qt::AlignCenter);    ui->line_MouseStatus->setText("(mouse actions require)");
     ui->line_ButtonsPressed->setAlignment(Qt::AlignCenter); ui->line_ButtonsPressed->setText("(mouse actions require)");
     ui->line_LocalX->setAlignment(Qt::AlignCenter);         ui->line_LocalX->setText("(mouse actions require)");

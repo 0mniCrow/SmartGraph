@@ -6,6 +6,10 @@
 #include <QColor>
 #include <QTouchEvent>
 #include <QPainter>
+#include <QPicture>
+#include <QPainterPath>
+#include <QLabel>
+#include <QGridLayout>
 
 namespace Ui {
 class TouchForm;
@@ -20,7 +24,10 @@ public:
     ~TouchForm();
 public slots:
     void paintState(int state);
+    void wgt_show();
 private:
+    QWidget wgt;
+    QLabel * generate_label(const QPainter::CompositionMode& mode);
     QList<QColor> _color_list_;
     QList<QTouchEvent::TouchPoint> _touchpoint_list_;
     Ui::TouchForm *ui;

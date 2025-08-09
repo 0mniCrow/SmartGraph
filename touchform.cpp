@@ -10,6 +10,64 @@ TouchForm::TouchForm(QWidget *parent) :
     _color_list_<<Qt::cyan<<Qt::green<<Qt::blue<<Qt::black
                <<Qt::red<<Qt::magenta<<Qt::darkYellow
               <<Qt::gray<<Qt::darkCyan<<Qt::darkBlue;
+    ui->spinBox->setMinimum(0);
+    connect(ui->spinBox,&QSpinBox::valueChanged,this,&TouchForm::paintState);
+    QPicture pic;
+    QPainter painter;
+    painter.begin(&pic);
+    painter.setBrush(QBrush(Qt::white));
+    painter.setPen(QPen(Qt::red));
+    painter.drawLine(20,20,50,50);
+    painter.end();
+    if(!pic.save("myline.dat"))
+    {
+        qDebug()<<"Can't save the file";
+    }
+
+    QGridLayout* grid = new QGridLayout;
+    grid->addWidget(generate_label(QPainter::CompositionMode_Source),0,0);
+    grid->addWidget(new QLabel("<CENTER>Source</CENTER>"),1,0);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_SourceOver),0,1);
+    grid->addWidget(new QLabel("<CENTER>SourceOver</CENTER>"),1,1);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_SourceIn),0,2);
+    grid->addWidget(new QLabel("<CENTER>SourceIn</CENTER>"),1,2);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_SourceOut),0,3);
+    grid->addWidget(new QLabel("<CENTER>SourceOut</CENTER>"),1,3);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_SourceAtop),0,4);
+    grid->addWidget(new QLabel("<CENTER>SourceAtop</CENTER>"),1,4);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_Clear),0,5);
+    grid->addWidget(new QLabel("<CENTER>Clear</CENTER>"),1,5);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_Destination),2,0);
+    grid->addWidget(new QLabel("<CENTER>Destination</CENTER>"),3,0);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_DestinationOver),2,1);
+    grid->addWidget(new QLabel("<CENTER>DestinationOver</CENTER>"),3,1);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_DestinationIn),2,2);
+    grid->addWidget(new QLabel("<CENTER>DestinationIn</CENTER>"),3,2);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_DestinationOut),2,3);
+    grid->addWidget(new QLabel("<CENTER>DestinationOut</CENTER>"),3,3);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_DestinationAtop),2,4);
+    grid->addWidget(new QLabel("<CENTER>DestinationAtop</CENTER>"),3,4);
+
+    grid->addWidget(generate_label(QPainter::CompositionMode_Xor),2,5);
+    grid->addWidget(new QLabel("<CENTER>Xor</CENTER>"),3,5);
+    wgt.setLayout(grid);
+    wgt.show();
+}
+
+void TouchForm::wgt_show()
+{
+    wgt.show();
+    return;
 }
 
 TouchForm::~TouchForm()
@@ -36,8 +94,8 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         QPixmap pixm("C:/Users/Somny/Pictures/0087_001.png");
         QSize psze = pixm.size();
         painter1.setPen(QPen(Qt::red,8,Qt::DashDotLine,Qt::SquareCap,Qt::BevelJoin));
-        psze.scale(300,150,Qt::KeepAspectRatio);
-        pixm.scaled(psze,Qt::KeepAspectRatio);
+        psze.scale(300,150,Qt::IgnoreAspectRatio);
+        pixm.scaled(psze,Qt::IgnoreAspectRatio);
         painter1.setBrush(QBrush(Qt::black,pixm));
         painter1.drawEllipse(0,0,500,330);
         painter1.end();
@@ -143,6 +201,157 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         painter8.end();
     }
         break;
+    case 5:
+    {
+        int x = 10;
+        int y = 10;
+        QPainter painter9;
+        painter9.begin(this);
+        painter9.setRenderHint(QPainter::Antialiasing,true);
+        painter9.setBrush(QBrush(Qt::red,Qt::DiagCrossPattern));
+        painter9.setPen(QPen(Qt::blue,3,Qt::DashLine));
+        painter9.drawRect(QRect(x,y,110,70));
+        x+=120;
+        //y+=80;
+        painter9.end();
+        QPainter painter10;
+        painter10.begin(this);
+        painter10.setRenderHint(QPainter::Antialiasing,true);
+        painter10.setBrush(QBrush(Qt::green));
+        painter10.setPen(QPen(Qt::black));
+        painter10.drawRoundedRect(QRect(x,y,110,70),30,30);
+        x+=120;
+        //y+=80;
+        painter10.end();
+        QPainter painter11;
+        painter11.begin(this);
+        painter11.setRenderHint(QPainter::Antialiasing,true);
+        painter11.setBrush(QBrush(Qt::green,Qt::CrossPattern));
+        painter11.setPen(QPen(Qt::red,3,Qt::DotLine));
+        painter11.drawEllipse(QRect(x,y,110,70));
+        x=10;
+        y+=80;
+        painter11.end();
+
+        QPainter painter12;
+        painter12.begin(this);
+        painter12.setRenderHint(QPainter::Antialiasing,true);
+        painter12.setBrush(QBrush(Qt::yellow));
+        painter12.setPen(QPen(Qt::blue));
+        painter12.drawChord(QRect(x,y,110,70),45*16,200*16);
+        x+=120;
+        painter12.end();
+
+        QPainter painter13;
+        painter13.begin(this);
+        painter13.setRenderHint(QPainter::Antialiasing,true);
+        painter13.setBrush(QBrush(Qt::black,Qt::BDiagPattern));
+        painter13.setPen(QPen(Qt::blue,4));
+        painter13.drawPie(QRect(x,y,110,70),90*16,270*16);
+        x+=120;
+        painter13.end();
+
+        QPainter painter14;
+        painter14.begin(this);
+        painter14.setRenderHint(QPainter::Antialiasing,true);
+        painter14.setBrush(QBrush(Qt::lightGray));
+        painter14.setPen(QPen(Qt::black));
+        int n = 8;
+        QPolygonF polygon;
+        for(int i = 0; i<n; ++i)
+        {
+            qreal fAngle = qDegreesToRadians(360.0*i/n);
+            qreal n_x = x+50 + cos(fAngle)*40;
+            qreal n_y = y+50 + sin(fAngle)*40;
+            polygon.append(QPointF(n_x,n_y));
+        }
+        painter14.drawPolygon(polygon);
+        painter14.end();
+    }
+        break;
+    case 6:
+    {
+        QPicture pic;
+        if(!pic.load("myline.dat"))
+        {
+            qDebug()<<"can't load the file";
+            break;
+        }
+        QPainter painter15;
+        painter15.begin(this);
+        painter15.drawPicture(QPoint(40,40),pic);
+        painter15.end();
+    }
+        break;
+    case 7:
+    {
+        QPainterPath path;
+        QPointF pt1(width(),height()/2);
+        QPointF pt2(width()/2,-height());
+        QPointF pt3(width()/2,height()*2);
+        QPointF pt4(0,height()/2);
+        path.moveTo(pt1);
+        path.cubicTo(pt2,pt3,pt4);
+        QRect rect(width()/4,height()/4,width()/2,height()/2);
+        path.addRect(rect);
+        path.addEllipse(rect);
+        QPainter painter16;
+        painter16.begin(this);
+        painter16.setRenderHint(QPainter::Antialiasing,true);
+        painter16.setPen(QPen(Qt::blue,6));
+        painter16.drawPath(path);
+        painter16.end();
+    }
+        break;
+    case 8:
+    {
+        QPainterPath path;
+        path.addRect(20,20,60,60);
+        path.moveTo(0,0);
+        path.cubicTo(99,0,50,50,99,99);
+        path.cubicTo(0,99,50,50,0,0);
+        path.setFillRule(Qt::WindingFill);
+
+        QPainter painter17;
+        painter17.begin(this);
+        painter17.fillRect(0,0,100,100,Qt::white);
+        painter17.setPen(QPen(QColor(79,106,25),1,Qt::SolidLine,Qt::FlatCap,Qt::MiterJoin));
+        painter17.setBrush(QColor(122,163,39));
+        painter17.drawPath(path);
+        painter17.end();
+    }
+        break;
+    case 9:
+    {
+        QPainter painter18;
+        painter18.begin(this);
+        painter18.setRenderHint(QPainter::Antialiasing,true);
+        painter18.setClipRect(0,0,100,100);
+        painter18.setBrush(QBrush(Qt::green));
+        painter18.setPen(QPen(Qt::black,2));
+        painter18.drawEllipse(0,0,200,100);
+        painter18.end();
+    }
+        break;
+    case 10:
+    {
+        QPainter painter19;
+        painter19.begin(this);
+        QRegion region1(0,0,200,200);
+        QRegion region2(20,20,180,160,QRegion::Ellipse);
+        QRegion region3 = region1.subtracted(region2);
+        painter19.setRenderHint(QPainter::Antialiasing,true);
+        painter19.setClipRegion(region3);
+        painter19.setBrush(QBrush(Qt::blue));
+        painter19.setPen(QPen(Qt::black,3));
+        painter19.drawEllipse(0,0,200,200);
+        painter19.end();
+    }
+        break;
+    default:
+    {
+
+    }
     }
 //    painter.setRenderHint(QPainter::Antialiasing,true);
 //    int colour_count = _color_list_.count();
@@ -173,14 +382,47 @@ bool TouchForm::event (QEvent * reg_event)
     case QEvent::TouchUpdate:
     case QEvent::TouchEnd:
     {
-        QTouchEvent * t_event = static_cast<QTouchEvent*>(reg_event);
-        _touchpoint_list_ = t_event->points();
+//        QTouchEvent * t_event = static_cast<QTouchEvent*>(reg_event);
+//        _touchpoint_list_ = t_event->points();
 //        this->update();
     }
+        break;
     default:
     {
         return QWidget::event(reg_event);
     }
     }
     return  true;
+}
+
+QLabel * TouchForm::generate_label(const QPainter::CompositionMode& mode)
+{
+    QLabel * n_label = new QLabel;
+    n_label->setFixedSize(100,100);
+    QRect rectangle(n_label->contentsRect());
+    QPainter painter;
+    QImage sourceImage(rectangle.size(),QImage::Format_ARGB32_Premultiplied);
+    sourceImage.fill(QColor(0,0,0,0));
+    painter.begin(&sourceImage);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.setBrush(QBrush(QColor(0,0,255)));
+    painter.drawPolygon(
+                QPolygon()<<
+                rectangle.bottomLeft()<<
+                QPoint(rectangle.center().x(),0)<<
+                rectangle.bottomRight());
+    painter.end();
+
+    QImage resultImage(rectangle.size(),QImage::Format_ARGB32_Premultiplied);
+    painter.begin(&resultImage);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    painter.setPen(QPen(QColor(0,255,255),4));
+    painter.setBrush(QBrush(QColor(255,0,0)));
+    painter.drawEllipse(rectangle);
+    painter.setCompositionMode(mode);
+    painter.drawImage(rectangle,sourceImage);
+    painter.end();
+    n_label->setPixmap(QPixmap::fromImage(resultImage));
+    return n_label;
 }
