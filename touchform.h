@@ -10,6 +10,12 @@
 #include <QPainterPath>
 #include <QLabel>
 #include <QGridLayout>
+#include <QKeyEvent>
+#include <QGraphicsBlurEffect>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsColorizeEffect>
+#include <QGraphicsOpacityEffect>
+#include <QFormLayout>
 
 namespace Ui {
 class TouchForm;
@@ -27,14 +33,22 @@ public slots:
     void wgt_show();
 private:
     QWidget wgt;
+    QWidget wgt2;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
+    QLabel * generate_label2(QGraphicsEffect* graphic_effect);
     QList<QColor> _color_list_;
     QList<QTouchEvent::TouchPoint> _touchpoint_list_;
     Ui::TouchForm *ui;
     int _paint_state_;
+    int cur_x;
+    int cur_y;
+    int cur_x_size;
+    int cur_y_size;
 protected:
     virtual void paintEvent(QPaintEvent* p_event) override;
     virtual bool event (QEvent * reg_event) override;
+    virtual void keyPressEvent(QKeyEvent* key_event)override;
+    virtual void closeEvent(QCloseEvent*  cl_event) override;
 };
 
 #endif // TOUCHFORM_H

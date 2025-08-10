@@ -3,7 +3,7 @@
 
 TouchForm::TouchForm(QWidget *parent) :
     QWidget(parent),ui(new Ui::TouchForm),
-    _paint_state_(0)
+    _paint_state_(0),cur_x(50),cur_y(50),cur_x_size(30),cur_y_size(30)
 {
     ui->setupUi(this);
     setAttribute(Qt::WA_AcceptTouchEvents, true);
@@ -61,7 +61,20 @@ TouchForm::TouchForm(QWidget *parent) :
     grid->addWidget(generate_label(QPainter::CompositionMode_Xor),2,5);
     grid->addWidget(new QLabel("<CENTER>Xor</CENTER>"),3,5);
     wgt.setLayout(grid);
-    wgt.show();
+
+    QGraphicsBlurEffect* blur_eff = new QGraphicsBlurEffect;
+    QGraphicsDropShadowEffect* shad_eff = new QGraphicsDropShadowEffect;
+    QGraphicsColorizeEffect* col_eff = new QGraphicsColorizeEffect;
+    QGraphicsOpacityEffect* op_eff = new QGraphicsOpacityEffect;
+
+    QFormLayout* m_form = new QFormLayout;
+    m_form->addRow("No Effects", generate_label2(nullptr));
+    m_form->addRow("Blur",generate_label2(blur_eff));
+    m_form->addRow("Drop Shadow",generate_label2(shad_eff));
+    m_form->addRow("Colorize",generate_label2(col_eff));
+    m_form->addRow("Opacity",generate_label2(op_eff));
+    wgt2.setLayout(m_form);
+
 }
 
 void TouchForm::wgt_show()
@@ -91,7 +104,7 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
     {
         QPainter painter1;
         painter1.begin(this);
-        QPixmap pixm("C:/Users/Somny/Pictures/0087_001.png");
+        QPixmap pixm("wheel.png");
         QSize psze = pixm.size();
         painter1.setPen(QPen(Qt::red,8,Qt::DashDotLine,Qt::SquareCap,Qt::BevelJoin));
         psze.scale(300,150,Qt::IgnoreAspectRatio);
@@ -348,6 +361,16 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         painter19.end();
     }
         break;
+    case 11:
+    {
+        QPainter painter20;
+        painter20.begin(this);
+        painter20.setRenderHint(QPainter::Antialiasing,true);
+        painter20.setBrush(QBrush(Qt::darkRed,Qt::Dense3Pattern));
+        painter20.setPen(QPen(Qt::black,2,Qt::DotLine));
+        painter20.drawEllipse(cur_x,cur_y,cur_x_size,cur_y_size);
+        painter20.end();
+    }
     default:
     {
 
@@ -387,12 +410,95 @@ bool TouchForm::event (QEvent * reg_event)
 //        this->update();
     }
         break;
+
     default:
     {
         return QWidget::event(reg_event);
     }
     }
     return  true;
+}
+
+void TouchForm::keyPressEvent(QKeyEvent* key_event)
+{
+    switch(key_event->key())
+    {
+    case Qt::Key_Up:
+    {
+        if(cur_y>0)
+        {
+            cur_y-=10;
+            if(cur_y<0)
+            {
+                cur_y=0;
+            }
+            key_event->accept();
+            repaint();
+        }
+    }
+        break;
+    case Qt::Key_Down:
+    {
+        if(cur_y+cur_y_size<height())
+        {
+            cur_y+=10;
+            if(cur_y+cur_y_size>=height())
+            {
+                cur_y = height()-cur_y_size-1;
+            }
+            key_event->accept();
+            repaint();
+        }
+    }
+        break;
+    case Qt::Key_Left:
+    {
+        if(cur_x>0)
+        {
+            cur_x-=10;
+            if(cur_x<0)
+            {
+                cur_x = 0;
+            }
+            key_event->accept();
+            repaint();
+        }
+    }
+        break;
+    case Qt::Key_Right:
+    {
+        if(cur_x+cur_x_size<width())
+        {
+            cur_x+=10;
+            if(cur_x+cur_x_size>=width())
+            {
+                cur_x = width()-cur_x_size-1;
+            }
+            key_event->accept();
+            repaint();
+        }
+    }
+        break;
+    case Qt::Key_Q:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            wgt.show();
+            key_event->accept();
+        }
+    }
+        break;
+    case Qt::Key_E:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            wgt2.show();
+            key_event->accept();
+        }
+    }
+    }
+    QWidget::keyPressEvent(key_event);
+    return;
 }
 
 QLabel * TouchForm::generate_label(const QPainter::CompositionMode& mode)
@@ -414,15 +520,42 @@ QLabel * TouchForm::generate_label(const QPainter::CompositionMode& mode)
     painter.end();
 
     QImage resultImage(rectangle.size(),QImage::Format_ARGB32_Premultiplied);
+    resultImage.fill(Qt::transparent);
     painter.begin(&resultImage);
     painter.setRenderHint(QPainter::Antialiasing,true);
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.setPen(QPen(QColor(0,255,255),4));
     painter.setBrush(QBrush(QColor(255,0,0)));
-    painter.drawEllipse(rectangle);
+//    painter.drawPolygon(QPolygon()<<
+//                         rectangle.topLeft()<<
+//                         QPoint(rectangle.center().x(),rectangle.bottom())<<
+//                                rectangle.topRight());
+    painter.drawEllipse(rectangle.center(),rectangle.width()/2,rectangle.height()/2);
     painter.setCompositionMode(mode);
     painter.drawImage(rectangle,sourceImage);
     painter.end();
+
     n_label->setPixmap(QPixmap::fromImage(resultImage));
     return n_label;
+}
+QLabel * TouchForm::generate_label2(QGraphicsEffect* graphic_effect)
+{
+    QLabel * n_label = new QLabel;
+    QPixmap pixmap("yo-lee.png");
+    n_label->setPixmap(pixmap.scaled(200,200,Qt::KeepAspectRatio));
+
+    if(graphic_effect)
+    {
+        n_label->setGraphicsEffect(graphic_effect);
+    }
+    return n_label;
+}
+
+
+void TouchForm::closeEvent(QCloseEvent*  cl_event)
+{
+    wgt.close();
+    wgt2.close();
+    cl_event->accept();
+    return;
 }
