@@ -34,8 +34,10 @@ public slots:
 private:
     QWidget wgt;
     QWidget wgt2;
+    QWidget wgt3;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);
+    QImage brightness(const QImage& origImg, int brght);
     QList<QColor> _color_list_;
     QList<QTouchEvent::TouchPoint> _touchpoint_list_;
     Ui::TouchForm *ui;

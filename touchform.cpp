@@ -75,6 +75,18 @@ TouchForm::TouchForm(QWidget *parent) :
     m_form->addRow("Opacity",generate_label2(op_eff));
     wgt2.setLayout(m_form);
 
+
+    QImage img("tiny_dragon.png");
+    QHBoxLayout* n_layout = new QHBoxLayout;
+    n_layout->setSpacing(0);
+    for(int i = -150; i <150;i+=50)
+    {
+        QLabel* n_label = new QLabel;
+        n_label->setFixedSize(img.size());
+        n_label->setPixmap(QPixmap::fromImage(brightness(img,i)));
+        n_layout->addWidget(n_label);
+    }
+    wgt3.setLayout(n_layout);
 }
 
 void TouchForm::wgt_show()
@@ -98,6 +110,8 @@ void TouchForm::paintState(int state)
 void TouchForm::paintEvent(QPaintEvent* p_event)
 {
     Q_UNUSED(p_event);
+    QPainter painter;
+    painter.begin(this);
     switch(_paint_state_)
     {
     case 0:
@@ -371,11 +385,72 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         painter20.drawEllipse(cur_x,cur_y,cur_x_size,cur_y_size);
         painter20.end();
     }
+        break;
+    case 12:
+    {
+        QPainter painter21;
+        painter21.begin(this);
+        QImage img("a_lot_of_axe.jpg");
+        painter21.drawImage(0,0,img,30,30,110,100);
+        painter21.drawImage(0,120,img,120,120,110,100);
+        painter21.end();
+    }
+        break;
+    case 13:
+    {
+        QPainter painter22;
+        painter22.begin(this);
+        QImage img("a_lot_of_axe.jpg");
+        painter22.drawImage(0,0,img);
+        img.invertPixels(QImage::InvertRgb);
+        painter22.drawImage(0,img.height(),img);
+        painter22.end();
+    }
+        break;
+    case 14:
+    {
+        QPainter painter23;
+        painter23.begin(this);
+        QImage img1("a_lot_of_axe.jpg");
+        painter23.drawImage(0,0,img1);
+
+        QImage img2 = img1.scaled(img1.width()/2,img1.height(),Qt::IgnoreAspectRatio);
+        painter23.drawImage(img1.width(),0,img2);
+
+        QImage img3 = img1.scaled(img1.width(),img1.height()/2,Qt::IgnoreAspectRatio);
+        painter23.drawImage(0,img1.height(),img3);
+
+        QImage img4 = img1.scaled(img1.width()/2,img1.height(),Qt::KeepAspectRatio);
+        painter23.drawImage(img1.width(),img1.height(),img4);
+        painter23.end();
+    }
+        break;
+    case 15:
+    {
+        QImage img("a_lot_of_axe.jpg");
+        painter.drawImage(0,0,img);
+        painter.drawImage(0,img.height(),img.mirrored(true,true));
+    }
+        break;
+    case 16:
+    {
+        QImage img(size(),QImage::Format_ARGB32_Premultiplied);
+        QPainter painter24;
+
+        painter24.begin(&img);
+        painter24.setRenderHint(QPainter::Antialiasing,true);
+        painter24.eraseRect(rect());
+        painter24.drawEllipse(0,0,size().width(),size().height());
+        painter24.end();
+
+        painter.drawImage(0,0,img);
+    }
     default:
     {
 
     }
     }
+    painter.end();
 //    painter.setRenderHint(QPainter::Antialiasing,true);
 //    int colour_count = _color_list_.count();
 //    foreach(QTouchEvent::TouchPoint tp, _touchpoint_list_)
@@ -496,6 +571,16 @@ void TouchForm::keyPressEvent(QKeyEvent* key_event)
             key_event->accept();
         }
     }
+        break;
+    case Qt::Key_W:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            wgt3.show();
+            key_event->accept();
+        }
+    }
+        break;
     }
     QWidget::keyPressEvent(key_event);
     return;
@@ -558,4 +643,30 @@ void TouchForm::closeEvent(QCloseEvent*  cl_event)
     wgt2.close();
     cl_event->accept();
     return;
+}
+
+QImage TouchForm::brightness(const QImage& origImg, int brght)
+{
+    QImage temp_img = origImg;
+    qint32 max_height = temp_img.height();
+    qint32 max_width = temp_img.width();
+
+    for(qint32 row = 0; row<max_height;++row)
+    {
+        QRgb* temp_line = reinterpret_cast<QRgb*>(temp_img.scanLine(row));
+        for(qint32 col = 0; col<max_width; ++col)
+        {
+            int n_red = qRed(*temp_line)+brght;
+            int n_green = qGreen(*temp_line)+brght;
+            int n_blue = qBlue(*temp_line)+brght;
+            int n_alpha = qAlpha(*temp_line);
+            //*temp_line++ - спачатку адбываецца пост-інкрымент, затым з аператара вяртаецца
+            //копія на папярэдні элемент і ён дэрэферэнсіруецца
+            *temp_line++ = qRgba((n_red>255?255:n_red<0?0:n_red),
+                                 (n_green>255?255:n_green<0?0:n_green),
+                                 (n_blue>255?255:n_blue<0?0:n_blue),
+                                 n_alpha);
+        }
+    }
+    return temp_img;
 }
