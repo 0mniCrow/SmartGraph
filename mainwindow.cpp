@@ -637,7 +637,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append("Current graph" + QString(hasNegCycle(n_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
 //    ui->textEdit->append(QString(actions.c_str()));
 
-
+    loadGraphicScreen();
     execute();
 }
 
@@ -662,6 +662,32 @@ void MainWindow::execute()
 
 
     return;
+}
+
+void MainWindow::loadGraphicScreen()
+{
+    QGraphicsScene* scene = new QGraphicsScene(QRectF(-100,-100,300,300));
+
+    QGraphicsRectItem* rect_graphic =
+            scene->addRect(
+                QRectF(30,30,120,80),
+                QPen(Qt::black),
+                QBrush(Qt::blue));
+    rect_graphic->setFlags(QGraphicsItem::ItemIsMovable);
+    QGraphicsPixmapItem* pixmap_graphic =
+            scene->addPixmap(QPixmap("tiny_dragon.png"));
+    pixmap_graphic->setFlags(QGraphicsItem::ItemIsMovable);
+    QGraphicsTextItem* text_graphic =
+            scene->addText("Гэты тэкст магчыма цягаць і рухаць мышам!");
+    text_graphic->setFlags(QGraphicsItem::ItemIsMovable);
+
+    QGraphicsLineItem* line_graphic =
+            scene->addLine(QLineF(10,10,80,80),QPen(Qt::red,2));
+    line_graphic->setTransform(QTransform().shear(20.5,7.0),true);
+    line_graphic->setFlags(QGraphicsItem::ItemIsMovable);
+    text_graphic->setParentItem(rect_graphic);
+    ui->graphicsView->setScene(scene);
+    ui->graphicsView->show();
 }
 
 void MainWindow::setProgressBar(int val, int max)

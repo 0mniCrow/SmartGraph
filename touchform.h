@@ -9,6 +9,7 @@
 #include <QPicture>
 #include <QPainterPath>
 #include <QLabel>
+#include <QPushButton>
 #include <QGridLayout>
 #include <QKeyEvent>
 #include <QGraphicsBlurEffect>
@@ -20,6 +21,26 @@
 namespace Ui {
 class TouchForm;
 }
+
+
+class LocWidget:public QLabel
+{
+private:
+    QPoint _pos_;
+protected:
+    virtual void mousePressEvent(QMouseEvent* m_event) override;
+    virtual void mouseMoveEvent(QMouseEvent* m_event) override;
+public:
+    LocWidget(QWidget* tata = nullptr);
+};
+
+class ElidedText: public QWidget
+{
+protected:
+    virtual void paintEvent(QPaintEvent* p_event);
+public:
+    ElidedText(QWidget* tata = nullptr);
+};
 
 class TouchForm : public QWidget
 {
@@ -35,6 +56,8 @@ private:
     QWidget wgt;
     QWidget wgt2;
     QWidget wgt3;
+    LocWidget wgt4;
+    ElidedText wgt5;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);
     QImage brightness(const QImage& origImg, int brght);

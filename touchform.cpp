@@ -87,6 +87,18 @@ TouchForm::TouchForm(QWidget *parent) :
         n_layout->addWidget(n_label);
     }
     wgt3.setLayout(n_layout);
+
+    wgt4.setAttribute(Qt::WA_TranslucentBackground);
+    wgt4.setPixmap(QPixmap("tiny_dragon.png"));
+    QPushButton* exit = new QPushButton("><");
+    exit->setFixedSize(16,16);
+    QObject::connect(exit,&QPushButton::clicked,&wgt4,&QWidget::close);
+    QVBoxLayout* vert_layout = new QVBoxLayout;
+    vert_layout->addWidget(exit);
+    vert_layout->addStretch(1);
+    wgt4.setLayout(vert_layout);
+
+    wgt5.resize(200,20);
 }
 
 void TouchForm::wgt_show()
@@ -445,6 +457,30 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
 
         painter.drawImage(0,0,img);
     }
+        break;
+    case 17:
+    {
+        QPixmap pixmap("a_lot_of_axe.jpg");
+        painter.drawPixmap(0,0,pixmap);
+
+        QRect rect(0,pixmap.height(),pixmap.width()/2,pixmap.height());
+        painter.drawPixmap(rect,pixmap);
+    }
+        break;
+    case 18:
+    {
+        QRect rectangle(0,0,220,200);
+        QLinearGradient gradient(0,0,200,200);
+        gradient.setColorAt(0,Qt::red);
+        gradient.setColorAt(0.5,Qt::yellow);
+        gradient.setColorAt(1,Qt::blue);
+        painter.setPen(QPen(gradient,0));
+        painter.setFont(QFont("Times", 25, QFont::Normal));
+        painter.drawRect(rectangle);
+        painter.drawText(rectangle,Qt::AlignCenter|Qt::TextWordWrap,"Незвычайны тэкст");
+
+    }
+        break;
     default:
     {
 
@@ -581,8 +617,30 @@ void TouchForm::keyPressEvent(QKeyEvent* key_event)
         }
     }
         break;
+
+    case Qt::Key_R:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            wgt4.show();
+            key_event->accept();
+        }
     }
-    QWidget::keyPressEvent(key_event);
+        break;
+    case Qt::Key_T:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            wgt5.show();
+            key_event->accept();
+        }
+    }
+        break;
+    default:
+    {
+        QWidget::keyPressEvent(key_event);
+    }
+    }
     return;
 }
 
@@ -669,4 +727,35 @@ QImage TouchForm::brightness(const QImage& origImg, int brght)
         }
     }
     return temp_img;
+}
+
+LocWidget::LocWidget(QWidget* tata):QLabel(tata,Qt::FramelessWindowHint|Qt::Window)
+{
+    return;
+}
+
+void LocWidget::mousePressEvent(QMouseEvent* m_event)
+{
+    _pos_ = m_event->pos();
+    return;
+}
+
+void LocWidget::mouseMoveEvent(QMouseEvent* m_event)
+{
+    move(m_event->globalPosition().toPoint() - _pos_);
+    return;
+}
+
+ElidedText::ElidedText(QWidget* tata):QWidget(tata)
+{
+    return;
+}
+
+void ElidedText::paintEvent(QPaintEvent* p_event)
+{
+    Q_UNUSED(p_event);
+    QString str = "Вельмі доўгі радок тэксту, калі ласка зьмяніце памер акна, каб тэкст умяшчаўся.";
+    QString strElided = fontMetrics().elidedText(str,Qt::ElideMiddle,width());
+    QPainter painter(this);
+    painter.drawText(rect(),strElided);
 }

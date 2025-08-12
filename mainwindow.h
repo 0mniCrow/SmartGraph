@@ -7,6 +7,8 @@
 #include <QWheelEvent>
 #include <QMessageBox>
 #include <QGesture>
+#include <QGraphicsScene>
+#include <QGraphicsItem>
 #include "vectorgraph.h"
 #include "listgraph.h"
 #include "Graph_algorithms.h"
@@ -55,7 +57,8 @@ private:
     TouchForm * touchform;
     MatrixModel * model;
     void keyPressEvent(QKeyEvent* pe) override;
-
+    void loadGraphicScreen();
     Ui::MainWindow *ui;
+//    QGraphicsScene scene;
 };
 #endif // MAINWINDOW_H
