@@ -435,7 +435,7 @@
     <item>
      <widget class="QToolBox" name="toolBox">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page">
        <property name="geometry">
@@ -443,7 +443,7 @@
          <x>0</x>
          <y>0</y>
          <width>735</width>
-         <height>281</height>
+         <height>225</height>
         </rect>
        </property>
        <attribute name="label">
@@ -461,7 +461,7 @@
          <x>0</x>
          <y>0</y>
          <width>735</width>
-         <height>281</height>
+         <height>225</height>
         </rect>
        </property>
        <attribute name="label">
@@ -470,6 +470,69 @@
        <layout class="QVBoxLayout" name="verticalLayout_9">
         <item>
          <widget class="QGraphicsView" name="graphicsView"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>735</width>
+         <height>225</height>
+        </rect>
+       </property>
+       <attribute name="label">
+        <string>Графічная старонка 2</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_10">
+        <item>
+         <widget class="QGraphicsView" name="manipulativeView"/>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="button_zoomIn">
+            <property name="text">
+             <string>Zoom in</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_zoomOut">
+            <property name="text">
+             <string>Zoom out</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_rotateLeft">
+            <property name="text">
+             <string>Rotate left</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_rotateRight">
+            <property name="text">
+             <string>Rotate right</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_4">
+       <attribute name="label">
+        <string>Графічная старонка з віджатамі</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_11">
+        <item>
+         <widget class="QGraphicsView" name="widget_view"/>
         </item>
        </layout>
       </widget>

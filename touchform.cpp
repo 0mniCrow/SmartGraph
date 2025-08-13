@@ -759,3 +759,34 @@ void ElidedText::paintEvent(QPaintEvent* p_event)
     QPainter painter(this);
     painter.drawText(rect(),strElided);
 }
+
+QRectF LocItem::boundingRect() const
+{
+    QPointF pos(-10 -_pen_wdt_,-10-_pen_wdt_);
+    QSizeF size(20+_pen_wdt_*2,20+_pen_wdt_*2);
+    return QRectF(pos,size);
+}
+
+void LocItem::paint(QPainter* painter,
+                   const QStyleOptionGraphicsItem* style_opt,
+                   QWidget* ref_widget)
+{
+    Q_UNUSED(style_opt) Q_UNUSED(ref_widget)
+    painter->save();
+    painter->setPen(QPen(Qt::blue,_pen_wdt_));
+    painter->drawEllipse(-10,-10,20,20);
+    painter->restore();
+    return;
+}
+void LocItem::mousePressEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    QApplication::setOverrideCursor(Qt::PointingHandCursor);
+    QGraphicsItem::mousePressEvent(m_event);
+    return;
+}
+void LocItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    QApplication::restoreOverrideCursor();
+    QGraphicsItem::mouseReleaseEvent(m_event);
+    return;
+}

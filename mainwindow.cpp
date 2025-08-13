@@ -39,6 +39,16 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->tableView->setAttribute(Qt::WA_TransparentForMouseEvents);
     //ui->textEdit->setAttribute(Qt::WA_TransparentForMouseEvents);
 
+
+    loadGraphicScreen();
+    load2ndGraphicScreen();
+    loadWidgetGraphicScreen();
+    execute();
+}
+
+void MainWindow::execute()
+{
+
     //___________________________________Matrix graph__________________________
 
 //    graph(4),l_graph(3);
@@ -637,12 +647,6 @@ MainWindow::MainWindow(QWidget *parent)
 //    ui->textEdit->append("Current graph" + QString(hasNegCycle(n_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
 //    ui->textEdit->append(QString(actions.c_str()));
 
-    loadGraphicScreen();
-    execute();
-}
-
-void MainWindow::execute()
-{
     ui->textEdit->clear();
     //_________________________________________________Searching for n-sized cycles in directed graph_________________________________
 
@@ -688,6 +692,63 @@ void MainWindow::loadGraphicScreen()
     text_graphic->setParentItem(rect_graphic);
     ui->graphicsView->setScene(scene);
     ui->graphicsView->show();
+}
+
+void MainWindow::load2ndGraphicScreen()
+{
+    QGraphicsScene* scene = new QGraphicsScene(QRectF(-100,-100,500,500));
+    ui->manipulativeView->setRenderHint(QPainter::Antialiasing,true);
+    LocItem* item = new LocItem;
+    scene->addItem(item);
+    item->setPos(0,0);
+    item->setFlags(QGraphicsItem::ItemIsMovable);
+    QGraphicsPixmapItem* pixmap =
+            scene->addPixmap(QPixmap("tiny_dragon.png"));
+    pixmap->setParentItem(item);
+    pixmap->setFlags(QGraphicsItem::ItemIsMovable);
+    QObject::connect(ui->button_zoomIn,&QPushButton::clicked,this,&MainWindow::zoomIn);
+    QObject::connect(ui->button_zoomOut,&QPushButton::clicked,this,&MainWindow::zoomOut);
+    QObject::connect(ui->button_rotateLeft,&QPushButton::clicked,this,&MainWindow::rotateLeft);
+    QObject::connect(ui->button_rotateRight,&QPushButton::clicked,this,&MainWindow::rotateRight);
+    ui->manipulativeView->setScene(scene);
+    ui->manipulativeView->show();
+}
+
+void MainWindow::loadWidgetGraphicScreen()
+{
+    QGraphicsScene* scene = new QGraphicsScene(QRectF(0,0,400,400));
+    ui->widget_view->setScene(scene);
+    QPushButton* btn = new QPushButton("Quit");
+    QGraphicsProxyWidget* p_button = scene->addWidget(btn);
+    QTransform trans = p_button->transform();
+
+    trans.translate(100,350);
+    trans.rotate(-45,Qt::YAxis);
+    trans.scale(8,2);
+    p_button->setTransform(trans);
+    QObject::connect(btn,&QPushButton::clicked,this,&MainWindow::close);
+
+    QDial * dial = new QDial;
+    dial->setNotchesVisible(true);
+    p_button = scene->addWidget(dial);
+    trans = p_button->transform();
+    trans.scale(4,2);
+    trans.rotate(-45,Qt::YAxis);
+    p_button->setTransform(trans);
+
+    QProgressBar* bar = new QProgressBar;
+    bar->setFixedSize(500,40);
+    p_button = scene->addWidget(bar);
+    trans = p_button->transform();
+    trans.scale(2,2);
+    trans.rotate(80,Qt::YAxis);
+    trans.rotate(30,Qt::XAxis);
+    p_button->setTransform(trans);
+
+    QObject::connect(dial,&QDial::valueChanged,bar,&QProgressBar::setValue);
+    ui->widget_view->rotate(15);
+    ui->widget_view->resize(500,500);
+    ui->widget_view->show();
 }
 
 void MainWindow::setProgressBar(int val, int max)
@@ -996,4 +1057,25 @@ void MainWindow::tapGesture(QTapGesture* t_gesture)
                QString::number(t_gesture->position().y())+";\n");
     ui->label_gesture_type->setText(dir);
     update();
+}
+
+void MainWindow::zoomIn()
+{
+    ui->manipulativeView->scale(1.2,1.2);
+    return;
+}
+void MainWindow::zoomOut()
+{
+    ui->manipulativeView->scale(1/1.2,1/1.2);
+    return;
+}
+void MainWindow::rotateLeft()
+{
+    ui->manipulativeView->rotate(-10);
+    return;
+}
+void MainWindow::rotateRight()
+{
+    ui->manipulativeView->rotate(10);
+    return;
 }

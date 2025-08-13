@@ -9,6 +9,9 @@
 #include <QGesture>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QGraphicsView>
+#include <QGraphicsProxyWidget>
+#include <QDial>
 #include "vectorgraph.h"
 #include "listgraph.h"
 #include "Graph_algorithms.h"
@@ -49,6 +52,10 @@ public:
     ~MainWindow();
 public slots:
     void setProgressBar(int val, int max);
+    void zoomIn();
+    void zoomOut();
+    void rotateLeft();
+    void rotateRight();
 private slots:
     void execute();
 private:
@@ -58,6 +65,8 @@ private:
     MatrixModel * model;
     void keyPressEvent(QKeyEvent* pe) override;
     void loadGraphicScreen();
+    void load2ndGraphicScreen();
+    void loadWidgetGraphicScreen();
     Ui::MainWindow *ui;
 //    QGraphicsScene scene;
 };
