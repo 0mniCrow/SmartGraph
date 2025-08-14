@@ -18,6 +18,8 @@
 #include <QGraphicsOpacityEffect>
 #include <QFormLayout>
 #include <QGraphicsItem>
+#include <QMovie>
+#include <QTimer>
 
 
 namespace Ui {
@@ -72,6 +74,7 @@ private:
     QWidget wgt3;
     LocWidget wgt4;
     ElidedText wgt5;
+    QTimer timer;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);
     QImage brightness(const QImage& origImg, int brght);

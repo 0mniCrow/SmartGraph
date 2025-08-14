@@ -479,7 +479,7 @@
          <x>0</x>
          <y>0</y>
          <width>735</width>
-         <height>225</height>
+         <height>234</height>
         </rect>
        </property>
        <attribute name="label">
@@ -527,6 +527,14 @@
        </layout>
       </widget>
       <widget class="QWidget" name="page_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>735</width>
+         <height>225</height>
+        </rect>
+       </property>
        <attribute name="label">
         <string>Графічная старонка з віджатамі</string>
        </attribute>

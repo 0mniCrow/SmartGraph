@@ -636,6 +636,21 @@ void TouchForm::keyPressEvent(QKeyEvent* key_event)
         }
     }
         break;
+    case Qt::Key_Y:
+    {
+        QLabel * label = new QLabel;
+        QMovie * mov= new QMovie("animation.gif");
+
+        connect(&timer,&QTimer::timeout,label,&QWidget::close);
+        connect(&timer,&QTimer::timeout,label,&QObject::deleteLater);
+        connect(&timer,&QTimer::timeout,mov,&QObject::deleteLater);
+        mov->start();
+        label->setMovie(mov);
+        label->resize(mov->frameRect().size());
+        label->show();
+        timer.start(4000);
+    }
+        break;
     default:
     {
         QWidget::keyPressEvent(key_event);
