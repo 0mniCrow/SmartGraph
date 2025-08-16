@@ -10,7 +10,7 @@
 class GraphEdge;
 using local_val_type = int;
 using local_id_type = uint;
-using edge_ptr = std::weak_ptr<GraphEdge*>;
+using edge_ptr = GraphEdge*;//std::weak_ptr<GraphEdge*>;
 
 class GraphNode:public QGraphicsItem
 {
@@ -29,6 +29,8 @@ public:
     void removeEdge(edge_ptr edge);
     void removeEdge(uint linked_id);
     void setValue(const local_val_type& value);
+    enum {NodeType = UserType+1};
+    int type() const override {return NodeType;}
     QList<edge_ptr> edges() const;
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

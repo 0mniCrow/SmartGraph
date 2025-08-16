@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     Graph_algorithms.cpp \
+    graphedge.cpp \
     graphnode.cpp \
     listgraph.cpp \
     main.cpp \
@@ -22,6 +23,7 @@ SOURCES += \
 HEADERS += \
     Graph_algorithms.h \
     Graph_algorithms_supply.h \
+    graphedge.h \
     graphnode.h \
     listgraph.h \
     mainwindow.h \
