@@ -23,6 +23,8 @@ private:
 public:
     explicit GraphNode(local_id_type id);
     local_id_type getId() const;
+    void calculateForces();
+    bool advancePosition();
     void setId(const local_id_type& id);
     void addEdge(edge_ptr edge);
     void addEdge(const local_id_type& linked_id);

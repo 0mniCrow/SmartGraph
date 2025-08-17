@@ -12,6 +12,7 @@ SOURCES += \
     Graph_algorithms.cpp \
     graphedge.cpp \
     graphnode.cpp \
+    graphwidget.cpp \
     listgraph.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     Graph_algorithms_supply.h \
     graphedge.h \
     graphnode.h \
+    graphwidget.h \
     listgraph.h \
     mainwindow.h \
     matrixmodel.h \
