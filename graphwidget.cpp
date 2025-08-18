@@ -16,15 +16,15 @@ GraphWidget::GraphWidget(QWidget *tata):QGraphicsView(tata)
     setMinimumSize(400,400);
     setWindowTitle(tr("Elastic Nodes"));
 
-    GraphNode* node1 = new GraphNode(1);
-    GraphNode* node2 = new GraphNode(2);
-    GraphNode* node3 = new GraphNode(3);
-    GraphNode* node4 = new GraphNode(4);
-    _centralNode_ = new GraphNode(0);
-    GraphNode* node5 = new GraphNode(5);
-    GraphNode* node6 = new GraphNode(6);
-    GraphNode* node7 = new GraphNode(7);
-    GraphNode* node8 = new GraphNode(8);
+    GraphNode* node1 = new GraphNode(1,this);
+    GraphNode* node2 = new GraphNode(2,this);
+    GraphNode* node3 = new GraphNode(3,this);
+    GraphNode* node4 = new GraphNode(4,this);
+    _centralNode_ = new GraphNode(0,this);
+    GraphNode* node5 = new GraphNode(5,this);
+    GraphNode* node6 = new GraphNode(6,this);
+    GraphNode* node7 = new GraphNode(7,this);
+    GraphNode* node8 = new GraphNode(8,this);
 
     scene->addItem(node1);
     scene->addItem(node2);
@@ -66,6 +66,32 @@ void GraphWidget::itemMoved()
     {
         _timerID_ = startTimer(1000/25);
     }
+}
+
+void GraphWidget::shuffle()
+{
+    const QList<QGraphicsItem*> items = scene()->items();
+    for(QGraphicsItem* item: items)
+    {
+        if(qgraphicsitem_cast<GraphNode*>(item))
+        {
+            item->setPos(-150+QRandomGenerator::global()->bounded(300),
+                         -150+QRandomGenerator::global()->bounded(300));
+        }
+    }
+    return;
+}
+
+void GraphWidget::zoomIn()
+{
+    scaleView(qreal(1.2));
+    return;
+}
+
+void GraphWidget::zoomOut()
+{
+    scaleView(qreal(1.2));
+    return;
 }
 
 void GraphWidget::keyPressEvent(QKeyEvent* k_event)
@@ -127,9 +153,15 @@ void GraphWidget::timerEvent(QTimerEvent* t_event)
     const QList<QGraphicsItem*> items = scene()->items();
     for(QGraphicsItem* item: items)
     {
-        if(GraphNode* node = qgraphicsitem_cast<GraphNode*>(item))
+        GraphNode* node = nullptr;
+        node = qgraphicsitem_cast<GraphNode*>(item);
+        if(node)
         {
             nodes.append(node);
+            if(node->type()==GraphEdge::EdgeType)
+            {
+                nodes.pop_back();
+            }
         }
     }
 

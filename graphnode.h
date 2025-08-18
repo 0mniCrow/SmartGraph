@@ -8,6 +8,7 @@
 #include <QStyleOptionGraphicsItem>
 
 class GraphEdge;
+class GraphWidget;
 using local_val_type = int;
 using local_id_type = uint;
 using edge_ptr = GraphEdge*;//std::weak_ptr<GraphEdge*>;
@@ -19,17 +20,18 @@ private:
     QList<edge_ptr> _edges_;
     QPointF _next_position_;
     local_val_type _value_;
+    GraphWidget * _graph_;
     bool _is_hovered_;
 public:
-    explicit GraphNode(local_id_type id);
+    explicit GraphNode(local_id_type id, GraphWidget* graph);
     local_id_type getId() const;
     void calculateForces();
     bool advancePosition();
     void setId(const local_id_type& id);
     void addEdge(edge_ptr edge);
-    void addEdge(const local_id_type& linked_id);
+//    void addEdge(const local_id_type& linked_id);
     void removeEdge(edge_ptr edge);
-    void removeEdge(uint linked_id);
+//    void removeEdge(uint linked_id);
     void setValue(const local_val_type& value);
     enum {NodeType = UserType+1};
     int type() const override {return NodeType;}

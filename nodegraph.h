@@ -18,17 +18,17 @@ using std::pair;
 using std::queue;
 
 template< typename I,typename T>
-struct GraphNode
+struct Graph_Node
 {
     I _id_;
     T _value_;
-    vector<std::pair<std::weak_ptr<GraphNode>,int>> _edges_;
-    GraphNode():_id_(I()),_value_(T()){}
-    GraphNode(I i):_id_(i),_value_(T()){}
-    GraphNode(I i, T t):_id_(i),_value_(t){}
+    vector<std::pair<std::weak_ptr<Graph_Node>,int>> _edges_;
+    Graph_Node():_id_(I()),_value_(T()){}
+    Graph_Node(I i):_id_(i),_value_(T()){}
+    Graph_Node(I i, T t):_id_(i),_value_(t){}
 };
 
-using ref_node = GraphNode<cur_id_type,cur_node_type>;
+using ref_node = Graph_Node<cur_id_type,cur_node_type>;
 using shar_r_node = std::shared_ptr<ref_node>;
 using nodevector = vector<shar_r_node>;
 using nodepointer = std::weak_ptr<ref_node>;

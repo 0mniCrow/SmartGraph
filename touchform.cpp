@@ -99,6 +99,11 @@ TouchForm::TouchForm(QWidget *parent) :
     wgt4.setLayout(vert_layout);
 
     wgt5.resize(200,20);
+
+    GraphWidget *grphwgt = new GraphWidget();
+    QVBoxLayout* grpLayout = new QVBoxLayout();
+    grpLayout->addWidget(grphwgt);
+    grphwidget.setLayout(grpLayout);
 }
 
 void TouchForm::wgt_show()
@@ -649,6 +654,15 @@ void TouchForm::keyPressEvent(QKeyEvent* key_event)
         label->resize(mov->frameRect().size());
         label->show();
         timer.start(4000);
+    }
+        break;
+    case Qt::Key_A:
+    {
+        if(key_event->modifiers()&Qt::ControlModifier)
+        {
+            grphwidget.show();
+            key_event->accept();
+        }
     }
         break;
     default:

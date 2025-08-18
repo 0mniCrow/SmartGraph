@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsView>
 #include <QKeyEvent>
+#include <QRandomGenerator>
 
 class GraphNode;
 

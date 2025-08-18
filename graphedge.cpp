@@ -52,14 +52,19 @@ QRectF GraphEdge::boundingRect() const
 
     qreal penWidth = 1;
     qreal extra = (penWidth+_arrowSize_)/2.0;
-    return QRectF(_source_coord_,QSizeF(_dest_coord_.x()-_source_coord_.x(),
-                                        _dest_coord_.y()-_source_coord_.y())).normalized().adjusted(
-                -extra,-extra,extra,extra);
+    return QRectF(_source_coord_,
+                  QSizeF(_dest_coord_.x()-_source_coord_.x(),
+                         _dest_coord_.y()-_source_coord_.y())
+                  ).
+            normalized().
+            adjusted(-extra,-extra,extra,extra);
 }
 void GraphEdge::paint(QPainter* painter,
                       const QStyleOptionGraphicsItem* option,
                       QWidget* widget)
 {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
     if(!_source_node_||!_dest_node_)
     {
         return;
@@ -85,4 +90,5 @@ void GraphEdge::paint(QPainter* painter,
     painter->setBrush(Qt::black);
     painter->drawPolygon(QPolygonF()<<line.p1()<<sourceArrowP1<<sourceArrowP2);
     painter->drawPolygon(QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
+    return;
 }

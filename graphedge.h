@@ -25,7 +25,9 @@ public:
     int type() const override {return EdgeType;}
 protected:
     QRectF boundingRect() const override;
-    void paint(QPainter* painter,const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
 
 };
 

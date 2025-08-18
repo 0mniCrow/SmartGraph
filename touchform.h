@@ -20,7 +20,7 @@
 #include <QGraphicsItem>
 #include <QMovie>
 #include <QTimer>
-
+#include "graphwidget.h"
 
 namespace Ui {
 class TouchForm;
@@ -74,6 +74,7 @@ private:
     QWidget wgt3;
     LocWidget wgt4;
     ElidedText wgt5;
+    QWidget grphwidget;
     QTimer timer;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);
