@@ -1,7 +1,10 @@
 #include "graphedge.h"
 #include "graphnode.h"
 
-GraphEdge::GraphEdge(GraphNode* src, GraphNode* dst, bool directed):_source_node_(src),_dest_node_(dst),_directed_(directed)
+GraphEdge::GraphEdge(GraphNode* src, GraphNode* dst, bool directed):
+    _source_node_(src),
+    _dest_node_(dst),
+    _directed_(directed)
 {
     setAcceptedMouseButtons(Qt::NoButton);
     src->addEdge(this);

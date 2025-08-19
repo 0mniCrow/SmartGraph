@@ -3,10 +3,27 @@
 
 #include <QObject>
 #include <QGraphicsView>
+#include <QGraphicsItem>
 #include <QKeyEvent>
 #include <QRandomGenerator>
+#include <QGraphicsSceneMouseEvent>
 
 class GraphNode;
+
+class CustomGScene:public QGraphicsScene
+{
+public:
+    CustomGScene(QObject* tata):QGraphicsScene(tata){}
+protected:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event) override
+    {
+        qDebug()<<m_event;
+        QGraphicsItem* item = nullptr;
+        item = itemAt(m_event->pos(),views().at(0)->transform());
+        qDebug()<< item;
+        QGraphicsScene::mouseReleaseEvent(m_event);
+    }
+};
 
 class GraphWidget: public QGraphicsView
 {
@@ -24,6 +41,7 @@ public slots:
 protected:
     void keyPressEvent(QKeyEvent* event) override;
     void timerEvent(QTimerEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
 #if QT_CONFIG(wheelevent)
     void wheelEvent(QWheelEvent* event) override;
 #endif

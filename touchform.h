@@ -26,6 +26,21 @@ namespace Ui {
 class TouchForm;
 }
 
+class SimpleGItem:public QGraphicsItem
+{
+private:
+    QString _text_;
+public:
+    SimpleGItem();
+protected:
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
+
+};
+
 class LocItem:public QGraphicsItem
 {
 private:

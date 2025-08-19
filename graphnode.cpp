@@ -8,7 +8,9 @@ GraphNode::GraphNode(local_id_type id, GraphWidget* graph):
     _graph_(graph),
     _is_hovered_(false)
 {
-    setFlags(ItemIsMovable);
+    setFlag(ItemIsMovable, true);
+    setFlag(ItemIsFocusable,true);
+    setAcceptHoverEvents(true);
     setFlags(ItemSendsGeometryChanges);
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
@@ -28,7 +30,7 @@ void GraphNode::setId(const local_id_type& id)
 void GraphNode::addEdge(edge_ptr edge)
 {
     _edges_.append(edge);
-    //edge.lock()->adjust();
+    edge->adjust();
     ///TODO: праверка на існаваньне сувязі.
     return;
 }
@@ -143,18 +145,19 @@ void GraphNode::calculateForces()
 
 bool GraphNode::advancePosition()
 {
-    if(_next_position_!=pos())
+    if(_next_position_==pos())
     {
-        setPos(_next_position_);
-        return true;
+        return false;
     }
-    return false;
+    setPos(_next_position_);
+    return true;
+
 }
 
 QRectF GraphNode::boundingRect() const
 {
     qreal adjust = 2;
-    return QRectF(-10-adjust, -1-adjust,23+adjust,23+adjust);
+    return QRectF(-10-adjust, -10-adjust,23+adjust,23+adjust);
 }
 
 QPainterPath GraphNode::shape() const
@@ -167,16 +170,16 @@ QPainterPath GraphNode::shape() const
 void GraphNode::paint(QPainter * painter,const QStyleOptionGraphicsItem * option, QWidget * widget)
 {
     Q_UNUSED(widget)
-    if(_is_hovered_)
-    {
-        painter->setPen(QPen(Qt::red,2));
-        painter->setBrush(Qt::white);
-    }
-    else
-    {
+//    if(_is_hovered_)
+//    {
+//        painter->setPen(QPen(Qt::red,2));
+//        painter->setBrush(Qt::white);
+//    }
+//    else
+//    {
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::darkGray);
-    }
+//    }
     painter->drawEllipse(-7,-7,20,20);
     QRadialGradient gradient(-3,-3,10);
     if(option->state & QStyle::State_Sunken)
@@ -221,27 +224,29 @@ QVariant GraphNode::itemChange(GraphicsItemChange change, const QVariant& value)
 
 void GraphNode::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 {
+    qDebug()<<m_event;
     update();
     QGraphicsItem::mousePressEvent(m_event);
     return;
 }
 void GraphNode::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
+    qDebug()<<m_event;
     update();
     QGraphicsItem::mouseReleaseEvent(m_event);
     return;
 }
 
-void GraphNode::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
-{
-    Q_UNUSED(h_event)
-    _is_hovered_ = true;
-    return;
-}
-void GraphNode::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
-{
-    Q_UNUSED(h_event)
-    _is_hovered_ = false;
-    return;
-}
+//void GraphNode::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
+//{
+//    Q_UNUSED(h_event)
+//    _is_hovered_ = true;
+//    return;
+//}
+//void GraphNode::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
+//{
+//    Q_UNUSED(h_event)
+//    _is_hovered_ = false;
+//    return;
+//}
 

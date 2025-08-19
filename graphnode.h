@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
 
 class GraphEdge;
 class GraphWidget;
@@ -33,8 +34,8 @@ public:
     void removeEdge(edge_ptr edge);
 //    void removeEdge(uint linked_id);
     void setValue(const local_val_type& value);
-    enum {NodeType = UserType+1};
-    int type() const override {return NodeType;}
+    enum {Type = UserType+1};
+    int type() const override {return Type;}
     QList<edge_ptr> edges() const;
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -45,8 +46,8 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
 
-    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
+//    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
+//    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
 };
 
 #endif // GRAPHNODE_H

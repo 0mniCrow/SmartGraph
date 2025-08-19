@@ -4,7 +4,8 @@
 
 GraphWidget::GraphWidget(QWidget *tata):QGraphicsView(tata)
 {
-    QGraphicsScene* scene = new QGraphicsScene(this);
+    //QGraphicsScene* scene = new QGraphicsScene(this);
+    CustomGScene* scene = new CustomGScene(this);
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     scene->setSceneRect(-200,-200,400,400);
     setScene(scene);
@@ -136,12 +137,10 @@ void GraphWidget::keyPressEvent(QKeyEvent* k_event)
         break;
     default:
     {
-        k_event->ignore();
+        //k_event->ignore();
         QGraphicsView::keyPressEvent(k_event);
-        return;
     }
     }
-    k_event->accept();
     return;
 }
 
@@ -153,14 +152,12 @@ void GraphWidget::timerEvent(QTimerEvent* t_event)
     const QList<QGraphicsItem*> items = scene()->items();
     for(QGraphicsItem* item: items)
     {
-        GraphNode* node = nullptr;
-        node = qgraphicsitem_cast<GraphNode*>(item);
-        if(node)
+        if(item->type()==GraphNode::Type)
         {
-            nodes.append(node);
-            if(node->type()==GraphEdge::EdgeType)
+            GraphNode* node= qgraphicsitem_cast<GraphNode*>(item);
+            if(node)
             {
-                nodes.pop_back();
+                nodes.append(node);
             }
         }
     }
@@ -240,3 +237,12 @@ void GraphWidget::scaleView(qreal scaleFactor)
     }
     scale(scaleFactor,scaleFactor);
 }
+
+
+void GraphWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    //qDebug()<<event;
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
+

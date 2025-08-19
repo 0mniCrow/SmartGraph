@@ -101,6 +101,8 @@ TouchForm::TouchForm(QWidget *parent) :
     wgt5.resize(200,20);
 
     GraphWidget *grphwgt = new GraphWidget();
+    SimpleGItem* item = new SimpleGItem();
+    grphwgt->scene()->addItem(item);
     QVBoxLayout* grpLayout = new QVBoxLayout();
     grpLayout->addWidget(grphwgt);
     grphwidget.setLayout(grpLayout);
@@ -817,5 +819,32 @@ void LocItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event)
 {
     QApplication::restoreOverrideCursor();
     QGraphicsItem::mouseReleaseEvent(m_event);
+    return;
+}
+
+SimpleGItem::SimpleGItem()
+{
+    setFlags(ItemIsMovable);
+    return;
+}
+
+
+QRectF SimpleGItem::boundingRect() const
+{
+    return QRectF(-11, -11,21,21);
+}
+QPainterPath SimpleGItem::shape() const
+{
+    QPainterPath path;
+    path.addEllipse(boundingRect());
+    return path;
+}
+void SimpleGItem::paint(QPainter* painter,
+           const QStyleOptionGraphicsItem* option,
+           QWidget* widget)
+{
+    Q_UNUSED(option) Q_UNUSED(widget)
+    painter->setPen(QPen(Qt::black,1));
+    painter->drawEllipse(-10,-10,20,20);
     return;
 }

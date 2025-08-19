@@ -21,8 +21,8 @@ public:
     GraphNode* destNode() const;
 
     void adjust();
-    enum {EdgeType = UserType+2};
-    int type() const override {return EdgeType;}
+    enum {Type = UserType+2};
+    int type() const override {return Type;}
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter,
