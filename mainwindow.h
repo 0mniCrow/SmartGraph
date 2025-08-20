@@ -17,6 +17,7 @@
 #include "Graph_algorithms.h"
 #include "matrixmodel.h"
 #include "touchform.h"
+#include "visualisationgraphform.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -65,6 +66,7 @@ private:
 //    VectorGraph graph;
 //    ListGraph l_graph;
     TouchForm * touchform;
+    VisualisationGraphForm *vis_form;
     MatrixModel * model;
     void keyPressEvent(QKeyEvent* pe) override;
     void loadGraphicScreen();

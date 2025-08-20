@@ -3,7 +3,7 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),touchform(new TouchForm())
+    : QMainWindow(parent),touchform(new TouchForm()),vis_form(new VisualisationGraphForm())
     , ui(new Ui::MainWindow)
 {
 
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     grabGesture(Qt::PinchGesture);
     grabGesture(Qt::SwipeGesture);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
+    connect(ui->Button_vis_Form,&QPushButton::clicked,vis_form,&QWidget::show);
     //connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&TouchForm::wgt_show);
     ui->line_MouseStatus->setAlignment(Qt::AlignCenter);    ui->line_MouseStatus->setText("(mouse actions require)");
     ui->line_ButtonsPressed->setAlignment(Qt::AlignCenter); ui->line_ButtonsPressed->setText("(mouse actions require)");
@@ -761,6 +762,11 @@ MainWindow::~MainWindow()
     {
         touchform->close();
         delete touchform;
+    }
+    if(vis_form)
+    {
+        vis_form->close();
+        delete vis_form;
     }
     delete ui;
 }

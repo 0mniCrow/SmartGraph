@@ -8,10 +8,10 @@ GraphNode::GraphNode(local_id_type id, GraphWidget* graph):
     _graph_(graph),
     _is_hovered_(false)
 {
-    setFlag(ItemIsMovable, true);
-    setFlag(ItemIsFocusable,true);
-    setAcceptHoverEvents(true);
-    setFlags(ItemSendsGeometryChanges);
+//    setFlag(ItemIsMovable, true);
+//    setFlag(ItemIsFocusable,true);
+//    setAcceptHoverEvents(true);
+    setFlags(ItemSendsGeometryChanges|ItemIsMovable);
     setCacheMode(DeviceCoordinateCache);
     setZValue(-1);
     return;

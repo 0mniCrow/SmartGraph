@@ -19,7 +19,7 @@ protected:
     {
         qDebug()<<m_event;
         QGraphicsItem* item = nullptr;
-        item = itemAt(m_event->pos(),views().at(0)->transform());
+        item = itemAt(m_event->scenePos(),QTransform());
         qDebug()<< item;
         QGraphicsScene::mouseReleaseEvent(m_event);
     }

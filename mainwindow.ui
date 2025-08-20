@@ -423,6 +423,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="Button_vis_Form">
+        <property name="text">
+         <string>Open visual form</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>

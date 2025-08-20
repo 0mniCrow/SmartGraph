@@ -13,13 +13,17 @@ SOURCES += \
     graphedge.cpp \
     graphnode.cpp \
     graphwidget.cpp \
+    gviewitem.cpp \
+    gviewport.cpp \
+    gviewscene.cpp \
     listgraph.cpp \
     main.cpp \
     mainwindow.cpp \
     matrixmodel.cpp \
     nodegraph.cpp \
     touchform.cpp \
-    vectorgraph.cpp
+    vectorgraph.cpp \
+    visualisationgraphform.cpp
 
 HEADERS += \
     Graph_algorithms.h \
@@ -27,16 +31,21 @@ HEADERS += \
     graphedge.h \
     graphnode.h \
     graphwidget.h \
+    gviewitem.h \
+    gviewport.h \
+    gviewscene.h \
     listgraph.h \
     mainwindow.h \
     matrixmodel.h \
     nodegraph.h \
     touchform.h \
-    vectorgraph.h
+    vectorgraph.h \
+    visualisationgraphform.h
 
 FORMS += \
     mainwindow.ui \
-    touchform.ui
+    touchform.ui \
+    visualisationgraphform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
