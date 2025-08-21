@@ -25,6 +25,7 @@ public:
 
 private slots:
     void AddObject();
+    void RemoveObject();
 };
 
 #endif // VISUALISATIONGRAPHFORM_H

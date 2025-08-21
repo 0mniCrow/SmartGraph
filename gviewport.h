@@ -15,9 +15,12 @@ class GViewPort:public QGraphicsView
 {
 private:
     bool _add_mode_;
+    bool _delete_mode_;
 public:
     GViewPort(QWidget* tata = nullptr);
     void changeAddMode(bool mode);
+    void changeDeleteMode(bool mode);
+    bool deleteMode()const{return _delete_mode_;}
     bool addMode()const{return _add_mode_;}
 protected:
     void mouseReleaseEvent(QMouseEvent* m_event);
