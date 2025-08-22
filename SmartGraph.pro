@@ -13,6 +13,7 @@ SOURCES += \
     graphedge.cpp \
     graphnode.cpp \
     graphwidget.cpp \
+    gviewedge.cpp \
     gviewitem.cpp \
     gviewport.cpp \
     gviewscene.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     graphedge.h \
     graphnode.h \
     graphwidget.h \
+    gviewedge.h \
     gviewitem.h \
     gviewport.h \
     gviewscene.h \
