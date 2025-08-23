@@ -34,3 +34,8 @@ void GViewScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event)
     QGraphicsScene::mouseReleaseEvent(m_event);
     return;
 }
+
+void GViewScene::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    return;
+}

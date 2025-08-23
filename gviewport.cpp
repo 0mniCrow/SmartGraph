@@ -43,6 +43,11 @@ void GViewPort::changeDeleteMode(bool mode)
     return;
 }
 
+void GViewPort::changeMouseTrackMode(bool mode)
+{
+    setMouseTracking(mode);
+}
+
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 {
 //    if(_add_mode_)
