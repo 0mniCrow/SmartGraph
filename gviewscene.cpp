@@ -1,6 +1,6 @@
 #include "gviewscene.h"
 
-GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata),_add_mode_(false)
+GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata),_add_mode_(false),_create_edge_mode_(false)
 {
 
 }
@@ -31,11 +31,22 @@ void GViewScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event)
         QApplication::restoreOverrideCursor();
         _add_mode_ = false;
     }
+    else if(_create_edge_mode_)
+    {
+
+    }
     QGraphicsScene::mouseReleaseEvent(m_event);
     return;
 }
 
 void GViewScene::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
+    if(_create_edge_mode_)
+    {
+        if(!_src_4_edge_)
+        {
+
+        }
+    }
     return;
 }

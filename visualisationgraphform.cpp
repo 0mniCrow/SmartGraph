@@ -15,6 +15,7 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     ui->group_forGView->setLayout(layout);
     connect(ui->button_GView_add,&QPushButton::clicked,this,&VisualisationGraphForm::AddObject);
     connect(ui->button_GView_remove,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveObject);
+    connect(ui->button_AddEdge,&QPushButton::clicked,this,&VisualisationGraphForm::CreateEdge);
 }
 
 VisualisationGraphForm::~VisualisationGraphForm()
@@ -32,4 +33,9 @@ void VisualisationGraphForm::AddObject()
 void VisualisationGraphForm::RemoveObject()
 {
     _view_->changeDeleteMode(true);
+}
+
+void VisualisationGraphForm::CreateEdge()
+{
+
 }
