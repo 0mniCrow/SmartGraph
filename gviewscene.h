@@ -2,6 +2,7 @@
 #define GVIEWSCENE_H
 
 #include "gviewitem.h"
+#include "
 #include <QGraphicsScene>
 #include <QApplication>
 #include <QColor>

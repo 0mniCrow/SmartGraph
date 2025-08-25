@@ -16,11 +16,14 @@ class GViewPort:public QGraphicsView
 private:
     bool _add_mode_;
     bool _delete_mode_;
+    bool _add_edge_mode_;
+    GViewEdge* _new_edge_;
 public:
     GViewPort(QWidget* tata = nullptr);
     void changeAddMode(bool mode);
     void changeDeleteMode(bool mode);
     void changeMouseTrackMode(bool mode);
+    void createEdge();
     bool deleteMode()const{return _delete_mode_;}
     bool addMode()const{return _add_mode_;}
 protected:

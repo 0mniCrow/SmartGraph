@@ -1,4 +1,5 @@
 #include "gviewitem.h"
+#include "gviewedge.h"
 
 GViewItem::GViewItem(const QString &info,
                      const QColor &color):
@@ -35,6 +36,11 @@ QColor GViewItem::color()const
     return _color_;
 }
 
+void GViewItem::addEdge(GViewEdge* edge)
+{
+    _edges_.append(edge);
+    return;
+}
 
 QRectF GViewItem::boundingRect() const
 {

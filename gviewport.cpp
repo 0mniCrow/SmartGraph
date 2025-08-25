@@ -1,7 +1,7 @@
 #include "gviewport.h"
 
 GViewPort::GViewPort(QWidget *tata):QGraphicsView(tata),
-    _add_mode_(false),_delete_mode_(false)
+    _add_mode_(false),_delete_mode_(false),_add_edge_mode_(false)
 {
     return;
 }
@@ -81,6 +81,31 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
             _delete_mode_=true;
         }
     }
+    else if(_add_edge_mode_)
+    {
+        GViewScene* cur_scene = dynamic_cast<GViewScene*>(scene());
+        if(!cur_scene->edgeMode())
+        {
+            QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
+            if(base_item)
+            {
+                GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
+                if(item)
+                {
+
+                }
+            }
+        }
+        else
+        {
+
+        }
+    }
     QGraphicsView::mouseReleaseEvent(m_event);
     return;
+}
+
+void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
+{
+
 }

@@ -12,13 +12,18 @@ private:
     GViewItem* _src_item_;
     GViewItem* _dest_item_;
     bool _directed_;
+    bool _incomplete_;
 public:
     GViewEdge(GViewItem* source,
               GViewItem* destination,
               bool directed = false);
+    GViewEdge(GViewItem* source, bool direction = false);
     GViewItem* source() const;
     GViewItem* destination() const;
+    GViewItem* setSource(GViewItem* new_src);
+    GViewItem* setDest(GViewItem* new_dest);
     void recalculate();
+    void searchDestination(const QPointF& point);
     enum {Type = UserType+2};
     int type() const override {return Type;}
 protected:

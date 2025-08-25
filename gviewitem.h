@@ -5,7 +5,7 @@
 #include <QGraphicsItem>
 #include <QColor>
 #include <QPainter>
-
+class GViewEdge;
 
 class GViewItem:public QGraphicsItem
 {
@@ -14,9 +14,12 @@ private:
     QColor _color_;
     bool _is_hovered_;
     bool _is_clicked_;
+    QVector<GViewEdge*> _edges_;
+
 public:
     GViewItem(const QString& info = QString(), const QColor& color = QColor());
     GViewItem(const QColor& color);
+    void addEdge(GViewEdge* edge);
     void setColor(const QColor& color);
     void setInfo(const QString& info);
     QString info()const;

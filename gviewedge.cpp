@@ -5,9 +5,17 @@ GViewEdge::GViewEdge(GViewItem *source,
                      bool directed):
     _src_item_(source),_dest_item_(destination),_directed_(directed)
 {
+    _incomplete_ = false;
     return;
 }
 
+GViewEdge::GViewEdge(GViewItem* source, bool direction):
+    _src_item_(source),_directed_(direction)
+{
+    _incomplete_ = true;
+    _dest_item_ = nullptr;
+    return;
+}
 
 GViewItem* GViewEdge::source() const
 {
@@ -17,6 +25,24 @@ GViewItem* GViewEdge::source() const
 GViewItem* GViewEdge::destination() const
 {
     return _dest_item_;
+}
+
+GViewItem* GViewEdge::setSource(GViewItem* new_src)
+{
+    GViewItem* prev_item = _src_item_;
+    _src_item_ = new_src;
+    return prev_item;
+}
+
+GViewItem* GViewEdge::setDest(GViewItem* new_dest)
+{
+    if(_incomplete_)
+    {
+        _incomplete_ = false;
+    }
+    GViewItem* prev_item = _dest_item_;
+    _dest_item_ = new_dest;
+    return prev_item;
 }
 
 void GViewEdge::recalculate()
@@ -43,11 +69,44 @@ void GViewEdge::recalculate()
     return;
 }
 
+void GViewEdge::searchDestination(const QPointF& point)
+{
+    if(!_src_item_)
+    {
+        return;
+    }
+    QLineF line(mapFromItem(_src_item_,0,0),mapFromScene(point));
+    qreal length = line.length();
+
+    prepareGeometryChange();
+    if(length>qreal(20.0))
+    {
+        QPointF edgeOffset((line.dx()*10)/length,(line.dy()*10/length));
+        _src_point_ = line.p1()+edgeOffset;
+        _dest_point_ = line.p2();
+    }
+    else
+    {
+        _src_point_ = _dest_point_ = line.p1();
+    }
+    return;
+}
+
 QRectF GViewEdge::boundingRect() const
 {
-    if(!_src_item_||!_dest_item_)
+    if(_incomplete_)
     {
-        return QRectF();
+        if(!_src_item_)
+        {
+            return QRectF();
+        }
+    }
+    else
+    {
+        if(!_src_item_||!_dest_item_)
+        {
+            return QRectF();
+        }
     }
 
     qreal penWidth = 1;
@@ -59,15 +118,26 @@ QRectF GViewEdge::boundingRect() const
             normalized().
             adjusted(-extra,-extra,extra,extra);
 }
+
 void GViewEdge::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    if(!_src_item_||!_dest_item_)
+    if(_incomplete_)
     {
-        return;
+        if(!_src_item_)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if(!_src_item_||!_dest_item_)
+        {
+            return;
+        }
     }
     QLineF line(_src_point_,_dest_point_);
     if(qFuzzyCompare(line.length(),qreal(0.0)))
