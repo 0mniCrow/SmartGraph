@@ -37,5 +37,5 @@ void VisualisationGraphForm::RemoveObject()
 
 void VisualisationGraphForm::CreateEdge()
 {
-
+    _view_->changeAddEdgeMode(true);
 }

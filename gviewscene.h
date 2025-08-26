@@ -2,7 +2,7 @@
 #define GVIEWSCENE_H
 
 #include "gviewitem.h"
-#include "
+#include "gviewedge.h"
 #include <QGraphicsScene>
 #include <QApplication>
 #include <QColor>
@@ -24,7 +24,7 @@ public:
     void setEdgeMode(bool edge_mode);
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+    //void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
 };
 
 #endif // GVIEWSCENE_H

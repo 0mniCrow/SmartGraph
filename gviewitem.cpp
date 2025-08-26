@@ -6,7 +6,7 @@ GViewItem::GViewItem(const QString &info,
     _info_(info),_color_(color),
     _is_hovered_(false),_is_clicked_(false)
 {
-    setFlags(ItemIsMovable);
+    setFlags(ItemSendsGeometryChanges|ItemIsMovable);
     return;
 }
 
@@ -39,6 +39,7 @@ QColor GViewItem::color()const
 void GViewItem::addEdge(GViewEdge* edge)
 {
     _edges_.append(edge);
+    edge->recalculate();
     return;
 }
 
@@ -97,6 +98,27 @@ void GViewItem::paint(QPainter* painter,
           <<workingRect.bottomLeft();
     painter->drawPolygon(triangle);
     painter->restore();
+}
+
+QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    switch(change)
+    {
+    case ItemPositionHasChanged:
+    {
+        for(GViewEdge* edge:_edges_)
+        {
+            edge->recalculate();
+        }
+    }
+        break;
+    default:
+    {
+        ///...
+    }
+        break;
+    }
+    return QGraphicsItem::itemChange(change,value);
 }
 
 void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)

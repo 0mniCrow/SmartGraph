@@ -22,8 +22,7 @@ public:
     GViewPort(QWidget* tata = nullptr);
     void changeAddMode(bool mode);
     void changeDeleteMode(bool mode);
-    void changeMouseTrackMode(bool mode);
-    void createEdge();
+    void changeAddEdgeMode(bool mode);
     bool deleteMode()const{return _delete_mode_;}
     bool addMode()const{return _add_mode_;}
 protected:

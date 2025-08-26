@@ -3,6 +3,7 @@
 GViewPort::GViewPort(QWidget *tata):QGraphicsView(tata),
     _add_mode_(false),_delete_mode_(false),_add_edge_mode_(false)
 {
+    _new_edge_=  nullptr;
     return;
 }
 
@@ -43,9 +44,10 @@ void GViewPort::changeDeleteMode(bool mode)
     return;
 }
 
-void GViewPort::changeMouseTrackMode(bool mode)
+void GViewPort::changeAddEdgeMode(bool mode)
 {
-    setMouseTracking(mode);
+    _add_edge_mode_ = mode;
+    return;
 }
 
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
@@ -83,8 +85,8 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     }
     else if(_add_edge_mode_)
     {
-        GViewScene* cur_scene = dynamic_cast<GViewScene*>(scene());
-        if(!cur_scene->edgeMode())
+        //GViewScene* cur_scene = dynamic_cast<GViewScene*>(scene());
+        if(!_new_edge_)
         {
             QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
             if(base_item)
@@ -92,13 +94,33 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
                 GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
                 if(item)
                 {
+                    _new_edge_ = new GViewEdge(item);
+                    scene()->addItem(_new_edge_);
+                    setMouseTracking(true);
+                    //cur_scene->setEdgeMode(true);
 
                 }
             }
         }
         else
         {
-
+            QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
+            if(base_item)
+            {
+                GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
+                if(item)
+                {
+                    if(_new_edge_->source()!=item)
+                    {
+                        _new_edge_->setDest(item);
+                        _new_edge_->source()->addEdge(_new_edge_);
+                        _new_edge_->destination()->addEdge(_new_edge_);
+                        setMouseTracking(false);
+                        _add_edge_mode_ = false;
+                        _new_edge_ = nullptr;
+                    }
+                }
+            }
         }
     }
     QGraphicsView::mouseReleaseEvent(m_event);
@@ -107,5 +129,10 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 
 void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
 {
-
+    if(_add_edge_mode_&&_new_edge_)
+    {
+        _new_edge_->searchDestination(mapToScene(m_event->pos()));
+    }
+    QGraphicsView::mouseMoveEvent(m_event);
+    return;
 }
