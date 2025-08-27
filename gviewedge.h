@@ -26,6 +26,7 @@ public:
     void searchDestination(const QPointF& point);
     enum {Type = UserType+2};
     int type() const override {return Type;}
+    QPainterPath shape() const override;
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter,

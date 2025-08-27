@@ -119,6 +119,18 @@ QRectF GViewEdge::boundingRect() const
             adjusted(-extra,-extra,extra,extra);
 }
 
+QPainterPath GViewEdge::shape() const
+{
+    QPainterPath path(_src_point_);
+    QLineF line(_src_point_,_dest_point_);
+    if(line.length()>20.0)
+    {
+        line.setLength(line.length()-20.0);
+    }
+    path.lineTo(line.p2());
+    return path;
+}
+
 void GViewEdge::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)

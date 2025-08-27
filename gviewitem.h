@@ -5,6 +5,7 @@
 #include <QGraphicsItem>
 #include <QColor>
 #include <QPainter>
+#include <QStyleOptionGraphicsItem>
 class GViewEdge;
 
 class GViewItem:public QGraphicsItem
