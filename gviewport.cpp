@@ -9,20 +9,19 @@ GViewPort::GViewPort(QWidget *tata):QGraphicsView(tata),
 
 void GViewPort::changeAddMode(bool mode)
 {
-    dynamic_cast<GViewScene*>(scene())->setAddMode(mode);
-//    if(mode)
-//    {
-//        QPixmap new_cursor_pix("sphere.png");
-//        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
-//                                                 new_cursor_pix.height()/2,Qt::KeepAspectRatio));
-//        QApplication::setOverrideCursor(new_cursor);
+    if(mode)
+    {
+        QPixmap new_cursor_pix("sphere.png");
+        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
+                                                 new_cursor_pix.height()/2,Qt::KeepAspectRatio));
+        QApplication::setOverrideCursor(new_cursor);
 
-//    }
-//    else
-//    {
-//        QApplication::restoreOverrideCursor();
-//    }
-//    _add_mode_=mode;
+    }
+    else
+    {
+        QApplication::restoreOverrideCursor();
+    }
+    _add_mode_=mode;
     return;
 }
 
@@ -31,8 +30,8 @@ void GViewPort::changeDeleteMode(bool mode)
     if(mode)
     {
         QPixmap new_cursor_pix("x_sign.png");
-        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
-                                                 new_cursor_pix.height()/2,
+        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/3,
+                                                 new_cursor_pix.height()/3,
                                                  Qt::KeepAspectRatio));
         QApplication::setOverrideCursor(new_cursor);
     }
@@ -52,15 +51,15 @@ void GViewPort::changeAddEdgeMode(bool mode)
 
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 {
-//    if(_add_mode_)
-//    {
-//        GViewItem* item = new GViewItem("Info",QColor::fromRgb(QRandomGenerator::global()->generate()));
-//        scene()->addItem(item);
-//        item->setPos(m_event->pos());
-//        QApplication::restoreOverrideCursor();
-//        _add_mode_ = false;
-//    }
-    if(_delete_mode_)
+    if(_add_mode_)
+    {
+        GViewItem* item = new GViewItem("Info",QColor::fromRgb(QRandomGenerator::global()->generate()));
+        scene()->addItem(item);
+        item->setPos(mapToScene(m_event->pos()));
+        QApplication::restoreOverrideCursor();
+        _add_mode_ = false;
+    }
+    else if(_delete_mode_)
     {
         _delete_mode_ = false;
         QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
@@ -85,7 +84,6 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     }
     else if(_add_edge_mode_)
     {
-        //GViewScene* cur_scene = dynamic_cast<GViewScene*>(scene());
         if(!_new_edge_)
         {
             QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
@@ -97,8 +95,6 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
                     _new_edge_ = new GViewEdge(item);
                     scene()->addItem(_new_edge_);
                     setMouseTracking(true);
-                    //cur_scene->setEdgeMode(true);
-
                 }
             }
         }
