@@ -18,6 +18,8 @@ public:
               GViewItem* destination,
               bool directed = false);
     GViewEdge(GViewItem* source, bool direction = false);
+    bool isDirected() const{return _directed_;}
+    void setDirected(bool directed){_directed_=directed;}
     GViewItem* source() const;
     GViewItem* destination() const;
     GViewItem* setSource(GViewItem* new_src);

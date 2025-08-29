@@ -7,6 +7,156 @@ GViewPort::GViewPort(QWidget *tata):QGraphicsView(tata),
     return;
 }
 
+QGraphicsItem* GViewPort::grabItem(QMouseEvent* m_event)
+{
+    return scene()->itemAt(mapToScene(m_event->pos()),transform());
+}
+
+void GViewPort::addItem(GViewItem *vertex, const QPoint &pos)
+{
+    if(_mode_!= GPort_add || !vertex)
+    {
+        return;
+    }
+    if(_vertices_.contains(vertex))
+    {
+        return;
+    }
+    _vertices_.push_back(vertex);
+    scene()->addItem(vertex);
+    vertex->setPos(mapToScene(pos));
+    setMode(GPort_NoMode);
+    return;
+}
+
+void GViewPort::deleteItem(GViewItem* vertex)
+{
+    if(_mode_!= GPort_delete ||
+            !vertex)
+    {
+        return;
+    }
+    QList<GViewItem*>::iterator it = std::find(_vertices_.begin(),_vertices_.end(),vertex);
+    if(it!=_vertices_.end())
+    {
+        delLinkedEdges(vertex);
+        scene()->removeItem(*it);
+        delete *it;
+        _vertices_.erase(it);
+        setMode(GPort_NoMode);
+    }
+    return;
+}
+
+void GViewPort::delLinkedEdges(GViewItem*vertex)
+{
+    if(!vertex)
+    {
+        return;
+    }
+    QList<GViewEdge*>::const_iterator it = _edges_.cbegin();
+    while(it!=_edges_.cend())
+    {
+        if((*it)->source()==vertex||(*it)->destination()==vertex)
+        {
+            scene()->removeItem(*it);
+            delete *it;
+            it = _edges_.erase(it);
+
+        }
+        else
+        {
+            it++;
+        }
+    }
+    return;
+}
+
+bool GViewPort::addEdge(GViewItem* source, GViewItem* dest)
+{
+    if(!source || !dest)
+    {
+        return false;
+    }
+
+    for(GViewEdge* edge: _edges_)
+    {
+        if(edge->source()==source&&edge->destination()==dest)
+        {
+            return false;
+        }
+        else if(edge->destination()==source&&edge->source()==dest)
+        {
+            if(edge->isDirected())
+            {
+                edge->setDirected(false);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+    GViewEdge * new_edge = new GViewEdge(source,dest,true);
+    scene()->addItem(new_edge);
+    _edges_.push_back(new_edge);
+    return true;
+}
+
+void GViewPort::startEdge(GViewItem* src)
+{
+    if(_mode_ != GPort_startAddEdge ||
+            _new_edge_|| !src)
+    {
+        return;
+    }
+    _new_edge_ = new GViewEdge(src,true);
+    scene()->addItem(_new_edge_);
+    setMode(GPort_finAddEdge);
+    setMouseTracking(true);
+    return;
+}
+
+void GViewPort::finishEdge(GViewItem* dest)
+{
+
+    if(_mode_!= GPort_finAddEdge ||
+            !_new_edge_ || !dest)
+    {
+        return;
+    }
+    setMouseTracking(false);
+    setMode(GPort_NoMode);
+    for(GViewEdge* edge:_edges_)
+    {
+        if(edge->source()==_new_edge_->source() &&
+                edge->destination() == dest)
+        {
+            scene()->removeItem(_new_edge_);
+            delete _new_edge_;
+            _new_edge_ = nullptr;
+            return;
+        }
+        else if(edge->destination()==_new_edge_->source()&&
+                edge->source()==dest)
+        {
+            if(edge->isDirected())
+            {
+                edge->setDirected(false);
+            }
+            scene()->removeItem(_new_edge_);
+            delete _new_edge_;
+            _new_edge_ = nullptr;
+            return;
+        }
+    }
+    _new_edge_->setDest(dest);
+    _edges_.push_back(_new_edge_);
+    _new_edge_ = nullptr;
+    return;
+}
+
 void GViewPort::changeAddMode(bool mode)
 {
     if(mode)

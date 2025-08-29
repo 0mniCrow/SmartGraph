@@ -18,27 +18,36 @@ private:
     bool _add_mode_;
     bool _delete_mode_;
     bool _add_edge_mode_;
-    char _mode_;
-    QList<std::unique_ptr<GViewItem>> _items_;
-    QList<std::unique_ptr<GViewEdge>> _edges_;
+
+    QList<GViewItem*> _vertices_;
+    QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
+    void delLinkedEdges(GViewItem* vertex);
+    bool addEdge(GViewItem* source, GViewItem* dest);
+    void startEdge(GViewItem* src);
+    void finishEdge(GViewItem* dest);
+    QGraphicsItem* grabItem(QMouseEvent* m_event);
+    void addItem(GViewItem* vertex, const QPoint& pos);
+    void deleteItem(GViewItem* vertex);
 public:
-    enum {GPort_NoMode = 0,
-          GPort_add = 1,
-          GPort_delete = 2,
-          GPort_addEdge = 3,
-          GPort_delEdge = 4};
+    enum GPort_Mode{GPort_NoMode,
+          GPort_add,
+          GPort_delete,
+          GPort_startAddEdge,
+          GPort_finAddEdge};
     GViewPort(QWidget* tata = nullptr);
     void changeAddMode(bool mode);
     void changeDeleteMode(bool mode);
     void changeAddEdgeMode(bool mode);
     bool deleteMode()const{return _delete_mode_;}
     bool addMode()const{return _add_mode_;}
-    void setMode(char mode);
-    char mode() const;
+    void setMode(GPort_Mode mode) {_mode_ = mode;}
+    GPort_Mode mode() const {return _mode_;}
 protected:
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
+private:
+    GPort_Mode _mode_;
 
 };
 
