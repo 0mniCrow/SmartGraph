@@ -16,6 +16,7 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     connect(ui->button_GView_add,&QPushButton::clicked,this,&VisualisationGraphForm::AddObject);
     connect(ui->button_GView_remove,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveObject);
     connect(ui->button_AddEdge,&QPushButton::clicked,this,&VisualisationGraphForm::CreateEdge);
+    connect(ui->button_removeEdge,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveEdge);
 }
 
 VisualisationGraphForm::~VisualisationGraphForm()
@@ -27,15 +28,53 @@ VisualisationGraphForm::~VisualisationGraphForm()
 
 void VisualisationGraphForm::AddObject()
 {
-    _view_->changeAddMode(true);
+    if(_view_->mode()==GViewPort::GPort_add)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_add);
+    }
+    //_view_->changeAddMode(true);
 }
 
 void VisualisationGraphForm::RemoveObject()
 {
-    _view_->changeDeleteMode(true);
+    if(_view_->mode()==GViewPort::GPort_delete)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_delete);
+    }
+    //_view_->changeDeleteMode(true);
 }
 
 void VisualisationGraphForm::CreateEdge()
 {
-    _view_->changeAddEdgeMode(true);
+    if(_view_->mode()==GViewPort::GPort_startAddEdge||
+            _view_->mode()==GViewPort::GPort_finAddEdge)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_startAddEdge);
+    }
+    //_view_->changeAddEdgeMode(true);
+}
+
+void VisualisationGraphForm::RemoveEdge()
+{
+    if(_view_->mode()==GViewPort::GPort_startDelEdge||
+            _view_->mode()==GViewPort::GPort_finDelEdge)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_startDelEdge);
+    }
 }

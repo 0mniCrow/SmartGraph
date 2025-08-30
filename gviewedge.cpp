@@ -2,17 +2,21 @@
 
 GViewEdge::GViewEdge(GViewItem *source,
                      GViewItem *destination,
-                     bool directed):
-    _src_item_(source),_dest_item_(destination),_directed_(directed)
+                     bool directed, GViewEdge_mode mode):
+    _src_item_(source), _dest_item_(destination),
+    _directed_(directed),_mode_(mode)
 {
-    _incomplete_ = false;
+    //_incomplete_ = false;
     return;
 }
 
-GViewEdge::GViewEdge(GViewItem* source, bool direction):
-    _src_item_(source),_directed_(direction)
+GViewEdge::GViewEdge(GViewItem* source,
+                     bool direction,
+                     GViewEdge_mode mode):
+    _src_item_(source),_directed_(direction),
+    _mode_(mode)
 {
-    _incomplete_ = true;
+    //_incomplete_ = true;
     _dest_item_ = nullptr;
     return;
 }
@@ -34,15 +38,21 @@ GViewItem* GViewEdge::setSource(GViewItem* new_src)
     return prev_item;
 }
 
-GViewItem* GViewEdge::setDest(GViewItem* new_dest)
+bool GViewEdge::setDest(GViewItem* new_dest)
 {
-    if(_incomplete_)
+//    if(_incomplete_)
+//    {
+//        _incomplete_ = false;
+//    }
+    if(_mode_ != GVedge_incomplete ||
+            _dest_item_)
     {
-        _incomplete_ = false;
+        return false;
     }
-    GViewItem* prev_item = _dest_item_;
+    _mode_ = GVedge_regular;
+    //GViewItem* prev_item = _dest_item_;
     _dest_item_ = new_dest;
-    return prev_item;
+    return true; //prev_item;
 }
 
 void GViewEdge::recalculate()
@@ -94,7 +104,8 @@ void GViewEdge::searchDestination(const QPointF& point)
 
 QRectF GViewEdge::boundingRect() const
 {
-    if(_incomplete_)
+    if(/*_incomplete_*/_mode_ == GVedge_incomplete||
+            _mode_ == GVedge_deletion)
     {
         if(!_src_item_)
         {
@@ -137,7 +148,8 @@ void GViewEdge::paint(QPainter* painter,
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    if(_incomplete_)
+    if(/*_incomplete_*/_mode_ == GVedge_incomplete||
+            _mode_ == GVedge_deletion)
     {
         if(!_src_item_)
         {
@@ -156,7 +168,14 @@ void GViewEdge::paint(QPainter* painter,
     {
         return;
     }
-    painter->setPen(QPen(Qt::black,1,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin));
+    painter->setPen(QPen(
+                        (_mode_==GVedge_deletion)?
+                            Qt::darkRed:
+                            Qt::black,
+                        EDGE_WIDTH,
+                        Qt::SolidLine,
+                        Qt::RoundCap,
+                        Qt::RoundJoin));
     painter->drawLine(line);
     return;
 }

@@ -1,29 +1,29 @@
 #ifndef GVIEWEDGE_H
 #define GVIEWEDGE_H
 
+#define EDGE_WIDTH 2.0
+
 #include <QGraphicsItem>
 #include "gviewitem.h"
 
 class GViewEdge:public QGraphicsItem
 {
-private:
-    QPointF _src_point_;
-    QPointF _dest_point_;
-    GViewItem* _src_item_;
-    GViewItem* _dest_item_;
-    bool _directed_;
-    bool _incomplete_;
 public:
+    enum GViewEdge_mode{GVedge_regular, GVedge_incomplete, GVedge_deletion};
     GViewEdge(GViewItem* source,
               GViewItem* destination,
-              bool directed = false);
-    GViewEdge(GViewItem* source, bool direction = false);
+              bool directed = false,
+              GViewEdge_mode mode = GVedge_regular);
+    GViewEdge(GViewItem* source, bool direction = false,
+              GViewEdge_mode mode = GVedge_incomplete);
     bool isDirected() const{return _directed_;}
     void setDirected(bool directed){_directed_=directed;}
     GViewItem* source() const;
     GViewItem* destination() const;
     GViewItem* setSource(GViewItem* new_src);
-    GViewItem* setDest(GViewItem* new_dest);
+    bool setDest(GViewItem* new_dest);
+    void setMode(GViewEdge_mode mode){_mode_=mode;}
+    GViewEdge_mode mode()const{return _mode_;}
     void recalculate();
     void searchDestination(const QPointF& point);
     enum {Type = UserType+2};
@@ -34,6 +34,14 @@ protected:
     void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
+private:
+    QPointF _src_point_;
+    QPointF _dest_point_;
+    GViewItem* _src_item_;
+    GViewItem* _dest_item_;
+    bool _directed_;
+    //bool _incomplete_;
+    GViewEdge_mode _mode_;
 };
 
 #endif // GVIEWEDGE_H

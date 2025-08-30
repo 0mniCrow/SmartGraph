@@ -21,6 +21,7 @@ public:
     GViewItem(const QString& info = QString(), const QColor& color = QColor());
     GViewItem(const QColor& color);
     void addEdge(GViewEdge* edge);
+    void delEdge(GViewEdge* edge);
     void setColor(const QColor& color);
     void setInfo(const QString& info);
     QString info()const;

@@ -43,6 +43,15 @@ void GViewItem::addEdge(GViewEdge* edge)
     return;
 }
 
+void GViewItem::delEdge(GViewEdge* edge)
+{
+    if(_edges_.count(edge))
+    {
+        _edges_.erase(std::find(_edges_.cbegin(),_edges_.cend(),edge));
+    }
+    return;
+}
+
 QRectF GViewItem::boundingRect() const
 {
     return QRectF(-20-LINE_WIDTH,-40-LINE_WIDTH,40+LINE_WIDTH,80+LINE_WIDTH );

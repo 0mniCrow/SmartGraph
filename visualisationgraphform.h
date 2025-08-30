@@ -27,6 +27,7 @@ private slots:
     void AddObject();
     void RemoveObject();
     void CreateEdge();
+    void RemoveEdge();
 };
 
 #endif // VISUALISATIONGRAPHFORM_H
