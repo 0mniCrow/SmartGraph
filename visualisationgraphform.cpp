@@ -6,7 +6,7 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     ui(new Ui::VisualisationGraphForm)
 {
     ui->setupUi(this);
-    _view_ = new GViewPort();
+    _view_ = new GViewPort(ui->spin_Radius->value());
     _scene_ = new GViewScene(_view_);
     _scene_->setSceneRect(QRectF(-500,500,1000,1000));
     _view_->setScene(_scene_);
@@ -17,6 +17,7 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     connect(ui->button_GView_remove,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveObject);
     connect(ui->button_AddEdge,&QPushButton::clicked,this,&VisualisationGraphForm::CreateEdge);
     connect(ui->button_removeEdge,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveEdge);
+    connect(ui->spin_Radius,&QSpinBox::valueChanged,this,&VisualisationGraphForm::ChangeSize);
 }
 
 VisualisationGraphForm::~VisualisationGraphForm()
@@ -77,4 +78,9 @@ void VisualisationGraphForm::RemoveEdge()
     {
         _view_->setMode(GViewPort::GPort_startDelEdge);
     }
+}
+
+void VisualisationGraphForm::ChangeSize(int radius)
+{
+    _view_->setRadius(radius);
 }

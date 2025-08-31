@@ -28,6 +28,7 @@ private slots:
     void RemoveObject();
     void CreateEdge();
     void RemoveEdge();
+    void ChangeSize(int radius);
 };
 
 #endif // VISUALISATIONGRAPHFORM_H

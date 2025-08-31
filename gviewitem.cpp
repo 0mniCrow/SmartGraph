@@ -1,8 +1,8 @@
 #include "gviewitem.h"
 #include "gviewedge.h"
 
-GViewItem::GViewItem(const QString &info,
-                     const QColor &color):
+GViewItem::GViewItem(int radius, const QString &info,
+                     const QColor &color):_radius_(radius),
     _info_(info),_color_(color),
     _is_hovered_(false),_is_clicked_(false)
 {
@@ -10,10 +10,11 @@ GViewItem::GViewItem(const QString &info,
     return;
 }
 
-GViewItem::GViewItem(const QColor& color):_color_(color),
+GViewItem::GViewItem(int radius, const QColor& color):
+    _radius_(radius),_color_(color),
     _is_hovered_(false),_is_clicked_(false)
 {
-    setFlags(ItemIsMovable);
+    setFlags(ItemSendsGeometryChanges|ItemIsMovable);
     return;
 }
 
@@ -54,7 +55,10 @@ void GViewItem::delEdge(GViewEdge* edge)
 
 QRectF GViewItem::boundingRect() const
 {
-    return QRectF(-20-LINE_WIDTH,-40-LINE_WIDTH,40+LINE_WIDTH,80+LINE_WIDTH );
+    return QRectF(-_radius_-LINE_WIDTH,
+                  -_radius_-LINE_WIDTH,
+                  _radius_*2+LINE_WIDTH,
+                  _radius_*2+LINE_WIDTH);
 }
 
 QPainterPath GViewItem::shape() const
@@ -67,7 +71,7 @@ QPainterPath GViewItem::shape() const
 //          <<workingRect.bottomLeft();
 //    path.addPolygon(triangle);
     QPainterPath path;
-    path.addEllipse(-20,-20,40,40);
+    path.addEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
     return path;
 }
 
@@ -110,7 +114,7 @@ void GViewItem::paint(QPainter* painter,
 //    painter->drawPolygon(triangle);
 
     painter->setRenderHint(QPainter::Antialiasing,true);
-    painter->drawEllipse(-7,-7,20,20);
+    //painter->drawEllipse(-7,-7,20,20);
     QColor cur_color;
     QPen cur_pen;
     if(_is_hovered_)
@@ -135,7 +139,7 @@ void GViewItem::paint(QPainter* painter,
         cur_pen.setWidthF((LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
     }
     painter->setPen(cur_pen);
-    painter->drawEllipse(-10,-10,20,20);
+    painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
     painter->restore();
 }
 
@@ -158,6 +162,13 @@ QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
         break;
     }
     return QGraphicsItem::itemChange(change,value);
+}
+
+void GViewItem::setRadius(int radius)
+{
+    prepareGeometryChange();
+    _radius_=radius;
+    return;
 }
 
 void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)

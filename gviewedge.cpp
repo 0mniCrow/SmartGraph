@@ -1,23 +1,30 @@
 #include "gviewedge.h"
 
 GViewEdge::GViewEdge(GViewItem *source,
-                     GViewItem *destination,
+                     GViewItem *destination, int vert_radius,
                      bool directed, GViewEdge_mode mode):
     _src_item_(source), _dest_item_(destination),
+    _vertex_radius_(vert_radius),
     _directed_(directed),_mode_(mode)
 {
-    //_incomplete_ = false;
     return;
 }
 
-GViewEdge::GViewEdge(GViewItem* source,
+GViewEdge::GViewEdge(GViewItem* source, int vert_radius,
                      bool direction,
                      GViewEdge_mode mode):
-    _src_item_(source),_directed_(direction),
-    _mode_(mode)
+    _src_item_(source),_vertex_radius_(vert_radius),
+    _directed_(direction),_mode_(mode)
 {
-    //_incomplete_ = true;
     _dest_item_ = nullptr;
+    return;
+}
+
+void GViewEdge::setVertRadius(int radius)
+{
+    //prepareGeometryChange();
+    _vertex_radius_ = radius;
+    recalculate();
     return;
 }
 
@@ -40,10 +47,6 @@ GViewItem* GViewEdge::setSource(GViewItem* new_src)
 
 bool GViewEdge::setDest(GViewItem* new_dest)
 {
-//    if(_incomplete_)
-//    {
-//        _incomplete_ = false;
-//    }
     if(_mode_ != GVedge_incomplete ||
             _dest_item_)
     {
@@ -66,11 +69,12 @@ void GViewEdge::recalculate()
     qreal length = line.length();
 
     prepareGeometryChange();
-    if(length>qreal(20.0))
+    if(length>qreal(_vertex_radius_))
     {
-        QPointF edgeOffset((line.dx()*10)/length,(line.dy()*10)/length);
-        _src_point_ = line.p1()+edgeOffset;
-        _dest_point_ =  line.p2() - edgeOffset;
+        QPointF edgeOffset((line.dx()*_vertex_radius_)/length,
+                           (line.dy()*_vertex_radius_)/length);
+        _src_point_ = line.p1() + edgeOffset;
+        _dest_point_ = line.p2() - edgeOffset;
     }
     else
     {
@@ -89,9 +93,10 @@ void GViewEdge::searchDestination(const QPointF& point)
     qreal length = line.length();
 
     prepareGeometryChange();
-    if(length>qreal(20.0))
+    if(length>qreal(_vertex_radius_))
     {
-        QPointF edgeOffset((line.dx()*10)/length,(line.dy()*10/length));
+        QPointF edgeOffset((line.dx()*_vertex_radius_)/length,
+                           (line.dy()*_vertex_radius_/length));
         _src_point_ = line.p1()+edgeOffset;
         _dest_point_ = line.p2();
     }
@@ -134,9 +139,9 @@ QPainterPath GViewEdge::shape() const
 {
     QPainterPath path(_src_point_);
     QLineF line(_src_point_,_dest_point_);
-    if(line.length()>20.0)
+    if(line.length()>qreal(_vertex_radius_))
     {
-        line.setLength(line.length()-20.0);
+        line.setLength(line.length()-qreal(_vertex_radius_));
     }
     path.lineTo(line.p2());
     return path;
@@ -148,7 +153,7 @@ void GViewEdge::paint(QPainter* painter,
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    if(/*_incomplete_*/_mode_ == GVedge_incomplete||
+    if(_mode_ == GVedge_incomplete||
             _mode_ == GVedge_deletion)
     {
         if(!_src_item_)

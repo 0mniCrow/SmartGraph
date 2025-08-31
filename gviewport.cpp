@@ -1,7 +1,10 @@
 #include "gviewport.h"
 
-GViewPort::GViewPort(QWidget *tata):QGraphicsView(tata),
-    _add_mode_(false),_delete_mode_(false),_add_edge_mode_(false)
+GViewPort::GViewPort(int vertex_radius, QWidget *tata):
+    QGraphicsView(tata),
+    _vertex_radius_(vertex_radius),
+    _add_mode_(false),_delete_mode_(false),
+    _add_edge_mode_(false)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -75,10 +78,11 @@ void GViewPort::delLinkedEdges(GViewItem*vertex)
         if((*it)->source()==vertex||(*it)->destination()==vertex)
         {
             (*it)->source()->delEdge(*it);
-            if(!(*it)->isDirected())
-            {
-                (*it)->destination()->delEdge(*it);
-            }
+
+            //if(!(*it)->isDirected())
+            //{
+            (*it)->destination()->delEdge(*it);
+            //}
             scene()->removeItem(*it);
             delete *it;
             it = _edges_.erase(it);
@@ -110,7 +114,7 @@ bool GViewPort::addEdge(GViewItem* source, GViewItem* dest, bool directed)
             if(edge->isDirected())
             {
                 edge->setDirected(false);
-                edge->destination()->addEdge(edge);
+                //edge->destination()->addEdge(edge);
                 return true;
             }
             else
@@ -119,12 +123,12 @@ bool GViewPort::addEdge(GViewItem* source, GViewItem* dest, bool directed)
             }
         }
     }
-    GViewEdge * new_edge = new GViewEdge(source,dest,directed);
+    GViewEdge * new_edge = new GViewEdge(source,dest,_vertex_radius_,directed);
     source->addEdge(new_edge);
-    if(!directed)
-    {
-        dest->addEdge(new_edge);
-    }
+    //if(!directed)
+    //{
+    dest->addEdge(new_edge);
+    //}
     scene()->addItem(new_edge);
     _edges_.push_back(new_edge);
     return true;
@@ -137,7 +141,7 @@ void GViewPort::startAddEdge(GViewItem* src)
     {
         return;
     }
-    _new_edge_ = new GViewEdge(src,true);
+    _new_edge_ = new GViewEdge(src,_vertex_radius_,true);
     scene()->addItem(_new_edge_);
     setMouseTracking(true);
     _mode_=GPort_finAddEdge;
@@ -175,7 +179,7 @@ void GViewPort::finishAddEdge(GViewItem* dest)
             if(edge->isDirected())
             {
                 edge->setDirected(false);
-                edge->destination()->addEdge(edge);
+                //edge->destination()->addEdge(edge);
             }
             scene()->removeItem(_new_edge_);
             delete _new_edge_;
@@ -186,6 +190,7 @@ void GViewPort::finishAddEdge(GViewItem* dest)
     }
     _new_edge_->source()->addEdge(_new_edge_);
     _new_edge_->setDest(dest);
+    _new_edge_->destination()->addEdge(_new_edge_);
     _edges_.push_back(_new_edge_);
     _new_edge_ = nullptr;
     setMode(GPort_NoMode);
@@ -202,7 +207,7 @@ void GViewPort::startDelEdge(GViewItem* src)
         return;
     }
     _del_edge_ = src;
-    _new_edge_ = new GViewEdge(src,true,GViewEdge::GVedge_deletion);
+    _new_edge_ = new GViewEdge(src,_vertex_radius_,true,GViewEdge::GVedge_deletion);
     scene()->addItem(_new_edge_);
     _mode_=GPort_finDelEdge;
     setMouseTracking(true);
@@ -236,6 +241,7 @@ void GViewPort::finishDelEdge(GViewItem* dest)
     if(it!=_edges_.constEnd())
     {
         (*it)->source()->delEdge(*it);
+        (*it)->destination()->delEdge(*it);
         if(!(*it)->isDirected())
         {
             (*it)->destination()->delEdge(*it);
@@ -322,6 +328,18 @@ void GViewPort::setMode(GPort_Mode mode)
 
 }
 
+void GViewPort::setRadius(int radius)
+{
+    for(GViewItem* vertex: _vertices_)
+    {
+        vertex->setRadius(radius);
+    }
+    for(GViewEdge* edge: _edges_)
+    {
+        edge->setVertRadius(radius);
+    }
+    return;
+}
 
 void GViewPort::changeAddMode(bool mode)
 {
@@ -371,7 +389,7 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     {
     case GPort_add:
     {
-        GViewItem* item = new GViewItem("Info",
+        GViewItem* item = new GViewItem(_vertex_radius_,"Info",
                                         QColor::fromRgb(
                                             QRandomGenerator::global()->generate()
                                             )
@@ -522,11 +540,6 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
 
     }
     }
-
-//    if(_add_edge_mode_&&_new_edge_)
-//    {
-//        _new_edge_->searchDestination(mapToScene(m_event->pos()));
-//    }
     QGraphicsView::mouseMoveEvent(m_event);
     return;
 }

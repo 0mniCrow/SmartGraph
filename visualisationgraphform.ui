@@ -35,7 +35,14 @@
            <number>8</number>
           </property>
           <item>
-           <widget class="QSpinBox" name="spinBox">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Radius</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spin_Radius">
             <property name="minimum">
              <number>20</number>
             </property>

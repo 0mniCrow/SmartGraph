@@ -11,6 +11,7 @@ class GViewEdge;
 class GViewItem:public QGraphicsItem
 {
 private:
+    int _radius_;
     QString _info_;
     QColor _color_;
     bool _is_hovered_;
@@ -18,10 +19,12 @@ private:
     QVector<GViewEdge*> _edges_;
 
 public:
-    GViewItem(const QString& info = QString(), const QColor& color = QColor());
-    GViewItem(const QColor& color);
+    GViewItem(int radius, const QString& info = QString(), const QColor& color = QColor());
+    GViewItem(int radius, const QColor& color);
     void addEdge(GViewEdge* edge);
     void delEdge(GViewEdge* edge);
+    int radius()const{return _radius_;}
+    void setRadius(int radius);
     void setColor(const QColor& color);
     void setInfo(const QString& info);
     QString info()const;
