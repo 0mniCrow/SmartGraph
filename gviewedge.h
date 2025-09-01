@@ -29,6 +29,8 @@ public:
     GViewEdge_mode mode()const{return _mode_;}
     void recalculate();
     void setVertRadius(int radius);
+    qreal arrowSize()const{return _arrowSize_;}
+    void setArrowSize(qreal arrow_size);
     void searchDestination(const QPointF& point);
     enum {Type = UserType+2};
     int type() const override {return Type;}
@@ -45,7 +47,7 @@ private:
     GViewItem* _dest_item_;
     int _vertex_radius_;
     bool _directed_;
-    //bool _incomplete_;
+    qreal _arrowSize_ = 10;
     GViewEdge_mode _mode_;
 
 };

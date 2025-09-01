@@ -7,6 +7,7 @@ GViewEdge::GViewEdge(GViewItem *source,
     _vertex_radius_(vert_radius),
     _directed_(directed),_mode_(mode)
 {
+    setAcceptedMouseButtons(Qt::NoButton);
     return;
 }
 
@@ -16,15 +17,22 @@ GViewEdge::GViewEdge(GViewItem* source, int vert_radius,
     _src_item_(source),_vertex_radius_(vert_radius),
     _directed_(direction),_mode_(mode)
 {
+    setAcceptedMouseButtons(Qt::NoButton);
     _dest_item_ = nullptr;
     return;
 }
 
 void GViewEdge::setVertRadius(int radius)
 {
-    //prepareGeometryChange();
     _vertex_radius_ = radius;
     recalculate();
+    return;
+}
+
+void GViewEdge::setArrowSize(qreal arrow_size)
+{
+    _arrowSize_ = arrow_size;
+    update();
     return;
 }
 
@@ -109,7 +117,7 @@ void GViewEdge::searchDestination(const QPointF& point)
 
 QRectF GViewEdge::boundingRect() const
 {
-    if(/*_incomplete_*/_mode_ == GVedge_incomplete||
+    if(_mode_ == GVedge_incomplete||
             _mode_ == GVedge_deletion)
     {
         if(!_src_item_)
@@ -124,9 +132,7 @@ QRectF GViewEdge::boundingRect() const
             return QRectF();
         }
     }
-
-    qreal penWidth = 1;
-    qreal extra = (penWidth)/2.0;
+    qreal extra = (EDGE_WIDTH+_arrowSize_)/2.0;
     return QRectF(_src_point_,
                   QSizeF(_dest_point_.x()-_src_point_.x(),
                          _dest_point_.y()-_src_point_.y())
@@ -182,5 +188,32 @@ void GViewEdge::paint(QPainter* painter,
                         Qt::RoundCap,
                         Qt::RoundJoin));
     painter->drawLine(line);
+    painter->setBrush(Qt::black);
+    double angle = std::atan2(-line.dy(),line.dx());
+    if(!_directed_ && _mode_==GVedge_regular)
+    {
+        QPointF sourceArrowP1 =
+                _src_point_ +
+                QPointF(sin(angle+M_PI/3)*_arrowSize_,
+                        cos(angle+M_PI/3)*_arrowSize_);
+
+        QPointF sourceArrowP2 =
+                _src_point_ +
+                QPointF(sin(angle+M_PI - M_PI/3)*_arrowSize_,
+                        cos(angle+M_PI-M_PI/3)*_arrowSize_);
+
+        painter->drawPolygon(
+                    QPolygonF()<<line.p1()<<sourceArrowP1<<sourceArrowP2);
+    }
+    QPointF destArrowP1 =
+            _dest_point_ +
+            QPointF(sin(angle-M_PI/3)*_arrowSize_,
+                    cos(angle-M_PI/3)*_arrowSize_);
+    QPointF destArrowP2 =
+            _dest_point_ +
+            QPointF(sin(angle-M_PI+M_PI/3)*_arrowSize_,
+                    cos(angle-M_PI+M_PI/3)*_arrowSize_);
+    painter->drawPolygon(
+                QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
     return;
 }

@@ -37,7 +37,6 @@ void VisualisationGraphForm::AddObject()
     {
         _view_->setMode(GViewPort::GPort_add);
     }
-    //_view_->changeAddMode(true);
 }
 
 void VisualisationGraphForm::RemoveObject()
@@ -50,7 +49,6 @@ void VisualisationGraphForm::RemoveObject()
     {
         _view_->setMode(GViewPort::GPort_delete);
     }
-    //_view_->changeDeleteMode(true);
 }
 
 void VisualisationGraphForm::CreateEdge()
@@ -64,7 +62,6 @@ void VisualisationGraphForm::CreateEdge()
     {
         _view_->setMode(GViewPort::GPort_startAddEdge);
     }
-    //_view_->changeAddEdgeMode(true);
 }
 
 void VisualisationGraphForm::RemoveEdge()

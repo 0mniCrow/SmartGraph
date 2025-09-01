@@ -2,9 +2,7 @@
 
 GViewPort::GViewPort(int vertex_radius, QWidget *tata):
     QGraphicsView(tata),
-    _vertex_radius_(vertex_radius),
-    _add_mode_(false),_delete_mode_(false),
-    _add_edge_mode_(false)
+    _vertex_radius_(vertex_radius)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -78,11 +76,7 @@ void GViewPort::delLinkedEdges(GViewItem*vertex)
         if((*it)->source()==vertex||(*it)->destination()==vertex)
         {
             (*it)->source()->delEdge(*it);
-
-            //if(!(*it)->isDirected())
-            //{
             (*it)->destination()->delEdge(*it);
-            //}
             scene()->removeItem(*it);
             delete *it;
             it = _edges_.erase(it);
@@ -114,7 +108,6 @@ bool GViewPort::addEdge(GViewItem* source, GViewItem* dest, bool directed)
             if(edge->isDirected())
             {
                 edge->setDirected(false);
-                //edge->destination()->addEdge(edge);
                 return true;
             }
             else
@@ -125,10 +118,7 @@ bool GViewPort::addEdge(GViewItem* source, GViewItem* dest, bool directed)
     }
     GViewEdge * new_edge = new GViewEdge(source,dest,_vertex_radius_,directed);
     source->addEdge(new_edge);
-    //if(!directed)
-    //{
     dest->addEdge(new_edge);
-    //}
     scene()->addItem(new_edge);
     _edges_.push_back(new_edge);
     return true;
@@ -330,6 +320,7 @@ void GViewPort::setMode(GPort_Mode mode)
 
 void GViewPort::setRadius(int radius)
 {
+    _vertex_radius_ = radius;
     for(GViewItem* vertex: _vertices_)
     {
         vertex->setRadius(radius);
@@ -341,47 +332,6 @@ void GViewPort::setRadius(int radius)
     return;
 }
 
-void GViewPort::changeAddMode(bool mode)
-{
-    if(mode)
-    {
-        QPixmap new_cursor_pix("sphere.png");
-        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
-                                                 new_cursor_pix.height()/2,Qt::KeepAspectRatio));
-        QApplication::setOverrideCursor(new_cursor);
-
-    }
-    else
-    {
-        QApplication::restoreOverrideCursor();
-    }
-    _add_mode_=mode;
-    return;
-}
-
-void GViewPort::changeDeleteMode(bool mode)
-{
-    if(mode)
-    {
-        QPixmap new_cursor_pix("x_sign.png");
-        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/3,
-                                                 new_cursor_pix.height()/3,
-                                                 Qt::KeepAspectRatio));
-        QApplication::setOverrideCursor(new_cursor);
-    }
-    else
-    {
-        QApplication::restoreOverrideCursor();
-    }
-    _delete_mode_ = mode;
-    return;
-}
-
-void GViewPort::changeAddEdgeMode(bool mode)
-{
-    _add_edge_mode_ = mode;
-    return;
-}
 
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 {
@@ -445,79 +395,6 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 
     }
     }
-
-    /*
-    if(_add_mode_)
-    {
-        GViewItem* item = new GViewItem("Info",QColor::fromRgb(QRandomGenerator::global()->generate()));
-        scene()->addItem(item);
-        item->setPos(mapToScene(m_event->pos()));
-        QApplication::restoreOverrideCursor();
-        _add_mode_ = false;
-    }
-    else if(_delete_mode_)
-    {
-        _delete_mode_ = false;
-        QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
-        if(base_item)
-        {
-            GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
-            if(item)
-            {
-                scene()->removeItem(item);
-                delete item;
-                QApplication::restoreOverrideCursor();
-            }
-            else
-            {
-                _delete_mode_=true;
-            }
-        }
-        else
-        {
-            _delete_mode_=true;
-        }
-    }
-    else if(_add_edge_mode_)
-    {
-        if(!_new_edge_)
-        {
-            QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
-            if(base_item)
-            {
-                GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
-                if(item)
-                {
-                    _new_edge_ = new GViewEdge(item);
-                    scene()->addItem(_new_edge_);
-                    setMouseTracking(true);
-                }
-            }
-        }
-        else
-        {
-            QGraphicsItem* base_item = scene()->itemAt(mapToScene(m_event->pos()),transform());
-            if(base_item)
-            {
-                GViewItem* item = qgraphicsitem_cast<GViewItem*>(base_item);
-                if(item)
-                {
-                    if(_new_edge_->source()!=item)
-                    {
-                        _new_edge_->setDest(item);
-                        _new_edge_->source()->addEdge(_new_edge_);
-                        _new_edge_->destination()->addEdge(_new_edge_);
-                        setMouseTracking(false);
-                        _add_edge_mode_ = false;
-                        _new_edge_ = nullptr;
-                    }
-                }
-            }
-        }
-    }
-    */
-
-
     QGraphicsView::mouseReleaseEvent(m_event);
     return;
 }

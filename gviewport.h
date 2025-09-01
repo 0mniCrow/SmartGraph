@@ -23,15 +23,10 @@ public:
                     GPort_startDelEdge,
                     GPort_finDelEdge};
     GViewPort(int vertex_radius,QWidget* tata = nullptr);
-    void changeAddMode(bool mode);
-    void changeDeleteMode(bool mode);
-    void changeAddEdgeMode(bool mode);
-    bool deleteMode()const{return _delete_mode_;}
-    bool addMode()const{return _add_mode_;}
     void setMode(GPort_Mode mode);
+    GPort_Mode mode() const {return _mode_;}
     int vertRadius()const {return _vertex_radius_;}
     void setRadius(int radius);
-    GPort_Mode mode() const {return _mode_;}
 protected:
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
@@ -41,9 +36,6 @@ private:
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
     int _vertex_radius_;
-    bool _add_mode_;
-    bool _delete_mode_;
-    bool _add_edge_mode_;
     GPort_Mode _mode_;
 
     void delLinkedEdges(GViewItem* vertex);
