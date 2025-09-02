@@ -1,11 +1,15 @@
 #ifndef GVIEWITEM_H
 #define GVIEWITEM_H
 #define LINE_WIDTH 2.0
+#define SELECTED_RISE 3
 
 #include <QGraphicsItem>
 #include <QColor>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
+
 class GViewEdge;
 
 class GViewItem:public QGraphicsItem
@@ -17,7 +21,7 @@ private:
     bool _is_hovered_;
     bool _is_clicked_;
     QVector<GViewEdge*> _edges_;
-
+    void checkBorders();
 public:
     GViewItem(int radius, const QString& info = QString(), const QColor& color = QColor());
     GViewItem(int radius, const QColor& color);

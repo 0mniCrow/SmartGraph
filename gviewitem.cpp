@@ -6,7 +6,7 @@ GViewItem::GViewItem(int radius, const QString &info,
     _info_(info),_color_(color),
     _is_hovered_(false),_is_clicked_(false)
 {
-    setFlags(ItemSendsGeometryChanges|ItemIsMovable);
+    setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     return;
 }
 
@@ -15,6 +15,16 @@ GViewItem::GViewItem(int radius, const QColor& color):
     _is_hovered_(false),_is_clicked_(false)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable);
+    return;
+}
+
+void GViewItem::checkBorders()
+{
+    QRectF sceneRect = scene()->sceneRect();
+    QPointF newPos = scenePos();
+    newPos.setX(qMin(qMax(newPos.x(), sceneRect.left() + _radius_), sceneRect.right() - _radius_));
+    newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
+    setPos(newPos);
     return;
 }
 
@@ -55,10 +65,11 @@ void GViewItem::delEdge(GViewEdge* edge)
 
 QRectF GViewItem::boundingRect() const
 {
-    return QRectF(-_radius_-LINE_WIDTH,
-                  -_radius_-LINE_WIDTH,
-                  _radius_*2+LINE_WIDTH,
-                  _radius_*2+LINE_WIDTH);
+    int select_inflate = isSelected()?SELECTED_RISE:0;
+    return QRectF(-_radius_-LINE_WIDTH-select_inflate,
+                  -_radius_-LINE_WIDTH-select_inflate,
+                  _radius_*2+LINE_WIDTH+select_inflate,
+                  _radius_*2+LINE_WIDTH+select_inflate);
 }
 
 QPainterPath GViewItem::shape() const
@@ -70,8 +81,12 @@ QPainterPath GViewItem::shape() const
 //           <<QPoint(workingRect.center().x(),0)
 //          <<workingRect.bottomLeft();
 //    path.addPolygon(triangle);
+    int select_inflate = isSelected()?SELECTED_RISE:0;
     QPainterPath path;
-    path.addEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    path.addEllipse(-_radius_-select_inflate,
+                    -_radius_-select_inflate,
+                    _radius_*2+select_inflate,
+                    _radius_*2+select_inflate);
     return path;
 }
 
@@ -117,11 +132,14 @@ void GViewItem::paint(QPainter* painter,
     //painter->drawEllipse(-7,-7,20,20);
     QColor cur_color;
     QPen cur_pen;
-    if(_is_hovered_)
+    if(isUnderMouse())
     {
-        cur_color.setRgbF(_color_.redF()+2.0,
-                          _color_.greenF()+2.0,
-                          _color_.blueF()+2.0);
+        cur_color.setRed(_color_.red()<235?_color_.red()+20:_color_.red()-20);
+        cur_color.setGreen(_color_.green()<235?_color_.green()+20:_color_.green()-20);
+        cur_color.setBlue(_color_.blue()<235?_color_.blue()+20:_color_.blue()-20);
+//        cur_color.setRgbF(_color_.redF()+2.0,
+//                          _color_.greenF()+2.0,
+//                          _color_.blueF()+2.0);
     }
     else
     {
@@ -135,8 +153,16 @@ void GViewItem::paint(QPainter* painter,
     }
     else
     {
-        cur_pen.setColor(Qt::darkGray);
-        cur_pen.setWidthF((LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
+        if(isSelected())
+        {
+            cur_pen.setColor(Qt::darkYellow);
+            cur_pen.setWidthF(LINE_WIDTH);
+        }
+        else
+        {
+            cur_pen.setColor(Qt::darkGray);
+            cur_pen.setWidthF((LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
+        }
     }
     painter->setPen(cur_pen);
     painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -149,10 +175,16 @@ QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
     {
     case ItemPositionHasChanged:
     {
+        checkBorders();
         for(GViewEdge* edge:_edges_)
         {
             edge->recalculate();
         }
+    }
+        break;
+    case ItemSelectedHasChanged:
+    {
+        update();
     }
         break;
     default:
@@ -180,6 +212,7 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
     _is_clicked_ = false;
+
     update();
     QGraphicsItem::mouseReleaseEvent(m_event);
 }
