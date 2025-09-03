@@ -14,6 +14,7 @@
 
 class GViewPort:public QGraphicsView
 {
+    Q_OBJECT
 public:
     enum GPort_Mode{GPort_NoMode,
                     GPort_add,
@@ -37,6 +38,7 @@ private:
     GViewItem* _del_edge_;
     int _vertex_radius_;
     GPort_Mode _mode_;
+    int _counter_;
 
     void delLinkedEdges(GViewItem* vertex);
     bool addEdge(GViewItem* source, GViewItem* dest,bool directed = true);
@@ -48,7 +50,8 @@ private:
     GViewItem* grabGItem(QMouseEvent* m_event);
     void addItem(GViewItem* vertex, const QPoint& pos);
     void deleteItem(GViewItem* vertex);
-
+signals:
+    void selectedInfo(QString info);
 };
 
 #endif // GVIEWPORT_H

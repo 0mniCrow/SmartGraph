@@ -29,6 +29,7 @@ private slots:
     void CreateEdge();
     void RemoveEdge();
     void ChangeSize(int radius);
+    void updateInfo(QString info);
 };
 
 #endif // VISUALISATIONGRAPHFORM_H

@@ -2,7 +2,7 @@
 
 GViewPort::GViewPort(int vertex_radius, QWidget *tata):
     QGraphicsView(tata),
-    _vertex_radius_(vertex_radius)
+    _vertex_radius_(vertex_radius),_counter_(0)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -339,7 +339,7 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     {
     case GPort_add:
     {
-        GViewItem* item = new GViewItem(_vertex_radius_,"Info",
+        GViewItem* item = new GViewItem(_vertex_radius_,"Vertex N"+QString::number(_counter_++),
                                         QColor::fromRgb(
                                             QRandomGenerator::global()->generate()
                                             )
@@ -392,7 +392,13 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         break;
     default:
     {
-
+        GViewItem * item = grabGItem(m_event);
+        if(item)
+        {
+            QString selected("Selected Item: ");
+            selected.append(item->info());
+            emit selectedInfo(selected);
+        }
     }
     }
     QGraphicsView::mouseReleaseEvent(m_event);
@@ -414,7 +420,6 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
         break;
     default:
     {
-
     }
     }
     QGraphicsView::mouseMoveEvent(m_event);
