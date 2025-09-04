@@ -4,7 +4,7 @@
 GViewItem::GViewItem(int radius, const QString &info,
                      const QColor &color):_radius_(radius),
     _info_(info),_color_(color),
-    _is_hovered_(false),_is_clicked_(false)
+    _is_clicked_(false)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     return;
@@ -12,9 +12,9 @@ GViewItem::GViewItem(int radius, const QString &info,
 
 GViewItem::GViewItem(int radius, const QColor& color):
     _radius_(radius),_color_(color),
-    _is_hovered_(false),_is_clicked_(false)
+    _is_clicked_(false)
 {
-    setFlags(ItemSendsGeometryChanges|ItemIsMovable);
+    setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     return;
 }
 
@@ -218,13 +218,11 @@ void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 }
 void GViewItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
 {
-    _is_hovered_ = true;
     update();
     QGraphicsItem::hoverEnterEvent(h_event);
 }
 void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
-    _is_hovered_ = false;
     update();
     QGraphicsItem::hoverLeaveEvent(h_event);
 }

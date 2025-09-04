@@ -6,6 +6,7 @@ GViewPort::GViewPort(int vertex_radius, QWidget *tata):
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
+    _selected_vertex_= nullptr;
     return;
 }
 
@@ -395,9 +396,21 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         GViewItem * item = grabGItem(m_event);
         if(item)
         {
-            QString selected("Selected Item: ");
-            selected.append(item->info());
-            emit selectedInfo(selected);
+            if(item != _selected_vertex_)
+            {
+                QString selected("Selected Item: ");
+                selected.append(item->info());
+                emit selectedInfo(selected);
+                _selected_vertex_ = item;
+            }
+        }
+        else
+        {
+            if(_selected_vertex_)
+            {
+                _selected_vertex_->setSelected(false);
+                _selected_vertex_ = nullptr;
+            }
         }
     }
     }

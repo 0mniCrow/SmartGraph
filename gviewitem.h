@@ -18,7 +18,6 @@ private:
     int _radius_;
     QString _info_;
     QColor _color_;
-    bool _is_hovered_;
     bool _is_clicked_;
     QVector<GViewEdge*> _edges_;
     void checkBorders();

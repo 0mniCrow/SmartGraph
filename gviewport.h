@@ -36,6 +36,7 @@ private:
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
+    GViewItem* _selected_vertex_;
     int _vertex_radius_;
     GPort_Mode _mode_;
     int _counter_;
