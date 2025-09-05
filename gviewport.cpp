@@ -53,9 +53,15 @@ void GViewPort::deleteItem(GViewItem* vertex)
     {
         return;
     }
+    if(vertex->isSelected())
+    {
+        vertex->setSelected(false);
+        _selected_vertex_ = nullptr;
+    }
     QList<GViewItem*>::const_iterator it = std::find(_vertices_.cbegin(),_vertices_.cend(),vertex);
     if(it!=_vertices_.end())
     {
+
         delLinkedEdges(vertex);
         scene()->removeItem(*it);
         delete *it;
