@@ -444,3 +444,78 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
     QGraphicsView::mouseMoveEvent(m_event);
     return;
 }
+
+
+
+///____________________________________________________
+VertexModel::VertexModel(QObject * tata):QAbstractTableModel(tata)
+{
+    return;
+}
+QVariant VertexModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(role)
+    return QVariant();
+}
+
+QVariant VertexModel::data(const QModelIndex& index,int role) const
+{
+    if(!index.isValid())
+    {
+        return QVariant();
+    }
+    if(role==Qt::DisplayRole||role==Qt::EditRole)
+    {
+        if(index.row()<_vertices_.size())
+        {
+            return _vertices_.at(index.row())->info();
+        }
+    }
+    return QVariant();
+}
+Qt::ItemFlags VertexModel::flags(const QModelIndex& index) const
+{
+    if(index.isValid())
+    {
+        return QAbstractTableModel::flags(index)|Qt::ItemIsEditable|Qt::ItemIsEnabled;
+    }
+    return QAbstractTableModel::flags(index);
+}
+int VertexModel::rowCount(const QModelIndex& parent) const
+{
+    Q_UNUSED(parent)
+    return _vertices_.size();
+}
+int VertexModel::columnCount(const QModelIndex& parent) const
+{
+    Q_UNUSED(parent)
+    return 1;
+}
+bool VertexModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    if(!index.isValid()|| index.row()>=_vertices_.size())
+    {
+        return false;
+    }
+    if(role==Qt::EditRole)
+    {
+        _vertices_[index.row()]->setInfo(value.toString());
+        emit dataChanged(index,index);
+        return true;
+    }
+    return false;
+}
+
+bool VertexModel::insertRows(int row, int count, const QModelIndex& parent)
+{
+    return false;
+}
+bool VertexModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+    return false;
+}
+
+void addItem(GViewItem* item);
+void removeItem(GViewItem* item);
