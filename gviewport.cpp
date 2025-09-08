@@ -508,14 +508,32 @@ bool VertexModel::setData(const QModelIndex& index, const QVariant& value, int r
     return false;
 }
 
-bool VertexModel::insertRows(int row, int count, const QModelIndex& parent)
+
+void VertexModel::addItem(GViewItem* item, int row)
 {
-    return false;
-}
-bool VertexModel::removeRows(int row, int count, const QModelIndex& parent)
-{
-    return false;
+    if(_vertices_.contains(item))
+    {
+        return;
+    }
+    if(row<0||row>=_vertices_.size())
+    {
+        row = _vertices_.size();
+    }
+    beginInsertRows(QModelIndex(),row,row);
+    _vertices_.insert(row,item);
+    endInsertRows();
+    return;
 }
 
-void addItem(GViewItem* item);
-void removeItem(GViewItem* item);
+void VertexModel::removeItem(GViewItem* item)
+{
+    int index = _vertices_.indexOf(item);
+    if(index<0)
+    {
+        return;
+    }
+    beginRemoveRows(QModelIndex(),index,index);
+    _vertices_.remove(index);
+    endRemoveRows();
+    return;
+}
