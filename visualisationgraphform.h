@@ -18,6 +18,7 @@ private:
     Ui::VisualisationGraphForm *ui;
     GViewScene* _scene_;
     GViewPort* _view_;
+    VertexModel* _model_;
     bool _add_mode_;
 public:
     explicit VisualisationGraphForm(QWidget *parent = nullptr);

@@ -1,8 +1,19 @@
 #include "gviewport.h"
-
-GViewPort::GViewPort(int vertex_radius, QWidget *tata):
+/*
+ * //todo:
+ * Дадаць: сутыкненьне вяршын,
+ * стварэньне іконак.
+ * Дадаць да вяршын трыманьне відарысаў.
+ * Дадаць магчымасьць адсякаць квадрат іконкі.
+ *
+ *
+ * (done) Зрабіць: сьпіс усіх створаных вяршын.
+ * Магчыма перацягваць вяршыны,
+ * каб ставіць адну за адной, сартыроўка.
+*/
+GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
-    _vertex_radius_(vertex_radius),_counter_(0)
+    _vertices_(model),_vertex_radius_(vertex_radius),_counter_(0)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -35,11 +46,11 @@ void GViewPort::addItem(GViewItem *vertex, const QPoint &pos)
     {
         return;
     }
-    if(_vertices_.contains(vertex))
+    if(_vertices_->contains(vertex))//if(_vertices_.contains(vertex))
     {
         return;
     }
-    _vertices_.push_back(vertex);
+    _vertices_->addItem(vertex);//_vertices_.push_back(vertex);
     scene()->addItem(vertex);
     vertex->setPos(mapToScene(pos));
     setMode(GPort_NoMode);
@@ -58,14 +69,16 @@ void GViewPort::deleteItem(GViewItem* vertex)
         vertex->setSelected(false);
         _selected_vertex_ = nullptr;
     }
-    QList<GViewItem*>::const_iterator it = std::find(_vertices_.cbegin(),_vertices_.cend(),vertex);
-    if(it!=_vertices_.end())
+    auto it = _vertices_->find(vertex);
+    //QList<GViewItem*>::const_iterator it = std::find(_vertices_.cbegin(),_vertices_.cend(),vertex);
+    if(it!=_vertices_->end())//if(it!=_vertices_.end())
     {
 
         delLinkedEdges(vertex);
         scene()->removeItem(*it);
         delete *it;
-        _vertices_.erase(it);
+        _vertices_->removeItem(*it);
+        //_vertices_.erase(it);
         setMode(GPort_NoMode);
     }
     return;
@@ -328,9 +341,13 @@ void GViewPort::setMode(GPort_Mode mode)
 void GViewPort::setRadius(int radius)
 {
     _vertex_radius_ = radius;
-    for(GViewItem* vertex: _vertices_)
+//    for(GViewItem* vertex: _vertices_)
+//    {
+//        vertex->setRadius(radius);
+//    }
+    for(int i = 0; i <_vertices_->size();i++)
     {
-        vertex->setRadius(radius);
+        _vertices_->at(i)->setRadius(radius);
     }
     for(GViewEdge* edge: _edges_)
     {
@@ -536,4 +553,46 @@ void VertexModel::removeItem(GViewItem* item)
     _vertices_.remove(index);
     endRemoveRows();
     return;
+}
+
+int VertexModel::size()
+{
+    return _vertices_.size();
+}
+
+GViewItem* VertexModel::operator[](int num)
+{
+    if(num<0 || num>= _vertices_.size())
+    {
+        return nullptr;
+    }
+    return _vertices_.at(num);
+}
+
+GViewItem* VertexModel::at(int num)
+{
+    if(num<0 || num>= _vertices_.size())
+    {
+        return nullptr;
+    }
+    return _vertices_.at(num);
+}
+
+QVector<GViewItem*>::const_iterator VertexModel::begin() const
+{
+    return _vertices_.cbegin();
+}
+
+QVector<GViewItem*>::const_iterator VertexModel::end() const
+{
+    return _vertices_.cend();
+}
+QVector<GViewItem*>::const_iterator VertexModel::find(GViewItem* item)
+{
+    return std::find(begin(),end(),item);
+}
+
+bool VertexModel::contains(GViewItem* item)const
+{
+    return _vertices_.contains(item);
 }

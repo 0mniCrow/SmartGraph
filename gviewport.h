@@ -29,6 +29,13 @@ public:
 
     void addItem(GViewItem* item, int row = -1);
     void removeItem(GViewItem* item);
+    int size();
+    GViewItem* operator[](int num);
+    GViewItem* at(int num);
+    bool contains(GViewItem* item)const;
+    QVector<GViewItem*>::const_iterator begin() const;
+    QVector<GViewItem*>::const_iterator end() const;
+    QVector<GViewItem*>::const_iterator find(GViewItem* item);
 };
 
 class GViewPort:public QGraphicsView
@@ -42,7 +49,7 @@ public:
                     GPort_finAddEdge,
                     GPort_startDelEdge,
                     GPort_finDelEdge};
-    GViewPort(int vertex_radius,QWidget* tata = nullptr);
+    GViewPort(int vertex_radius, VertexModel* model, QWidget* tata = nullptr);
     void setMode(GPort_Mode mode);
     GPort_Mode mode() const {return _mode_;}
     int vertRadius()const {return _vertex_radius_;}
@@ -51,7 +58,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
 private:
-    QList<GViewItem*> _vertices_;
+    //QList<GViewItem*> _vertices_;
+    VertexModel * _vertices_;
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
