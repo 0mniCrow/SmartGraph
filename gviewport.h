@@ -13,6 +13,22 @@
 #include <memory>
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
+#include <QStyledItemDelegate>
+
+class SpacingDelegate: public QStyledItemDelegate
+{
+    Q_OBJECT
+private:
+    int _space_size_;
+    int _drop_row_;
+    bool _drag_move_active_;
+public:
+    SpacingDelegate(int space_size, QObject* tata = nullptr);
+    void setDropRow(int drop_row);
+    void setDragActive(bool active);
+    QSize sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
+    void paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
+};
 
 class VertexModel:public QAbstractTableModel
 {
