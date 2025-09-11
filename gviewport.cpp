@@ -496,9 +496,9 @@ Qt::ItemFlags VertexModel::flags(const QModelIndex& index) const
 {
     if(index.isValid())
     {
-        return QAbstractTableModel::flags(index)|Qt::ItemIsEditable|Qt::ItemIsEnabled;
+        return QAbstractTableModel::flags(index)|Qt::ItemIsEditable|Qt::ItemIsEnabled| Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     }
-    return QAbstractTableModel::flags(index);
+    return QAbstractTableModel::flags(index)| Qt::ItemIsDropEnabled;
 }
 int VertexModel::rowCount(const QModelIndex& parent) const
 {
@@ -523,6 +523,78 @@ bool VertexModel::setData(const QModelIndex& index, const QVariant& value, int r
         return true;
     }
     return false;
+}
+
+QStringList VertexModel::mimeTypes() const
+{
+    QStringList list;
+    list.append("application/x-movedVertex");
+    return list;
+}
+QMimeData* VertexModel::mimeData(const QModelIndexList& indexes) const
+{
+    QMimeData* data = new QMimeData();
+    QByteArray encoded;
+    QDataStream stream(&encoded,QIODevice::WriteOnly);
+    for(const QModelIndex& index: indexes)
+    {
+        if(index.isValid())
+        {
+            stream<<index.row();
+        }
+    }
+    data->setData("application/x-movedVertex",encoded);
+    return data;
+}
+
+bool VertexModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
+                  int row, int column, const QModelIndex& parent)
+{
+    Q_UNUSED(parent)
+    Q_UNUSED(column)
+    if(action == Qt::IgnoreAction)
+    {
+        return true;
+    }
+    if(!data->hasFormat("application/x-movedVertex"))
+    {
+        return false;
+    }
+    QByteArray encoded(data->data("application/x-movedVertex"));
+    QDataStream stream(&encoded, QIODevice::ReadOnly);
+    int insert_row = 0;
+    if(row!=-1)
+    {
+        insert_row = row;
+    }
+    else if(parent.isValid())
+    {
+        insert_row = parent.row();
+    }
+    else
+    {
+        insert_row = rowCount(QModelIndex());
+    }
+    int src_row = -1;
+    stream>>src_row;
+    if(src_row<0 || src_row>=_vertices_.size())
+    {
+        return false;
+    }
+    beginMoveRows(QModelIndex(),src_row,src_row,
+                  QModelIndex(),insert_row>src_row?insert_row+1:insert_row);
+    std::swap(_vertices_[src_row],_vertices_[insert_row>src_row?insert_row-1:insert_row]);
+    endMoveRows();
+    return true;
+}
+
+Qt::DropActions VertexModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+Qt::DropActions VertexModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
 }
 
 

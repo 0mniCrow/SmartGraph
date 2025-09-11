@@ -14,6 +14,8 @@
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
+#include <QMimeData>
+#include <QDataStream>
 
 class SpacingDelegate: public QStyledItemDelegate
 {
@@ -42,6 +44,12 @@ public:
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action,
+                      int row, int column, const QModelIndex& parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
 
     void addItem(GViewItem* item, int row = -1);
     void removeItem(GViewItem* item);

@@ -15,6 +15,9 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     layout->addWidget(_view_);
     ui->group_forGView->setLayout(layout);
     ui->table_vertices->setModel(_model_);
+    ui->table_vertices->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->table_vertices->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->table_vertices->setDefaultDropAction(Qt::MoveAction);
     connect(ui->button_GView_add,&QPushButton::clicked,this,&VisualisationGraphForm::AddObject);
     connect(ui->button_GView_remove,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveObject);
     connect(ui->button_AddEdge,&QPushButton::clicked,this,&VisualisationGraphForm::CreateEdge);
