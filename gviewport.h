@@ -51,6 +51,11 @@ public:
     Qt::DropActions supportedDropActions() const override;
     Qt::DropActions supportedDragActions() const override;
 
+    bool moveRows(const QModelIndex& sourceParent,
+                  int sourceRow, int count, const
+                  QModelIndex& destParent, int destChild) override;
+    bool insertRows(int row, int count, const QModelIndex& parent) override;
+    bool removeRows(int row, int count, const QModelIndex& parent) override;
     void addItem(GViewItem* item, int row = -1);
     void removeItem(GViewItem* item);
     int size();

@@ -487,6 +487,10 @@ QVariant VertexModel::data(const QModelIndex& index,int role) const
     {
         if(index.row()<_vertices_.size())
         {
+            if(!_vertices_.at(index.row()))
+            {
+                return QVariant();
+            }
             return _vertices_.at(index.row())->info();
         }
     }
@@ -518,6 +522,10 @@ bool VertexModel::setData(const QModelIndex& index, const QVariant& value, int r
     }
     if(role==Qt::EditRole)
     {
+        if(!_vertices_.at(index.row()))
+        {
+            return false;
+        }
         _vertices_[index.row()]->setInfo(value.toString());
         emit dataChanged(index,index);
         return true;
@@ -581,10 +589,11 @@ bool VertexModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     {
         return false;
     }
-    beginMoveRows(QModelIndex(),src_row,src_row,
-                  QModelIndex(),insert_row>src_row?insert_row+1:insert_row);
-    std::swap(_vertices_[src_row],_vertices_[insert_row>src_row?insert_row-1:insert_row]);
-    endMoveRows();
+    moveRows(QModelIndex(),src_row,1,QModelIndex(),insert_row);
+//    beginMoveRows(QModelIndex(),src_row,src_row,
+//                  QModelIndex(),insert_row>src_row?insert_row+1:insert_row);
+//    std::swap(_vertices_[src_row],_vertices_[insert_row>src_row?insert_row-1:insert_row]);
+//    endMoveRows();
     return true;
 }
 
@@ -597,7 +606,47 @@ Qt::DropActions VertexModel::supportedDragActions() const
     return Qt::MoveAction;
 }
 
+bool VertexModel::moveRows(const QModelIndex& sourceParent,
+              int sourceRow, int count, const
+              QModelIndex& destParent, int destChild)
+{
+    Q_UNUSED(destParent)
+    Q_UNUSED(sourceParent)
+    if(!count) return false;
+    int from = sourceRow>=_vertices_.size()?_vertices_.size()-1:sourceRow;
+    int to = destChild>=_vertices_.size()?_vertices_.size()-1:destChild;
+    //beginMoveRows(sourceParent,from,from,
+    //              destParent,to);
+    ///!УВАГА, гэта будзе працаваць толькі для адзіночных пераносаў. Потым трэба будзе
+    /// дапрацаваць, каб магчыма было пераносіць некалькі шэрагаў.
 
+    _vertices_.move(from,to);
+    //endMoveRows();
+    return true;
+}
+
+bool VertexModel::insertRows(int row, int count, const QModelIndex& parent)
+{
+    if(!count) return false;
+    beginInsertRows(parent,row,row+count-1);
+    for(int i = row; i<row+count;i++)
+    {
+        _vertices_.insert(i>_vertices_.size()?_vertices_.size():i,nullptr);
+    }
+    endInsertRows();
+    return true;
+}
+bool VertexModel::removeRows(int row, int count, const QModelIndex& parent)
+{
+    if(!count) return false;
+    beginRemoveRows(parent,row,row+count-1);
+    for(int i = row; i<row+count;i++)
+    {
+        _vertices_.remove(i>=_vertices_.size()?_vertices_.size()-1:i);
+    }
+    endRemoveRows();
+    return true;
+}
 void VertexModel::addItem(GViewItem* item, int row)
 {
     if(_vertices_.contains(item))
