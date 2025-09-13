@@ -754,3 +754,54 @@ void SpacingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt, 
     }
     QStyledItemDelegate::paint(painter,option,index);
 }
+
+///______________________VertexList___________________________
+
+VertexList::VertexList(SpacingDelegate* delegate, QWidget* tata):
+    QTableView(tata),_delegate_(delegate)
+{
+    _def_row_height_ = 0;
+    if(delegate)
+    {
+        setItemDelegate(delegate);
+    }
+    return;
+}
+void VertexList::setSpacingDelegate(SpacingDelegate* delegate)
+{
+    if(delegate)
+    {
+        setItemDelegate(_delegate_=delegate);
+    }
+    return;
+}
+void VertexList::dragMoveEvent(QDragMoveEvent* d_event)
+{
+    QModelIndex index(indexAt(d_event->position().toPoint()));
+    if(index.isValid())
+    {
+        _delegate_->setDropRow(index.row());
+        _delegate_->setDragActive(true);
+        if(!_def_row_height_)
+        {
+            _def_row_height_ = rowHeight(index.row());
+            _cur_index_ = index;
+            setRowHeight(index.row(),_def_row_height_+40);
+        }
+        viewport()->update();
+    }
+    QTableView::dragMoveEvent(d_event);
+    return;
+}
+void VertexList::dropEvent(QDropEvent* d_event)
+{
+    _delegate_->setDragActive(false);
+    if(_def_row_height_)
+    {
+        setRowHeight(_cur_index_.row(),_def_row_height_);
+        _def_row_height_ = 0;
+    }
+    viewport()->update();
+    QTableView::dropEvent(d_event);
+    return;
+}

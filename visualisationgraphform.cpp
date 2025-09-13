@@ -14,10 +14,17 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     QVBoxLayout * layout = new QVBoxLayout();
     layout->addWidget(_view_);
     ui->group_forGView->setLayout(layout);
-    ui->table_vertices->setModel(_model_);
-    ui->table_vertices->setDragDropMode(QAbstractItemView::InternalMove);
-    ui->table_vertices->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->table_vertices->setDefaultDropAction(Qt::MoveAction);
+    SpacingDelegate* delegate = new SpacingDelegate(50);
+    _vert_list_ = new VertexList(delegate);
+    _vert_list_->setModel(_model_);
+    _vert_list_->setDragDropMode(QAbstractItemView::InternalMove);
+    _vert_list_->setSelectionMode(QAbstractItemView::SingleSelection);
+    _vert_list_->setDefaultDropAction(Qt::MoveAction);
+    _vert_list_->horizontalHeader()->hide();
+    _vert_list_->verticalHeader()->hide();
+    QVBoxLayout* layout2 = new QVBoxLayout();
+    layout2->addWidget(_vert_list_);
+    ui->group_forTableView->setLayout(layout2);
     connect(ui->button_GView_add,&QPushButton::clicked,this,&VisualisationGraphForm::AddObject);
     connect(ui->button_GView_remove,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveObject);
     connect(ui->button_AddEdge,&QPushButton::clicked,this,&VisualisationGraphForm::CreateEdge);
@@ -30,6 +37,7 @@ VisualisationGraphForm::~VisualisationGraphForm()
 {
     _view_->deleteLater();
     _scene_->deleteLater();
+    _vert_list_->deleteLater();
     delete ui;
 }
 

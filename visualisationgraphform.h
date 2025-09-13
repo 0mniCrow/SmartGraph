@@ -5,6 +5,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QVBoxLayout>
+#include <QHeaderView>
 #include "gviewport.h"
 
 namespace Ui {
@@ -19,6 +20,7 @@ private:
     GViewScene* _scene_;
     GViewPort* _view_;
     VertexModel* _model_;
+    VertexList* _vert_list_;
     bool _add_mode_;
 public:
     explicit VisualisationGraphForm(QWidget *parent = nullptr);

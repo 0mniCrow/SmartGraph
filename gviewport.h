@@ -11,6 +11,7 @@
 #include <QRandomGenerator>
 #include <QMouseEvent>
 #include <memory>
+#include <QTableView>
 #include <QAbstractTableModel>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
@@ -30,6 +31,22 @@ public:
     void setDragActive(bool active);
     QSize sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
     void paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
+};
+
+class VertexList:public QTableView
+{
+    Q_OBJECT
+private:
+    SpacingDelegate* _delegate_;
+    int _def_row_height_;
+    QModelIndex _cur_index_;
+public:
+    VertexList(SpacingDelegate* delegate, QWidget* tata = nullptr);
+    void setSpacingDelegate(SpacingDelegate* delegate);
+protected:
+    void dragMoveEvent(QDragMoveEvent* d_event) override;
+    void dropEvent(QDropEvent* d_event) override;
+
 };
 
 class VertexModel:public QAbstractTableModel
