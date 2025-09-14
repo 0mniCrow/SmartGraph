@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 #include "gviewport.h"
+#include "gview_tableVertexView.h"
 
 namespace Ui {
 class VisualisationGraphForm;

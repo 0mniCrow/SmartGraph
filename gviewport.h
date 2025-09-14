@@ -6,83 +6,13 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include "gviewscene.h"
+#include "gview_tableVertexModel.h"
 #include <QPixmap>
 #include <QCursor>
 #include <QRandomGenerator>
 #include <QMouseEvent>
 #include <memory>
-#include <QTableView>
-#include <QAbstractTableModel>
-#include <QSortFilterProxyModel>
-#include <QStyledItemDelegate>
-#include <QMimeData>
-#include <QDataStream>
 
-class SpacingDelegate: public QStyledItemDelegate
-{
-    Q_OBJECT
-private:
-    int _space_size_;
-    int _drop_row_;
-    bool _drag_move_active_;
-public:
-    SpacingDelegate(int space_size, QObject* tata = nullptr);
-    void setDropRow(int drop_row);
-    void setDragActive(bool active);
-    QSize sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
-    void paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
-};
-
-class VertexList:public QTableView
-{
-    Q_OBJECT
-private:
-    SpacingDelegate* _delegate_;
-    int _def_row_height_;
-    QModelIndex _cur_index_;
-public:
-    VertexList(SpacingDelegate* delegate, QWidget* tata = nullptr);
-    void setSpacingDelegate(SpacingDelegate* delegate);
-protected:
-    void dragMoveEvent(QDragMoveEvent* d_event) override;
-    void dropEvent(QDropEvent* d_event) override;
-
-};
-
-class VertexModel:public QAbstractTableModel
-{
-private:
-    QVector<GViewItem*> _vertices_;
-public:
-    VertexModel(QObject * tata = nullptr);
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-    QVariant data(const QModelIndex& index,int role = Qt::DisplayRole) const override;
-    Qt::ItemFlags flags(const QModelIndex& index) const override;
-    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
-    QStringList mimeTypes() const override;
-    QMimeData* mimeData(const QModelIndexList& indexes) const override;
-    bool dropMimeData(const QMimeData* data, Qt::DropAction action,
-                      int row, int column, const QModelIndex& parent) override;
-    Qt::DropActions supportedDropActions() const override;
-    Qt::DropActions supportedDragActions() const override;
-
-    bool moveRows(const QModelIndex& sourceParent,
-                  int sourceRow, int count, const
-                  QModelIndex& destParent, int destChild) override;
-    bool insertRows(int row, int count, const QModelIndex& parent) override;
-    bool removeRows(int row, int count, const QModelIndex& parent) override;
-    void addItem(GViewItem* item, int row = -1);
-    void removeItem(GViewItem* item);
-    int size();
-    GViewItem* operator[](int num);
-    GViewItem* at(int num);
-    bool contains(GViewItem* item)const;
-    QVector<GViewItem*>::const_iterator begin() const;
-    QVector<GViewItem*>::const_iterator end() const;
-    QVector<GViewItem*>::const_iterator find(GViewItem* item);
-};
 
 class GViewPort:public QGraphicsView
 {

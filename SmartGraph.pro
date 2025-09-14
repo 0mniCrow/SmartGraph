@@ -13,6 +13,9 @@ SOURCES += \
     graphedge.cpp \
     graphnode.cpp \
     graphwidget.cpp \
+    gview_tablePhantomRowProxyModel.cpp \
+    gview_tableVertexModel.cpp \
+    gview_tableVertexView.cpp \
     gviewedge.cpp \
     gviewitem.cpp \
     gviewport.cpp \
@@ -32,6 +35,9 @@ HEADERS += \
     graphedge.h \
     graphnode.h \
     graphwidget.h \
+    gview_tablePhantomRowProxyModel.h \
+    gview_tableVertexModel.h \
+    gview_tableVertexView.h \
     gviewedge.h \
     gviewitem.h \
     gviewport.h \
