@@ -16,6 +16,17 @@ void PhantomRowProxyModel::clearPhantomRow()
     invalidate();
     return;
 }
+
+bool PhantomRowProxyModel::isPhantomRowSet() const
+{
+    return _phantom_row_>=0;
+}
+
+VertexModel* PhantomRowProxyModel::getSourceModel()
+{
+    return dynamic_cast<VertexModel*>(sourceModel());
+}
+
 int PhantomRowProxyModel::rowCount(const QModelIndex& parent) const
 {
     int base_count = QSortFilterProxyModel::rowCount(parent);
@@ -58,9 +69,53 @@ QVariant PhantomRowProxyModel::data(const QModelIndex& index, int role) const
 }
 Qt::ItemFlags PhantomRowProxyModel::flags(const QModelIndex& index) const
 {
+
+    if (!index.isValid())
+    {
+            return Qt::ItemIsDropEnabled;
+    }
     if(_phantom_row_>=0 && index.row()==_phantom_row_)
     {
-        return Qt::ItemIsEnabled;
+        return Qt::ItemIsEnabled|Qt::ItemIsDropEnabled;
     }
-    return QSortFilterProxyModel::flags(index);
+    QModelIndex sourceIndex = mapToSource(index);
+    return sourceModel()->flags(sourceIndex);
+}
+
+bool PhantomRowProxyModel::dropMimeData(const QMimeData* data,
+                                        Qt::DropAction action,
+                  int row, int column, const QModelIndex& parent)
+{
+    int source_row = row;
+    if(_phantom_row_ >= 0 && row > _phantom_row_ )
+    {
+        --source_row;
+    }
+    QModelIndex sourceParent(mapToSource(parent));
+    return sourceModel()->dropMimeData(data,action,source_row,column,sourceParent);
+}
+
+Qt::DropActions PhantomRowProxyModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+Qt::DropActions PhantomRowProxyModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
+}
+QStringList PhantomRowProxyModel::mimeTypes() const
+{
+    return sourceModel()->mimeTypes();
+}
+QMimeData* PhantomRowProxyModel::mimeData(const QModelIndexList& indexes) const
+{
+    QModelIndexList sourceIndexes;
+    for(const QModelIndex& proxy_index:indexes)
+    {
+        if(proxy_index.isValid()&&proxy_index.row()!=_phantom_row_)
+        {
+            sourceIndexes.append(mapToSource(proxy_index));
+        }
+    }
+    return sourceModel()->mimeData(sourceIndexes);
 }

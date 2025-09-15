@@ -7,6 +7,8 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
 {
     ui->setupUi(this);
     _model_ = new VertexModel();
+    _proxy_model_ = new PhantomRowProxyModel(this);
+    _proxy_model_->setSourceModel(_model_);
     _view_ = new GViewPort(ui->spin_Radius->value(),_model_);
     _scene_ = new GViewScene(_view_);
     _scene_->setSceneRect(QRectF(-500,500,1000,1000));
@@ -16,10 +18,12 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     ui->group_forGView->setLayout(layout);
     SpacingDelegate* delegate = new SpacingDelegate(50);
     _vert_list_ = new VertexList(delegate);
-    _vert_list_->setModel(_model_);
+    _vert_list_->setModel(_proxy_model_/*_model_*/);
     _vert_list_->setDragDropMode(QAbstractItemView::InternalMove);
     _vert_list_->setSelectionMode(QAbstractItemView::SingleSelection);
     _vert_list_->setDefaultDropAction(Qt::MoveAction);
+   // _vert_list_->setAcceptDrops(true);
+   // _vert_list_->setDragEnabled(true);
     _vert_list_->horizontalHeader()->hide();
     _vert_list_->verticalHeader()->hide();
     QVBoxLayout* layout2 = new QVBoxLayout();

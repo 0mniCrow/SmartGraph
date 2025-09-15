@@ -2,6 +2,7 @@
 #define GVIEW_TABLEVERTEXVIEW_H
 
 #include "gview_tableVertexModel.h"
+#include "gview_tablePhantomRowProxyModel.h"
 #include <QTableView>
 #include <QStyledItemDelegate>
 #include <QDragMoveEvent>
@@ -30,12 +31,16 @@ private:
     SpacingDelegate* _delegate_;
     int _def_row_height_;
     QModelIndex _cur_index_;
+    PhantomRowProxyModel* getProxyModel();
 public:
     VertexList(SpacingDelegate* delegate, QWidget* tata = nullptr);
     void setSpacingDelegate(SpacingDelegate* delegate);
+    //void setPhantomRowProxy(PhantomRowProxyModel* proxy_model);
 protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
+    void dragLeaveEvent(QDragLeaveEvent* event) override;
     void dropEvent(QDropEvent* d_event) override;
+    //virtual bool event(QEvent* event) override;
 
 };
 

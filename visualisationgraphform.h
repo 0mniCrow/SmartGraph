@@ -21,6 +21,7 @@ private:
     GViewScene* _scene_;
     GViewPort* _view_;
     VertexModel* _model_;
+    PhantomRowProxyModel * _proxy_model_;
     VertexList* _vert_list_;
     bool _add_mode_;
 public:

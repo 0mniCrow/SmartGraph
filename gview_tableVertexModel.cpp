@@ -90,6 +90,19 @@ QMimeData* VertexModel::mimeData(const QModelIndexList& indexes) const
     return data;
 }
 
+int VertexModel::extractMimeData(const QMimeData* mimeData) const
+{
+    if(!mimeData)
+    {
+        return -1;
+    }
+    QByteArray encoded(mimeData->data("application/x-movedVertex"));
+    QDataStream stream(&encoded,QIODevice::ReadOnly);
+    int src_row = -1;
+    stream>>src_row;
+    return src_row;
+}
+
 bool VertexModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
                   int row, int column, const QModelIndex& parent)
 {
@@ -103,8 +116,8 @@ bool VertexModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     {
         return false;
     }
-    QByteArray encoded(data->data("application/x-movedVertex"));
-    QDataStream stream(&encoded, QIODevice::ReadOnly);
+    //QByteArray encoded(data->data("application/x-movedVertex"));
+    //QDataStream stream(&encoded, QIODevice::ReadOnly);
     int insert_row = 0;
     if(row!=-1)
     {
@@ -118,8 +131,8 @@ bool VertexModel::dropMimeData(const QMimeData* data, Qt::DropAction action,
     {
         insert_row = rowCount(QModelIndex());
     }
-    int src_row = -1;
-    stream>>src_row;
+    int src_row = extractMimeData(data);//-1;
+    //stream>>src_row;
     if(src_row<0 || src_row>=_vertices_.size())
     {
         return false;
