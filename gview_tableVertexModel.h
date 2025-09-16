@@ -11,7 +11,7 @@ class VertexModel:public QAbstractTableModel
 {
 private:
     QVector<GViewItem*> _vertices_;
-
+    int _phantom_row_;
 public:
     VertexModel(QObject * tata = nullptr);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

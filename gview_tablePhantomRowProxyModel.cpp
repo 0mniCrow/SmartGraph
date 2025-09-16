@@ -1,19 +1,24 @@
 #include "gview_tablePhantomRowProxyModel.h"
 PhantomRowProxyModel::PhantomRowProxyModel(QObject* tata):
-    QSortFilterProxyModel(tata),_phantom_row_(-1)
+    QAbstractProxyModel(tata),_phantom_row_(-1)
 {
+    _parent_ = tata;
     return;
 }
 void PhantomRowProxyModel::setPhantomRow(int row)
 {
+    beginResetModel();
     _phantom_row_ = row;
-    invalidate();
+    endResetModel();
+    //invalidate();
     return;
 }
 void PhantomRowProxyModel::clearPhantomRow()
 {
+    beginResetModel();
     _phantom_row_ = -1;
-    invalidate();
+    endResetModel();
+    //invalidate();
     return;
 }
 
@@ -29,8 +34,19 @@ VertexModel* PhantomRowProxyModel::getSourceModel()
 
 int PhantomRowProxyModel::rowCount(const QModelIndex& parent) const
 {
-    int base_count = QSortFilterProxyModel::rowCount(parent);
+    int base_count = sourceModel()->rowCount(mapToSource(parent));
     return base_count + (_phantom_row_ >= 0 ? 1 : 0);
+}
+
+int PhantomRowProxyModel::columnCount(const QModelIndex& parent) const
+{
+    Q_UNUSED(parent)
+    return sourceModel()->columnCount(QModelIndex());
+}
+QModelIndex PhantomRowProxyModel::parent(const QModelIndex &index) const
+{
+    Q_UNUSED(index)
+    return QModelIndex();
 }
 QModelIndex PhantomRowProxyModel::mapToSource(const QModelIndex& proxyIndex) const
 {
@@ -39,7 +55,7 @@ QModelIndex PhantomRowProxyModel::mapToSource(const QModelIndex& proxyIndex) con
     {
         --row;
     }
-    return QSortFilterProxyModel::index(row,proxyIndex.column());
+    return sourceModel()->index(row,proxyIndex.column());
 }
 
 QModelIndex PhantomRowProxyModel::mapFromSource(const QModelIndex& sourceIndex) const
@@ -65,8 +81,14 @@ QVariant PhantomRowProxyModel::data(const QModelIndex& index, int role) const
         }
         return QVariant();
     }
-    return QSortFilterProxyModel::data(index,role);
+    return sourceModel()->data(mapToSource(index),role);
 }
+
+ QModelIndex PhantomRowProxyModel::index(int row, int column, const QModelIndex& parent) const
+ {
+        Q_UNUSED(parent);
+     return sourceModel()->index(row,column,QModelIndex());
+ }
 Qt::ItemFlags PhantomRowProxyModel::flags(const QModelIndex& index) const
 {
 
@@ -79,7 +101,10 @@ Qt::ItemFlags PhantomRowProxyModel::flags(const QModelIndex& index) const
         return Qt::ItemIsEnabled|Qt::ItemIsDropEnabled;
     }
     QModelIndex sourceIndex = mapToSource(index);
-    return sourceModel()->flags(sourceIndex);
+    Qt::ItemFlags fl = sourceModel()->flags(sourceIndex);
+    //qDebug()<<"Row["<<index.row()<<"] Flags: "<<fl;
+
+    return fl;//sourceModel()->flags(sourceIndex);
 }
 
 bool PhantomRowProxyModel::dropMimeData(const QMimeData* data,
