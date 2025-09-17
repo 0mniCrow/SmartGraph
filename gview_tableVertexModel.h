@@ -1,6 +1,7 @@
 #ifndef GVIEW_TABLEVERTEXMODEL_H
 #define GVIEW_TABLEVERTEXMODEL_H
-
+#define INACTIVE_PHANTOM_ROW -1
+#define VM_COLUMN_COUNT 1
 #include "gviewitem.h"
 #include <QIODevice>
 #include <QAbstractTableModel>
@@ -11,8 +12,21 @@ class VertexModel:public QAbstractTableModel
 {
 private:
     QVector<GViewItem*> _vertices_;
+    QVector<GViewItem*> _proxy_vector_;
+    char _vm_flags_;
+    int _dragged_row_;
     int _phantom_row_;
+    int getActualSize() const;
+    bool isRowValid(int row) const;
+    QVariant getData(int row) const;
+    QVector<GViewItem*>* getActualList();
+    const QVector<GViewItem*>* getActualCList() const;
+    bool loadData(int row, const QVariant& data);
 public:
+    enum VM_FLAGS{VM_NoFlags = 0x00,
+                  VM_Proxy_isActive = 0x01,
+                  VM_Sorted = 0x02,
+                  VM_Filtered = 0x04};
     VertexModel(QObject * tata = nullptr);
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex& index,int role = Qt::DisplayRole) const override;
@@ -42,6 +56,13 @@ public:
     QVector<GViewItem*>::const_iterator end() const;
     QVector<GViewItem*>::const_iterator find(GViewItem* item);
     int extractMimeData(const QMimeData* mimeData) const;
+
+    void setVMFlags(char vm_flags);
+    char getVMFlags() const;
+    void setPhantomRow(int phantom_row);
+    void clearPhantomRow();
+    void setDraggedRow(int dragged_row);
+    void clearDraggedRow();
 };
 
 

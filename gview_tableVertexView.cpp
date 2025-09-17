@@ -79,6 +79,17 @@ void VertexList::dropEvent(QDropEvent* d_event)
     return;
 }
 
+void VertexList::startDrag(Qt::DropActions supportedActions)
+{
+    QModelIndex index = currentIndex();
+    if(index.isValid())
+    {
+        //model()->setDraggedRow(index.row());
+    }
+    QTableView::startDrag(supportedActions);
+    return;
+}
+
 ///____________________Spacing delegate_______________________________
 
 SpacingDelegate::SpacingDelegate(int space_size, QObject* tata):

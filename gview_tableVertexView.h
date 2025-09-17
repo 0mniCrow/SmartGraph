@@ -40,6 +40,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
     void dropEvent(QDropEvent* d_event) override;
+    void startDrag(Qt::DropActions supportedActions) override;
     //virtual bool event(QEvent* event) override;
 
 };
