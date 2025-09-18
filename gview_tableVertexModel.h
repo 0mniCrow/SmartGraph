@@ -16,6 +16,7 @@ private:
     char _vm_flags_;
     int _dragged_row_;
     int _phantom_row_;
+    bool (*_sort_func_)(GViewItem* left, GViewItem* right);
     int getActualSize() const;
     bool isRowValid(int row) const;
     QVariant getData(int row) const;
@@ -56,13 +57,16 @@ public:
     QVector<GViewItem*>::const_iterator end() const;
     QVector<GViewItem*>::const_iterator find(GViewItem* item);
     int extractMimeData(const QMimeData* mimeData) const;
-
     void setVMFlags(char vm_flags);
     char getVMFlags() const;
     void setPhantomRow(int phantom_row);
+    int phantomRow() const;
     void clearPhantomRow();
     void setDraggedRow(int dragged_row);
     void clearDraggedRow();
+protected:
+    virtual bool sortVM(GViewItem* left, GViewItem* right);
+    virtual bool filter(GViewItem* element);
 };
 
 

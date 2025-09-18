@@ -9,11 +9,12 @@ VertexModel::VertexModel(QObject * tata):QAbstractTableModel(tata),
 
 int VertexModel::getActualSize() const
 {
+    int phantom_shift = _phantom_row_>=0?1:0;
     if(_vm_flags_&VM_Proxy_isActive)
     {
-        return _proxy_vector_.size();
+        return _proxy_vector_.size()+phantom_shift;
     }
-    return _vertices_.size();
+    return _vertices_.size()+phantom_shift;
 }
 
 bool VertexModel::isRowValid(int row) const
@@ -99,17 +100,18 @@ QVariant VertexModel::data(const QModelIndex& index,int role) const
         {
             return QVariant();
         }
-        if(_phantom_row_>=0 &&
-                _phantom_row_ == index.row()&&
-                _phantom_row_ != _dragged_row_)
+        if(_phantom_row_>=0)
         {
-            return QString("Drop here...");
+            if(_phantom_row_ == index.row()&&
+                    _phantom_row_ != _dragged_row_)
+            {
+                return QString("Drop here...");
+            }
+            else if(index.row()>_phantom_row_)
+            {
+                return getData(index.row()-1);
+            }
         }
-//        if(!_vertices_.at(index.row()))
-//        {
-//            return QVariant();
-//        }
-//        return _vertices_.at(index.row())->info();
         return getData(index.row());
     }
     else if(role ==  Qt::BackgroundRole)
@@ -157,16 +159,11 @@ bool VertexModel::setData(const QModelIndex& index, const QVariant& value, int r
     }
     if(role==Qt::EditRole)
     {
-//        if(!_vertices_.at(index.row()))
-//        {
-//            return false;
-//        }
-//        _vertices_[index.row()]->setInfo(value.toString());
         if(_phantom_row_>=0 && _phantom_row_==index.row())
         {
             return false;
         }
-        if(loadData(index.row(),value))
+        if(loadData(index.row()-(_phantom_row_>index.row()?1:0),value))
         {
             emit dataChanged(index,index);
             return true;
@@ -265,30 +262,30 @@ bool VertexModel::moveRows(const QModelIndex& sourceParent,
               int sourceRow, int count, const
               QModelIndex& destParent, int destChild)
 {
-    ///______________TODO______________________
     Q_UNUSED(destParent)
     Q_UNUSED(sourceParent)
     if(!count) return false;
-    int from = sourceRow>=_vertices_.size()?_vertices_.size()-1:sourceRow;
-    int to = destChild>=_vertices_.size()?_vertices_.size()-1:destChild;
+    int from = sourceRow>=getActualList()->size()?
+                getActualList()->size()-1:sourceRow;//_vertices_.size()?_vertices_.size()-1:sourceRow;
+    int to = destChild>=getActualList()->size()?
+                getActualList()->size()-1:destChild;//_vertices_.size()?_vertices_.size()-1:destChild;
     //beginMoveRows(sourceParent,from,from,
     //              destParent,to);
     ///!УВАГА, гэта будзе працаваць толькі для адзіночных пераносаў. Потым трэба будзе
     /// дапрацаваць, каб магчыма было пераносіць некалькі шэрагаў.
 
-    _vertices_.move(from,to);
+    getActualList()->move(from,to);
     //endMoveRows();
     return true;
 }
 
 bool VertexModel::insertRows(int row, int count, const QModelIndex& parent)
 {
-    ///______________TODO______________________
     if(!count) return false;
     beginInsertRows(parent,row,row+count-1);
     for(int i = row; i<row+count;i++)
     {
-        _vertices_.insert(i>_vertices_.size()?_vertices_.size():i,nullptr);
+        getActualList()->insert(i>getActualList()->size()?getActualList()->size():i,nullptr);
     }
     endInsertRows();
     return true;
@@ -300,73 +297,71 @@ bool VertexModel::removeRows(int row, int count, const QModelIndex& parent)
     for(int i = row; i<row+count;i++)
     {
         getActualList()->remove((i>=getActualSize())?getActualSize()-1:i);
-        //_vertices_.remove(i>=_vertices_.size()?_vertices_.size()-1:i);
     }
     endRemoveRows();
     return true;
 }
 void VertexModel::addItem(GViewItem* item, int row)
 {
-    ///______________TODO______________________
-    if(_vertices_.contains(item))
+    if(getActualList()->contains(item))
     {
         return;
     }
-    if(row<0||row>=_vertices_.size())
+    if(row<0||row>=getActualList()->size())
     {
-        row = _vertices_.size();
+        row = getActualList()->size();
     }
     beginInsertRows(QModelIndex(),row,row);
-    _vertices_.insert(row,item);
+    getActualList()->insert(row,item);
     endInsertRows();
     return;
 }
 
 void VertexModel::removeItem(GViewItem* item)
 {
-    ///______________TODO______________________
-    int index = _vertices_.indexOf(item);
+
+    int index = getActualList()->indexOf(item);
     if(index<0)
     {
         return;
     }
     beginRemoveRows(QModelIndex(),index,index);
-    _vertices_.remove(index);
+    getActualList()->remove(index);
     endRemoveRows();
     return;
 }
 
 int VertexModel::size()
 {
-    return getActualSize();//_vertices_.size();
+    return getActualSize();
 }
 
 GViewItem* VertexModel::operator[](int num)
 {
-    if(num<0 || num>= getActualSize())//_vertices_.size())
+    if(num<0 || num>= getActualSize())
     {
         return nullptr;
     }
-    return getActualList()->at(num);//_vertices_.at(num);
+    return getActualList()->at(num);
 }
 
 GViewItem* VertexModel::at(int num)
 {
-    if(num<0 || num>= getActualSize())//_vertices_.size())
+    if(num<0 || num>= getActualSize())
     {
         return nullptr;
     }
-    return getActualList()->at(num);//_vertices_.at(num);
+    return getActualList()->at(num);
 }
 
 QVector<GViewItem*>::const_iterator VertexModel::begin() const
 {
-    return getActualCList()->cbegin();//_vertices_.cbegin();
+    return getActualCList()->cbegin();
 }
 
 QVector<GViewItem*>::const_iterator VertexModel::end() const
 {
-    return getActualCList()->cend();//_vertices_.cend();
+    return getActualCList()->cend();
 }
 QVector<GViewItem*>::const_iterator VertexModel::find(GViewItem* item)
 {
@@ -376,30 +371,49 @@ QVector<GViewItem*>::const_iterator VertexModel::find(GViewItem* item)
 bool VertexModel::contains(GViewItem* item)const
 {
     return  getActualCList()->contains(item);
-    //return _vertices_.contains(item);
 }
 
 void VertexModel::setPhantomRow(int phantom_row)
 {
-    if(_dragged_row_<0)
+    if(_dragged_row_<0 || _phantom_row_ == phantom_row)
     {
         return;
     }
     if(isRowValid(phantom_row))
     {
-        _phantom_row_ = phantom_row;
+        if(_phantom_row_>=0)
+        {
+            beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
+            _phantom_row_ = INACTIVE_PHANTOM_ROW;
+            endRemoveRows();
+        }
+        if(phantom_row != _dragged_row_)
+        {
+            beginInsertRows(QModelIndex(),phantom_row,phantom_row);
+            _phantom_row_ = phantom_row;
+            endInsertRows();
+        }
+
         emit dataChanged(index(phantom_row,0),index(getActualSize()-1,0));
     }
     return;
 }
+
+int VertexModel::phantomRow() const
+{
+    return _phantom_row_;
+}
+
 void VertexModel::clearPhantomRow()
 {
     if(_phantom_row_<0)
     {
         return;
     }
+    beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
     int temp_ph_row = _phantom_row_;
     _phantom_row_ = INACTIVE_PHANTOM_ROW;
+    endRemoveRows();
     emit dataChanged(index(temp_ph_row,0),index(getActualSize()-1,0));
     return;
 }
@@ -426,4 +440,14 @@ void VertexModel::setVMFlags(char vm_flags)
 char VertexModel::getVMFlags() const
 {
     return _vm_flags_;
+}
+
+bool VertexModel::sortVM(GViewItem* left, GViewItem* right)
+{
+    return left->info()>right->info();
+}
+
+bool VertexModel::filter(GViewItem* element)
+{
+    return !element->info().isEmpty();
 }

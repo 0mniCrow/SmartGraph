@@ -28,13 +28,13 @@ class VertexList:public QTableView
 {
     Q_OBJECT
 private:
-    SpacingDelegate* _delegate_;
     int _def_row_height_;
     QModelIndex _cur_index_;
-    PhantomRowProxyModel* getProxyModel();
+    VertexModel* vertexModel();
+    //PhantomRowProxyModel* getProxyModel();
 public:
-    VertexList(SpacingDelegate* delegate, QWidget* tata = nullptr);
-    void setSpacingDelegate(SpacingDelegate* delegate);
+    VertexList( QWidget* tata = nullptr);
+    //void setSpacingDelegate(SpacingDelegate* delegate);
     //void setPhantomRowProxy(PhantomRowProxyModel* proxy_model);
 protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
