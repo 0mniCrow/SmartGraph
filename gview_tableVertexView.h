@@ -31,18 +31,13 @@ private:
     int _def_row_height_;
     QModelIndex _cur_index_;
     VertexModel* vertexModel();
-    //PhantomRowProxyModel* getProxyModel();
 public:
     VertexList( QWidget* tata = nullptr);
-    //void setSpacingDelegate(SpacingDelegate* delegate);
-    //void setPhantomRowProxy(PhantomRowProxyModel* proxy_model);
 protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
     void dropEvent(QDropEvent* d_event) override;
     void startDrag(Qt::DropActions supportedActions) override;
-    //virtual bool event(QEvent* event) override;
-
 };
 
 #endif // GVIEW_TABLEVERTEXVIEW_H

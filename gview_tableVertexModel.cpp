@@ -107,10 +107,31 @@ QVariant VertexModel::data(const QModelIndex& index,int role) const
             {
                 return QString("Drop here...");
             }
+            else if(_dragged_row_<_phantom_row_&&
+                    index.row()<_phantom_row_)
+            {
+                return getData(index.row()+1);
+            }
             else if(index.row()>_phantom_row_)
             {
                 return getData(index.row()-1);
             }
+
+//            else if(index.row()>_phantom_row_&&
+//                    _dragged_row_>_phantom_row_)
+//            {
+//                return getData(index.row()-1);
+//            }
+//            else if(index.row()<_phantom_row_ &&
+//                    _dragged_row_<_phantom_row_)
+//            {
+//                return getData(index.row()+2);
+//            }
+//            else if(index.row()>_phantom_row_&&
+//                    _dragged_row_<_phantom_row_)
+//            {
+//                return getData(index.row());
+//            }
         }
         return getData(index.row());
     }
@@ -394,7 +415,7 @@ void VertexModel::setPhantomRow(int phantom_row)
             endInsertRows();
         }
 
-        emit dataChanged(index(phantom_row,0),index(getActualSize()-1,0));
+        emit dataChanged(index(phantom_row/*>_dragged_row_?phantom_row-1:phantom_row*/,0),index(getActualSize()-1,0));
     }
     return;
 }

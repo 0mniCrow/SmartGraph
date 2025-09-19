@@ -10,21 +10,6 @@ VertexModel* VertexList::vertexModel()
 {
     return dynamic_cast<VertexModel*>(model());
 }
-//void VertexList::setSpacingDelegate(SpacingDelegate* delegate)
-//{
-//    return;
-//}
-
-//PhantomRowProxyModel* VertexList::getProxyModel()
-//{
-//    return dynamic_cast<PhantomRowProxyModel*>(model());
-//}
-
-//bool VertexList::event(QEvent* event)
-//{
-//    qDebug()<<"Event type: " << event->type();
-//    return QTableView::event(event);
-//}
 
 void VertexList::dragMoveEvent(QDragMoveEvent* d_event)
 { 
@@ -34,12 +19,6 @@ void VertexList::dragMoveEvent(QDragMoveEvent* d_event)
         if(index.row()!=vertexModel()->phantomRow())
         {
             vertexModel()->setPhantomRow(index.row());
-//        auto pr_mod = getProxyModel();
-//        if(pr_mod->isPhantomRowSet())
-//        {
-//            pr_mod->setPhantomRow(getProxyModel()->getSourceModel()->extractMimeData(d_event->mimeData()));
-//        }
-//        viewport()->update();
         }
     }
     QTableView::dragMoveEvent(d_event);
@@ -54,14 +33,6 @@ void VertexList::dragLeaveEvent(QDragLeaveEvent* event)
 
 void VertexList::dropEvent(QDropEvent* d_event)
 {
-//    _delegate_->setDragActive(false);
-//    if(_def_row_height_)
-//    {
-//        setRowHeight(_cur_index_.row(),_def_row_height_);
-//        _def_row_height_ = 0;
-//    }
-//    getProxyModel()->clearPhantomRow();
-//    viewport()->update();
     vertexModel()->clearPhantomRow();
     vertexModel()->clearDraggedRow();
     QTableView::dropEvent(d_event);
