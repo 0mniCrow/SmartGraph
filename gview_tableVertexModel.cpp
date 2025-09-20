@@ -107,40 +107,37 @@ QVariant VertexModel::data(const QModelIndex& index,int role) const
             {
                 return QString("Drop here...");
             }
-            else if(_dragged_row_<_phantom_row_&&
-                    index.row()<_phantom_row_)
+            else if(index.row()<_phantom_row_&&
+                    index.row()>=_dragged_row_)
             {
                 return getData(index.row()+1);
             }
-            else if(index.row()>_phantom_row_)
+            else if(index.row()>_phantom_row_&&
+                    index.row()<=_dragged_row_)
             {
                 return getData(index.row()-1);
             }
-
-//            else if(index.row()>_phantom_row_&&
-//                    _dragged_row_>_phantom_row_)
-//            {
-//                return getData(index.row()-1);
-//            }
-//            else if(index.row()<_phantom_row_ &&
-//                    _dragged_row_<_phantom_row_)
-//            {
-//                return getData(index.row()+2);
-//            }
-//            else if(index.row()>_phantom_row_&&
-//                    _dragged_row_<_phantom_row_)
-//            {
-//                return getData(index.row());
-//            }
         }
         return getData(index.row());
     }
     else if(role ==  Qt::BackgroundRole)
     {
-        if(_phantom_row_>=0 &&
-                _phantom_row_==index.row())
+        if(_phantom_row_>=0)
+        {
+        if(_phantom_row_==index.row())
         {
             return QColor(179,237,235);
+        }
+        else if(index.row()<_phantom_row_&&
+                index.row()>=_dragged_row_)
+        {
+            return QColor(248,255,182);
+        }
+        else if(index.row()>_phantom_row_&&
+                index.row()<=_dragged_row_)
+        {
+            return QColor(248,255,182);
+        }
         }
         return QVariant();
     }
@@ -404,15 +401,15 @@ void VertexModel::setPhantomRow(int phantom_row)
     {
         if(_phantom_row_>=0)
         {
-            beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
+            //beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
             _phantom_row_ = INACTIVE_PHANTOM_ROW;
-            endRemoveRows();
+            //endRemoveRows();
         }
         if(phantom_row != _dragged_row_)
         {
-            beginInsertRows(QModelIndex(),phantom_row,phantom_row);
+            //beginInsertRows(QModelIndex(),phantom_row,phantom_row);
             _phantom_row_ = phantom_row;
-            endInsertRows();
+            //endInsertRows();
         }
 
         emit dataChanged(index(phantom_row/*>_dragged_row_?phantom_row-1:phantom_row*/,0),index(getActualSize()-1,0));
@@ -431,10 +428,10 @@ void VertexModel::clearPhantomRow()
     {
         return;
     }
-    beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
+    //beginRemoveRows(QModelIndex(),_phantom_row_,_phantom_row_);
     int temp_ph_row = _phantom_row_;
     _phantom_row_ = INACTIVE_PHANTOM_ROW;
-    endRemoveRows();
+    //endRemoveRows();
     emit dataChanged(index(temp_ph_row,0),index(getActualSize()-1,0));
     return;
 }
