@@ -90,6 +90,8 @@ QVariant VertexModel::headerData(int section, Qt::Orientation orientation, int r
 
 QVariant VertexModel::data(const QModelIndex& index,int role) const
 {
+    ///!todo set selected item in the list selected on the graphic model
+    /// and visa versa
     if(!index.isValid())
     {
         return QVariant();
