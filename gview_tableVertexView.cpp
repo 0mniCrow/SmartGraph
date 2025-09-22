@@ -1,14 +1,21 @@
 #include "gview_tableVertexView.h"
 
-VertexList::VertexList(QWidget* tata):
+VertexList::VertexList(SelectedRow *styleDelegate, QWidget* tata):
     QTableView(tata)
 {
+    setItemDelegate(styleDelegate);
+    connect(this,&QObject::destroyed,styleDelegate,&QObject::deleteLater);
     return;
 }
 
 VertexModel* VertexList::vertexModel()
 {
     return dynamic_cast<VertexModel*>(model());
+}
+
+SelectedRow* VertexList::selectedRowDelegate()
+{
+    return dynamic_cast<SelectedRow*>(itemDelegate());
 }
 
 void VertexList::dragMoveEvent(QDragMoveEvent* d_event)
@@ -35,7 +42,20 @@ void VertexList::dropEvent(QDropEvent* d_event)
 {
     vertexModel()->clearPhantomRow();
     vertexModel()->clearDraggedRow();
+    selectedRowDelegate()->clearDragAction();
     QTableView::dropEvent(d_event);
+    QPointF tyk = d_event->position();
+    QModelIndex index = indexAt(tyk.toPoint());
+    if(index.isValid())
+    {
+        selectionModel()->clearSelection();
+        selectionModel()->select(index,QItemSelectionModel::Select|
+                                 QItemSelectionModel::Rows);
+        setCurrentIndex(index);
+        setFocus();
+    }
+    //selectionModel()->select()
+    //setSelection(d_event->position(),QItemSelectionModel::Select);
     return;
 }
 
@@ -45,44 +65,49 @@ void VertexList::startDrag(Qt::DropActions supportedActions)
     if(index.isValid())
     {
         vertexModel()->setDraggedRow(index.row());
+        selectedRowDelegate()->setDragAction(true);
     }
     QTableView::startDrag(supportedActions);
+
     return;
 }
 
 ///____________________Spacing delegate_______________________________
 
-SpacingDelegate::SpacingDelegate(int space_size, QObject* tata):
-    QStyledItemDelegate(tata),_space_size_(space_size),
-_drop_row_(-1),_drag_move_active_(false){}
-
-void SpacingDelegate::setDropRow(int drop_row)
+SelectedRow::SelectedRow(QObject* tata):
+    QStyledItemDelegate(tata),_drag_action_(false)
 {
-    _drop_row_ = drop_row;
-    return;
-}
-void SpacingDelegate::setDragActive(bool active)
-{
-    _drag_move_active_=active;
     return;
 }
 
-QSize SpacingDelegate::sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const
+void SelectedRow::paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const
 {
-    if(_drag_move_active_&& index.row()==_drop_row_)
+    if(_drag_action_&&
+            opt.state& QStyle::State_Selected &&
+            !(opt.state& QStyle::State_MouseOver))
     {
-        //QSize hint_size = QStyledItemDelegate::sizeHint(opt,index);
-        return QSize(opt.rect.width(),opt.rect.height()+_space_size_);
+        painter->save();
+        painter->setPen(QPen(Qt::black,1,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+        painter->setBrush(QColor(248,255,182));
+        painter->drawRect(opt.rect);
+        QString data = index.data().toString();
+        painter->drawText(opt.rect,data,Qt::AlignLeft|Qt::AlignVCenter);
+        painter->restore();
     }
-    return QStyledItemDelegate::sizeHint(opt,index);
+    else
+    {
+        QStyledItemDelegate::paint(painter,opt,index);
+    }
+    return;
 }
 
-void SpacingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const
+void SelectedRow::setDragAction(bool drag_action)
 {
-    QStyleOptionViewItem option = opt;
-    if(_drag_move_active_&& index.row()==_drop_row_)
-    {
-        painter->fillRect(option.rect,QColor(100,149,237));
-    }
-    QStyledItemDelegate::paint(painter,option,index);
+    _drag_action_ = drag_action;
+    return;
+}
+void SelectedRow::clearDragAction()
+{
+    _drag_action_ = false;
+    return;
 }

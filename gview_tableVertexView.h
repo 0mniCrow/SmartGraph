@@ -5,22 +5,20 @@
 #include "gview_tablePhantomRowProxyModel.h"
 #include <QTableView>
 #include <QStyledItemDelegate>
+#include <QItemSelectionModel>
 #include <QDragMoveEvent>
 #include <QDropEvent>
 
 
-class SpacingDelegate: public QStyledItemDelegate
+class SelectedRow: public QStyledItemDelegate
 {
     Q_OBJECT
 private:
-    int _space_size_;
-    int _drop_row_;
-    bool _drag_move_active_;
+    bool _drag_action_;
 public:
-    SpacingDelegate(int space_size, QObject* tata = nullptr);
-    void setDropRow(int drop_row);
-    void setDragActive(bool active);
-    QSize sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
+    SelectedRow(QObject* tata = nullptr);
+    void setDragAction(bool drag_action);
+    void clearDragAction();
     void paint(QPainter* painter, const QStyleOptionViewItem& opt, const QModelIndex& index) const override;
 };
 
@@ -28,11 +26,10 @@ class VertexList:public QTableView
 {
     Q_OBJECT
 private:
-    int _def_row_height_;
-    QModelIndex _cur_index_;
+    SelectedRow* selectedRowDelegate();
     VertexModel* vertexModel();
 public:
-    VertexList( QWidget* tata = nullptr);
+    VertexList(SelectedRow* styleDelegate, QWidget* tata = nullptr);
 protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
