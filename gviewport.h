@@ -54,8 +54,12 @@ private:
     GViewItem* grabGItem(QMouseEvent* m_event);
     void addItem(GViewItem* vertex, const QPoint& pos);
     void deleteItem(GViewItem* vertex);
+    void selectItem(GViewItem* selected_item);
 signals:
     void selectedInfo(QString info);
+    void viewNewSelect(GViewItem* new_item);
+public slots:
+    void outsideNewSelect(GViewItem* selected_item);
 };
 
 #endif // GVIEWPORT_H

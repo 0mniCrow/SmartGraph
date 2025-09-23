@@ -52,6 +52,7 @@ public:
     int size();
     GViewItem* operator[](int num);
     GViewItem* at(int num);
+    int rowIndex(GViewItem * item) const;
     bool contains(GViewItem* item)const;
     QVector<GViewItem*>::const_iterator begin() const;
     QVector<GViewItem*>::const_iterator end() const;

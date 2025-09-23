@@ -72,6 +72,54 @@ void VertexList::startDrag(Qt::DropActions supportedActions)
     return;
 }
 
+void VertexList::changeSelection(const QModelIndex& index)
+{
+    selectionModel()->clearSelection();
+    if(index.isValid())
+    {
+        selectionModel()->select(index,QItemSelectionModel::Select|
+                                 QItemSelectionModel::Rows);
+        setCurrentIndex(index);
+        setFocus();
+    }
+    return;
+}
+
+void VertexList::outsideNewSelect(GViewItem* selected_item)
+{
+    if(selected_item &&
+            vertexModel()->contains(selected_item))
+    {
+        int row = vertexModel()->rowIndex(selected_item);
+        if(row<0)
+        {
+            return;
+        }
+        changeSelection(vertexModel()->index(row,1));
+    }
+    else
+    {
+        changeSelection(QModelIndex());
+    }
+    return;
+}
+
+void VertexList::newSelection(const QModelIndex& newObject,
+                              const QModelIndex& prevObject)
+{
+    Q_UNUSED(prevObject);
+    if(!newObject.isValid())
+    {
+        return;
+    }
+    GViewItem * selected_item = vertexModel()->at(newObject.row());
+    if(selected_item)
+    {
+        emit listNewSelect(selected_item);
+    }
+    return;
+}
+
 ///____________________Spacing delegate_______________________________
 
 SelectedRow::SelectedRow(QObject* tata):

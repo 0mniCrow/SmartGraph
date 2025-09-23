@@ -8,6 +8,7 @@ GViewEdge::GViewEdge(GViewItem *source,
     _directed_(directed),_mode_(mode)
 {
     setAcceptedMouseButtons(Qt::NoButton);
+    setZValue(-1);
     return;
 }
 

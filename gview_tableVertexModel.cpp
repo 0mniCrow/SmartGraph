@@ -390,7 +390,20 @@ QVector<GViewItem*>::const_iterator VertexModel::find(GViewItem* item)
 
 bool VertexModel::contains(GViewItem* item)const
 {
+    if(!item)
+    {
+        return false;
+    }
     return  getActualCList()->contains(item);
+}
+
+int VertexModel::rowIndex(GViewItem * item) const
+{
+    if(contains(item))
+    {
+        return getActualCList()->indexOf(item);
+    }
+    return -1;
 }
 
 void VertexModel::setPhantomRow(int phantom_row)

@@ -28,6 +28,7 @@ class VertexList:public QTableView
 private:
     SelectedRow* selectedRowDelegate();
     VertexModel* vertexModel();
+    void changeSelection(const QModelIndex& index);
 public:
     VertexList(SelectedRow* styleDelegate, QWidget* tata = nullptr);
 protected:
@@ -35,6 +36,12 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent* event) override;
     void dropEvent(QDropEvent* d_event) override;
     void startDrag(Qt::DropActions supportedActions) override;
+signals:
+    void listNewSelect(GViewItem* selected_item);
+public slots:
+    void outsideNewSelect(GViewItem* selected_item);
+private slots:
+    void newSelection(const QModelIndex& newObject, const QModelIndex& prevObject);
 };
 
 #endif // GVIEW_TABLEVERTEXVIEW_H
