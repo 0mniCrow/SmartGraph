@@ -54,7 +54,7 @@ private:
     GViewItem* grabGItem(QMouseEvent* m_event);
     void addItem(GViewItem* vertex, const QPoint& pos);
     void deleteItem(GViewItem* vertex);
-    void selectItem(GViewItem* selected_item);
+    void selectItem(GViewItem* selected_item, bool outside = false);
 signals:
     void selectedInfo(QString info);
     void viewNewSelect(GViewItem* new_item);

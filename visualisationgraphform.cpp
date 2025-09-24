@@ -24,6 +24,7 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     _vert_list_->setDefaultDropAction(Qt::MoveAction);
     _vert_list_->horizontalHeader()->hide();
     _vert_list_->verticalHeader()->hide();
+    _vert_list_->setSelectConn();
     //_vert_list_->setItemDelegate(delegate);
     QVBoxLayout* layout2 = new QVBoxLayout();
     layout2->addWidget(_vert_list_);
@@ -34,6 +35,8 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     connect(ui->button_removeEdge,&QPushButton::clicked,this,&VisualisationGraphForm::RemoveEdge);
     connect(ui->spin_Radius,&QSpinBox::valueChanged,this,&VisualisationGraphForm::ChangeSize);
     connect(_view_,&GViewPort::selectedInfo,this,&VisualisationGraphForm::updateInfo);
+    connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
+    connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
 }
 
 VisualisationGraphForm::~VisualisationGraphForm()

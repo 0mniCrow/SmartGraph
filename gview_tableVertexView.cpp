@@ -5,6 +5,14 @@ VertexList::VertexList(SelectedRow *styleDelegate, QWidget* tata):
 {
     setItemDelegate(styleDelegate);
     connect(this,&QObject::destroyed,styleDelegate,&QObject::deleteLater);
+    //QItemSelectionModel * cur_select_model = selectionModel();
+    setSelectConn();
+    return;
+}
+
+void VertexList::setSelectConn()
+{
+    connect(selectionModel(),&QItemSelectionModel::currentRowChanged,this,&VertexList::newSelection);
     return;
 }
 
@@ -95,7 +103,7 @@ void VertexList::outsideNewSelect(GViewItem* selected_item)
         {
             return;
         }
-        changeSelection(vertexModel()->index(row,1));
+        changeSelection(vertexModel()->index(row,0));
     }
     else
     {

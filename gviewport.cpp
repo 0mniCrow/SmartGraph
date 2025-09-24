@@ -418,12 +418,6 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     {
         GViewItem * item = grabGItem(m_event);
         selectItem(item);
-        if(item && item != _selected_vertex_)
-        {
-            QString selected("Selected Item: ");
-            selected.append(item->info());
-            emit selectedInfo(selected);
-        }
     }
     }
     QGraphicsView::mouseReleaseEvent(m_event);
@@ -451,14 +445,24 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
     return;
 }
 
-void GViewPort::selectItem(GViewItem* selected_item)
+void GViewPort::selectItem(GViewItem* selected_item, bool outside)
 {
     if(selected_item)
     {
         if(selected_item != _selected_vertex_)
         {
+            if(_selected_vertex_)
+                _selected_vertex_->setSelected(false);
             _selected_vertex_ = selected_item;
-            emit viewNewSelect(selected_item);
+            _selected_vertex_->setSelected(true);
+            if(outside)
+            {
+                return;
+            }
+            QString selected("Selected Item: ");
+            selected.append(_selected_vertex_->info());
+            emit selectedInfo(selected);
+            emit viewNewSelect(_selected_vertex_);
         }
     }
     else
@@ -474,6 +478,6 @@ void GViewPort::selectItem(GViewItem* selected_item)
 
 void GViewPort::outsideNewSelect(GViewItem* selected_item)
 {
-    selectItem(selected_item);
+    selectItem(selected_item,true);
     return;
 }

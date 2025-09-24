@@ -31,6 +31,7 @@ private:
     void changeSelection(const QModelIndex& index);
 public:
     VertexList(SelectedRow* styleDelegate, QWidget* tata = nullptr);
+    void setSelectConn();
 protected:
     void dragMoveEvent(QDragMoveEvent* d_event) override;
     void dragLeaveEvent(QDragLeaveEvent* event) override;
