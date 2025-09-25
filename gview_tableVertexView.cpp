@@ -88,7 +88,7 @@ void VertexList::changeSelection(const QModelIndex& index)
         selectionModel()->select(index,QItemSelectionModel::Select|
                                  QItemSelectionModel::Rows);
         setCurrentIndex(index);
-        setFocus();
+        //setFocus();
     }
     return;
 }

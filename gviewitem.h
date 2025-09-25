@@ -1,6 +1,8 @@
 #ifndef GVIEWITEM_H
 #define GVIEWITEM_H
-#define LINE_WIDTH 2.0
+#define LINE_CLICKED_WIDTH 3.0
+#define LINE_SELECT_WIDTH 2.0
+#define LINE_BASE_WIDTH 1.0
 #define SELECTED_RISE 3
 
 #include <QGraphicsItem>

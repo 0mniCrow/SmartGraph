@@ -364,9 +364,9 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     case GPort_add:
     {
         GViewItem* item = new GViewItem(_vertex_radius_,"Vertex N"+QString::number(_counter_++),
-                                        QColor::fromRgb(
+                                        Qt::gray/*QColor::fromRgb(
                                             QRandomGenerator::global()->generate()
-                                            )
+                                            )*/
                                         );
         addItem(item,m_event->pos());
         QApplication::restoreOverrideCursor();

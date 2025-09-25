@@ -66,10 +66,27 @@ void GViewItem::delEdge(GViewEdge* edge)
 QRectF GViewItem::boundingRect() const
 {
     int select_inflate = isSelected()?SELECTED_RISE:0;
-    return QRectF(-_radius_-LINE_WIDTH-select_inflate,
+    int borders = 0;
+    if(_is_clicked_)
+    {
+        borders = LINE_CLICKED_WIDTH;
+    }
+    else if(isSelected())
+    {
+        borders = LINE_SELECT_WIDTH;
+    }
+    else
+    {
+        borders = LINE_BASE_WIDTH;
+    }
+    return QRectF(-_radius_ - borders - select_inflate,
+                  -_radius_ - borders - select_inflate,
+                  _radius_*2 + borders + select_inflate,
+                  _radius_*2 + borders+ select_inflate);
+            /*QRectF(-_radius_-LINE_WIDTH-select_inflate,
                   -_radius_-LINE_WIDTH-select_inflate,
                   _radius_*2+LINE_WIDTH+select_inflate,
-                  _radius_*2+LINE_WIDTH+select_inflate);
+                  _radius_*2+LINE_WIDTH+select_inflate);*/
 }
 
 QPainterPath GViewItem::shape() const
@@ -134,12 +151,17 @@ void GViewItem::paint(QPainter* painter,
     QPen cur_pen;
     if(isUnderMouse())
     {
-        cur_color.setRed(_color_.red()<235?_color_.red()+20:_color_.red()-20);
-        cur_color.setGreen(_color_.green()<235?_color_.green()+20:_color_.green()-20);
-        cur_color.setBlue(_color_.blue()<235?_color_.blue()+20:_color_.blue()-20);
+        cur_color = Qt::yellow;
+//        cur_color.setRed(_color_.red()<235?_color_.red()+20:_color_.red()-20);
+//        cur_color.setGreen(_color_.green()<235?_color_.green()+20:_color_.green()-20);
+//        cur_color.setBlue(_color_.blue()<235?_color_.blue()+20:_color_.blue()-20);
 //        cur_color.setRgbF(_color_.redF()+2.0,
 //                          _color_.greenF()+2.0,
 //                          _color_.blueF()+2.0);
+    }
+    else if(isSelected())
+    {
+        cur_color = Qt::darkGray;
     }
     else
     {
@@ -148,20 +170,20 @@ void GViewItem::paint(QPainter* painter,
     painter->setBrush(cur_color);
     if(_is_clicked_)
     {
-        cur_pen.setColor(Qt::black);
-        cur_pen.setWidthF(LINE_WIDTH);
+        cur_pen.setColor(Qt::darkGray);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
     }
     else
     {
         if(isSelected())
         {
-            cur_pen.setColor(Qt::darkYellow);
-            cur_pen.setWidthF(LINE_WIDTH);
+            cur_pen.setColor(Qt::black);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
         }
         else
         {
-            cur_pen.setColor(Qt::darkGray);
-            cur_pen.setWidthF((LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
+            cur_pen.setColor(Qt::black);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);//(LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
         }
     }
     painter->setPen(cur_pen);
