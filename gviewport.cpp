@@ -18,6 +18,7 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
     _selected_vertex_= nullptr;
+    setMouseTracking(true);
     return;
 }
 
@@ -153,7 +154,7 @@ void GViewPort::startAddEdge(GViewItem* src)
     }
     _new_edge_ = new GViewEdge(src,_vertex_radius_,true);
     scene()->addItem(_new_edge_);
-    setMouseTracking(true);
+    //setMouseTracking(true);
     _mode_=GPort_finAddEdge;
     return;
 }
@@ -170,7 +171,7 @@ void GViewPort::finishAddEdge(GViewItem* dest)
     {
         return;
     }
-    setMouseTracking(false);
+    //setMouseTracking(false);
 
     for(GViewEdge* edge:_edges_)
     {
@@ -220,7 +221,7 @@ void GViewPort::startDelEdge(GViewItem* src)
     _new_edge_ = new GViewEdge(src,_vertex_radius_,true,GViewEdge::GVedge_deletion);
     scene()->addItem(_new_edge_);
     _mode_=GPort_finDelEdge;
-    setMouseTracking(true);
+    //setMouseTracking(true);
     return;
 }
 
@@ -263,7 +264,7 @@ void GViewPort::finishDelEdge(GViewItem* dest)
         scene()->removeItem(_new_edge_);
         delete _new_edge_;
         _new_edge_=nullptr;
-        setMouseTracking(false);
+        //setMouseTracking(false);
         setMode(GPort_NoMode);
     }
     return;

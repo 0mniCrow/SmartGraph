@@ -148,7 +148,7 @@ QPainterPath GViewEdge::shape() const
     QLineF line(_src_point_,_dest_point_);
     if(line.length()>qreal(_vertex_radius_))
     {
-        line.setLength(line.length()-qreal(_vertex_radius_));
+        line.setLength(line.length()-qreal(_vertex_radius_)*2);
     }
     path.lineTo(line.p2());
     return path;

@@ -7,6 +7,7 @@ GViewItem::GViewItem(int radius, const QString &info,
     _is_clicked_(false)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+    setAcceptHoverEvents(true);
     return;
 }
 
@@ -15,6 +16,7 @@ GViewItem::GViewItem(int radius, const QColor& color):
     _is_clicked_(false)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+    setAcceptHoverEvents(true);
     return;
 }
 

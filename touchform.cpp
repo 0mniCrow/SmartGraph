@@ -488,6 +488,46 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
 
     }
         break;
+    case 19:
+    {
+        QPointF start(200.0,200.0);
+        QPointF finish(500.0,400.0);
+        QLineF line(start,finish);
+        qreal dx = line.dx();
+        qreal dy = line.dy();
+        qreal len = line.length();
+        if(qFuzzyIsNull(len))
+        {
+            break;
+        }
+
+        qreal ux = dx/len;
+        qreal uy = dy/len;
+
+        qreal px = -uy;
+        qreal py = ux;
+
+        qreal thick = 9.0;
+        qreal arrow = 20.0;
+        QPointF offP(px*thick,py*thick);
+        QPointF offN(-px*thick,-py*thick);
+
+        QPointF arrOff(ux*arrow,uy*arrow);
+        QPolygonF arrs;
+        arrs
+                <<(line.p1()+offP)
+               <<(line.p1()+arrOff+offP)
+              <<(line.p1()+arrOff - offP)
+             <<(line.p1()+offN)
+            <<(line.p2()+offN)
+           <<(line.p2()-arrOff+offN)
+          <<(line.p2()-arrOff+offP)
+         <<(line.p2()+offP);
+
+        painter.setPen(QPen(Qt::blue,2,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
+        painter.setBrush(QBrush(Qt::cyan));
+        painter.drawPolygon(arrs);
+    }
     default:
     {
 
