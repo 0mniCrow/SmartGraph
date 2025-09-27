@@ -490,8 +490,9 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         break;
     case 19:
     {
-        QPointF start(200.0,200.0);
-        QPointF finish(500.0,400.0);
+        QPointF start(400.0,800.0);
+        QPointF finish(500.0,100.0);
+        qreal arrSZ = 50.0;
         QLineF line(start,finish);
         qreal dx = line.dx();
         qreal dy = line.dy();
@@ -501,33 +502,63 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
             break;
         }
 
+        double atan_angle = std::atan2(-dy,dx);
+
+        double the1 = atan_angle - M_PI/3;
+        double the2 = atan_angle - M_PI + M_PI/3;
+
+        double sthe1 = atan_angle + M_PI/3;
+        double sthe2 = atan_angle + M_PI - M_PI/3;
+
+        double delX1 = sin(the1)*arrSZ;
+        double delY1 = cos(the1)*arrSZ;
+        double delX2 = sin(the2)*arrSZ;
+        double delY2 = cos(the2)*arrSZ;
+
+        double s_delX1 = sin(sthe1)*arrSZ;
+        double s_delY1 = cos(sthe1)*arrSZ;
+        double s_delX2 = sin(sthe2)*arrSZ;
+        double s_delY2 = cos(sthe2)*arrSZ;
+
+        QPointF dest_point1 = line.p2()+ QPointF(delX1,delY1);
+        QPointF dest_point2 = line.p2()+ QPointF(delX2,delY2);
+        QPointF dest_mid_point((dest_point1.x()+dest_point2.x())/2,
+                               (dest_point1.y()+dest_point2.y())/2);
+
+        QPointF src_point1 = line.p1() + QPointF(s_delX1,s_delY1);
+        QPointF src_point2 = line.p1() + QPointF(s_delX2,s_delY2);
+        QPointF src_mid_point((src_point1.x()+src_point2.x())/2,
+                              (src_point1.y()+src_point2.y())/2);
+
         qreal ux = dx/len;
         qreal uy = dy/len;
 
         qreal px = -uy;
         qreal py = ux;
 
-        qreal thick = 9.0;
-        qreal arrow = 20.0;
+        qreal thick = 8.0;
+
         QPointF offP(px*thick,py*thick);
         QPointF offN(-px*thick,-py*thick);
 
-        QPointF arrOff(ux*arrow,uy*arrow);
-        QPolygonF arrs;
-        arrs
-                <<(line.p1()+offP)
-               <<(line.p1()+arrOff+offP)
-              <<(line.p1()+arrOff - offP)
-             <<(line.p1()+offN)
-            <<(line.p2()+offN)
-           <<(line.p2()-arrOff+offN)
-          <<(line.p2()-arrOff+offP)
-         <<(line.p2()+offP);
+        QPointF arrOff(ux*arrSZ,uy*arrSZ);
+        QPolygonF result;
+        result<< src_mid_point+offP << dest_mid_point+offP
+              <<dest_point1<<line.p2()<<dest_point2<<
+                dest_mid_point+offN
+              << src_mid_point+offN
+              <<src_point2<<line.p1()<<src_point1;
 
         painter.setPen(QPen(Qt::blue,2,Qt::SolidLine,Qt::SquareCap,Qt::MiterJoin));
         painter.setBrush(QBrush(Qt::cyan));
-        painter.drawPolygon(arrs);
+        painter.drawPolygon(result);
     }
+        break;
+    case 20:
+    {
+        QPainterPath path;
+    }
+        break;
     default:
     {
 
