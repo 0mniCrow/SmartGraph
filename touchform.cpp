@@ -556,7 +556,158 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
         break;
     case 20:
     {
-        QPainterPath path;
+        int rect_x = 200;
+        int rect_y = 200;
+        int rect_size = 200;
+        QPointF start(100.0,100.0);
+        QPointF finish(600.0,500.0);
+
+        //QRect rect(rect_x,rect_y,rect_size,rect_size);
+        enum Position{PNone = 0, PLeftTop = 1, PMidTop = 2,
+                     PRightTop = 3, PMidLeft = 4, PMidRight = 5,
+                     PLeftDown = 6, PMidDown = 7, PRightDown = 8,
+                     PInside = 9};
+
+        QList<uchar> positions(2,PNone);
+        QList<QPointF> data = {start, finish};
+        for(int i = 0; i< positions.size();i++)
+        {
+            if(data.at(i).x()<rect_x)
+            {
+                if(data.at(i).y()<rect_y)
+                {
+                    positions[i] = PLeftTop;
+                }
+                else if(data.at(i).y()>rect_size+rect_y)
+                {
+                    positions[i] = PLeftDown;
+                }
+                else
+                {
+                    positions[i] = PMidLeft;
+                }
+            }
+            else if(data.at(i).x()>rect_size+rect_x)
+            {
+                if(data.at(i).y()<rect_y)
+                {
+                    positions[i] = PRightTop;
+                }
+                else if(data.at(i).y()>rect_size+rect_y)
+                {
+                    positions[i] = PRightDown;
+                }
+                else
+                {
+                    positions[i] = PMidRight;
+                }
+            }
+            else
+            {
+                if(data.at(i).y()<rect_y)
+                {
+                    positions[i]  = PMidTop;
+                }
+                else if(data.at(i).y()>rect_size+rect_y)
+                {
+                    positions[i] = PMidDown;
+                }
+                else
+                {
+                    positions[i] = PInside;
+                }
+            }
+        }
+
+        uchar start_pos = positions[0];
+        uchar fin_pos = positions[1];
+        enum linetype{PLine = 1,PBezier = 2};
+        uchar line_type = PNone;
+        if(((start_pos>=PLeftTop && start_pos<=PRightTop)&&
+            (fin_pos>=PLeftTop && fin_pos<=PRightTop)) ||
+           ((start_pos>=PLeftDown && start_pos<=PRightDown)&&
+            (fin_pos>=PLeftDown && fin_pos<=PRightDown)) ||
+           ((start_pos==PLeftTop || start_pos==PMidLeft || start_pos==PLeftDown)&&
+            (fin_pos==PLeftTop || fin_pos==PMidLeft || fin_pos==PLeftDown)) ||
+           ((start_pos==PRightTop || start_pos==PMidRight || start_pos==PRightDown)&&
+            (fin_pos==PRightTop || fin_pos==PMidRight || fin_pos==PRightDown))
+        )
+        {
+            line_type = PLine;
+        }
+        else if(start_pos == PInside || fin_pos== PInside ||
+                start_pos == PNone || fin_pos == PNone)
+        {
+            line_type = PNone;
+        }
+        else
+        {
+            line_type = PBezier;
+        }
+
+        if(line_type == PLine)
+        {
+            painter.drawLine(start,finish);
+        }
+        else
+        {
+            qreal repulse = 20.0;
+            QPointF startShift;
+            QPointF finShift;
+
+            if(start_pos == PLeftTop)
+            {
+                startShift.setX(finish.x()+repulse);
+                startShift.setY(start.y()-repulse);
+
+            }
+            else if(start_pos == PRightTop)
+            {
+                startShift.setX(finish.x()-repulse);
+                startShift.setY(start.y()-repulse);
+            }
+            else if(start_pos == PLeftDown)
+            {
+                startShift.setX(finish.x()+repulse);
+                startShift.setY(start.y()+repulse);
+            }
+            else if(start_pos == PRightDown)
+            {
+                startShift.setX(finish.x()-repulse);
+                startShift.setY(start.y()+repulse);
+            }
+
+            if(fin_pos == PLeftTop)
+            {
+                finShift.setX(start.x()+repulse);
+                finShift.setY(finish.y()-repulse);
+
+            }
+            else if(fin_pos == PRightTop)
+            {
+                finShift.setX(start.x()-repulse);
+                finShift.setY(finish.y()-repulse);
+            }
+            else if(fin_pos == PLeftDown)
+            {
+                finShift.setX(start.x()+repulse);
+                finShift.setY(finish.y()+repulse);
+            }
+            else if(fin_pos == PRightDown)
+            {
+                finShift.setX(start.x()-repulse);
+                finShift.setY(finish.y()+repulse);
+            }
+            QPainterPath path(start);
+            path.cubicTo(startShift,finShift,finish);
+            painter.drawPath(path);
+        }
+        //QPainterPath path(start);
+        //path.quadTo(finish.x(),start.y(),finish.x(),finish.y());
+        painter.setBrush(QBrush(Qt::green));
+        painter.drawRect(rect_x,rect_y,rect_size,rect_size);
+        //painter.drawPath(path);
+
     }
         break;
     default:
