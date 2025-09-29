@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
-    touchform->paintState(11);
+    touchform->paintState(20);
     setAttribute(Qt::WA_AcceptTouchEvents, true);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     grabGesture(Qt::TapGesture);

@@ -80,6 +80,11 @@ class TouchForm : public QWidget
 public:
     explicit TouchForm(QWidget *parent = nullptr);
     ~TouchForm();
+    enum Position{PNone = 0, PLeftTop = 1, PMidTop = 2,
+                 PRightTop = 3, PMidLeft = 4, PMidRight = 5,
+                 PLeftDown = 6, PMidDown = 7, PRightDown = 8,
+                 PInside = 9};
+    enum linetype{PLine = 1,PBezier = 2};
 public slots:
     void paintState(int state);
     void wgt_show();
@@ -102,6 +107,11 @@ private:
     int cur_y;
     int cur_x_size;
     int cur_y_size;
+    uchar chPos(const QPointF& point, const QRectF& rect) const;
+    uchar chLine(uchar start_pos, uchar fin_pos) const;
+    void setShiftPoints(QPointF& startShift, QPointF& finShift,
+                        const QPointF& start, const QPointF& finish,
+                        uchar start_pos,uchar fin_pos, const QRectF& rect) const;
 protected:
     virtual void paintEvent(QPaintEvent* p_event) override;
     virtual bool event (QEvent * reg_event) override;
