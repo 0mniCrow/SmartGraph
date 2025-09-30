@@ -2,7 +2,6 @@
 #define GVIEW_TABLEVERTEXVIEW_H
 
 #include "gview_tableVertexModel.h"
-#include "gview_tablePhantomRowProxyModel.h"
 #include <QTableView>
 #include <QStyledItemDelegate>
 #include <QItemSelectionModel>

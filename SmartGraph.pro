@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui 3dinput
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,10 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     Graph_algorithms.cpp \
-    graphedge.cpp \
-    graphnode.cpp \
-    graphwidget.cpp \
-    gview_tablePhantomRowProxyModel.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexView.cpp \
     gviewedge.cpp \
@@ -32,10 +28,6 @@ SOURCES += \
 HEADERS += \
     Graph_algorithms.h \
     Graph_algorithms_supply.h \
-    graphedge.h \
-    graphnode.h \
-    graphwidget.h \
-    gview_tablePhantomRowProxyModel.h \
     gview_tableVertexModel.h \
     gview_tableVertexView.h \
     gviewedge.h \

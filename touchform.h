@@ -20,26 +20,12 @@
 #include <QGraphicsItem>
 #include <QMovie>
 #include <QTimer>
-#include "graphwidget.h"
+//#include "graphwidget.h"
 
 namespace Ui {
 class TouchForm;
 }
 
-class SimpleGItem:public QGraphicsItem
-{
-private:
-    QString _text_;
-public:
-    SimpleGItem();
-protected:
-    QRectF boundingRect() const override;
-    QPainterPath shape() const override;
-    void paint(QPainter* painter,
-               const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
-
-};
 
 class LocItem:public QGraphicsItem
 {
@@ -94,7 +80,7 @@ private:
     QWidget wgt3;
     LocWidget wgt4;
     ElidedText wgt5;
-    QWidget grphwidget;
+    //QWidget grphwidget;
     QTimer timer;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);

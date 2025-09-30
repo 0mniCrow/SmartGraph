@@ -5,8 +5,6 @@ VertexList::VertexList(SelectedRow *styleDelegate, QWidget* tata):
 {
     setItemDelegate(styleDelegate);
     connect(this,&QObject::destroyed,styleDelegate,&QObject::deleteLater);
-    //QItemSelectionModel * cur_select_model = selectionModel();
-    //setSelectConn();
     return;
 }
 

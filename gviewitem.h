@@ -4,6 +4,7 @@
 #define LINE_SELECT_WIDTH 2.0
 #define LINE_BASE_WIDTH 1.0
 #define SELECTED_RISE 3
+#define MOUSE_SENSE_DECR 0.5
 
 #include <QGraphicsItem>
 #include <QColor>
@@ -46,6 +47,7 @@ protected:
                QWidget* widget) override;
     void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
 };

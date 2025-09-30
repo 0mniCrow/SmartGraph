@@ -236,10 +236,18 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
     _is_clicked_ = false;
-
     update();
     QGraphicsItem::mouseReleaseEvent(m_event);
 }
+
+void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    QPointF delta = m_event->scenePos()-m_event->lastScenePos();
+    setPos(pos()+delta*MOUSE_SENSE_DECR);
+    m_event->accept();
+    //QGraphicsItem::mouseMoveEvent(m_event);
+}
+
 void GViewItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
 {
     update();
