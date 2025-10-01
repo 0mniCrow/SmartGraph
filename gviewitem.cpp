@@ -229,21 +229,55 @@ void GViewItem::setRadius(int radius)
 
 void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 {
+
+    //scene()->views().first()->viewport()->grabMouse();
+    setCursor(Qt::BlankCursor);
+//#ifdef Q_OS_WIN
+//    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(QPoint(0,0));
+//    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(
+//                             QPoint(scene()->views().first()->viewport()->width(),
+//                              scene()->views().first()->viewport()->height()));
+//    RECT clipRect = {
+//        topLeft.x(),
+//        topLeft.y(),
+//        bottomRight.x(),
+//        bottomRight.y()
+//    };
+//    ::ClipCursor(&clipRect);
+//#endif
     _is_clicked_ = true;
     update();
+
     QGraphicsItem::mousePressEvent(m_event);
 }
 void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
+    if(scene() && !scene()->views().isEmpty())
+    {
+        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
+        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+        QCursor::setPos(gl_pos);
+    }
+    //scene()->views().first()->viewport()->releaseMouse();
+    unsetCursor();
     _is_clicked_ = false;
     update();
+//#ifdef Q_OS_WIN
+//    ::ClipCursor(nullptr);
+//#endif
     QGraphicsItem::mouseReleaseEvent(m_event);
 }
 
 void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
-    QPointF delta = m_event->scenePos()-m_event->lastScenePos();
-    setPos(pos()+delta*MOUSE_SENSE_DECR);
+    QPointF delta = (m_event->scenePos()-m_event->lastScenePos()) * MOUSE_SENSE_DECR;
+    QPointF new_pos(pos()+delta);
+    setPos(new_pos);
+
+    //QPoint viewPoint = scene()->views().first()->mapFromScene(new_pos);
+    //QPoint gl_Point = scene()->views().first()->viewport()->mapToGlobal(viewPoint);
+    //QCursor::setPos(gl_Point);
+    //setPos(pos()+delta*MOUSE_SENSE_DECR);
     m_event->accept();
     //QGraphicsItem::mouseMoveEvent(m_event);
 }

@@ -1,5 +1,11 @@
 #ifndef GVIEWITEM_H
 #define GVIEWITEM_H
+//#include <qglobal.h>
+//#ifdef Q_OS_WIN
+//    #include <windows.h>
+//#endif
+
+
 #define LINE_CLICKED_WIDTH 3.0
 #define LINE_SELECT_WIDTH 2.0
 #define LINE_BASE_WIDTH 1.0
@@ -7,11 +13,13 @@
 #define MOUSE_SENSE_DECR 0.5
 
 #include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QColor>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
-#include <QGraphicsScene>
+#include <QCursor>
 
 class GViewEdge;
 

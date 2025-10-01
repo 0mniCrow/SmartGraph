@@ -7,8 +7,6 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
 {
     ui->setupUi(this);
     _model_ = new VertexModel();
-    //_proxy_model_ = new PhantomRowProxyModel(this);
-    //_proxy_model_->setSourceModel(_model_);
     _view_ = new GViewPort(ui->spin_Radius->value(),_model_);
     _scene_ = new GViewScene(_view_);
     _scene_->setSceneRect(QRectF(-500,500,1000,1000));
@@ -25,7 +23,6 @@ VisualisationGraphForm::VisualisationGraphForm(QWidget *parent) :
     _vert_list_->horizontalHeader()->hide();
     _vert_list_->verticalHeader()->hide();
     _vert_list_->setSelectConn();
-    //_vert_list_->setItemDelegate(delegate);
     QVBoxLayout* layout2 = new QVBoxLayout();
     layout2->addWidget(_vert_list_);
     ui->group_forTableView->setLayout(layout2);

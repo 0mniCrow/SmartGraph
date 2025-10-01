@@ -26,20 +26,6 @@ namespace Ui {
 class TouchForm;
 }
 
-
-class LocItem:public QGraphicsItem
-{
-private:
-    const char _pen_wdt_ = 3;
-public:
-    virtual QRectF boundingRect() const override;
-    virtual void paint(QPainter* painter,
-                       const QStyleOptionGraphicsItem* style_opt,
-                       QWidget* ref_widget) override;
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent* m_event) override;
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event) override;
-};
-
 class LocWidget:public QLabel
 {
 private:
@@ -80,7 +66,6 @@ private:
     QWidget wgt3;
     LocWidget wgt4;
     ElidedText wgt5;
-    //QWidget grphwidget;
     QTimer timer;
     QLabel * generate_label(const QPainter::CompositionMode& mode);
     QLabel * generate_label2(QGraphicsEffect* graphic_effect);
