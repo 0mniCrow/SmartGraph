@@ -3,14 +3,15 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),touchform(new TouchForm()),vis_form(new VisualisationGraphForm())
+    : QMainWindow(parent),touchform(new TouchForm())//,vis_form(new VisualisationGraphForm())
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     touchform->paintState(20);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
-    connect(ui->Button_vis_Form,&QPushButton::clicked,vis_form,&QWidget::show);
+    //connect(ui->Button_vis_Form,&QPushButton::clicked,vis_form,&QWidget::show);
+    initiateGraphicsView();
     execute();
 }
 
@@ -648,11 +649,11 @@ MainWindow::~MainWindow()
         touchform->close();
         delete touchform;
     }
-    if(vis_form)
-    {
-        vis_form->close();
-        delete vis_form;
-    }
+//    if(vis_form)
+//    {
+//        vis_form->close();
+//        delete vis_form;
+//    }
     delete ui;
 }
 
@@ -709,10 +710,10 @@ void MainWindow::closeEvent(QCloseEvent*  cl_event)
         {
             touchform->close();
         }
-        if(vis_form)
-        {
-            vis_form->close();
-        }
+//        if(vis_form)
+//        {
+//            vis_form->close();
+//        }
         cl_event->accept();
 
     }
@@ -722,5 +723,100 @@ void MainWindow::closeEvent(QCloseEvent*  cl_event)
         cl_event->ignore();
     }
     }
+    return;
+}
+
+
+void MainWindow::initiateGraphicsView()
+{
+    _model_ = new VertexModel();
+    _view_ = new GViewPort(ui->spin_Radius->value(),_model_);
+    _scene_ = new GViewScene(_view_);
+    _scene_->setSceneRect(QRectF(-500,500,1000,1000));
+    _view_->setScene(_scene_);
+    QVBoxLayout * layout = new QVBoxLayout();
+    layout->addWidget(_view_);
+    ui->group_forGView->setLayout(layout);
+    SelectedRow* delegate = new SelectedRow();
+    _vert_list_ = new VertexList(delegate);
+    _vert_list_->setModel(_model_);
+    _vert_list_->setDragDropMode(QAbstractItemView::InternalMove);
+    _vert_list_->setSelectionMode(QAbstractItemView::SingleSelection);
+    _vert_list_->setDefaultDropAction(Qt::MoveAction);
+    _vert_list_->horizontalHeader()->hide();
+    _vert_list_->verticalHeader()->hide();
+    _vert_list_->setSelectConn();
+    QVBoxLayout* layout2 = new QVBoxLayout();
+    layout2->addWidget(_vert_list_);
+    ui->group_forTableView->setLayout(layout2);
+    connect(ui->button_GView_add,&QPushButton::clicked,this,&MainWindow::AddObject);
+    connect(ui->button_GView_remove,&QPushButton::clicked,this,&MainWindow::RemoveObject);
+    connect(ui->button_AddEdge,&QPushButton::clicked,this,&MainWindow::CreateEdge);
+    connect(ui->button_removeEdge,&QPushButton::clicked,this,&MainWindow::RemoveEdge);
+    connect(ui->spin_Radius,&QSpinBox::valueChanged,this,&MainWindow::ChangeSize);
+    connect(_view_,&GViewPort::selectedInfo,this,&MainWindow::updateInfo);
+    connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
+    connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
+}
+
+void MainWindow::AddObject()
+{
+    if(_view_->mode()==GViewPort::GPort_add)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_add);
+    }
+}
+
+void MainWindow::RemoveObject()
+{
+    if(_view_->mode()==GViewPort::GPort_delete)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_delete);
+    }
+}
+
+void MainWindow::CreateEdge()
+{
+    if(_view_->mode()==GViewPort::GPort_startAddEdge||
+            _view_->mode()==GViewPort::GPort_finAddEdge)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_startAddEdge);
+    }
+}
+
+void MainWindow::RemoveEdge()
+{
+    if(_view_->mode()==GViewPort::GPort_startDelEdge||
+            _view_->mode()==GViewPort::GPort_finDelEdge)
+    {
+        _view_->setMode(GViewPort::GPort_NoMode);
+    }
+    else
+    {
+        _view_->setMode(GViewPort::GPort_startDelEdge);
+    }
+}
+
+void MainWindow::ChangeSize(int radius)
+{
+    _view_->setRadius(radius);
+}
+
+void MainWindow::updateInfo(QString info)
+{
+    //ui->text_GView_info->append(info);
+    ui->textEdit->append(info);
     return;
 }

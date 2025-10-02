@@ -22,8 +22,7 @@ SOURCES += \
     matrixmodel.cpp \
     nodegraph.cpp \
     touchform.cpp \
-    vectorgraph.cpp \
-    visualisationgraphform.cpp
+    vectorgraph.cpp
 
 HEADERS += \
     Graph_algorithms.h \
@@ -39,13 +38,11 @@ HEADERS += \
     matrixmodel.h \
     nodegraph.h \
     touchform.h \
-    vectorgraph.h \
-    visualisationgraphform.h
+    vectorgraph.h
 
 FORMS += \
     mainwindow.ui \
-    touchform.ui \
-    visualisationgraphform.ui
+    touchform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

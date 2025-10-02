@@ -4,7 +4,7 @@
 GViewItem::GViewItem(int radius, const QString &info,
                      const QColor &color):_radius_(radius),
     _info_(info),_color_(color),
-    _is_clicked_(false)
+    _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setAcceptHoverEvents(true);
@@ -13,7 +13,7 @@ GViewItem::GViewItem(int radius, const QString &info,
 
 GViewItem::GViewItem(int radius, const QColor& color):
     _radius_(radius),_color_(color),
-    _is_clicked_(false)
+    _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setAcceptHoverEvents(true);
@@ -69,7 +69,7 @@ QRectF GViewItem::boundingRect() const
 {
     int select_inflate = isSelected()?SELECTED_RISE:0;
     int borders = 0;
-    if(_is_clicked_)
+    if(_flags_&GV_Is_Clicked)
     {
         borders = LINE_CLICKED_WIDTH;
     }
@@ -115,31 +115,6 @@ void GViewItem::paint(QPainter* painter,
 {
     Q_UNUSED(option) Q_UNUSED(widget)
     painter->save();
-//    painter->setRenderHint(QPainter::Antialiasing,true);
-//    QColor cur_color;
-//    QPen cur_pen;
-//    if(_is_hovered_)
-//    {
-//        cur_color.setRgbF(_color_.redF()+2.0,
-//                          _color_.greenF()+2.0,
-//                          _color_.blueF()+2.0);
-//    }
-//    else
-//    {
-//        cur_color = _color_;
-//    }
-//    painter->setBrush(cur_color);
-//    if(_is_clicked_)
-//    {
-//        cur_pen.setColor(Qt::black);
-//        cur_pen.setWidthF(LINE_WIDTH);
-//    }
-//    else
-//    {
-//        cur_pen.setColor(Qt::darkGray);
-//        cur_pen.setWidthF((LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
-//    }
-//    painter->setPen(cur_pen);
 //    QRect workingRect(-20.0,-40.0,40.0,80.0);
 //    QPolygon triangle;
 //    triangle<<workingRect.bottomRight()
@@ -151,44 +126,43 @@ void GViewItem::paint(QPainter* painter,
     //painter->drawEllipse(-7,-7,20,20);
     QColor cur_color;
     QPen cur_pen;
-    if(isUnderMouse())
+    if(_flags_&GV_Is_Clicked)
     {
-        cur_color = Qt::yellow;
+        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        cur_color = QColorConstants::Svg::orange;
+    }
+    else
+    {
+        if(isUnderMouse())
+        {
+            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = Qt::yellow;
+        }
+        else if(isSelected())
+        {
+            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            cur_color = QColorConstants::Svg::palegoldenrod;
+        }
+        else
+        {
+            cur_pen.setColor(QColorConstants::Svg::black);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = QColorConstants::Svg::slategray;
+        }
+    }
+    painter->setBrush(cur_color);
+    painter->setPen(cur_pen);
+
 //        cur_color.setRed(_color_.red()<235?_color_.red()+20:_color_.red()-20);
 //        cur_color.setGreen(_color_.green()<235?_color_.green()+20:_color_.green()-20);
 //        cur_color.setBlue(_color_.blue()<235?_color_.blue()+20:_color_.blue()-20);
 //        cur_color.setRgbF(_color_.redF()+2.0,
 //                          _color_.greenF()+2.0,
 //                          _color_.blueF()+2.0);
-    }
-    else if(isSelected())
-    {
-        cur_color = Qt::darkGray;
-    }
-    else
-    {
-        cur_color = _color_;
-    }
-    painter->setBrush(cur_color);
-    if(_is_clicked_)
-    {
-        cur_pen.setColor(Qt::darkGray);
-        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
-    }
-    else
-    {
-        if(isSelected())
-        {
-            cur_pen.setColor(Qt::black);
-            cur_pen.setWidthF(LINE_SELECT_WIDTH);
-        }
-        else
-        {
-            cur_pen.setColor(Qt::black);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);//(LINE_WIDTH>1.0)?LINE_WIDTH-1.0:LINE_WIDTH);
-        }
-    }
-    painter->setPen(cur_pen);
+
     painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
     painter->restore();
 }
@@ -229,9 +203,8 @@ void GViewItem::setRadius(int radius)
 
 void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 {
-
-    //scene()->views().first()->viewport()->grabMouse();
     setCursor(Qt::BlankCursor);
+
 //#ifdef Q_OS_WIN
 //    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(QPoint(0,0));
 //    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(
@@ -245,7 +218,8 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 //    };
 //    ::ClipCursor(&clipRect);
 //#endif
-    _is_clicked_ = true;
+
+    setGVFlag(GV_Is_Clicked, true);
     update();
 
     QGraphicsItem::mousePressEvent(m_event);
@@ -258,20 +232,57 @@ void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
         QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
         QCursor::setPos(gl_pos);
     }
-    //scene()->views().first()->viewport()->releaseMouse();
     unsetCursor();
-    _is_clicked_ = false;
+    setGVFlag(GV_Is_Clicked,false);
     update();
+
 //#ifdef Q_OS_WIN
 //    ::ClipCursor(nullptr);
 //#endif
+
     QGraphicsItem::mouseReleaseEvent(m_event);
 }
 
 void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
+    if(_flags_&GV_Ignore_Next_Move)
+    {
+        setGVFlag(GV_Ignore_Next_Move,false);
+        m_event->ignore();
+        return;
+    }
     QPointF delta = (m_event->scenePos()-m_event->lastScenePos()) * MOUSE_SENSE_DECR;
     QPointF new_pos(pos()+delta);
+
+    QRect vpRect = scene()->views().first()->viewport()->rect();
+    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
+    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
+    QPoint globalPos(QCursor::pos());
+    bool wrapped = false;
+    if (globalPos.x() <= topLeft.x())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.x() >= bottomRight.x())
+    {
+        wrapped = true;
+    }
+    if (globalPos.y() <= topLeft.y())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.y() >= bottomRight.y())
+    {
+        wrapped = true;
+    }
+
+    if (wrapped)
+    {
+        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
+        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+        QCursor::setPos(gl_pos);
+        setGVFlag(GV_Ignore_Next_Move,true);
+    }
     setPos(new_pos);
 
     //QPoint viewPoint = scene()->views().first()->mapFromScene(new_pos);

@@ -9,7 +9,7 @@
 #define LINE_CLICKED_WIDTH 3.0
 #define LINE_SELECT_WIDTH 2.0
 #define LINE_BASE_WIDTH 1.0
-#define SELECTED_RISE 3
+#define SELECTED_RISE 5
 #define MOUSE_SENSE_DECR 0.5
 
 #include <QGraphicsItem>
@@ -26,12 +26,20 @@ class GViewEdge;
 class GViewItem:public QGraphicsItem
 {
 private:
+    enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
+                  GV_Ignore_Next_Move = 0x02,
+                  GV_Is_Dragged = 0x04};
     int _radius_;
     QString _info_;
     QColor _color_;
     bool _is_clicked_;
+    bool _ignore_n_move_;
+    char _flags_;
     QVector<GViewEdge*> _edges_;
     void checkBorders();
+    char GVflags() const {return _flags_;}
+    void setGVFlag(char flag, bool state=true) { _flags_= state? _flags_|flag : _flags_ & ~flag;}
+    void setGVFlags(char flags) {_flags_ = flags;}
 public:
     GViewItem(int radius, const QString& info = QString(), const QColor& color = QColor());
     GViewItem(int radius, const QColor& color);
