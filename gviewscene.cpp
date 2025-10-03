@@ -1,39 +1,34 @@
 #include "gviewscene.h"
 
-GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata),_add_mode_(false)
+GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata)
 {
-
-}
-void GViewScene::setAddMode(bool add_mode)
-{
-    Q_UNUSED(add_mode)
-//    if(add_mode)
-//    {
-//        QPixmap new_cursor_pix("sphere.png");
-//        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
-//                                                 new_cursor_pix.height()/2,Qt::KeepAspectRatio));
-//        QApplication::setOverrideCursor(new_cursor);
-
-//    }
-//    else
-//    {
-//        QApplication::restoreOverrideCursor();
-//    }
-//    _add_mode_=add_mode;
+    setItemIndexMethod(QGraphicsScene::NoIndex);
     return;
 }
 
-void GViewScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* m_event)
+
+void GViewScene::mousePressEvent(QGraphicsSceneMouseEvent* m_event)
 {
-//    if(_add_mode_)
-//    {
-//        GViewItem* item = new GViewItem("Info",QColor::fromRgb(QRandomGenerator::global()->generate()));
-//        addItem(item);
-//        item->setPos(m_event->scenePos());
-//        QApplication::restoreOverrideCursor();
-//        _add_mode_ = false;
-//    }
-    QGraphicsScene::mouseReleaseEvent(m_event);
+    if(qgraphicsitem_cast<GViewItem*>(itemAt(m_event->scenePos(),QTransform())))
+    {
+        QGraphicsScene::mousePressEvent(m_event);
+    }
+    else
+    {
+       m_event->accept();
+    }
     return;
 }
 
+void GViewScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    if(qgraphicsitem_cast<GViewItem*>(itemAt(m_event->scenePos(),QTransform())))
+    {
+        QGraphicsScene::mouseDoubleClickEvent(m_event);
+    }
+    else
+    {
+       m_event->accept();
+    }
+    return;
+}

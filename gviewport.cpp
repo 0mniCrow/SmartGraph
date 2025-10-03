@@ -8,8 +8,8 @@
  *
  *
  * (done) Зрабіць: сьпіс усіх створаных вяршын.
- * Магчыма перацягваць вяршыны,
- * каб ставіць адну за адной, сартыроўка.
+ * (done)Магчыма перацягваць вяршыны,
+ *          каб ставіць адну за адной, сартыроўка.
 */
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
@@ -19,6 +19,10 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     _del_edge_=  nullptr;
     _selected_vertex_= nullptr;
     setMouseTracking(true);
+
+    setCacheMode(QGraphicsView::CacheBackground);
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    setRenderHint(QPainter::Antialiasing);
     return;
 }
 
@@ -357,6 +361,31 @@ void GViewPort::setRadius(int radius)
     return;
 }
 
+void GViewPort::mousePressEvent(QMouseEvent* m_event)
+{
+    GViewItem* item = grabGItem(m_event);
+    if(!item)
+    {
+        QGraphicsView::mousePressEvent(m_event);
+        return;
+    }
+    switch(_mode_)
+    {
+    case GPort_add:
+    case GPort_delete:
+    {
+        QGraphicsView::mousePressEvent(m_event);
+        return;
+    }
+        break;
+    default:
+    {
+        selectItem(item);
+    }
+    }
+    QGraphicsView::mousePressEvent(m_event);
+    return;
+}
 
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 {
@@ -370,6 +399,7 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
                                             )*/
                                         );
         addItem(item,m_event->pos());
+        selectItem(item);
         QApplication::restoreOverrideCursor();
 
     }
@@ -466,14 +496,14 @@ void GViewPort::selectItem(GViewItem* selected_item, bool outside)
             emit viewNewSelect(_selected_vertex_);
         }
     }
-    else
-    {
-        if(_selected_vertex_)
-        {
-            _selected_vertex_->setSelected(false);
-            _selected_vertex_ = nullptr;
-        }
-    }
+//    else
+//    {
+//        if(_selected_vertex_)
+//        {
+//            _selected_vertex_->setSelected(false);
+//            _selected_vertex_ = nullptr;
+//        }
+//    }
     return;
 }
 

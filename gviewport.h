@@ -31,6 +31,7 @@ public:
     int vertRadius()const {return _vertex_radius_;}
     void setRadius(int radius);
 protected:
+    void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
 private:

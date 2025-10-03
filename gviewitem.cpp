@@ -7,6 +7,7 @@ GViewItem::GViewItem(int radius, const QString &info,
     _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     return;
 }
@@ -16,6 +17,7 @@ GViewItem::GViewItem(int radius, const QColor& color):
     _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     return;
 }
@@ -100,12 +102,12 @@ QPainterPath GViewItem::shape() const
 //           <<QPoint(workingRect.center().x(),0)
 //          <<workingRect.bottomLeft();
 //    path.addPolygon(triangle);
-    int select_inflate = isSelected()?SELECTED_RISE:0;
+    //int select_inflate = isSelected()?SELECTED_RISE:0;
     QPainterPath path;
-    path.addEllipse(-_radius_-select_inflate,
+    path.addEllipse(/*-_radius_-select_inflate,
                     -_radius_-select_inflate,
                     _radius_*2+select_inflate,
-                    _radius_*2+select_inflate);
+                    _radius_*2+select_inflate*/boundingRect());
     return path;
 }
 
