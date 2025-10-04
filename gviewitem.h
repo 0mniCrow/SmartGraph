@@ -20,6 +20,8 @@
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QCursor>
+#include <QMenu>
+#include <QIcon>
 
 class GViewEdge;
 
@@ -43,6 +45,7 @@ private:
 public:
     GViewItem(int radius, const QString& info = QString(), const QColor& color = QColor());
     GViewItem(int radius, const QColor& color);
+    ~GViewItem();
     void addEdge(GViewEdge* edge);
     void delEdge(GViewEdge* edge);
     int radius()const{return _radius_;}
@@ -66,6 +69,8 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event) override;
 };
+
 
 #endif // GVIEWITEM_H

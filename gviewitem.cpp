@@ -22,6 +22,12 @@ GViewItem::GViewItem(int radius, const QColor& color):
     return;
 }
 
+GViewItem::~GViewItem()
+{
+
+}
+
+
 void GViewItem::checkBorders()
 {
     QRectF sceneRect = scene()->sceneRect();
@@ -205,7 +211,7 @@ void GViewItem::setRadius(int radius)
 
 void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 {
-    setCursor(Qt::BlankCursor);
+
 
 //#ifdef Q_OS_WIN
 //    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(QPoint(0,0));
@@ -220,22 +226,28 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 //    };
 //    ::ClipCursor(&clipRect);
 //#endif
-
-    setGVFlag(GV_Is_Clicked, true);
+    if(flags()&ItemIsMovable)
+    {
+        setCursor(Qt::BlankCursor);
+        setGVFlag(GV_Is_Clicked, true);
+    }
     update();
 
     QGraphicsItem::mousePressEvent(m_event);
 }
 void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
-    if(scene() && !scene()->views().isEmpty())
+    if(flags()&ItemIsMovable)
     {
-        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
-        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
-        QCursor::setPos(gl_pos);
+        if(scene() && !scene()->views().isEmpty())
+        {
+            QPoint viewPos = scene()->views().first()->mapFromScene(pos());
+            QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+            QCursor::setPos(gl_pos);
+        }
+        unsetCursor();
+        setGVFlag(GV_Is_Clicked,false);
     }
-    unsetCursor();
-    setGVFlag(GV_Is_Clicked,false);
     update();
 
 //#ifdef Q_OS_WIN
@@ -247,6 +259,11 @@ void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 
 void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
+    if(!(flags()&ItemIsMovable))
+    {
+        m_event->ignore();
+        return;
+    }
     if(_flags_&GV_Ignore_Next_Move)
     {
         setGVFlag(GV_Ignore_Next_Move,false);
@@ -304,4 +321,36 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
     update();
     QGraphicsItem::hoverLeaveEvent(h_event);
+}
+
+void GViewItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event)
+{
+    QMenu* menu = new QMenu;
+    QAction* action_pin = menu->addAction(QIcon::fromTheme(
+                          (flags()&ItemIsMovable)?"call-start":"call-stop"),
+                          (flags()&ItemIsMovable)?"Прычапіць":"Адчапіць");
+    action_pin->setCheckable(true);
+    action_pin->setChecked(!(flags()&ItemIsMovable));
+
+    QAction* selectedAction = menu->exec(c_event->screenPos());
+    if(selectedAction)
+    {
+        if(!selectedAction->isChecked())
+        {
+            selectedAction->setChecked(false);
+            setFlag(ItemIsMovable,true);
+            selectedAction->setText("Прычапіць");
+            selectedAction->setIcon(QIcon::fromTheme("call-start"));
+        }
+        else
+        {
+            selectedAction->setChecked(true);
+            setFlag(ItemIsMovable,false);
+            selectedAction->setText("Адчапіць");
+            selectedAction->setIcon(QIcon::fromTheme("call-stop"));
+        }
+    }
+    menu->deleteLater();
+    QGraphicsItem::contextMenuEvent(c_event);
+    return;
 }
