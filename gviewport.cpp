@@ -280,12 +280,14 @@ void GViewPort::setMode(GPort_Mode mode)
     {
     case GPort_add:
     case GPort_delete:
+    case GPort_startAddEdge:
     {
         QApplication::restoreOverrideCursor();
     }
         break;
     case GPort_finAddEdge:
     {
+        QApplication::restoreOverrideCursor();
         if(_new_edge_)
         {
             scene()->removeItem(_new_edge_);
@@ -318,17 +320,31 @@ void GViewPort::setMode(GPort_Mode mode)
     {
     case GPort_add:
     {
-        QPixmap new_cursor_pix("sphere.png");
-        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/2,
-                                                 new_cursor_pix.height()/2,Qt::KeepAspectRatio));
+        QPixmap new_cursor_pix(":/res/icons/icons/vertex_add.svg");
+        QCursor new_cursor(new_cursor_pix.scaled(ICON_SIZE,Qt::KeepAspectRatio));
         QApplication::setOverrideCursor(new_cursor);
     }
         break;
     case GPort_delete:
     {
-        QPixmap new_cursor_pix("x_sign.png");
-        QCursor new_cursor(new_cursor_pix.scaled(new_cursor_pix.width()/3,
-                                                 new_cursor_pix.height()/3,
+        QPixmap new_cursor_pix(":/res/icons/icons/vertex_remove.svg");
+        QCursor new_cursor(new_cursor_pix.scaled(ICON_SIZE,
+                                                 Qt::KeepAspectRatio));
+        QApplication::setOverrideCursor(new_cursor);
+    }
+        break;
+    case GPort_startAddEdge:
+    {
+        QPixmap new_cursor_pix(":/res/icons/icons/edge_start.svg");
+        QCursor new_cursor(new_cursor_pix.scaled(ICON_SIZE,
+                                                 Qt::KeepAspectRatio));
+        QApplication::setOverrideCursor(new_cursor);
+    }
+        break;
+    case GPort_finAddEdge:
+    {
+        QPixmap new_cursor_pix(":/res/icons/icons/edge_finish.svg");
+        QCursor new_cursor(new_cursor_pix.scaled(ICON_SIZE,
                                                  Qt::KeepAspectRatio));
         QApplication::setOverrideCursor(new_cursor);
     }
@@ -473,6 +489,36 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
     }
     }
     QGraphicsView::mouseMoveEvent(m_event);
+    return;
+}
+
+void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
+{
+    if(qgraphicsitem_cast<GViewItem*>(
+                scene()->itemAt(
+                    mapToScene(
+                        c_event->pos()),
+                    QTransform())))
+    {
+        QGraphicsView::contextMenuEvent(c_event);
+        return;
+    }
+    QMenu* menu = new QMenu;
+    QAction* action_add = menu->addAction(
+                QIcon(QPixmap(":/res/icons/icons/vertex_add.svg").
+                      scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Дадаць");
+
+    QAction* selectedAction = menu->exec(c_event->globalPos());
+    if(selectedAction == action_add)
+    {
+        setMode(GPort_add);
+        GViewItem* item = new GViewItem(_vertex_radius_,"Vertex N"+QString::number(_counter_++),
+                                        Qt::gray);
+        addItem(item,c_event->pos());
+        selectItem(item);
+    }
+    delete menu;
+    c_event->accept();
     return;
 }
 

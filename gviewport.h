@@ -34,6 +34,7 @@ protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
+    void contextMenuEvent(QContextMenuEvent* c_event) override;
 private:
     //QList<GViewItem*> _vertices_;
     VertexModel * _vertices_;

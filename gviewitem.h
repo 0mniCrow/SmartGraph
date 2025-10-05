@@ -23,6 +23,8 @@
 #include <QMenu>
 #include <QIcon>
 
+#define ICON_SIZE QSize(32,32)
+
 class GViewEdge;
 
 class GViewItem:public QGraphicsItem

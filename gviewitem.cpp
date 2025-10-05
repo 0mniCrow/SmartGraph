@@ -326,8 +326,10 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 void GViewItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event)
 {
     QMenu* menu = new QMenu;
-    QAction* action_pin = menu->addAction(QIcon::fromTheme(
-                          (flags()&ItemIsMovable)?"call-start":"call-stop"),
+    QAction* action_pin = menu->addAction(QIcon(QPixmap(
+                          (flags()&ItemIsMovable)?":/res/icons/icons/pin_free.svg":
+                                                  ":/res/icons/icons/pin_lock.svg").scaled(
+                                                    ICON_SIZE,Qt::KeepAspectRatio)),
                           (flags()&ItemIsMovable)?"Прычапіць":"Адчапіць");
     action_pin->setCheckable(true);
     action_pin->setChecked(!(flags()&ItemIsMovable));
