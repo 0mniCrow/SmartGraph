@@ -325,34 +325,34 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 
 void GViewItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event)
 {
-    QMenu* menu = new QMenu;
-    QAction* action_pin = menu->addAction(QIcon(QPixmap(
-                          (flags()&ItemIsMovable)?":/res/icons/icons/pin_free.svg":
-                                                  ":/res/icons/icons/pin_lock.svg").scaled(
-                                                    ICON_SIZE,Qt::KeepAspectRatio)),
-                          (flags()&ItemIsMovable)?"Прычапіць":"Адчапіць");
-    action_pin->setCheckable(true);
-    action_pin->setChecked(!(flags()&ItemIsMovable));
+//    QMenu* menu = new QMenu;
+//    QAction* action_pin = menu->addAction(QIcon(QPixmap(
+//                          (flags()&ItemIsMovable)?":/res/icons/icons/pin_free.svg":
+//                                                  ":/res/icons/icons/pin_lock.svg").scaled(
+//                                                    ICON_SIZE,Qt::KeepAspectRatio)),
+//                          (flags()&ItemIsMovable)?"Прычапіць":"Адчапіць");
+//    action_pin->setCheckable(true);
+//    action_pin->setChecked(!(flags()&ItemIsMovable));
 
-    QAction* selectedAction = menu->exec(c_event->screenPos());
-    if(selectedAction)
-    {
-        if(!selectedAction->isChecked())
-        {
-            selectedAction->setChecked(false);
-            setFlag(ItemIsMovable,true);
-            selectedAction->setText("Прычапіць");
-            selectedAction->setIcon(QIcon::fromTheme("call-start"));
-        }
-        else
-        {
-            selectedAction->setChecked(true);
-            setFlag(ItemIsMovable,false);
-            selectedAction->setText("Адчапіць");
-            selectedAction->setIcon(QIcon::fromTheme("call-stop"));
-        }
-    }
-    menu->deleteLater();
+//    QAction* selectedAction = menu->exec(c_event->screenPos());
+//    if(selectedAction)
+//    {
+//        if(!selectedAction->isChecked())
+//        {
+//            selectedAction->setChecked(false);
+//            setFlag(ItemIsMovable,true);
+//            selectedAction->setText("Прычапіць");
+//            selectedAction->setIcon(QIcon::fromTheme("call-start"));
+//        }
+//        else
+//        {
+//            selectedAction->setChecked(true);
+//            setFlag(ItemIsMovable,false);
+//            selectedAction->setText("Адчапіць");
+//            selectedAction->setIcon(QIcon::fromTheme("call-stop"));
+//        }
+//    }
+//    menu->deleteLater();
     QGraphicsItem::contextMenuEvent(c_event);
     return;
 }

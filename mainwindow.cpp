@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     touchform->paintState(20);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
-    //connect(ui->Button_vis_Form,&QPushButton::clicked,vis_form,&QWidget::show);
     initiateGraphicsView();
     execute();
 }
@@ -649,11 +648,6 @@ MainWindow::~MainWindow()
         touchform->close();
         delete touchform;
     }
-//    if(vis_form)
-//    {
-//        vis_form->close();
-//        delete vis_form;
-//    }
     delete ui;
 }
 
@@ -700,7 +694,7 @@ void MainWindow::closeEvent(QCloseEvent*  cl_event)
     mbx.setInformativeText("Астатнія вокны зачыняцца");
     mbx.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     mbx.setDefaultButton(QMessageBox::Yes);
-    mbx.setIcon(QMessageBox::Critical);
+    mbx.setIcon(QMessageBox::Warning);
     int vynik =mbx.exec();
     switch(vynik)
     {
@@ -710,10 +704,6 @@ void MainWindow::closeEvent(QCloseEvent*  cl_event)
         {
             touchform->close();
         }
-//        if(vis_form)
-//        {
-//            vis_form->close();
-//        }
         cl_event->accept();
 
     }
@@ -754,7 +744,7 @@ void MainWindow::initiateGraphicsView()
     connect(ui->button_AddEdge,&QPushButton::clicked,this,&MainWindow::CreateEdge);
     connect(ui->button_removeEdge,&QPushButton::clicked,this,&MainWindow::RemoveEdge);
     connect(ui->spin_Radius,&QSpinBox::valueChanged,this,&MainWindow::ChangeSize);
-    connect(_view_,&GViewPort::selectedInfo,this,&MainWindow::updateInfo);
+    connect(_view_,&GViewPort::gviewMessage,this,&MainWindow::updateInfo);
     connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
     connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
 }
@@ -816,7 +806,6 @@ void MainWindow::ChangeSize(int radius)
 
 void MainWindow::updateInfo(QString info)
 {
-    //ui->text_GView_info->append(info);
     ui->textEdit->append(info);
     return;
 }

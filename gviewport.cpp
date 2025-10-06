@@ -81,6 +81,10 @@ void GViewPort::deleteItem(GViewItem* vertex)
 
         delLinkedEdges(vertex);
         scene()->removeItem(*it);
+        if(*it == _selected_vertex_)
+        {
+            _selected_vertex_ = nullptr;
+        }
         delete *it;
         _vertices_->removeItem(*it);
         //_vertices_.erase(it);
@@ -95,8 +99,8 @@ void GViewPort::delLinkedEdges(GViewItem*vertex)
     {
         return;
     }
-    QList<GViewEdge*>::const_iterator it = _edges_.cbegin();
-    while(it!=_edges_.cend())
+    QList<GViewEdge*>::iterator it = _edges_.begin();
+    while(it!=_edges_.end())
     {
         if((*it)->source()==vertex||(*it)->destination()==vertex)
         {
@@ -394,6 +398,18 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
         return;
     }
         break;
+    case GPort_finAddEdge:
+    {
+        finishAddEdge(item);
+        selectItem(item);
+    }
+        break;
+    case GPort_finDelEdge:
+    {
+        finishDelEdge(item);
+        selectItem(item);
+    }
+        break;
     default:
     {
         selectItem(item);
@@ -403,21 +419,29 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
     return;
 }
 
+void GViewPort::createItem(const QPoint& pos)
+{
+    GViewItem* item = new GViewItem(_vertex_radius_,
+                                    "Vertex N"+
+                                    QString::number(_counter_++),
+                                    Qt::gray
+                                    );
+    addItem(item,pos);
+    selectItem(item);
+    if(QApplication::overrideCursor())
+    {
+        QApplication::restoreOverrideCursor();
+    }
+    return;
+}
+
 void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
 {
     switch(_mode_)
     {
     case GPort_add:
     {
-        GViewItem* item = new GViewItem(_vertex_radius_,"Vertex N"+QString::number(_counter_++),
-                                        Qt::gray/*QColor::fromRgb(
-                                            QRandomGenerator::global()->generate()
-                                            )*/
-                                        );
-        addItem(item,m_event->pos());
-        selectItem(item);
-        QApplication::restoreOverrideCursor();
-
+        createItem(m_event->pos());
     }
         break;
     case GPort_delete:
@@ -437,14 +461,6 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         }
     }
         break;
-    case GPort_finAddEdge:
-    {
-        if(GViewItem* g_item = grabGItem(m_event))
-        {
-            finishAddEdge(g_item);
-        }
-    }
-        break;
     case GPort_startDelEdge:
     {
         if(GViewItem* g_item = grabGItem(m_event))
@@ -453,12 +469,11 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         }
     }
         break;
+    case GPort_finAddEdge:
     case GPort_finDelEdge:
     {
-        if(GViewItem* g_item = grabGItem(m_event))
-        {
-            finishDelEdge(g_item);
-        }
+        QGraphicsView::mouseReleaseEvent(m_event);
+        return;
     }
         break;
     default:
@@ -494,30 +509,83 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
 
 void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
 {
-    if(qgraphicsitem_cast<GViewItem*>(
-                scene()->itemAt(
-                    mapToScene(
-                        c_event->pos()),
-                    QTransform())))
+    QMenu* menu = nullptr;
+    QGraphicsItem* cap_item = scene()->itemAt(mapToScene(c_event->pos()),transform());
+    GViewItem* g_item = qgraphicsitem_cast<GViewItem*>(cap_item);
+    if(g_item)
+    {
+        menu = new QMenu("Дзеянні з вяршыняй:");
+        QAction* act_pin = menu->addAction(QIcon(QPixmap(
+                              (g_item->flags()&QGraphicsItem::ItemIsMovable)?
+                                   ":/res/icons/icons/pin_free.svg":
+                                   ":/res/icons/icons/pin_lock.svg").scaled(
+                                                        ICON_SIZE,Qt::KeepAspectRatio)),
+                              (g_item->flags()&QGraphicsItem::ItemIsMovable)?
+                                               "Прычапіць":"Адчапіць");
+        act_pin->setCheckable(true);
+        act_pin->setChecked(!(g_item->flags()&QGraphicsItem::ItemIsMovable));
+
+        QAction* act_del = menu->addAction(QIcon(QPixmap(
+                             ":/res/icons/icons/vertex_remove.svg").
+                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Выдаліць");
+        QAction* act_edge = menu->addAction(QIcon(QPixmap(
+                             ":/res/icons/icons/edge_start.svg").
+                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Пачаць сувязь");
+        QAction* act_select = menu->exec(c_event->globalPos());
+        if(act_select== act_pin)
+        {
+            if(!act_pin->isChecked())
+            {
+                g_item->setFlag(QGraphicsItem::ItemIsMovable,true);
+            }
+            else
+            {
+                g_item->setFlag(QGraphicsItem::ItemIsMovable,false);
+            }
+        }
+        else if(act_select ==act_del)
+        {
+            setMode(GPort_delete);
+            deleteItem(g_item);
+            QApplication::restoreOverrideCursor();
+        }
+        else if(act_select==act_edge)
+        {
+            setMode(GPort_startAddEdge);
+            startAddEdge(g_item);
+        }
+        else
+        {
+            emit gviewMessage("Menu called an imposible action.");
+        }
+
+    }
+    else if(!cap_item)
+    {
+        menu = new QMenu("Опцыі:");
+        QAction* act_add = menu->addAction(
+                    QIcon(QPixmap(":/res/icons/icons/vertex_add.svg").
+                          scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Дадаць");
+        QAction* act_select = menu->exec(c_event->globalPos());
+        if(act_select == act_add)
+        {
+            setMode(GPort_add);
+            createItem(c_event->pos());
+        }
+        else
+        {
+            emit gviewMessage("Menu called an imposible action.");
+        }
+    }
+    else
     {
         QGraphicsView::contextMenuEvent(c_event);
         return;
     }
-    QMenu* menu = new QMenu;
-    QAction* action_add = menu->addAction(
-                QIcon(QPixmap(":/res/icons/icons/vertex_add.svg").
-                      scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Дадаць");
-
-    QAction* selectedAction = menu->exec(c_event->globalPos());
-    if(selectedAction == action_add)
+    if(menu)
     {
-        setMode(GPort_add);
-        GViewItem* item = new GViewItem(_vertex_radius_,"Vertex N"+QString::number(_counter_++),
-                                        Qt::gray);
-        addItem(item,c_event->pos());
-        selectItem(item);
+        delete menu;
     }
-    delete menu;
     c_event->accept();
     return;
 }
@@ -538,10 +606,11 @@ void GViewPort::selectItem(GViewItem* selected_item, bool outside)
             }
             QString selected("Selected Item: ");
             selected.append(_selected_vertex_->info());
-            emit selectedInfo(selected);
+            emit gviewMessage(selected);
             emit viewNewSelect(_selected_vertex_);
         }
     }
+///! На выпадак, калі трэба "здымаць вылучэнне" мэта працягу кода
 //    else
 //    {
 //        if(_selected_vertex_)

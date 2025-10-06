@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/res/icons">
+        <file>icons/edge_finish.svg</file>
+        <file>icons/edge_start.svg</file>
+        <file>icons/vertex_add.svg</file>
+        <file>icons/vertex_remove.svg</file>
+        <file>icons/pin_free.svg</file>
+        <file>icons/pin_lock.svg</file>
+    </qresource>
+</RCC>
