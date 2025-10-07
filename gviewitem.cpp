@@ -170,8 +170,30 @@ void GViewItem::paint(QPainter* painter,
 //        cur_color.setRgbF(_color_.redF()+2.0,
 //                          _color_.greenF()+2.0,
 //                          _color_.blueF()+2.0);
-
-    painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    painter->drawEllipse(ellipse_rect/*-_radius_,-_radius_,_radius_*2,_radius_*2*/);
+    if(!(flags()&ItemIsMovable))
+    {
+        QPolygonF pin_needle;
+        qreal pin_stem_rad = 220*M_PI/180;
+        QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
+                             ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
+        QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
+        qreal ux = pin_stem_line.dx()/pin_stem_line.length();
+        qreal uy = pin_stem_line.dy()/pin_stem_line.length();
+        qreal vx = -uy;
+        qreal vy = ux;
+        QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
+                                  pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
+        QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
+                                  pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
+        pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
+        painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
+        painter->setPen(QPen(Qt::black,1));
+        painter->drawPolygon(pin_needle);
+        painter->setBrush(QBrush(Qt::red));
+        painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
+    }
     painter->restore();
 }
 
@@ -323,36 +345,3 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
     QGraphicsItem::hoverLeaveEvent(h_event);
 }
 
-void GViewItem::contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event)
-{
-//    QMenu* menu = new QMenu;
-//    QAction* action_pin = menu->addAction(QIcon(QPixmap(
-//                          (flags()&ItemIsMovable)?":/res/icons/icons/pin_free.svg":
-//                                                  ":/res/icons/icons/pin_lock.svg").scaled(
-//                                                    ICON_SIZE,Qt::KeepAspectRatio)),
-//                          (flags()&ItemIsMovable)?"Прычапіць":"Адчапіць");
-//    action_pin->setCheckable(true);
-//    action_pin->setChecked(!(flags()&ItemIsMovable));
-
-//    QAction* selectedAction = menu->exec(c_event->screenPos());
-//    if(selectedAction)
-//    {
-//        if(!selectedAction->isChecked())
-//        {
-//            selectedAction->setChecked(false);
-//            setFlag(ItemIsMovable,true);
-//            selectedAction->setText("Прычапіць");
-//            selectedAction->setIcon(QIcon::fromTheme("call-start"));
-//        }
-//        else
-//        {
-//            selectedAction->setChecked(true);
-//            setFlag(ItemIsMovable,false);
-//            selectedAction->setText("Адчапіць");
-//            selectedAction->setIcon(QIcon::fromTheme("call-stop"));
-//        }
-//    }
-//    menu->deleteLater();
-    QGraphicsItem::contextMenuEvent(c_event);
-    return;
-}

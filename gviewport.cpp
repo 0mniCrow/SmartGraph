@@ -542,6 +542,7 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
             {
                 g_item->setFlag(QGraphicsItem::ItemIsMovable,false);
             }
+            g_item->update();
         }
         else if(act_select ==act_del)
         {

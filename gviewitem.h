@@ -11,6 +11,7 @@
 #define LINE_BASE_WIDTH 1.0
 #define SELECTED_RISE 5
 #define MOUSE_SENSE_DECR 0.5
+#define PIN_HEAD_RADIUS 3
 
 #include <QGraphicsItem>
 #include <QGraphicsScene>
@@ -71,7 +72,7 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent* c_event) override;
+
 };
 
 
