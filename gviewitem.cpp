@@ -134,7 +134,7 @@ void GViewItem::paint(QPainter* painter,
     //painter->drawEllipse(-7,-7,20,20);
     QColor cur_color;
     QPen cur_pen;
-    if(_flags_&GV_Is_Clicked)
+    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
     {
         cur_pen.setColor(QColorConstants::Svg::darkslateblue);
         cur_pen.setWidthF(LINE_CLICKED_WIDTH);
@@ -146,19 +146,25 @@ void GViewItem::paint(QPainter* painter,
         {
             cur_pen.setColor(QColorConstants::Svg::yellowgreen);
             cur_pen.setWidthF(LINE_BASE_WIDTH);
-            cur_color = Qt::yellow;
+            cur_color = (flags()&ItemIsMovable)?
+                        Qt::yellow:
+                        QColorConstants::Svg::lightcyan;
         }
         else if(isSelected())
         {
             cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
             cur_pen.setWidthF(LINE_SELECT_WIDTH);
-            cur_color = QColorConstants::Svg::palegoldenrod;
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::palegoldenrod:
+                        QColorConstants::Svg::lightskyblue;
         }
         else
         {
             cur_pen.setColor(QColorConstants::Svg::black);
             cur_pen.setWidthF(LINE_BASE_WIDTH);
-            cur_color = QColorConstants::Svg::slategray;
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::slategray:
+                        QColorConstants::Svg::powderblue;
         }
     }
     painter->setBrush(cur_color);

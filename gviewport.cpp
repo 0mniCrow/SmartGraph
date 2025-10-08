@@ -628,3 +628,40 @@ void GViewPort::outsideNewSelect(GViewItem* selected_item)
     selectItem(selected_item,true);
     return;
 }
+
+
+bool GViewPort::loadListGraph(const ListGraph& graph)
+{
+    QList<int> vertices;
+    QSet<int> created_verts;
+    std::vector<int> std_vert(graph.getIDlist());
+    std::for_each(std_vert.cbegin(),
+                  std_vert.cend(),
+                  [&vertices](const int&n){ vertices.push_back(n); });
+    for(const int& vert_id:vertices)
+    {
+        if(created_verts.contains(vert_id))
+        {
+            continue;
+        }
+
+    }
+    /*
+    1)Памяшчаем першы вератэкс у сярэдзіну экрана.
+    2)Дадаем ІД першага вертакса ў сет,
+    3)Ствараем аб'ект першага вертакса ў графічным праглядзе
+        Цыкл:
+        4)Бярэм бягучы вертакс і глядзім:
+            Калі ён ёсць у сеце, прапускаем.
+        5)Дадаем яго ў сет.
+        6)Ствараем его аб'ект ў графічным праглядзе.
+            Калі ён у сувязі з мінулым аб'ектам, дадаем каля яго.
+            У іншым выпадку дадаем на адлегласьці
+        Канец цыкла.
+    4) Бярэм апошні аб'ект у цыкле.
+        Калі ён мае сувязь, прасунуць яго бліжэй да связанага аб'екта.
+        Калі ён знаходзіцца каля іншага вертакса, адпіхнуцца на адлегласць у бок, дзе няма іншых аб'ектаў
+       Паўтараць, пакуль каля адлегласць ад усіх іншых аб'ектаў і прыемнай адлегласьцю.
+    */
+    return true;
+}

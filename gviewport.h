@@ -12,6 +12,8 @@
 #include <QRandomGenerator>
 #include <QMouseEvent>
 #include <memory>
+#include "listgraph.h"
+#include <QSet>
 
 
 class GViewPort:public QGraphicsView
@@ -30,6 +32,7 @@ public:
     GPort_Mode mode() const {return _mode_;}
     int vertRadius()const {return _vertex_radius_;}
     void setRadius(int radius);
+    bool loadListGraph(const ListGraph& graph);
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
