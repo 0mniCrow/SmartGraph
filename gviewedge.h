@@ -31,6 +31,8 @@ public:
     void setVertRadius(int radius);
     qreal arrowSize()const{return _arrowSize_;}
     void setArrowSize(qreal arrow_size);
+    qreal edgeWeight()const {return _weight_;}
+    void setWeight(qreal weight) {_weight_ = weight;} ///Дадаць аўтаматычнае вымярэнне "вагі"
     void searchDestination(const QPointF& point);
     enum {Type = UserType+2};
     int type() const override {return Type;}
@@ -49,6 +51,7 @@ private:
     bool _directed_;
     qreal _arrowSize_ = 10;
     GViewEdge_mode _mode_;
+    qreal _weight_;
 
 };
 

@@ -638,14 +638,17 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     std::for_each(std_vert.cbegin(),
                   std_vert.cend(),
                   [&vertices](const int&n){ vertices.push_back(n); });
-    for(const int& vert_id:vertices)
-    {
-        if(created_verts.contains(vert_id))
-        {
-            continue;
-        }
+//    QSet<GViewItem*> view_items;
+//    QSet<GViewEdge*> view_edges;
+//    for(const int& vert_id:vertices)
+//    {
+//        if(created_verts.contains(vert_id))
+//        {
+//            continue;
+//        }
 
-    }
+//    }
+
     /*
     1)Памяшчаем першы вератэкс у сярэдзіну экрана.
     2)Дадаем ІД першага вертакса ў сет,

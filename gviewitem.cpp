@@ -2,8 +2,8 @@
 #include "gviewedge.h"
 
 GViewItem::GViewItem(int radius, const QString &info,
-                     const QColor &color):_radius_(radius),
-    _info_(info),_color_(color),
+                     const QColor &color):_info_(info),
+    _color_(color),_radius_(radius),
     _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
@@ -13,7 +13,7 @@ GViewItem::GViewItem(int radius, const QString &info,
 }
 
 GViewItem::GViewItem(int radius, const QColor& color):
-    _radius_(radius),_color_(color),
+    _color_(color),_radius_(radius),
     _flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
@@ -36,6 +36,90 @@ void GViewItem::checkBorders()
     newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
     setPos(newPos);
     return;
+}
+
+void GViewItem::calcForce()
+{
+    if(!scene() || scene()->mouseGrabberItem() == this)
+    {
+        _adv_pos_ = pos();
+        return;
+    }
+
+    qreal vel_x = 0.0;
+    qreal vel_y = 0.0;
+    //Пошук зоны каля вяршыні
+    QRectF sceneRect = scene()->sceneRect();
+    QPointF cur_pos = scenePos();
+    QPointF zone_TL,zone_BR;
+    double zone_width = _radius_*5;
+    zone_TL.setX(qMax(cur_pos.x()-zone_width,sceneRect.left()));
+    zone_TL.setY(qMax(cur_pos.y()-zone_width,sceneRect.top()));
+    zone_BR.setX(qMin(mapToScene(boundingRect().bottomRight()).x()
+                      +zone_width,sceneRect.right()));
+    zone_BR.setY(qMin(mapToScene(boundingRect().bottomRight()).y()
+                      +zone_width,sceneRect.bottom()));
+    QRectF zone_rect(zone_TL,zone_BR);
+
+    //Пошук графічных аб'ектаў у зоне каля вяршыні
+    const QList<QGraphicsItem*> items(scene()->items(zone_rect));
+    for(QGraphicsItem* item:items)
+    {
+        GViewItem* g_item = qgraphicsitem_cast<GViewItem*>(item);
+        if(!g_item)
+        {
+            continue;
+        }
+        QPointF vect = mapToItem(g_item,0.0,0.0);
+        qreal dx = vect.x();
+        qreal dy = vect.y();
+        double len = 2.0 * (std::pow(dx,2.0)+std::pow(dy,2.0));
+        if(len>0)
+        {
+            vel_x+= (dx*150.0)/len;
+            vel_y+= (dy*150.0)/len;
+        }
+    }
+    double weight = (_edges_.size()+1) * 10;
+    for(const GViewEdge* edge: std::as_const(_edges_))
+    {
+        QPointF vect;
+        if(edge->source()==this)
+        {
+            vect = mapToItem(edge->destination(),0,0);
+        }
+        else
+        {
+            vect = mapToItem(edge->source(),0,0);
+        }
+        //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
+        QPointF difference = vect - pos();
+        qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
+        if(distance>edge->edgeWeight())
+        {
+            vel_x -= vect.x()/weight;
+            vel_y -= vect.y()/weight;
+        }
+    }
+    if(qAbs(vel_x)<0.1 && qAbs(vel_y)<0.1)
+    {
+        vel_x = 0.0;
+        vel_y = 0.0;
+    }
+    _adv_pos_ = pos()+QPointF(vel_x,vel_y);
+    _adv_pos_.setX(qMin(qMax(_adv_pos_.x(), sceneRect.left() + _radius_), sceneRect.right() - _radius_));
+    _adv_pos_.setY(qMin(qMax(_adv_pos_.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
+    return;
+}
+
+bool GViewItem::advPosition()
+{
+    if(_adv_pos_ == pos())
+    {
+        return false;
+    }
+    setPos(_adv_pos_);
+    return true;
 }
 
 void GViewItem::setColor(const QColor& color)
@@ -214,6 +298,7 @@ QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
         {
             edge->recalculate();
         }
+        ///!Інфармаваць бягучы адлюстравацель аб рухах
     }
         break;
     case ItemSelectedHasChanged:

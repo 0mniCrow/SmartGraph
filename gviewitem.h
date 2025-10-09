@@ -34,13 +34,15 @@ private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
                   GV_Is_Dragged = 0x04};
-    int _radius_;
+    QVector<GViewEdge*> _edges_;
     QString _info_;
     QColor _color_;
+    QPointF _adv_pos_;
+    int _radius_;
     bool _is_clicked_;
     bool _ignore_n_move_;
     char _flags_;
-    QVector<GViewEdge*> _edges_;
+
     void checkBorders();
     char GVflags() const {return _flags_;}
     void setGVFlag(char flag, bool state=true) { _flags_= state? _flags_|flag : _flags_ & ~flag;}
@@ -57,6 +59,8 @@ public:
     void setInfo(const QString& info);
     QString info()const;
     QColor color()const;
+    void calcForce();
+    bool advPosition();
     enum {Type = UserType+1};
     int type() const override{return Type;}
 
