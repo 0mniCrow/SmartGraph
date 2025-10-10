@@ -34,6 +34,8 @@ public:
     qreal edgeWeight()const {return _weight_;}
     void setWeight(qreal weight) {_weight_ = weight;} ///Дадаць аўтаматычнае вымярэнне "вагі"
     void searchDestination(const QPointF& point);
+    qreal length() const;
+    void fixateLength();
     enum {Type = UserType+2};
     int type() const override {return Type;}
     QPainterPath shape() const override;

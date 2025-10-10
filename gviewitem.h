@@ -33,14 +33,13 @@ class GViewItem:public QGraphicsItem
 private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
-                  GV_Is_Dragged = 0x04};
+                  GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08};
     QVector<GViewEdge*> _edges_;
     QString _info_;
     QColor _color_;
     QPointF _adv_pos_;
     int _radius_;
     bool _is_clicked_;
-    bool _ignore_n_move_;
     char _flags_;
 
     void checkBorders();

@@ -41,6 +41,7 @@ private slots:
     void RemoveEdge();
     void ChangeSize(int radius);
     void updateInfo(QString info);
+    void fixEdges(bool status);
     //_______________End______________________
 private:
     TouchForm * touchform;

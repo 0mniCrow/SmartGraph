@@ -13,7 +13,10 @@
 #include <QMouseEvent>
 #include <memory>
 #include "listgraph.h"
+#include <QTimer>
+#include <QBasicTimer>
 #include <QSet>
+#include <chrono>
 
 
 class GViewPort:public QGraphicsView
@@ -33,18 +36,20 @@ public:
     int vertRadius()const {return _vertex_radius_;}
     void setRadius(int radius);
     bool loadListGraph(const ListGraph& graph);
+    void itemMoved();
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
     void contextMenuEvent(QContextMenuEvent* c_event) override;
+    void timerEvent(QTimerEvent * t_event) override;
 private:
-    //QList<GViewItem*> _vertices_;
     VertexModel * _vertices_;
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
     GViewItem* _selected_vertex_;
+    QBasicTimer _timer_;
     int _vertex_radius_;
     GPort_Mode _mode_;
     int _counter_;

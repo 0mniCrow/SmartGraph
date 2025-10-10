@@ -668,3 +668,40 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     */
     return true;
 }
+
+
+void GViewPort::itemMoved()
+{
+    if(!_timer_.isActive())
+    {
+        _timer_.start(1000/25,this);
+    }
+    return;
+}
+
+void GViewPort::timerEvent(QTimerEvent * t_event)
+{
+    Q_UNUSED(t_event)
+
+    auto it = _vertices_->begin();
+    while(it!= _vertices_->end())
+    {
+        (*it)->calcForce();
+        it++;
+    }
+    bool item_mov = false;
+    it = _vertices_->begin();
+    while(it!= _vertices_->end())
+    {
+        if((*it)->advPosition())
+        {
+            item_mov = true;
+        }
+        it++;
+    }
+    if(!item_mov)
+    {
+        _timer_.stop();
+    }
+    return;
+}

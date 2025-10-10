@@ -1,5 +1,6 @@
 #include "gviewitem.h"
 #include "gviewedge.h"
+#include "gviewport.h"
 
 GViewItem::GViewItem(int radius, const QString &info,
                      const QColor &color):_info_(info),
@@ -297,6 +298,14 @@ QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
         for(GViewEdge* edge:_edges_)
         {
             edge->recalculate();
+        }
+        if(_flags_&GV_Is_Forced)
+        {
+            GViewPort* port = dynamic_cast<GViewPort*>(scene()->views().first());
+            if(port)
+            {
+                port->itemMoved();
+            }
         }
         ///!Інфармаваць бягучы адлюстравацель аб рухах
     }

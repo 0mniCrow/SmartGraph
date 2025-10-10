@@ -78,7 +78,7 @@ void GViewEdge::recalculate()
     qreal length = line.length();
 
     prepareGeometryChange();
-    if(length>qreal(_vertex_radius_))
+    if(length>static_cast<qreal>(_vertex_radius_))
     {
         QPointF edgeOffset((line.dx()*_vertex_radius_)/length,
                            (line.dy()*_vertex_radius_)/length);
@@ -113,6 +113,24 @@ void GViewEdge::searchDestination(const QPointF& point)
     {
         _src_point_ = _dest_point_ = line.p1();
     }
+    return;
+}
+
+qreal GViewEdge::length() const
+{
+    /*
+     * QPointF src(mapFromItem(_src_item_,0,0));
+     * QPointF dest(mapFromItem(_dest_item_,0,0));
+     * qreal dx = dest.x() - src.x();
+     * qreal dy = dest.y() - src.y();
+    */
+    QPointF delta(mapFromItem(_src_item_,0,0) - mapFromItem(_dest_item_,0,0));
+    return std::hypot(delta.x(),delta.y());
+}
+
+void GViewEdge::fixateLength()
+{
+    _weight_ = length();
     return;
 }
 

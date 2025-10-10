@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     touchform->paintState(20);
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
+    connect(ui->check_Fix_edge_length,&QCheckBox::clicked,this,&MainWindow::fixEdges);
     initiateGraphicsView();
     execute();
 }
@@ -808,4 +809,9 @@ void MainWindow::updateInfo(QString info)
 {
     ui->textEdit->append(info);
     return;
+}
+
+void MainWindow::fixEdges(bool status)
+{
+
 }
