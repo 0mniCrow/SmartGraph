@@ -813,5 +813,6 @@ void MainWindow::updateInfo(QString info)
 
 void MainWindow::fixEdges(bool status)
 {
-
+    _view_->setForceCalc(status);
+    return;
 }

@@ -37,6 +37,7 @@ public:
     void setRadius(int radius);
     bool loadListGraph(const ListGraph& graph);
     void itemMoved();
+    void setForceCalc(bool state, bool fixateEdgeLength = true);
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
@@ -66,6 +67,7 @@ private:
     void createItem(const QPoint& pos);
     void deleteItem(GViewItem* vertex);
     void selectItem(GViewItem* selected_item, bool outside = false);
+
 signals:
     void gviewMessage(QString info);
     void viewNewSelect(GViewItem* new_item);

@@ -705,3 +705,23 @@ void GViewPort::timerEvent(QTimerEvent * t_event)
     }
     return;
 }
+
+void GViewPort::setForceCalc(bool state, bool fixateEdgeLength)
+{
+    if(fixateEdgeLength)
+    {
+        for(GViewEdge* edge:_edges_)
+        {
+            edge->fixateLength();
+        }
+    }
+    auto it = _vertices_->begin();
+    while(it!=_vertices_->end())
+    {
+        (*it)->setForceCalc(state);
+        it++;
+    }
+    if(state)
+        itemMoved();
+    return;
+}

@@ -96,7 +96,7 @@ void GViewItem::calcForce()
         //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
         QPointF difference = vect - pos();
         qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
-        if(distance>edge->edgeWeight())
+        if(distance>=edge->edgeWeight())
         {
             vel_x -= vect.x()/weight;
             vel_y -= vect.y()/weight;

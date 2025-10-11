@@ -58,6 +58,8 @@ public:
     void setInfo(const QString& info);
     QString info()const;
     QColor color()const;
+    bool isForceCalc()const {return _flags_&GV_Is_Forced;}
+    void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}
     void calcForce();
     bool advPosition();
     enum {Type = UserType+1};
