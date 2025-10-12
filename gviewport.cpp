@@ -26,6 +26,21 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     return;
 }
 
+void GViewPort::clear()
+{
+    QList<GViewItem*> items;
+
+    for(int i = 0; i<_vertices_->size();i++)
+    {
+        items.push_back(_vertices_->at(i));
+    }
+    for(GViewItem* item:items)
+    {
+        setMode(GPort_delete);
+        deleteItem(item);
+    }
+}
+
 QGraphicsItem* GViewPort::grabItem(QMouseEvent* m_event)
 {
     return scene()->itemAt(mapToScene(m_event->pos()),transform());
@@ -632,40 +647,61 @@ void GViewPort::outsideNewSelect(GViewItem* selected_item)
 
 bool GViewPort::loadListGraph(const ListGraph& graph)
 {
-    QList<int> vertices;
-    QSet<int> created_verts;
-    std::vector<int> std_vert(graph.getIDlist());
-    std::for_each(std_vert.cbegin(),
-                  std_vert.cend(),
-                  [&vertices](const int&n){ vertices.push_back(n); });
-//    QSet<GViewItem*> view_items;
-//    QSet<GViewEdge*> view_edges;
-//    for(const int& vert_id:vertices)
-//    {
-//        if(created_verts.contains(vert_id))
-//        {
-//            continue;
-//        }
+    std::vector<int> vert_ids(graph.getIDlist());
+    QList<QPair<int,GViewItem*>> items;
+    for(const int& id:vert_ids)
+    {
+        GViewItem* item = new GViewItem(_vertex_radius_,QString::number(graph.value(id)),Qt::gray);
+        items.push_back(qMakePair(id,item));
+    }
+    QList<GViewEdge*> edges;
+    auto iter = items.begin();
+    while(iter!=items.end())
+    {
+        std::vector<int> edge_ids = graph.getEdges(iter->first);
+        if(edge_ids.size())
+        {
+            for(const int&edge: edge_ids)
+            {
+                auto edged_item = std::find_if(items.cbegin(),items.cend(),
+                          [edge](const QPair<int,GViewItem*>& vert)
+                    {return vert.first==edge;});
+                if(edged_item==items.cend())
+                {
+                    std::for_each(items.begin(),
+                                  items.end(),
+                                  [](QPair<int,GViewItem*>& pair){delete pair.second;});
+                    qDeleteAll(edges.begin(),edges.end());
+                    return false;
+                }
+                bool is_exist= false;
+                for(GViewEdge* exst_edge:edges)
+                {
+                    if(exst_edge->destination()==iter->second)
+                    {
+                        exst_edge->setDirected(false);
+                       is_exist = true;
+                       break;
+                    }
+                }
+                if(is_exist)
+                {
+                    continue;
+                }
+                GViewEdge* new_edge =
+                        new GViewEdge(iter->second,
+                                      edged_item->second,
+                                      _vertex_radius_,true);
+                new_edge->setWeight(_vertex_radius_*7);
+                iter->second->addEdge(new_edge);
+                edged_item->second->addEdge(new_edge);
+                edges.push_back(new_edge);
+            }
+        }
+        iter++;
+    }
+    clear();
 
-//    }
-
-    /*
-    1)Памяшчаем першы вератэкс у сярэдзіну экрана.
-    2)Дадаем ІД першага вертакса ў сет,
-    3)Ствараем аб'ект першага вертакса ў графічным праглядзе
-        Цыкл:
-        4)Бярэм бягучы вертакс і глядзім:
-            Калі ён ёсць у сеце, прапускаем.
-        5)Дадаем яго ў сет.
-        6)Ствараем его аб'ект ў графічным праглядзе.
-            Калі ён у сувязі з мінулым аб'ектам, дадаем каля яго.
-            У іншым выпадку дадаем на адлегласьці
-        Канец цыкла.
-    4) Бярэм апошні аб'ект у цыкле.
-        Калі ён мае сувязь, прасунуць яго бліжэй да связанага аб'екта.
-        Калі ён знаходзіцца каля іншага вертакса, адпіхнуцца на адлегласць у бок, дзе няма іншых аб'ектаў
-       Паўтараць, пакуль каля адлегласць ад усіх іншых аб'ектаў і прыемнай адлегласьцю.
-    */
     return true;
 }
 

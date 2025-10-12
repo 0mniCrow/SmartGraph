@@ -53,10 +53,10 @@ public:
     int addVertex(int vert_id = -1, cur_type val = 0);
     bool setValue(int vertex_id,cur_type val);
     bool isExists(int vertex_id);
-    cur_type value(int vertex_id);
+    cur_type value(int vertex_id) const;
     cur_type& operator()(int vertex_id);
     cur_type& at(int vertex_id);
-    std::vector<int> getEdges(int vertex_id);
+    std::vector<int> getEdges(int vertex_id) const;
     std::vector<ListEdge> getEdges() const;
     const std::map<int,int>& getConnections(int vertex_id);
     std::map<int,int>& getConnControl(int vertex_id);

@@ -169,9 +169,9 @@ bool ListGraph::isExists(int vertex_id)
     return true;
 }
 
-cur_type ListGraph::value(int vertex_id)
+cur_type ListGraph::value(int vertex_id) const
 {
-    CurVertexIter it = _list_graph_.find(vertex_id);
+    CurVertexCIter it = _list_graph_.find(vertex_id);
     if(it!=_list_graph_.end())
     {
         return it->second._value_;
@@ -197,11 +197,11 @@ cur_type& ListGraph::at(int vertex_id)
     return operator()(vertex_id);
 }
 
-std::vector<int> ListGraph::getEdges(int vertex_id)
+std::vector<int> ListGraph::getEdges(int vertex_id) const
 {
     std::vector<int> edges;
-    CurVertexIter vertex= _list_graph_.find(vertex_id);
-    if(vertex==_list_graph_.end())
+    CurVertexCIter vertex= _list_graph_.find(vertex_id);
+    if(vertex==_list_graph_.cend())
         return edges;
     for(std::pair<int,int> conn: vertex->second._edges_)
     {

@@ -38,6 +38,7 @@ public:
     bool loadListGraph(const ListGraph& graph);
     void itemMoved();
     void setForceCalc(bool state, bool fixateEdgeLength = true);
+    void clear();
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;

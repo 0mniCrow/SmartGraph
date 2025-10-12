@@ -125,6 +125,7 @@ qreal GViewEdge::length() const
      * qreal dy = dest.y() - src.y();
     */
     QPointF delta(mapFromItem(_src_item_,0,0) - mapFromItem(_dest_item_,0,0));
+    //qreal length = QLineF(mapFromItem(_src_item_,0,0),mapFromItem(_dest_item_,0,0)).length();
     return std::hypot(delta.x(),delta.y());
 }
 
