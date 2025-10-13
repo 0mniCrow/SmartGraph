@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
     connect(ui->check_Fix_edge_length,&QCheckBox::clicked,this,&MainWindow::fixEdges);
+
     initiateGraphicsView();
     execute();
 }
@@ -579,21 +580,22 @@ void MainWindow::execute()
 
 //_____________________________________Finding negative cycles________________________________________________________
 
-//    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
-//    list_graph.addVertex();
-//    list_graph.addVertex();
-//    list_graph.addVertex();
-//    list_graph.addVertex();
-//    list_graph.addVertex();
+    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
+    list_graph.addVertex();
 
-//    list_graph.addEdge(0,1,-1);
-//    list_graph.addEdge(0,2,4);
-//    list_graph.addEdge(1,2,3);
-//    list_graph.addEdge(1,3,2);
-//    list_graph.addEdge(1,4,2);
-//    list_graph.addEdge(3,2,5);
-//    list_graph.addEdge(3,1,1);
-//    list_graph.addEdge(4,3,-3);
+    list_graph.addEdge(0,1,-1);
+    list_graph.addEdge(0,2,4);
+    list_graph.addEdge(1,2,3);
+    list_graph.addEdge(1,3,2);
+    list_graph.addEdge(1,4,2);
+    list_graph.addEdge(3,2,5);
+    list_graph.addEdge(3,1,1);
+    list_graph.addEdge(4,3,-3);
+    _view_->loadListGraph(list_graph);
 //    string actions;
 //    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
 //    ui->textEdit->append("Current graph" + QString(hasNegCycle(list_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
@@ -616,22 +618,22 @@ void MainWindow::execute()
 //    ui->textEdit->append("Current graph" + QString(hasNegCycle(n_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
 //    ui->textEdit->append(QString(actions.c_str()));
 
-    ui->textEdit->clear();
-    //_________________________________________________Searching for n-sized cycles in directed graph_________________________________
+//    ui->textEdit->clear();
+//    //_________________________________________________Searching for n-sized cycles in directed graph_________________________________
 
-        vector<vector<bool>> graph({{0,1,0,1,0},
-                                    {1,0,1,0,1},
-                                    {0,1,0,1,0},
-                                    {1,0,1,0,1},
-                                    {0,1,0,1,0}});
-        Vector2D<bool> pro_graph(graph);
-        int cyc_length = 4;
-        string actions;
-        ui->textEdit->append("Current graph has [" +
-                             QString::number(
-                                 n_sizeCyclesSearch(pro_graph,cyc_length,actions)
-                                 )+"] "+QString::number(cyc_length)+"-length cycles;");
-        ui->textEdit->append(QString(actions.c_str()));
+//        vector<vector<bool>> graph({{0,1,0,1,0},
+//                                    {1,0,1,0,1},
+//                                    {0,1,0,1,0},
+//                                    {1,0,1,0,1},
+//                                    {0,1,0,1,0}});
+//        Vector2D<bool> pro_graph(graph);
+//        int cyc_length = 4;
+//        string actions;
+//        ui->textEdit->append("Current graph has [" +
+//                             QString::number(
+//                                 n_sizeCyclesSearch(pro_graph,cyc_length,actions)
+//                                 )+"] "+QString::number(cyc_length)+"-length cycles;");
+//        ui->textEdit->append(QString(actions.c_str()));
 
 
     return;
@@ -748,6 +750,8 @@ void MainWindow::initiateGraphicsView()
     connect(_view_,&GViewPort::gviewMessage,this,&MainWindow::updateInfo);
     connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
     connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
+    connect(_view_,&GViewPort::internalForceArrangeAct,
+            this,[this](){ui->check_Fix_edge_length->setChecked(true);});
 }
 
 void MainWindow::AddObject()

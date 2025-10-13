@@ -72,6 +72,7 @@ private:
 signals:
     void gviewMessage(QString info);
     void viewNewSelect(GViewItem* new_item);
+    void internalForceArrangeAct();
 public slots:
     void outsideNewSelect(GViewItem* selected_item);
 };

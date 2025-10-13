@@ -655,8 +655,8 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
         items.push_back(qMakePair(id,item));
     }
     QList<GViewEdge*> edges;
-    auto iter = items.begin();
-    while(iter!=items.end())
+    auto iter = items.cbegin();
+    while(iter!=items.cend())
     {
         std::vector<int> edge_ids = graph.getEdges(iter->first);
         if(edge_ids.size())
@@ -701,7 +701,23 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
         iter++;
     }
     clear();
-
+    iter = items.cbegin();
+    while(iter!=items.cend())
+    {
+        scene()->addItem(iter->second);
+        _vertices_->addItem(iter->second);
+        iter++;
+    }
+    for(GViewEdge* edge:edges)
+    {
+        scene()->addItem(edge);
+        _edges_.push_back(edge);
+        ///__________________
+        edge->setWeight(_vertex_radius_*7.0);
+        /// _________________
+    }
+    setForceCalc(true,false);
+    emit internalForceArrangeAct();
     return true;
 }
 
