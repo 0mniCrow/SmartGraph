@@ -204,6 +204,7 @@ void MainWindow::execute()
 //    listgraph.addEdge(2,5);
 //    listgraph.addEdge(3,4);
 //    listgraph.addEdge(4,5);
+//    _view_->loadListGraph(listgraph);
 //    ui->textEdit->append(QString(listgraph.getAdjacencyList().c_str()));
 //    ui->textEdit->append(QString(listgraph.getEdgeTable().c_str()));
 //    //isBipartite_BFS(listgraph,actions);

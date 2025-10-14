@@ -41,7 +41,8 @@ void GViewItem::checkBorders()
 
 void GViewItem::calcForce()
 {
-    if(!scene() || scene()->mouseGrabberItem() == this)
+    if(!scene() || scene()->mouseGrabberItem() == this||
+            !(_flags_&GV_Is_Forced))
     {
         _adv_pos_ = pos();
         return;
@@ -308,7 +309,6 @@ QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
                 port->itemMoved();
             }
         }
-        ///!Інфармаваць бягучы адлюстравацель аб рухах
     }
         break;
     case ItemSelectedHasChanged:

@@ -692,7 +692,7 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
                         new GViewEdge(iter->second,
                                       edged_item->second,
                                       _vertex_radius_,true);
-                new_edge->setWeight(_vertex_radius_*7);
+                new_edge->setWeight(_vertex_radius_*10.0);
                 iter->second->addEdge(new_edge);
                 edged_item->second->addEdge(new_edge);
                 edges.push_back(new_edge);
@@ -702,9 +702,43 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     }
     clear();
     iter = items.cbegin();
+    QPointF central_p = scene()->sceneRect().center();
     while(iter!=items.cend())
     {
+        bool free_space = false;
+        const qreal shift = _vertex_radius_*2.0;
+        while(!free_space)
+        {
+            switch(QRandomGenerator::system()->bounded(0,4))
+            {
+            case 0:
+            {
+                central_p.setX(central_p.x()+shift);
+            }
+                break;
+            case 1:
+            {
+                central_p.setY(central_p.y()+shift);
+            }
+                break;
+            case 2:
+            {
+                central_p.setX(central_p.x()-shift);
+            }
+                break;
+            case 3:
+            {
+                central_p.setY(central_p.y()-shift);
+            }
+                break;
+            }
+            if(!scene()->itemAt(central_p,transform()))
+            {
+                free_space = true;
+            }
+        }
         scene()->addItem(iter->second);
+        iter->second->setPos(central_p);
         _vertices_->addItem(iter->second);
         iter++;
     }
@@ -713,7 +747,7 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
         scene()->addItem(edge);
         _edges_.push_back(edge);
         ///__________________
-        edge->setWeight(_vertex_radius_*7.0);
+        edge->setWeight(_vertex_radius_*8.0);
         /// _________________
     }
     setForceCalc(true,false);
