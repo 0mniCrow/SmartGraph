@@ -18,6 +18,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QFormLayout>
 #include <QGraphicsItem>
+#include <QGraphicsView>
 #include <QMovie>
 #include <QTimer>
 //#include "graphwidget.h"
@@ -25,6 +26,43 @@
 namespace Ui {
 class TouchForm;
 }
+/*
+ * Адсякаючыя рэчы павінны рухацца ў залежнасьці ад таго,
+ * што карыстальнік націснуў. Калі ён націснуў на знешнюю рыску
+ * змяняцца памер. Калі заціснуў асноўную рэч, кола цягаецца пад
+ * курсорам.
+ * Ці патрэбны дадатковы клас рэч для відарыса на фоне?
+*/
+
+class CropOutline:public QGraphicsItem
+{
+
+};
+
+class CropItem:public QGraphicsItem
+{
+protected:
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
+};
+
+class CropView:public QGraphicsView
+{
+    Q_OBJECT
+protected:
+    void mousePressEvent(QMouseEvent* m_event) override;
+    void mouseReleaseEvent(QMouseEvent* m_event) override;
+    void mouseMoveEvent(QMouseEvent* m_event) override;
+};
 
 class LocWidget:public QLabel
 {
