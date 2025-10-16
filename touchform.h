@@ -34,35 +34,35 @@ class TouchForm;
  * Ці патрэбны дадатковы клас рэч для відарыса на фоне?
 */
 
-class CropOutline:public QGraphicsItem
-{
+//class CropOutline:public QGraphicsItem
+//{
 
-};
+//};
 
-class CropItem:public QGraphicsItem
-{
-protected:
-    QRectF boundingRect() const override;
-    QPainterPath shape() const override;
-    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    void paint(QPainter* painter,
-               const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
-    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
-    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
-    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-};
+//class CropItem:public QGraphicsItem
+//{
+//protected:
+//    QRectF boundingRect() const override;
+//    QPainterPath shape() const override;
+//    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+//    void paint(QPainter* painter,
+//               const QStyleOptionGraphicsItem* option,
+//               QWidget* widget) override;
+//    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+//    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+//    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+//    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
+//    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
+//};
 
-class CropView:public QGraphicsView
-{
-    Q_OBJECT
-protected:
-    void mousePressEvent(QMouseEvent* m_event) override;
-    void mouseReleaseEvent(QMouseEvent* m_event) override;
-    void mouseMoveEvent(QMouseEvent* m_event) override;
-};
+//class CropView:public QGraphicsView
+//{
+//    Q_OBJECT
+//protected:
+//    void mousePressEvent(QMouseEvent* m_event) override;
+//    void mouseReleaseEvent(QMouseEvent* m_event) override;
+//    void mouseMoveEvent(QMouseEvent* m_event) override;
+//};
 
 class LocWidget:public QLabel
 {

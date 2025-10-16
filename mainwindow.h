@@ -14,6 +14,7 @@
 #include "gview_tableVertexView.h"
 //______________________End____________________________
 //#include "visualisationgraphform.h"
+#include "imagecropwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -45,6 +46,7 @@ private slots:
     //_______________End______________________
 private:
     TouchForm * touchform;
+    ImageCropWindow _crop_window_;
     //VisualisationGraphForm *vis_form;
     MatrixModel * model;
     //____________Visual graph_______________

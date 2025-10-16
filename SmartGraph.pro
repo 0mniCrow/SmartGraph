@@ -16,6 +16,7 @@ SOURCES += \
     gviewitem.cpp \
     gviewport.cpp \
     gviewscene.cpp \
+    imagecropwindow.cpp \
     listgraph.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -33,6 +34,7 @@ HEADERS += \
     gviewitem.h \
     gviewport.h \
     gviewscene.h \
+    imagecropwindow.h \
     listgraph.h \
     mainwindow.h \
     matrixmodel.h \
@@ -41,6 +43,7 @@ HEADERS += \
     vectorgraph.h
 
 FORMS += \
+    imagecropwindow.ui \
     mainwindow.ui \
     touchform.ui
 

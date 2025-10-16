@@ -664,11 +664,12 @@ void MainWindow::keyPressEvent(QKeyEvent* pe)
         if(pe->modifiers()&Qt::ControlModifier)
         {
             this->close();
+            pe->accept();
         }
-        else
-        {
-            QMainWindow::keyPressEvent(pe);
-        }
+//        else
+//        {
+//            QMainWindow::keyPressEvent(pe);
+//        }
     }
         break;
     case Qt::Key_E:
@@ -676,18 +677,30 @@ void MainWindow::keyPressEvent(QKeyEvent* pe)
         if(pe->modifiers()&Qt::ControlModifier)
         {
             execute();
+            pe->accept();
         }
-        else
+//        else
+//        {
+//            QMainWindow::keyPressEvent(pe);
+//        }
+    }
+        break;
+    case Qt::Key_R:
+    {
+        if(pe->modifiers()&Qt::ControlModifier)
         {
-            QMainWindow::keyPressEvent(pe);
+            _crop_window_.show();
+            pe->accept();
         }
     }
         break;
     default:
     {
-        QMainWindow::keyPressEvent(pe);
+        pe->ignore();
+        //QMainWindow::keyPressEvent(pe);
     }
     }
+    QMainWindow::keyPressEvent(pe);
     return;
 }
 
