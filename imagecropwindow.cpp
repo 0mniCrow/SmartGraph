@@ -35,3 +35,46 @@ void ImageCropWindow::loadImage()
     ui->label->setPixmap(QPixmap::fromImage(bg));
     return;
 }
+
+
+CropItem::CropItem(qreal radius):_radius_(radius)
+{
+    setFlags(ItemIsMovable|ItemSendsGeometryChanges);
+    return;
+}
+void CropItem::setRadius(qreal radius)
+{
+    _radius_ = radius;
+    return;
+}
+qreal CropItem::radius() const
+{
+    return _radius_;
+}
+QRectF CropItem::boundingRect() const
+{
+    QRectF b_rect(-_radius_-DEF_OUTLINE,
+                  -_radius_-DEF_OUTLINE,
+                  _radius_*2+DEF_OUTLINE,
+                  _radius_*2+DEF_OUTLINE);
+    return b_rect;
+}
+QPainterPath CropItem::shape() const
+{
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addEllipse(QPointF(0,0),
+                    _radius_+DEF_OUTLINE,
+                    _radius_+DEF_OUTLINE);
+    path.addEllipse(QPointF(0,0),
+                    _radius_-DEF_WIDTH,
+                    _radius_-DEF_WIDTH);
+    return path;
+}
+
+//void CropItem::paint(QPainter* painter,
+//           const QStyleOptionGraphicsItem* option,
+//           QWidget* widget) override;
+//void CropItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+//void CropItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+//void CropItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;

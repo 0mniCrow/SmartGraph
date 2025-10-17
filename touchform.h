@@ -39,21 +39,7 @@ class TouchForm;
 
 //};
 
-//class CropItem:public QGraphicsItem
-//{
-//protected:
-//    QRectF boundingRect() const override;
-//    QPainterPath shape() const override;
-//    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-//    void paint(QPainter* painter,
-//               const QStyleOptionGraphicsItem* option,
-//               QWidget* widget) override;
-//    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-//    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
-//    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
-//    void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
-//    void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-//};
+
 
 //class CropView:public QGraphicsView
 //{
