@@ -10,6 +10,7 @@
 #include <QPainter>
 #include <QFileInfo>
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 
 class CropItem:public QGraphicsItem
 {
@@ -30,6 +31,16 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
 };
 
+class CropScene: public QGraphicsScene
+{
+public:
+    CropScene(QObject* tata=nullptr);
+    void loadPixmap(const QPixmap& bg);
+protected:
+    void drawBackground(QPainter* painter, const QRectF & rect) override;
+private:
+    QPixmap _bg_;
+};
 
 namespace Ui {
 class ImageCropWindow;

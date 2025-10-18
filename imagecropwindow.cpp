@@ -40,6 +40,7 @@ void ImageCropWindow::loadImage()
 CropItem::CropItem(qreal radius):_radius_(radius)
 {
     setFlags(ItemIsMovable|ItemSendsGeometryChanges);
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     return;
 }
 void CropItem::setRadius(qreal radius)
@@ -72,9 +73,60 @@ QPainterPath CropItem::shape() const
     return path;
 }
 
-//void CropItem::paint(QPainter* painter,
-//           const QStyleOptionGraphicsItem* option,
-//           QWidget* widget) override;
-//void CropItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-//void CropItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
-//void CropItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+void CropItem::paint(QPainter* painter,
+           const QStyleOptionGraphicsItem* option,
+           QWidget* widget)
+{
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+    QPen outlinePen(Qt::black,DEF_OUTLINE);
+    QColor t_color("indigo");
+    t_color.setAlpha(120);
+    QBrush t_brush(t_color);
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addEllipse(QPointF(0,0),_radius_,_radius_);
+    path.addEllipse(QPointF(0,0),_radius_-DEF_WIDTH,_radius_-DEF_WIDTH);
+    painter->save();
+    painter->setPen(outlinePen);
+    painter->setBrush(t_brush);
+    painter->drawPath(path);
+    painter->restore();
+    return;
+}
+
+void CropItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
+{
+    update();
+    QGraphicsItem::mousePressEvent(m_event);
+}
+
+void CropItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
+{
+    update();
+    QGraphicsItem::mouseReleaseEvent(m_event);
+}
+
+void CropItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    QGraphicsItem::mouseMoveEvent(m_event);
+}
+
+CropScene::CropScene(QObject* tata):QGraphicsScene(tata)
+{
+    return;
+}
+void CropScene::loadPixmap(const QPixmap& bg)
+{
+    setSceneRect(bg.rect());
+    _bg_ = bg;
+    update();
+}
+
+void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
+{
+    Q_UNUSED(rect);
+    painter->save();
+    painter->drawPixmap(rect,_bg_,rect);
+    painter->restore();
+}
