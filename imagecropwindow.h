@@ -56,6 +56,8 @@ public:
 
 private:
     Ui::ImageCropWindow *ui;
+    CropScene* _scene_;
+    CropItem* _item_;
 private slots:
     void chooseFile();
     void loadImage();

@@ -8,6 +8,9 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
     connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
+    _scene_ = new CropScene(ui->graphicsView);
+    ui->graphicsView->setScene(_scene_);
+    _item_ = nullptr;
 }
 
 ImageCropWindow::~ImageCropWindow()
@@ -31,8 +34,17 @@ void ImageCropWindow::loadImage()
     QImage bg(file_addr);
     if(bg.isNull())
         return;
-    ui->label->setFixedSize(bg.size());
-    ui->label->setPixmap(QPixmap::fromImage(bg));
+    if(_item_)
+    {
+        _scene_->removeItem(_item_);
+        delete _item_;
+    }
+    _scene_->loadPixmap(QPixmap::fromImage(bg));
+    _item_ = new CropItem();
+    _scene_->addItem(_item_);
+    _item_->setPos(_scene_->sceneRect().center());
+//    ui->label->setFixedSize(bg.size());
+//    ui->label->setPixmap(QPixmap::fromImage(bg));
     return;
 }
 
