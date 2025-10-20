@@ -12,6 +12,25 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 
+class CropItem;
+
+class ResizeItem:public QGraphicsItem
+{
+public:
+    ResizeItem(CropItem* parent);
+private:
+    qreal _radius_;
+protected:
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+};
+
 class CropItem:public QGraphicsItem
 {
 private:

@@ -100,6 +100,7 @@ void CropItem::paint(QPainter* painter,
     path.addEllipse(QPointF(0,0),_radius_,_radius_);
     path.addEllipse(QPointF(0,0),_radius_-DEF_WIDTH,_radius_-DEF_WIDTH);
     painter->save();
+    painter->setRenderHint(QPainter::Antialiasing,true);
     painter->setPen(outlinePen);
     painter->setBrush(t_brush);
     painter->drawPath(path);
@@ -141,4 +142,9 @@ void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
     painter->save();
     painter->drawPixmap(rect,_bg_,rect);
     painter->restore();
+}
+
+ResizeItem::ResizeItem(CropItem* parent):QGraphicsItem(parent)
+{
+    _radius_ = parent->radius();
 }
