@@ -134,6 +134,7 @@ void CropScene::loadPixmap(const QPixmap& bg)
     setSceneRect(bg.rect());
     _bg_ = bg;
     update();
+    return;
 }
 
 void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
@@ -142,9 +143,52 @@ void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
     painter->save();
     painter->drawPixmap(rect,_bg_,rect);
     painter->restore();
+    return;
 }
 
-ResizeItem::ResizeItem(CropItem* parent):QGraphicsItem(parent)
+ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 {
-    _radius_ = parent->radius();
+    _main_item_ = tata;
+    _radius_ = tata->radius();
+    setFlags(ItemIsMovable|ItemSendsGeometryChanges);
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+    return;
+}
+
+
+QRectF ResizeItem::boundingRect() const
+{
+    QRectF res_rect(-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                    -DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+    return res_rect;
+}
+QPainterPath ResizeItem::shape() const
+{
+    QPainterPath res_path;
+    res_path.addEllipse(QPointF(0,0),
+                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+    return res_path;
+}
+void ResizeItem::paint(QPainter* painter,
+           const QStyleOptionGraphicsItem* option,
+           QWidget* widget)
+{
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+    painter->save();
+    painter->setPen(QPen(Qt::black,DEF_CONTROL_OUTLINE));
+    painter->setBrush(QBrush(Qt::white));
+    painter->drawEllipse(QPointF(0,0),
+                         DEF_CONTROL_RADIUS,
+                         DEF_CONTROL_RADIUS);
+    painter->restore();
+}
+
+void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    QPointF l_point = m_event->lastScenePos();
+    QPointF n_point = m_event->scenePos();
 }

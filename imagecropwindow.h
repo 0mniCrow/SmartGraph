@@ -2,7 +2,9 @@
 #define IMAGECROPWINDOW_H
 #define DEF_RADIUS 40.0
 #define DEF_WIDTH 10.0
+#define DEF_CONTROL_RADIUS 2
 #define DEF_OUTLINE 2
+#define DEF_CONTROL_OUTLINE 1
 #include <QWidget>
 #include <QFileDialog>
 #include <QDir>
@@ -11,14 +13,17 @@
 #include <QFileInfo>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 
 class CropItem;
 
 class ResizeItem:public QGraphicsItem
 {
 public:
-    ResizeItem(CropItem* parent);
+    ResizeItem(CropItem* tata);
+    void setSize(qreal radius);
 private:
+    CropItem* _main_item_;
     qreal _radius_;
 protected:
     QRectF boundingRect() const override;
@@ -26,8 +31,8 @@ protected:
     void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
-    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
+//    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+//    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
 };
 
