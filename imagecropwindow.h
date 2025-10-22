@@ -25,6 +25,7 @@ public:
 private:
     CropItem* _main_item_;
     qreal _radius_;
+    bool _resz_caller_;
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

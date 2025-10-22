@@ -150,6 +150,7 @@ ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 {
     _main_item_ = tata;
     _radius_ = tata->radius();
+    _resz_caller_ = false;
     setFlags(ItemIsMovable|ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     return;
@@ -189,6 +190,23 @@ void ResizeItem::paint(QPainter* painter,
 
 void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
-    QPointF l_point = m_event->lastScenePos();
-    QPointF n_point = m_event->scenePos();
+    Q_UNUSED(m_event);
+//    QPointF tata_center = _main_item_->mapToScene(QPointF(0,0));
+//    QPointF dzicja_center = mapToScene(QPoint(0,0));
+//    QPointF l_point = m_event->lastScenePos();
+//    QPointF n_point = m_event->scenePos();
+
+    QPointF main_center = mapFromItem(_main_item_,QPointF(0,0));
+    QPointF delta(QPointF(0,0)-main_center);
+    qreal dist = std::hypot(delta.x(),delta.y());
+    setSize(dist);
+    m_event->accept();
+    return;
+}
+
+void ResizeItem::setSize(qreal radius)
+{
+   _resz_caller_=true;
+   _main_item_->setRadius(radius);
+   _resz_caller_= false;
 }
