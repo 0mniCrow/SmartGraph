@@ -11,6 +11,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
+    _r_item_ = nullptr;
 }
 
 ImageCropWindow::~ImageCropWindow()
@@ -36,13 +37,20 @@ void ImageCropWindow::loadImage()
         return;
     if(_item_)
     {
+        _scene_->removeItem(_r_item_);
         _scene_->removeItem(_item_);
+        delete _r_item_;
         delete _item_;
     }
     _scene_->loadPixmap(QPixmap::fromImage(bg));
     _item_ = new CropItem();
+    _r_item_ = new ResizeItem(_item_);
     _scene_->addItem(_item_);
-    _item_->setPos(_scene_->sceneRect().center());
+    _scene_->addItem(_r_item_);
+    QRectF scene_r(_scene_->sceneRect());
+    _item_->setPos(scene_r.center());
+    //_r_item_->setPos(scene_r.center());
+
 //    ui->label->setFixedSize(bg.size());
 //    ui->label->setPixmap(QPixmap::fromImage(bg));
     return;
@@ -57,13 +65,28 @@ CropItem::CropItem(qreal radius):_radius_(radius)
 }
 void CropItem::setRadius(qreal radius)
 {
+    prepareGeometryChange();
     _radius_ = radius;
     return;
 }
+
+void CropItem::moveRadius(qreal val)
+{
+    prepareGeometryChange();
+    _radius_+=val;
+    return;
+}
+
 qreal CropItem::radius() const
 {
     return _radius_;
 }
+
+QPointF CropItem::sceneCenterPoint() const
+{
+    return mapToScene(boundingRect().center());
+}
+
 QRectF CropItem::boundingRect() const
 {
     QRectF b_rect(-_radius_-DEF_OUTLINE,
@@ -149,9 +172,7 @@ void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
 ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 {
     _main_item_ = tata;
-    _radius_ = tata->radius();
-    _resz_caller_ = false;
-    setFlags(ItemIsMovable|ItemSendsGeometryChanges);
+    setFlags(ItemIsMovable|ItemIgnoresParentOpacity);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     return;
 }
@@ -159,19 +180,25 @@ ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 
 QRectF ResizeItem::boundingRect() const
 {
-    QRectF res_rect(-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                    -DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
-    return res_rect;
+    qreal m_rad = _main_item_->radius();
+    QRectF rect(-m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                  -m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                  m_rad*2+DEF_CONTROL_RADIUS+DEF_OUTLINE*2,
+                  m_rad*2+DEF_CONTROL_RADIUS+DEF_OUTLINE*2);
+    return rect;
 }
 QPainterPath ResizeItem::shape() const
 {
-    QPainterPath res_path;
-    res_path.addEllipse(QPointF(0,0),
-                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                    DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
-    return res_path;
+    QPainterPath path;
+    qreal m_rad = _main_item_->radius();
+    path.setFillRule(Qt::OddEvenFill);
+    path.addEllipse(QPointF(0,0),
+                    m_rad+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                    m_rad+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+    path.addEllipse(QPointF(0,0),
+                    m_rad,
+                    m_rad);
+    return path;
 }
 void ResizeItem::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
@@ -179,34 +206,45 @@ void ResizeItem::paint(QPainter* painter,
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
+    QPen outlinePen(Qt::black,DEF_CONTROL_OUTLINE);
+    QColor color("seashell");
+    color.setAlpha(120);
+    QBrush brush(color);
+    qreal m_rad = _main_item_->radius();
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addEllipse(QPointF(0,0),
+                    m_rad+DEF_CONTROL_RADIUS,
+                    m_rad+DEF_CONTROL_RADIUS);
+    path.addEllipse(QPointF(0,0),
+                    m_rad,
+                    m_rad);
     painter->save();
-    painter->setPen(QPen(Qt::black,DEF_CONTROL_OUTLINE));
-    painter->setBrush(QBrush(Qt::white));
-    painter->drawEllipse(QPointF(0,0),
-                         DEF_CONTROL_RADIUS,
-                         DEF_CONTROL_RADIUS);
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->setPen(outlinePen);
+    painter->setBrush(brush);
+    painter->drawPath(path);
+    painter->restore();
     painter->restore();
 }
 
 void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
     Q_UNUSED(m_event);
-//    QPointF tata_center = _main_item_->mapToScene(QPointF(0,0));
-//    QPointF dzicja_center = mapToScene(QPoint(0,0));
-//    QPointF l_point = m_event->lastScenePos();
-//    QPointF n_point = m_event->scenePos();
-
-    QPointF main_center = mapFromItem(_main_item_,QPointF(0,0));
-    QPointF delta(QPointF(0,0)-main_center);
-    qreal dist = std::hypot(delta.x(),delta.y());
-    setSize(dist);
-    m_event->accept();
+    QPointF l_point = m_event->lastScenePos();
+    QPointF n_point = m_event->scenePos();
+    QPointF main_center= _main_item_->sceneCenterPoint();
+    QPointF new_delta(main_center-n_point);
+    QPointF old_delta(main_center-l_point);
+    qreal new_dist = std::hypot(new_delta.x(),new_delta.y());
+    qreal old_dist = std::hypot(old_delta.x(),old_delta.y());
+    qreal diff = new_dist - old_dist;
+    _main_item_->moveRadius(diff);
+    update();
     return;
 }
 
 void ResizeItem::setSize(qreal radius)
 {
-   _resz_caller_=true;
-   _main_item_->setRadius(radius);
-   _resz_caller_= false;
+    _main_item_->setRadius(radius);
 }

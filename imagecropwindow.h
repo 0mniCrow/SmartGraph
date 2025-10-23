@@ -2,7 +2,7 @@
 #define IMAGECROPWINDOW_H
 #define DEF_RADIUS 40.0
 #define DEF_WIDTH 10.0
-#define DEF_CONTROL_RADIUS 2
+#define DEF_CONTROL_RADIUS 5
 #define DEF_OUTLINE 2
 #define DEF_CONTROL_OUTLINE 1
 #include <QWidget>
@@ -24,16 +24,12 @@ public:
     void setSize(qreal radius);
 private:
     CropItem* _main_item_;
-    qreal _radius_;
-    bool _resz_caller_;
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
-//    void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-//    void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
 };
 
@@ -44,7 +40,9 @@ private:
 public:
     CropItem(qreal radius = DEF_RADIUS);
     void setRadius(qreal radius);
+    void moveRadius(qreal val);
     qreal radius() const;
+    QPointF sceneCenterPoint() const;
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -83,6 +81,7 @@ private:
     Ui::ImageCropWindow *ui;
     CropScene* _scene_;
     CropItem* _item_;
+    ResizeItem* _r_item_;
 private slots:
     void chooseFile();
     void loadImage();
