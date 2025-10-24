@@ -82,9 +82,11 @@ private:
     CropScene* _scene_;
     CropItem* _item_;
     ResizeItem* _r_item_;
+    QPixmap getIMG();
 private slots:
     void chooseFile();
     void loadImage();
+    void cropImage();
 };
 
 #endif // IMAGECROPWINDOW_H

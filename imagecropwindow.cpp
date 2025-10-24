@@ -1,5 +1,6 @@
 #include "imagecropwindow.h"
 #include "ui_imagecropwindow.h"
+#include "touchform.h"
 
 ImageCropWindow::ImageCropWindow(QWidget *parent) :
     QWidget(parent),
@@ -8,6 +9,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
     connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
+    connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
@@ -26,15 +28,26 @@ void ImageCropWindow::chooseFile()
                          "Images (*.jpg *.png *.bmp)",nullptr,QFileDialog::DontUseNativeDialog));
     ui->line_imgAddr->setText(filename);
 }
-
-void ImageCropWindow::loadImage()
+QPixmap ImageCropWindow::getIMG()
 {
     QString file_addr(ui->line_imgAddr->text());
     if(!QFileInfo::exists(file_addr))
-        return;
+        return QPixmap();
     QImage bg(file_addr);
     if(bg.isNull())
-        return;
+        return QPixmap();
+    return QPixmap::fromImage(bg);
+}
+
+void ImageCropWindow::loadImage()
+{
+//    QString file_addr(ui->line_imgAddr->text());
+//    if(!QFileInfo::exists(file_addr))
+//        return;
+//    QImage bg(file_addr);
+//    if(bg.isNull())
+//        return;
+
     if(_item_)
     {
         _scene_->removeItem(_r_item_);
@@ -42,7 +55,13 @@ void ImageCropWindow::loadImage()
         delete _r_item_;
         delete _item_;
     }
-    _scene_->loadPixmap(QPixmap::fromImage(bg));
+    QPixmap bg(getIMG());
+    if(bg.isNull())
+    {
+        return;
+    }
+    _scene_->loadPixmap(bg);
+//    _scene_->loadPixmap(QPixmap::fromImage(bg));
     _item_ = new CropItem();
     _r_item_ = new ResizeItem(_item_);
     _scene_->addItem(_item_);
@@ -56,6 +75,39 @@ void ImageCropWindow::loadImage()
     return;
 }
 
+void ImageCropWindow::cropImage()
+{
+    QPixmap bg(getIMG());
+    if(bg.isNull())
+    {
+        return;
+    }
+    qreal radius = _item_->radius()-DEF_WIDTH;
+    QPixmap crop(radius*2,radius*2);
+    crop.fill(Qt::transparent);
+    QPainter painter(&crop);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setBrush(Qt::white);
+    painter.drawEllipse(0,0,radius*2,radius*2);
+    QPointF center(_item_->sceneCenterPoint());
+    QRectF target(center.x()-radius,center.y()-radius,radius*2.0,radius*2.0);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.drawPixmap(-target.topLeft(),bg.copy(target.toRect()));
+    painter.end();
+    LocWidget* widget = new LocWidget;
+    widget->setAttribute(Qt::WA_TranslucentBackground);
+    widget->setPixmap(crop);
+    QPushButton* exit = new QPushButton("X");
+    exit->setFixedSize(20,20);
+    QObject::connect(exit,&QPushButton::clicked,widget,&QWidget::close);
+    QObject::connect(this,&QObject::destroyed,widget,&QObject::deleteLater);
+    QVBoxLayout* vert_layout = new QVBoxLayout;
+    vert_layout->addWidget(exit);
+    vert_layout->addStretch(1);
+    widget->setLayout(vert_layout);
+    widget->show();
+    return;
+}
 
 CropItem::CropItem(qreal radius):_radius_(radius)
 {
@@ -224,7 +276,6 @@ void ResizeItem::paint(QPainter* painter,
     painter->setPen(outlinePen);
     painter->setBrush(brush);
     painter->drawPath(path);
-    painter->restore();
     painter->restore();
 }
 
