@@ -92,7 +92,8 @@ void ImageCropWindow::cropImage()
     QPointF center(_item_->sceneCenterPoint());
     QRectF target(center.x()-radius,center.y()-radius,radius*2.0,radius*2.0);
     painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    painter.drawPixmap(-target.topLeft(),bg.copy(target.toRect()));
+    QPixmap copy(bg.copy(target.toRect()));
+    painter.drawPixmap(crop.rect(),copy);
     painter.end();
     LocWidget* widget = new LocWidget;
     widget->setAttribute(Qt::WA_TranslucentBackground);
@@ -232,17 +233,18 @@ ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 
 QRectF ResizeItem::boundingRect() const
 {
-    qreal m_rad = _main_item_->radius();
+    qreal m_rad = _main_item_->radius()+DEF_OUTLINE;
     QRectF rect(-m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
                   -m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                  m_rad*2+DEF_CONTROL_RADIUS+DEF_OUTLINE*2,
-                  m_rad*2+DEF_CONTROL_RADIUS+DEF_OUTLINE*2);
+                  m_rad*2+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE*4,
+                  m_rad*2+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE*4);
+    //Незразумела чаму, але не хапае 4 піксела каб хапала для малявання аб'екта.
     return rect;
 }
 QPainterPath ResizeItem::shape() const
 {
     QPainterPath path;
-    qreal m_rad = _main_item_->radius();
+    qreal m_rad = _main_item_->radius()+DEF_OUTLINE;
     path.setFillRule(Qt::OddEvenFill);
     path.addEllipse(QPointF(0,0),
                     m_rad+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
