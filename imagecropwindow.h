@@ -37,10 +37,15 @@ class CropItem:public QGraphicsItem
 {
 private:
     qreal _radius_;
+    char _geom_type_;
 public:
+    enum Geometry{CI_INVALID = 0, CI_CIRCLE = 1,
+                  CI_TRIANGLE = 2, CI_SQUARE = 3};
     CropItem(qreal radius = DEF_RADIUS);
     void setRadius(qreal radius);
     void moveRadius(qreal val);
+    char geometryType() const {return _geom_type_;}
+    void setGeometryType(char g_type) {_geom_type_ = g_type;}
     qreal radius() const;
     QPointF sceneCenterPoint() const;
 protected:
@@ -87,6 +92,7 @@ private slots:
     void chooseFile();
     void loadImage();
     void cropImage();
+    void radiusChanged(int radius);
 };
 
 #endif // IMAGECROPWINDOW_H

@@ -10,6 +10,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
     connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
     connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
+    connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
@@ -110,6 +111,12 @@ void ImageCropWindow::cropImage()
     return;
 }
 
+void ImageCropWindow::radiusChanged(int radius)
+{
+    _item_->setRadius(radius);
+    return;
+}
+
 CropItem::CropItem(qreal radius):_radius_(radius)
 {
     setFlags(ItemIsMovable|ItemSendsGeometryChanges);
@@ -120,6 +127,8 @@ void CropItem::setRadius(qreal radius)
 {
     prepareGeometryChange();
     _radius_ = radius;
+    ResizeItem* res_item = dynamic_cast<ResizeItem*>(childItems().first());
+    res_item->update();
     return;
 }
 
