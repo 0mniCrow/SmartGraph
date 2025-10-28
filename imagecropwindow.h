@@ -45,7 +45,7 @@ public:
     void setRadius(qreal radius);
     void moveRadius(qreal val);
     char geometryType() const {return _geom_type_;}
-    void setGeometryType(char g_type) {_geom_type_ = g_type;}
+    void setGeometryType(char g_type);
     qreal radius() const;
     QPointF sceneCenterPoint() const;
 protected:
@@ -93,6 +93,7 @@ private slots:
     void loadImage();
     void cropImage();
     void radiusChanged(int radius);
+    void geometryChange(int geometry);
 };
 
 #endif // IMAGECROPWINDOW_H

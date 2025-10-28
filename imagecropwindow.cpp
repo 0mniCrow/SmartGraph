@@ -11,6 +11,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
     connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
     connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
+    connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
@@ -101,7 +102,45 @@ void ImageCropWindow::cropImage()
 
 void ImageCropWindow::radiusChanged(int radius)
 {
+    if(!_item_)
+    {
+        return;
+    }
     _item_->setRadius(radius);
+    return;
+}
+
+void ImageCropWindow::geometryChange(int geometry)
+{
+    if(!_item_)
+    {
+        return;
+    }
+    char new_geom = CropItem::Geometry::CI_INVALID;
+    switch(geometry)
+    {
+    case 0:
+    {
+        new_geom = CropItem::Geometry::CI_CIRCLE;
+    }
+        break;
+    case 1:
+    {
+        new_geom = CropItem::Geometry::CI_SQUARE;
+    }
+        break;
+    case 2:
+    {
+        new_geom = CropItem::Geometry::CI_TRIANGLE;
+    }
+        break;
+    }
+
+    _item_->setGeometryType(new_geom);
+    if(_r_item_)
+    {
+        _r_item_->update();
+    }
     return;
 }
 
@@ -127,6 +166,13 @@ void CropItem::moveRadius(qreal val)
     return;
 }
 
+void CropItem::setGeometryType(char g_type)
+{
+    prepareGeometryChange();
+    _geom_type_ = g_type;
+    return;
+}
+
 qreal CropItem::radius() const
 {
     return _radius_;
@@ -140,8 +186,6 @@ QPointF CropItem::sceneCenterPoint() const
 QRectF CropItem::boundingRect() const
 {
     QRectF rect;
-    if(_geom_type_==CI_CIRCLE)
-    {
     rect.setX(-_radius_-DEF_OUTLINE);
     rect.setY(-_radius_-DEF_OUTLINE);
     rect.setWidth(_radius_*2+DEF_OUTLINE);
@@ -150,11 +194,6 @@ QRectF CropItem::boundingRect() const
 //                  -_radius_-DEF_OUTLINE,
 //                  _radius_*2+DEF_OUTLINE,
 //                  _radius_*2+DEF_OUTLINE);
-    }
-    else if(_geom_type_==CI_SQUARE)
-    {
-
-    }
     return rect;
 }
 QPainterPath CropItem::shape() const
@@ -324,14 +363,52 @@ QRectF ResizeItem::boundingRect() const
 QPainterPath ResizeItem::shape() const
 {
     QPainterPath path;
-    qreal m_rad = _main_item_->radius()+DEF_OUTLINE;
+    //qreal geom_length = _main_item_->radius()+DEF_OUTLINE;
     path.setFillRule(Qt::OddEvenFill);
-    path.addEllipse(QPointF(0,0),
-                    m_rad+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                    m_rad+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
-    path.addEllipse(QPointF(0,0),
-                    m_rad,
-                    m_rad);
+    if(_main_item_->geometryType()==CropItem::Geometry::CI_CIRCLE)
+    {
+        qreal radius = _main_item_->radius()+DEF_OUTLINE;
+        path.addEllipse(QPointF(0,0),
+                        radius+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                        radius+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+        path.addEllipse(QPointF(0,0),
+                        radius,
+                        radius);
+    }
+    else if(_main_item_->geometryType()==CropItem::Geometry::CI_SQUARE)
+    {
+        qreal length = _main_item_->radius();
+        path.addRect(-length-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                     -length-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                     length*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                     length*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+        path.addRect(-length-DEF_OUTLINE,
+                     -length-DEF_OUTLINE,
+                     length*2+DEF_OUTLINE,
+                     length*2+DEF_OUTLINE);
+    }
+    else if(_main_item_->geometryType()==CropItem::Geometry::CI_TRIANGLE)
+    {
+        qreal side_len = _main_item_->radius();
+        QRectF rect(-side_len-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                    -side_len-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
+                    side_len*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
+                    side_len*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+        QPolygonF polygon;
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight();
+        path.addPolygon(polygon);
+        polygon.clear();
+        rect.setRect(   -side_len-DEF_OUTLINE,
+                        -side_len-DEF_OUTLINE,
+                        side_len*2+DEF_OUTLINE,
+                        side_len*2+DEF_OUTLINE);
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight();
+        path.addPolygon(polygon);
+    }
     return path;
 }
 void ResizeItem::paint(QPainter* painter,
@@ -344,15 +421,60 @@ void ResizeItem::paint(QPainter* painter,
     QColor color("seashell");
     color.setAlpha(120);
     QBrush brush(color);
-    qreal m_rad = _main_item_->radius();
+
     QPainterPath path;
     path.setFillRule(Qt::OddEvenFill);
-    path.addEllipse(QPointF(0,0),
-                    m_rad+DEF_CONTROL_RADIUS,
-                    m_rad+DEF_CONTROL_RADIUS);
-    path.addEllipse(QPointF(0,0),
-                    m_rad,
-                    m_rad);
+    char m_geometry = _main_item_->geometryType();
+    if(m_geometry == CropItem::Geometry::CI_CIRCLE)
+    {
+        qreal m_rad = _main_item_->radius();
+        path.addEllipse(QPointF(0,0),
+                        m_rad+DEF_CONTROL_RADIUS,
+                        m_rad+DEF_CONTROL_RADIUS);
+        path.addEllipse(QPointF(0,0),
+                        m_rad,
+                        m_rad);
+    }
+    else if(m_geometry==CropItem::Geometry::CI_SQUARE)
+    {
+        qreal m_len = _main_item_->radius();
+        path.addRect(-m_len-DEF_CONTROL_RADIUS,
+                     -m_len-DEF_CONTROL_RADIUS,
+                     m_len*2+DEF_CONTROL_RADIUS,
+                     m_len*2+DEF_CONTROL_RADIUS);
+        path.addRect(-m_len,
+                     -m_len,
+                     m_len*2,
+                     m_len*2);
+    }
+    else if(m_geometry==CropItem::Geometry::CI_TRIANGLE)
+    {
+        qreal m_side = _main_item_->radius();
+        QRectF rect(-m_side-DEF_CONTROL_RADIUS,
+                    -m_side-DEF_CONTROL_RADIUS,
+                    m_side*2+DEF_CONTROL_RADIUS,
+                    m_side*2+DEF_CONTROL_RADIUS);
+        QPolygonF polygon;
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight();
+        path.addPolygon(polygon);
+        polygon.clear();
+        rect.setRect(   -m_side,
+                        -m_side,
+                        m_side*2,
+                        m_side*2);
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight();
+        path.addPolygon(polygon);
+    }
+//    path.addEllipse(QPointF(0,0),
+//                    m_rad+DEF_CONTROL_RADIUS,
+//                    m_rad+DEF_CONTROL_RADIUS);
+//    path.addEllipse(QPointF(0,0),
+//                    m_rad,
+//                    m_rad);
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing,true);
     painter->setPen(outlinePen);

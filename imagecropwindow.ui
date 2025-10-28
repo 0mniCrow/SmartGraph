@@ -41,6 +41,25 @@
       </widget>
      </item>
      <item>
+      <widget class="QComboBox" name="combo_form">
+       <item>
+        <property name="text">
+         <string>Круг</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Квадрат</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Трохкутнік</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
       <widget class="QSpinBox" name="spinBox_radius">
        <property name="minimum">
         <number>10</number>
