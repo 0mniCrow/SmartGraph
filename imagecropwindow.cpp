@@ -43,11 +43,14 @@ QPixmap ImageCropWindow::getIMG()
 
 void ImageCropWindow::loadImage()
 {
-    if(_item_)
+    if(_r_item_)
     {
         _scene_->removeItem(_r_item_);
-        _scene_->removeItem(_item_);
         delete _r_item_;
+    }
+    if(_item_)
+    {       
+        _scene_->removeItem(_item_);
         delete _item_;
     }
     QPixmap bg(getIMG());
@@ -57,9 +60,9 @@ void ImageCropWindow::loadImage()
     }
     _scene_->loadPixmap(bg);
     _item_ = new CropItem();
-    _r_item_ = new ResizeItem(_item_);
+    //_r_item_ = new ResizeItem(_item_);
     _scene_->addItem(_item_);
-    _scene_->addItem(_r_item_);
+    //_scene_->addItem(_r_item_);
     QRectF scene_r(_scene_->sceneRect());
     _item_->setPos(scene_r.center());
     return;
@@ -154,8 +157,16 @@ void CropItem::setRadius(qreal radius)
 {
     prepareGeometryChange();
     _radius_ = radius;
-    ResizeItem* res_item = dynamic_cast<ResizeItem*>(childItems().first());
-    res_item->update();
+    auto child_items(childItems());
+    if(!child_items.size())
+    {
+        return;
+    }
+    ResizeItem* res_item = dynamic_cast<ResizeItem*>(child_items.first());
+    if(res_item)
+    {
+        res_item->update();
+    }
     return;
 }
 
@@ -168,8 +179,8 @@ void CropItem::moveRadius(qreal val)
 
 void CropItem::setGeometryType(char g_type)
 {
-    prepareGeometryChange();
     _geom_type_ = g_type;
+    update();
     return;
 }
 
@@ -190,10 +201,6 @@ QRectF CropItem::boundingRect() const
     rect.setY(-_radius_-DEF_OUTLINE);
     rect.setWidth(_radius_*2+DEF_OUTLINE);
     rect.setHeight(_radius_*2+DEF_OUTLINE);
-//    QRectF b_rect(-_radius_-DEF_OUTLINE,
-//                  -_radius_-DEF_OUTLINE,
-//                  _radius_*2+DEF_OUTLINE,
-//                  _radius_*2+DEF_OUTLINE);
     return rect;
 }
 QPainterPath CropItem::shape() const
@@ -217,25 +224,28 @@ QPainterPath CropItem::shape() const
                      _radius_*2+DEF_OUTLINE);
         path.addRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
                      -_radius_-DEF_OUTLINE+DEF_WIDTH,
-                     _radius_*2+DEF_OUTLINE-DEF_WIDTH,
-                     _radius_*2+DEF_OUTLINE-DEF_WIDTH);
+                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
+                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
     }
     else if(_geom_type_==CI_TRIANGLE)
     {
-        QRectF rect(boundingRect());
+        QRectF rect(-_radius_-DEF_OUTLINE,
+                    -_radius_-DEF_OUTLINE,
+                    _radius_*2+DEF_OUTLINE,
+                    _radius_*2+DEF_OUTLINE);
         QPolygonF polygon;
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
         polygon.clear();
-        rect.adjust(DEF_WIDTH,
-                    DEF_WIDTH,
-                    -DEF_WIDTH,
-                    -DEF_WIDTH);
+        rect.setRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
+                     -_radius_-DEF_OUTLINE+DEF_WIDTH,
+                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
+                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
     }
     return path;
@@ -270,8 +280,8 @@ void CropItem::paint(QPainter* painter,
                      _radius_*2);
         path.addRect(-_radius_+DEF_WIDTH,
                      -_radius_+DEF_WIDTH,
-                     _radius_*2-DEF_WIDTH,
-                     _radius_*2-DEF_WIDTH);
+                     (_radius_-DEF_WIDTH)*2,
+                     (_radius_-DEF_WIDTH)*2);
     }
     else if(_geom_type_==CI_TRIANGLE)
     {
@@ -282,16 +292,16 @@ void CropItem::paint(QPainter* painter,
         QPolygonF polygon;
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
         polygon.clear();
-        rect.adjust(DEF_WIDTH,
-                    DEF_WIDTH,
-                    -DEF_WIDTH,
-                    -DEF_WIDTH);
+        rect.setRect(-_radius_+DEF_WIDTH,
+                     -_radius_+DEF_WIDTH,
+                     (_radius_-DEF_WIDTH)*2,
+                     (_radius_-DEF_WIDTH)*2);
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
     }
     painter->save();
