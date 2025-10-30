@@ -22,8 +22,10 @@ class ResizeItem:public QGraphicsItem
 public:
     ResizeItem(CropItem* tata);
     void setSize(qreal radius);
+    void setThickness(qreal val);
 private:
     CropItem* _main_item_;
+    qreal _thickness_;
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -37,15 +39,17 @@ class CropItem:public QGraphicsItem
 {
 private:
     qreal _radius_;
+    qreal _thickness_;
     char _geom_type_;
 public:
     enum Geometry{CI_INVALID = 0, CI_CIRCLE = 1,
                   CI_TRIANGLE = 2, CI_SQUARE = 3};
-    CropItem(qreal radius = DEF_RADIUS);
+    CropItem(qreal radius = DEF_RADIUS,qreal thickness = DEF_WIDTH);
     void setRadius(qreal radius);
     void moveRadius(qreal val);
     char geometryType() const {return _geom_type_;}
     void setGeometryType(char g_type);
+    void setThickness(qreal val);
     qreal radius() const;
     QPointF sceneCenterPoint() const;
 protected:
@@ -93,6 +97,7 @@ private slots:
     void loadImage();
     void cropImage();
     void radiusChanged(int radius);
+    void thicknessChanged(int val);
     void geometryChange(int geometry);
 };
 

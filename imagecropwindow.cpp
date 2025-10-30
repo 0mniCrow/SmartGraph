@@ -7,11 +7,13 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     ui(new Ui::ImageCropWindow)
 {
     ui->setupUi(this);
+    ui->spin_crop_width->setValue(DEF_WIDTH);
     connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
     connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
     connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
     connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
     connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
+    connect(ui->spin_crop_width,&QSpinBox::valueChanged,this,&ImageCropWindow::thicknessChanged);
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
@@ -113,6 +115,16 @@ void ImageCropWindow::radiusChanged(int radius)
     return;
 }
 
+void ImageCropWindow::thicknessChanged(int val)
+{
+    if(!_item_)
+    {
+        return;
+    }
+    _item_->setThickness(val);
+    return;
+}
+
 void ImageCropWindow::geometryChange(int geometry)
 {
     if(!_item_)
@@ -147,7 +159,10 @@ void ImageCropWindow::geometryChange(int geometry)
     return;
 }
 
-CropItem::CropItem(qreal radius):_radius_(radius),_geom_type_(CI_CIRCLE)
+CropItem::CropItem(qreal radius, qreal thickness):
+    _radius_(radius),
+    _thickness_(thickness),
+    _geom_type_(CI_CIRCLE)
 {
     setFlags(ItemIsMovable|ItemSendsGeometryChanges);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
@@ -167,6 +182,13 @@ void CropItem::setRadius(qreal radius)
     {
         res_item->update();
     }
+    return;
+}
+
+void CropItem::setThickness(qreal val)
+{
+    _thickness_ = val;
+    update();
     return;
 }
 
@@ -213,8 +235,8 @@ QPainterPath CropItem::shape() const
                     _radius_+DEF_OUTLINE,
                     _radius_+DEF_OUTLINE);
         path.addEllipse(QPointF(0,0),
-                    _radius_-DEF_WIDTH,
-                    _radius_-DEF_WIDTH);
+                    _radius_-_thickness_,//DEF_WIDTH,
+                    _radius_-_thickness_);//-DEF_WIDTH);
     }
     else if(_geom_type_==CI_SQUARE)
     {
@@ -222,10 +244,10 @@ QPainterPath CropItem::shape() const
                      -_radius_-DEF_OUTLINE,
                      _radius_*2+DEF_OUTLINE,
                      _radius_*2+DEF_OUTLINE);
-        path.addRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
-                     -_radius_-DEF_OUTLINE+DEF_WIDTH,
-                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
-                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
+        path.addRect(-_radius_-DEF_OUTLINE+_thickness_,//DEF_WIDTH,
+                     -_radius_-DEF_OUTLINE+_thickness_,//DEF_WIDTH,
+                     (_radius_-_thickness_/*DEF_WIDTH*/)*2+DEF_OUTLINE,
+                     (_radius_-_thickness_/*DEF_WIDTH*/)*2+DEF_OUTLINE);
     }
     else if(_geom_type_==CI_TRIANGLE)
     {
@@ -238,15 +260,42 @@ QPainterPath CropItem::shape() const
                  QPointF(rect.center().x(),rect.topLeft().y())<<
                  rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
-        polygon.clear();
-        rect.setRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
-                     -_radius_-DEF_OUTLINE+DEF_WIDTH,
-                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
-                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
-        polygon<<rect.bottomLeft()<<
-                 QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight()<<rect.bottomLeft();
-        path.addPolygon(polygon);
+
+        QPolygonF smol_polygon;
+        for(int i = 0; i< polygon.size()-1;i++)
+        {
+            qreal dx = polygon.at(i).x();
+            qreal dy = polygon.at(i).y();
+            qreal len = std::hypot(dx,dy);
+            if(len<=0.0)
+            {
+                smol_polygon<<polygon.at(i);
+                continue;
+            }
+            qreal new_len = len - _thickness_;//DEF_WIDTH;
+            if(new_len <=0.0)
+            {
+                new_len = len;
+            }
+            qreal ux = dx/len;
+            qreal uy = dy/len;
+            QPointF new_point(ux*new_len,uy*new_len);
+            smol_polygon<<new_point;
+        }
+        if(smol_polygon.size())
+        {
+            smol_polygon.append(smol_polygon.at(0));
+        }
+        path.addPolygon(smol_polygon);
+//        polygon.clear();
+//        rect.setRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
+//                     -_radius_-DEF_OUTLINE+DEF_WIDTH,
+//                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
+//                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
+//        polygon<<rect.bottomLeft()<<
+//                 QPointF(rect.center().x(),rect.topLeft().y())<<
+//                 rect.bottomRight()<<rect.bottomLeft();
+//        path.addPolygon(polygon);
     }
     return path;
 }
@@ -269,8 +318,8 @@ void CropItem::paint(QPainter* painter,
                         _radius_,
                         _radius_);
         path.addEllipse(QPointF(0,0),
-                        _radius_-DEF_WIDTH,
-                        _radius_-DEF_WIDTH);
+                        _radius_-_thickness_,//DEF_WIDTH,
+                        _radius_-_thickness_);//DEF_WIDTH);
     }
     else if(_geom_type_==CI_SQUARE)
     {
@@ -278,10 +327,10 @@ void CropItem::paint(QPainter* painter,
                      -_radius_,
                      _radius_*2,
                      _radius_*2);
-        path.addRect(-_radius_+DEF_WIDTH,
-                     -_radius_+DEF_WIDTH,
-                     (_radius_-DEF_WIDTH)*2,
-                     (_radius_-DEF_WIDTH)*2);
+        path.addRect(-_radius_+_thickness_,//DEF_WIDTH,
+                     -_radius_+_thickness_,//DEF_WIDTH,
+                     (_radius_-_thickness_/*DEF_WIDTH*/)*2,
+                     (_radius_-_thickness_/*DEF_WIDTH*/)*2);
     }
     else if(_geom_type_==CI_TRIANGLE)
     {
@@ -294,15 +343,42 @@ void CropItem::paint(QPainter* painter,
                  QPointF(rect.center().x(),rect.topLeft().y())<<
                  rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
-        polygon.clear();
-        rect.setRect(-_radius_+DEF_WIDTH,
-                     -_radius_+DEF_WIDTH,
-                     (_radius_-DEF_WIDTH)*2,
-                     (_radius_-DEF_WIDTH)*2);
-        polygon<<rect.bottomLeft()<<
-                 QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight()<<rect.bottomLeft();
-        path.addPolygon(polygon);
+
+        QPolygonF smol_polygon;
+        for(int i = 0; i< polygon.size()-1;i++)
+        {
+            qreal dx = polygon.at(i).x();
+            qreal dy = polygon.at(i).y();
+            qreal len = std::hypot(dx,dy);
+            if(len<=0.0)
+            {
+                smol_polygon<<polygon.at(i);
+                continue;
+            }
+            qreal new_len = len - _thickness_;//DEF_WIDTH;
+            if(new_len <=0.0)
+            {
+                new_len = len;
+            }
+            qreal ux = dx/len;
+            qreal uy = dy/len;
+            QPointF new_point(ux*new_len,uy*new_len);
+            smol_polygon<<new_point;
+        }
+        if(smol_polygon.size())
+        {
+            smol_polygon.append(smol_polygon.at(0));
+        }
+        path.addPolygon(smol_polygon);
+//        polygon.clear();
+//        rect.setRect(-_radius_+DEF_WIDTH,
+//                     -_radius_+DEF_WIDTH,
+//                     (_radius_-DEF_WIDTH)*2,
+//                     (_radius_-DEF_WIDTH)*2);
+//        polygon<<rect.bottomLeft()<<
+//                 QPointF(rect.center().x(),rect.topLeft().y())<<
+//                 rect.bottomRight()<<rect.bottomLeft();
+//        path.addPolygon(polygon);
     }
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing,true);
@@ -470,6 +546,11 @@ void ResizeItem::paint(QPainter* painter,
                  rect.bottomRight();
         path.addPolygon(polygon);
         polygon.clear();
+
+        //QPointF delta(mapFromItem(_src_item_,0,0) - mapFromItem(_dest_item_,0,0));
+        //qreal length = QLineF(mapFromItem(_src_item_,0,0),mapFromItem(_dest_item_,0,0)).length();
+        //return std::hypot(delta.x(),delta.y());
+
         rect.setRect(   -m_side,
                         -m_side,
                         m_side*2,
@@ -506,6 +587,13 @@ void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
     qreal diff = new_dist - old_dist;
     _main_item_->moveRadius(diff);
     update();
+    return;
+}
+
+void ResizeItem::setThickness(qreal val)
+{
+    prepareGeometryChange();
+    _thickness_ = val;
     return;
 }
 
