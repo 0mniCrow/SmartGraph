@@ -20,7 +20,7 @@ class CropItem;
 class ResizeItem:public QGraphicsItem
 {
 public:
-    ResizeItem(CropItem* tata);
+    ResizeItem(CropItem* tata, qreal thickness = DEF_CONTROL_RADIUS);
     void setSize(qreal radius);
     void setThickness(qreal val);
 private:

@@ -62,9 +62,9 @@ void ImageCropWindow::loadImage()
     }
     _scene_->loadPixmap(bg);
     _item_ = new CropItem();
-    //_r_item_ = new ResizeItem(_item_);
+    _r_item_ = new ResizeItem(_item_);
     _scene_->addItem(_item_);
-    //_scene_->addItem(_r_item_);
+    _scene_->addItem(_r_item_);
     QRectF scene_r(_scene_->sceneRect());
     _item_->setPos(scene_r.center());
     return;
@@ -427,7 +427,7 @@ void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
     return;
 }
 
-ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
+ResizeItem::ResizeItem(CropItem* tata, qreal thickness):QGraphicsItem(tata),_thickness_(thickness)
 {
     _main_item_ = tata;
     setFlags(ItemIsMovable|ItemIgnoresParentOpacity);
@@ -439,24 +439,23 @@ ResizeItem::ResizeItem(CropItem* tata):QGraphicsItem(tata)
 QRectF ResizeItem::boundingRect() const
 {
     qreal m_rad = _main_item_->radius()+DEF_OUTLINE;
-    QRectF rect(-m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                  -m_rad-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                  m_rad*2+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE*4,
-                  m_rad*2+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE*4);
+    QRectF rect(-m_rad-_thickness_-DEF_CONTROL_OUTLINE,
+                  -m_rad-_thickness_-DEF_CONTROL_OUTLINE,
+                  (m_rad+_thickness_)*2+DEF_CONTROL_OUTLINE,
+                  (m_rad+_thickness_)*2+DEF_CONTROL_OUTLINE);
     //Незразумела чаму, але не хапае 4 піксела каб хапала для малявання аб'екта.
     return rect;
 }
 QPainterPath ResizeItem::shape() const
 {
     QPainterPath path;
-    //qreal geom_length = _main_item_->radius()+DEF_OUTLINE;
     path.setFillRule(Qt::OddEvenFill);
     if(_main_item_->geometryType()==CropItem::Geometry::CI_CIRCLE)
     {
         qreal radius = _main_item_->radius()+DEF_OUTLINE;
         path.addEllipse(QPointF(0,0),
-                        radius+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                        radius+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+                        radius+_thickness_+DEF_CONTROL_OUTLINE,
+                        radius+_thickness_+DEF_CONTROL_OUTLINE);
         path.addEllipse(QPointF(0,0),
                         radius,
                         radius);
@@ -464,10 +463,10 @@ QPainterPath ResizeItem::shape() const
     else if(_main_item_->geometryType()==CropItem::Geometry::CI_SQUARE)
     {
         qreal length = _main_item_->radius();
-        path.addRect(-length-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                     -length-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                     length*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                     length*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+        path.addRect(-length-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
+                     -length-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
+                     (length+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE,
+                     (length+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE);
         path.addRect(-length-DEF_OUTLINE,
                      -length-DEF_OUTLINE,
                      length*2+DEF_OUTLINE,
@@ -476,15 +475,16 @@ QPainterPath ResizeItem::shape() const
     else if(_main_item_->geometryType()==CropItem::Geometry::CI_TRIANGLE)
     {
         qreal side_len = _main_item_->radius();
-        QRectF rect(-side_len-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                    -side_len-DEF_OUTLINE-DEF_CONTROL_RADIUS-DEF_CONTROL_OUTLINE,
-                    side_len*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE,
-                    side_len*2+DEF_OUTLINE+DEF_CONTROL_RADIUS+DEF_CONTROL_OUTLINE);
+        QRectF rect(-side_len-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
+                    -side_len-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
+                    (side_len+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE,
+                    (side_len+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE);
         QPolygonF polygon;
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
+
         polygon.clear();
         rect.setRect(   -side_len-DEF_OUTLINE,
                         -side_len-DEF_OUTLINE,
@@ -492,7 +492,7 @@ QPainterPath ResizeItem::shape() const
                         side_len*2+DEF_OUTLINE);
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
     }
     return path;
@@ -513,10 +513,10 @@ void ResizeItem::paint(QPainter* painter,
     char m_geometry = _main_item_->geometryType();
     if(m_geometry == CropItem::Geometry::CI_CIRCLE)
     {
-        qreal m_rad = _main_item_->radius();
+        qreal m_rad = _main_item_->radius()+DEF_OUTLINE;
         path.addEllipse(QPointF(0,0),
-                        m_rad+DEF_CONTROL_RADIUS,
-                        m_rad+DEF_CONTROL_RADIUS);
+                        m_rad+_thickness_,
+                        m_rad+_thickness_);
         path.addEllipse(QPointF(0,0),
                         m_rad,
                         m_rad);
@@ -524,26 +524,26 @@ void ResizeItem::paint(QPainter* painter,
     else if(m_geometry==CropItem::Geometry::CI_SQUARE)
     {
         qreal m_len = _main_item_->radius();
-        path.addRect(-m_len-DEF_CONTROL_RADIUS,
-                     -m_len-DEF_CONTROL_RADIUS,
-                     m_len*2+DEF_CONTROL_RADIUS,
-                     m_len*2+DEF_CONTROL_RADIUS);
-        path.addRect(-m_len,
-                     -m_len,
-                     m_len*2,
-                     m_len*2);
+        path.addRect(-m_len-DEF_OUTLINE-_thickness_,
+                     -m_len-DEF_OUTLINE-_thickness_,
+                     (m_len+DEF_OUTLINE+_thickness_)*2,
+                     (m_len+DEF_OUTLINE+_thickness_)*2);
+        path.addRect(-m_len-DEF_OUTLINE,
+                     -m_len-DEF_OUTLINE,
+                     m_len*2+DEF_OUTLINE,
+                     m_len*2+DEF_OUTLINE);
     }
     else if(m_geometry==CropItem::Geometry::CI_TRIANGLE)
     {
         qreal m_side = _main_item_->radius();
-        QRectF rect(-m_side-DEF_CONTROL_RADIUS,
-                    -m_side-DEF_CONTROL_RADIUS,
-                    m_side*2+DEF_CONTROL_RADIUS,
-                    m_side*2+DEF_CONTROL_RADIUS);
+        QRectF rect(-m_side-DEF_OUTLINE-_thickness_,
+                    -m_side-DEF_OUTLINE-_thickness_,
+                    (m_side+DEF_OUTLINE+_thickness_)*2,
+                    (m_side+DEF_OUTLINE+_thickness_)*2);
         QPolygonF polygon;
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
         polygon.clear();
 
@@ -551,13 +551,13 @@ void ResizeItem::paint(QPainter* painter,
         //qreal length = QLineF(mapFromItem(_src_item_,0,0),mapFromItem(_dest_item_,0,0)).length();
         //return std::hypot(delta.x(),delta.y());
 
-        rect.setRect(   -m_side,
-                        -m_side,
-                        m_side*2,
-                        m_side*2);
+        rect.setRect(   -m_side-DEF_OUTLINE,
+                        -m_side-DEF_OUTLINE,
+                        m_side*2+DEF_OUTLINE,
+                        m_side*2+DEF_OUTLINE);
         polygon<<rect.bottomLeft()<<
                  QPointF(rect.center().x(),rect.topLeft().y())<<
-                 rect.bottomRight();
+                 rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
     }
 //    path.addEllipse(QPointF(0,0),
