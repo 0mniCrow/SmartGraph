@@ -14,6 +14,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
     connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
     connect(ui->spin_crop_width,&QSpinBox::valueChanged,this,&ImageCropWindow::thicknessChanged);
+    connect(ui->spin_resize_width,&QSpinBox::valueChanged,this,&ImageCropWindow::resThicknessChanged);
     _scene_ = new CropScene(ui->graphicsView);
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
@@ -122,6 +123,16 @@ void ImageCropWindow::thicknessChanged(int val)
         return;
     }
     _item_->setThickness(val);
+    return;
+}
+
+void ImageCropWindow::resThicknessChanged(int val)
+{
+    if(!_r_item_)
+    {
+        return;
+    }
+    _r_item_->setThickness(val);
     return;
 }
 
@@ -261,41 +272,41 @@ QPainterPath CropItem::shape() const
                  rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
 
-        QPolygonF smol_polygon;
-        for(int i = 0; i< polygon.size()-1;i++)
-        {
-            qreal dx = polygon.at(i).x();
-            qreal dy = polygon.at(i).y();
-            qreal len = std::hypot(dx,dy);
-            if(len<=0.0)
-            {
-                smol_polygon<<polygon.at(i);
-                continue;
-            }
-            qreal new_len = len - _thickness_;//DEF_WIDTH;
-            if(new_len <=0.0)
-            {
-                new_len = len;
-            }
-            qreal ux = dx/len;
-            qreal uy = dy/len;
-            QPointF new_point(ux*new_len,uy*new_len);
-            smol_polygon<<new_point;
-        }
-        if(smol_polygon.size())
-        {
-            smol_polygon.append(smol_polygon.at(0));
-        }
-        path.addPolygon(smol_polygon);
-//        polygon.clear();
-//        rect.setRect(-_radius_-DEF_OUTLINE+DEF_WIDTH,
-//                     -_radius_-DEF_OUTLINE+DEF_WIDTH,
-//                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE,
-//                     (_radius_-DEF_WIDTH)*2+DEF_OUTLINE);
-//        polygon<<rect.bottomLeft()<<
-//                 QPointF(rect.center().x(),rect.topLeft().y())<<
-//                 rect.bottomRight()<<rect.bottomLeft();
-//        path.addPolygon(polygon);
+//        QPolygonF smol_polygon;
+//        for(int i = 0; i< polygon.size()-1;i++)
+//        {
+//            qreal dx = polygon.at(i).x();
+//            qreal dy = polygon.at(i).y();
+//            qreal len = std::hypot(dx,dy);
+//            if(len<=0.0)
+//            {
+//                smol_polygon<<polygon.at(i);
+//                continue;
+//            }
+//            qreal new_len = len - _thickness_;//DEF_WIDTH;
+//            if(new_len <=0.0)
+//            {
+//                new_len = len;
+//            }
+//            qreal ux = dx/len;
+//            qreal uy = dy/len;
+//            QPointF new_point(ux*new_len,uy*new_len);
+//            smol_polygon<<new_point;
+//        }
+//        if(smol_polygon.size())
+//        {
+//            smol_polygon.append(smol_polygon.at(0));
+//        }
+//        path.addPolygon(smol_polygon);
+        polygon.clear();
+        rect.setRect(-_radius_-DEF_OUTLINE+_thickness_,
+                     -_radius_-DEF_OUTLINE+_thickness_*1.4,
+                     (_radius_-_thickness_)*2+DEF_OUTLINE,
+                     (_radius_-_thickness_)*2+DEF_OUTLINE);
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight()<<rect.bottomLeft();
+        path.addPolygon(polygon);
     }
     return path;
 }
@@ -344,41 +355,41 @@ void CropItem::paint(QPainter* painter,
                  rect.bottomRight()<<rect.bottomLeft();
         path.addPolygon(polygon);
 
-        QPolygonF smol_polygon;
-        for(int i = 0; i< polygon.size()-1;i++)
-        {
-            qreal dx = polygon.at(i).x();
-            qreal dy = polygon.at(i).y();
-            qreal len = std::hypot(dx,dy);
-            if(len<=0.0)
-            {
-                smol_polygon<<polygon.at(i);
-                continue;
-            }
-            qreal new_len = len - _thickness_;//DEF_WIDTH;
-            if(new_len <=0.0)
-            {
-                new_len = len;
-            }
-            qreal ux = dx/len;
-            qreal uy = dy/len;
-            QPointF new_point(ux*new_len,uy*new_len);
-            smol_polygon<<new_point;
-        }
-        if(smol_polygon.size())
-        {
-            smol_polygon.append(smol_polygon.at(0));
-        }
-        path.addPolygon(smol_polygon);
-//        polygon.clear();
-//        rect.setRect(-_radius_+DEF_WIDTH,
-//                     -_radius_+DEF_WIDTH,
-//                     (_radius_-DEF_WIDTH)*2,
-//                     (_radius_-DEF_WIDTH)*2);
-//        polygon<<rect.bottomLeft()<<
-//                 QPointF(rect.center().x(),rect.topLeft().y())<<
-//                 rect.bottomRight()<<rect.bottomLeft();
-//        path.addPolygon(polygon);
+//        QPolygonF smol_polygon;
+//        for(int i = 0; i< polygon.size()-1;i++)
+//        {
+//            qreal dx = polygon.at(i).x();
+//            qreal dy = polygon.at(i).y();
+//            qreal len = std::hypot(dx,dy);
+//            if(len<=0.0)
+//            {
+//                smol_polygon<<polygon.at(i);
+//                continue;
+//            }
+//            qreal new_len = len - _thickness_;//DEF_WIDTH;
+//            if(new_len <=0.0)
+//            {
+//                new_len = len;
+//            }
+//            qreal ux = dx/len;
+//            qreal uy = dy/len;
+//            QPointF new_point(ux*new_len,uy*new_len);
+//            smol_polygon<<new_point;
+//        }
+//        if(smol_polygon.size())
+//        {
+//            smol_polygon.append(smol_polygon.at(0));
+//        }
+//        path.addPolygon(smol_polygon);
+        polygon.clear();
+        rect.setRect(-_radius_+_thickness_,
+                     -_radius_+_thickness_*1.4,
+                     (_radius_-_thickness_)*2,
+                     (_radius_-_thickness_)*2);
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())<<
+                 rect.bottomRight()<<rect.bottomLeft();
+        path.addPolygon(polygon);
     }
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing,true);
@@ -443,7 +454,7 @@ QRectF ResizeItem::boundingRect() const
                   -m_rad-_thickness_-DEF_CONTROL_OUTLINE,
                   (m_rad+_thickness_)*2+DEF_CONTROL_OUTLINE,
                   (m_rad+_thickness_)*2+DEF_CONTROL_OUTLINE);
-    //Незразумела чаму, але не хапае 4 піксела каб хапала для малявання аб'екта.
+
     return rect;
 }
 QPainterPath ResizeItem::shape() const
@@ -476,7 +487,7 @@ QPainterPath ResizeItem::shape() const
     {
         qreal side_len = _main_item_->radius();
         QRectF rect(-side_len-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
-                    -side_len-DEF_OUTLINE-_thickness_-DEF_CONTROL_OUTLINE,
+                    -side_len-DEF_OUTLINE-_thickness_*1.4-DEF_CONTROL_OUTLINE,
                     (side_len+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE,
                     (side_len+DEF_OUTLINE+_thickness_)*2+DEF_CONTROL_OUTLINE);
         QPolygonF polygon;
@@ -537,7 +548,7 @@ void ResizeItem::paint(QPainter* painter,
     {
         qreal m_side = _main_item_->radius();
         QRectF rect(-m_side-DEF_OUTLINE-_thickness_,
-                    -m_side-DEF_OUTLINE-_thickness_,
+                    -m_side-DEF_OUTLINE-_thickness_*1.4,
                     (m_side+DEF_OUTLINE+_thickness_)*2,
                     (m_side+DEF_OUTLINE+_thickness_)*2);
         QPolygonF polygon;

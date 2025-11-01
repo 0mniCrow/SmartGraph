@@ -98,6 +98,7 @@ private slots:
     void cropImage();
     void radiusChanged(int radius);
     void thicknessChanged(int val);
+    void resThicknessChanged(int val);
     void geometryChange(int geometry);
 };
 
