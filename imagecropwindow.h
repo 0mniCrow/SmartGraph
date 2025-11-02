@@ -50,6 +50,7 @@ public:
     char geometryType() const {return _geom_type_;}
     void setGeometryType(char g_type);
     void setThickness(qreal val);
+    qreal thickness()const{return _thickness_;}
     qreal radius() const;
     QPointF sceneCenterPoint() const;
 protected:

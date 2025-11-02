@@ -78,13 +78,38 @@ void ImageCropWindow::cropImage()
     {
         return;
     }
-    qreal radius = _item_->radius()-DEF_WIDTH;
+    qreal radius = _item_->radius()-_item_->thickness();
+    char geometry = _item_->geometryType();
     QPixmap crop(radius*2,radius*2);
     crop.fill(Qt::transparent);
     QPainter painter(&crop);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(Qt::white);
-    painter.drawEllipse(0,0,radius*2,radius*2);
+    switch(geometry)
+    {
+    case CropItem::Geometry:: CI_CIRCLE:
+    {
+        painter.drawEllipse(0,0,radius*2,radius*2);
+    }
+        break;
+    case CropItem::Geometry::CI_SQUARE:
+    {
+        painter.drawRect(0,0,radius*2,radius*2);
+    }
+        break;
+    case CropItem::Geometry::CI_TRIANGLE:
+    {
+        QRectF rect(0,0,radius*2,radius*2);
+        QPolygonF polygon;
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.topLeft().y())
+              <<rect.bottomRight()<<rect.bottomLeft();
+        painter.drawPolygon(polygon);
+    }
+        break;
+    }
+
+
     QPointF center(_item_->sceneCenterPoint());
     QRectF target(center.x()-radius,center.y()-radius,radius*2.0,radius*2.0);
     painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
