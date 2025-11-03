@@ -35,17 +35,20 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
 };
 
-class CropItem:public QGraphicsItem
+class CropItem:public QGraphicsObject
 {
+    Q_OBJECT
 private:
     qreal _radius_;
     qreal _thickness_;
     char _geom_type_;
+    void checkBorders();
+    bool checkNewRadius(qreal n_radius);
 public:
     enum Geometry{CI_INVALID = 0, CI_CIRCLE = 1,
                   CI_TRIANGLE = 2, CI_SQUARE = 3};
     CropItem(qreal radius = DEF_RADIUS,qreal thickness = DEF_WIDTH);
-    void setRadius(qreal radius);
+    void setRadius(qreal radius, bool manual_set=false);
     void moveRadius(qreal val);
     char geometryType() const {return _geom_type_;}
     void setGeometryType(char g_type);
@@ -53,9 +56,12 @@ public:
     qreal thickness()const{return _thickness_;}
     qreal radius() const;
     QPointF sceneCenterPoint() const;
+signals:
+    void sendNewRadius(qreal new_radius);
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
@@ -98,6 +104,7 @@ private slots:
     void loadImage();
     void cropImage();
     void radiusChanged(int radius);
+    void nonManualRadChanged(qreal radius);
     void thicknessChanged(int val);
     void resThicknessChanged(int val);
     void geometryChange(int geometry);

@@ -53,6 +53,7 @@ void ImageCropWindow::loadImage()
     }
     if(_item_)
     {       
+        disconnect(_item_,&CropItem::sendNewRadius,this,&ImageCropWindow::nonManualRadChanged);
         _scene_->removeItem(_item_);
         delete _item_;
     }
@@ -64,6 +65,7 @@ void ImageCropWindow::loadImage()
     _scene_->loadPixmap(bg);
     _item_ = new CropItem();
     _r_item_ = new ResizeItem(_item_);
+    connect(_item_,&CropItem::sendNewRadius,this,&ImageCropWindow::nonManualRadChanged);
     _scene_->addItem(_item_);
     _scene_->addItem(_r_item_);
     QRectF scene_r(_scene_->sceneRect());
@@ -137,7 +139,25 @@ void ImageCropWindow::radiusChanged(int radius)
     {
         return;
     }
-    _item_->setRadius(radius);
+    _item_->setRadius(radius,true);
+    return;
+}
+
+void ImageCropWindow::nonManualRadChanged(qreal radius)
+{
+    int rad = static_cast<int>(radius);
+    if(rad<ui->spinBox_radius->minimum())
+    {
+        _item_->setRadius(ui->spinBox_radius->minimum(),true);
+    }
+    else if(rad>ui->spinBox_radius->maximum())
+    {
+        _item_->setRadius(ui->spinBox_radius->maximum(),true);
+    }
+    else
+    {
+        ui->spinBox_radius->setValue(rad);
+    }
     return;
 }
 
@@ -195,7 +215,7 @@ void ImageCropWindow::geometryChange(int geometry)
     return;
 }
 
-CropItem::CropItem(qreal radius, qreal thickness):
+CropItem::CropItem(qreal radius, qreal thickness):QGraphicsObject(nullptr),
     _radius_(radius),
     _thickness_(thickness),
     _geom_type_(CI_CIRCLE)
@@ -204,10 +224,18 @@ CropItem::CropItem(qreal radius, qreal thickness):
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     return;
 }
-void CropItem::setRadius(qreal radius)
+void CropItem::setRadius(qreal radius, bool manual_set)
 {
+    if(!checkNewRadius(radius))
+    {
+        return;
+    }
     prepareGeometryChange();
     _radius_ = radius;
+    if(!manual_set)
+    {
+        emit sendNewRadius(_radius_);
+    }
     auto child_items(childItems());
     if(!child_items.size())
     {
@@ -221,6 +249,47 @@ void CropItem::setRadius(qreal radius)
     return;
 }
 
+void CropItem::checkBorders()
+{
+    QRectF sceneRect = scene()->sceneRect();
+    QPointF newPos = scenePos();
+    newPos.setX(qMin(qMax(newPos.x(), sceneRect.left() + _radius_), sceneRect.right() - _radius_));
+    newPos.setY(qMin(qMax(newPos.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
+    setPos(newPos);
+    return;
+}
+
+bool CropItem::checkNewRadius(qreal n_radius)
+{
+    QRectF sceneRect = scene()->sceneRect();
+    QPointF cur_pos = scenePos();
+    if(     cur_pos.x()+n_radius>sceneRect.right() ||
+            cur_pos.x()-n_radius<sceneRect.left() ||
+            cur_pos.y()+n_radius>sceneRect.bottom()||
+            cur_pos.y()-n_radius<sceneRect.top())
+    {
+        return false;
+    }
+    return true;
+}
+
+QVariant CropItem::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    switch(change)
+    {
+    case ItemPositionHasChanged:
+    {
+        checkBorders();
+    }
+        break;
+    default:
+    {
+        ///-нічога-
+    }
+    }
+    return QGraphicsItem::itemChange(change,value);
+}
+
 void CropItem::setThickness(qreal val)
 {
     _thickness_ = val;
@@ -230,8 +299,13 @@ void CropItem::setThickness(qreal val)
 
 void CropItem::moveRadius(qreal val)
 {
+    if(!checkNewRadius(_radius_+val))
+    {
+        return;
+    }
     prepareGeometryChange();
     _radius_+=val;
+    emit sendNewRadius(_radius_);
     return;
 }
 
@@ -249,7 +323,7 @@ qreal CropItem::radius() const
 
 QPointF CropItem::sceneCenterPoint() const
 {
-    return mapToScene(boundingRect().center());
+    return scenePos();//mapToScene(boundingRect().center());
 }
 
 QRectF CropItem::boundingRect() const
