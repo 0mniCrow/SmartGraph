@@ -19,6 +19,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     ui->graphicsView->setScene(_scene_);
     _item_ = nullptr;
     _r_item_ = nullptr;
+    _s_item_ = nullptr;
 }
 
 ImageCropWindow::~ImageCropWindow()
@@ -48,6 +49,11 @@ void ImageCropWindow::loadImage()
 {
     if(_r_item_)
     {
+        if(_s_item_)
+        {
+            _scene_->removeItem(_s_item_);
+            delete _s_item_;
+        }
         _scene_->removeItem(_r_item_);
         delete _r_item_;
     }
@@ -65,9 +71,12 @@ void ImageCropWindow::loadImage()
     _scene_->loadPixmap(bg);
     _item_ = new CropItem();
     _r_item_ = new ResizeItem(_item_);
+    _s_item_ = new ShadowItem(_r_item_);
     connect(_item_,&CropItem::sendNewRadius,this,&ImageCropWindow::nonManualRadChanged);
     _scene_->addItem(_item_);
     _scene_->addItem(_r_item_);
+    _scene_->addItem(_s_item_);
+    _r_item_->setShadowItem(_s_item_);
     QRectF scene_r(_scene_->sceneRect());
     _item_->setPos(scene_r.center());
     return;
@@ -537,9 +546,10 @@ void CropScene::drawBackground(QPainter* painter, const QRectF & rect)
     return;
 }
 
-ResizeItem::ResizeItem(CropItem* tata, qreal thickness):QGraphicsItem(tata),_thickness_(thickness)
+ResizeItem::ResizeItem(CropItem* tata, qreal thickness):
+    QGraphicsItem(tata),_main_item_(tata),_thickness_(thickness)
 {
-    _main_item_ = tata;
+    _shadow_ = nullptr;
     setFlags(ItemIsMovable|ItemIgnoresParentOpacity);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     return;
@@ -682,6 +692,7 @@ void ResizeItem::paint(QPainter* painter,
     painter->setBrush(brush);
     painter->drawPath(path);
     painter->restore();
+    return;
 }
 
 void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
@@ -697,6 +708,10 @@ void ResizeItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
     qreal diff = new_dist - old_dist;
     _main_item_->moveRadius(diff);
     update();
+    if(_shadow_)
+    {
+        _shadow_->update();
+    }
     return;
 }
 
@@ -704,10 +719,142 @@ void ResizeItem::setThickness(qreal val)
 {
     prepareGeometryChange();
     _thickness_ = val;
+    if(_shadow_)
+        _shadow_->update();
     return;
+}
+
+char ResizeItem::mainGeomType() const
+{
+    return _main_item_->geometryType();
+}
+
+qreal ResizeItem::radius() const
+{
+    return _main_item_->radius()+
+            DEF_OUTLINE+
+            _thickness_+
+            DEF_CONTROL_OUTLINE;
 }
 
 void ResizeItem::setSize(qreal radius)
 {
     _main_item_->setRadius(radius);
+    if(_shadow_)
+        _shadow_->update();
+    return;
+}
+
+void ResizeItem::setShadowItem(ShadowItem* sh_item)
+{
+    _shadow_ = sh_item;
+    _shadow_->update();
+    return;
+}
+
+ShadowItem::ShadowItem(ResizeItem* resize_item)
+{
+    _res_item_ = resize_item;
+    setFlags(ItemIgnoresParentOpacity);
+    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+    return;
+}
+
+
+QRectF ShadowItem::boundingRect() const
+{
+    return scene()->sceneRect();
+}
+QPainterPath ShadowItem::shape() const
+{
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addRect(scene()->sceneRect());
+    char geom = _res_item_->mainGeomType();
+    switch(geom)
+    {
+    case CropItem::Geometry::CI_CIRCLE:
+    {
+        path.addEllipse(mapFromScene(_res_item_->scenePos()),
+                        _res_item_->radius(),
+                        _res_item_->radius());
+    }
+        break;
+    case CropItem::Geometry::CI_SQUARE:
+    {
+        QPointF cur_pos(mapFromScene(_res_item_->scenePos()));
+        qreal radius = _res_item_->radius();
+        path.addRect(cur_pos.x()-radius,
+                     cur_pos.y()-radius,
+                     radius*2,
+                     radius*2);
+    }
+        break;
+    case CropItem::Geometry::CI_TRIANGLE:
+    {
+        QPointF cur_pos(mapFromScene(_res_item_->scenePos()));
+        qreal radius = _res_item_->radius();
+        QRectF rect(cur_pos.x()-radius,
+                    cur_pos.y()-radius,
+                    radius*2,
+                    radius*2);
+        QPolygonF polygon;
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.y())<<
+                 rect.bottomRight()<<rect.bottomLeft();
+        path.addPolygon(polygon);
+    }
+        break;
+    }
+    return path;
+}
+void ShadowItem::paint(QPainter* painter,
+           const QStyleOptionGraphicsItem* option,
+           QWidget* widget)
+{
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+    QColor color(Qt::black);
+    color.setAlpha(80);
+    QBrush brush(color);
+
+    QPainterPath path;
+    path.setFillRule(Qt::OddEvenFill);
+    path.addRect(scene()->sceneRect());
+    char m_geometry = _res_item_->mainGeomType();
+    if(m_geometry == CropItem::Geometry::CI_CIRCLE)
+    {
+        path.addEllipse(mapFromScene(_res_item_->scenePos()),
+                        _res_item_->radius(),
+                        _res_item_->radius());
+    }
+    else if(m_geometry==CropItem::Geometry::CI_SQUARE)
+    {
+        QPointF cur_pos(mapFromScene(_res_item_->scenePos()));
+        qreal radius = _res_item_->radius();
+        path.addRect(cur_pos.x()-radius,
+                     cur_pos.y()-radius,
+                     radius*2,
+                     radius*2);
+    }
+    else if(m_geometry==CropItem::Geometry::CI_TRIANGLE)
+    {
+        QPointF cur_pos(mapFromScene(_res_item_->scenePos()));
+        qreal radius = _res_item_->radius();
+        QRectF rect(cur_pos.x()-radius,
+                    cur_pos.y()-radius,
+                    radius*2,
+                    radius*2);
+        QPolygonF polygon;
+        polygon<<rect.bottomLeft()<<
+                 QPointF(rect.center().x(),rect.y())<<
+                 rect.bottomRight()<<rect.bottomLeft();
+        path.addPolygon(polygon);
+    }
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(brush);
+    painter->drawPath(path);
+    painter->restore();
 }

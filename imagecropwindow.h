@@ -16,15 +16,20 @@
 #include <QGraphicsSceneMouseEvent>
 
 class CropItem;
+class ShadowItem;
 
 class ResizeItem:public QGraphicsItem
 {
 public:
     ResizeItem(CropItem* tata, qreal thickness = DEF_CONTROL_RADIUS);
     void setSize(qreal radius);
+    void setShadowItem(ShadowItem* sh_item);
     void setThickness(qreal val);
+    qreal radius() const;
+    char mainGeomType() const;
 private:
     CropItem* _main_item_;
+    ShadowItem* _shadow_;
     qreal _thickness_;
 protected:
     QRectF boundingRect() const override;
@@ -33,6 +38,21 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
+};
+
+class ShadowItem:public QGraphicsItem
+{
+private:
+    ResizeItem* _res_item_;
+public:
+    ShadowItem(ResizeItem* resize_item);
+protected:
+    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
+
 };
 
 class CropItem:public QGraphicsObject
@@ -98,6 +118,7 @@ private:
     CropScene* _scene_;
     CropItem* _item_;
     ResizeItem* _r_item_;
+    ShadowItem* _s_item_;
     QPixmap getIMG();
 private slots:
     void chooseFile();
