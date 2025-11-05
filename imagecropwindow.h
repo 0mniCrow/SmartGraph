@@ -78,6 +78,7 @@ public:
     QPointF sceneCenterPoint() const;
 signals:
     void sendNewRadius(qreal new_radius);
+    void itemMoved();
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -129,6 +130,7 @@ private slots:
     void thicknessChanged(int val);
     void resThicknessChanged(int val);
     void geometryChange(int geometry);
+    void updateShadow();
 };
 
 #endif // IMAGECROPWINDOW_H

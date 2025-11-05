@@ -60,6 +60,7 @@ void ImageCropWindow::loadImage()
     if(_item_)
     {       
         disconnect(_item_,&CropItem::sendNewRadius,this,&ImageCropWindow::nonManualRadChanged);
+        disconnect(_item_,&CropItem::itemMoved,this,&ImageCropWindow::updateShadow);
         _scene_->removeItem(_item_);
         delete _item_;
     }
@@ -73,6 +74,7 @@ void ImageCropWindow::loadImage()
     _r_item_ = new ResizeItem(_item_);
     _s_item_ = new ShadowItem(_r_item_);
     connect(_item_,&CropItem::sendNewRadius,this,&ImageCropWindow::nonManualRadChanged);
+    connect(_item_,&CropItem::itemMoved,this,&ImageCropWindow::updateShadow);
     _scene_->addItem(_item_);
     _scene_->addItem(_r_item_);
     _scene_->addItem(_s_item_);
@@ -221,6 +223,19 @@ void ImageCropWindow::geometryChange(int geometry)
     {
         _r_item_->update();
     }
+    if(_s_item_)
+    {
+        _s_item_->update();
+    }
+    return;
+}
+
+void ImageCropWindow::updateShadow()
+{
+    if(_s_item_)
+    {
+        _s_item_->update();
+    }
     return;
 }
 
@@ -289,6 +304,7 @@ QVariant CropItem::itemChange(GraphicsItemChange change, const QVariant& value)
     case ItemPositionHasChanged:
     {
         checkBorders();
+        emit itemMoved();
     }
         break;
     default:
