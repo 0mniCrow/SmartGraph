@@ -10,6 +10,8 @@ CONFIG += c++17
 
 SOURCES += \
     Graph_algorithms.cpp \
+    graphic_elements/abstractelement.cpp \
+    graphic_elements/abstractobjectinfo.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexView.cpp \
     gviewedge.cpp \
@@ -28,6 +30,8 @@ SOURCES += \
 HEADERS += \
     Graph_algorithms.h \
     Graph_algorithms_supply.h \
+    graphic_elements/abstractelement.h \
+    graphic_elements/abstractobjectinfo.h \
     gview_tableVertexModel.h \
     gview_tableVertexView.h \
     gviewedge.h \
