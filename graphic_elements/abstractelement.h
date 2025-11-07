@@ -2,9 +2,11 @@
 #define ABSTRACTELEMENT_H
 #include <QVariant>
 #include <QString>
+#include <QObject>
 
-class AbstractElement
+class AbstractElement:public QObject
 {
+    Q_OBJECT
 private:
     QString _element_name_;
     char _element_type_;
@@ -22,7 +24,7 @@ public:
     virtual QVariant& rvalue() = 0;
     virtual void setValue(const QVariant& new_val, bool inform_signal = true) = 0;
     QString elementName() const;
-    void setElementType(const QString& new_name);
+    void setElementName(const QString& new_name);
     char elementType() const;
     void setElementType(char type);
 signals:

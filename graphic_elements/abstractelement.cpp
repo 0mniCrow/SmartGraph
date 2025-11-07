@@ -19,7 +19,7 @@ QString AbstractElement::elementName() const
     return _element_name_;
 }
 
-void AbstractElement::setElementType(const QString& new_name)
+void AbstractElement::setElementName(const QString& new_name)
 {
     _element_name_ = new_name;
     return;
