@@ -12,6 +12,7 @@ SOURCES += \
     Graph_algorithms.cpp \
     graphic_elements/abstractelement.cpp \
     graphic_elements/abstractobjectinfo.cpp \
+    graphic_elements/nameelement.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexView.cpp \
     gviewedge.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     Graph_algorithms_supply.h \
     graphic_elements/abstractelement.h \
     graphic_elements/abstractobjectinfo.h \
+    graphic_elements/nameelement.h \
     gview_tableVertexModel.h \
     gview_tableVertexView.h \
     gviewedge.h \

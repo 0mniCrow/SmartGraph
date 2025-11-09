@@ -24,6 +24,7 @@ protected:
     virtual void destroyElement(AbstractElement* element) = 0;
     virtual QWidget* createInfoWindow() = 0;
     virtual void destroyInfoWindow() = 0;
+    virtual bool eventFilter(QObject* obj, QEvent *event) override;
 public:
     enum InfoObjectType{IO_Default = 0};
     AbstractObjectInfo();
@@ -40,7 +41,7 @@ public:
     int curElementNum() const;
     QVariant curValue() const;
     QString curElementName() const;
-    AbstractElement::ElementType curElementType() const;
+    char curElementType() const;
     AbstractElement* curElement() const;
     AbstractObjectInfo& operator++();
     AbstractObjectInfo& operator--();
@@ -48,29 +49,29 @@ public:
     AbstractObjectInfo& operator-(int len);
     bool append(const QString& element_name,
                 const QVariant& value = QVariant(),
-                AbstractElement::ElementType element_type = AbstractElement::ET_Default);
+                char element_type = AbstractElement::ET_Default);
     bool appendAt(int num,
                      const QString& element_name,
                      const QVariant& value = QVariant(),
-                     AbstractElement::ElementType element_type = AbstractElement::ET_Default);
+                     char element_type = AbstractElement::ET_Default);
     bool appendAfter(const QString& element_name,
                      const QString& new_element_name,
                      const QVariant& value = QVariant(),
-                     AbstractElement::ElementType element_type = AbstractElement::ET_Default);
+                     char element_type = AbstractElement::ET_Default);
     bool destroyAt(int num);
     bool destroy(const QString& element_name);
     void clear();
     bool setValue(const QString& element_name, const QVariant& new_val);
     bool setValue(int num, const QVariant& new_val);
-    QVariant& operator[](int num);
-    QVariant& operator()(const QString& element_name);
+    QVariant operator[](int num);
+    QVariant operator()(const QString& element_name);
     QMap<int,QString> getNames() const;
     bool changeName(const QString& cur_name, const QString& new_name);
     bool changeName(int num, const QString& new_name);
-    AbstractElement::ElementType widgetType(const QString& element_name) const;
-    AbstractElement::ElementType widgetType(int num) const;
-    bool setWidgetType(const QString& element_name, AbstractElement::ElementType element_type);
-    bool setWidgetType(int num, AbstractElement::ElementType element_type);
+    char widgetType(const QString& element_name) const;
+    char widgetType(int num) const;
+    bool setWidgetType(const QString& element_name, char element_type);
+    bool setWidgetType(int num, char element_type);
     bool swapElements(const QString& first_name, const QString& sec_name);
     bool swapElements(int first_num, int sec_num);
     QWidget * getInfoWidget() const;

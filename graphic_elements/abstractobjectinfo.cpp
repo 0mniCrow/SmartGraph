@@ -111,7 +111,7 @@ AbstractElement* AbstractObjectInfo::elementAt(const QString& element_name) cons
 
 bool AbstractObjectInfo::append(const QString& element_name,
                                 const QVariant& value,
-                                AbstractElement::ElementType element_type)
+                                char element_type)
 {
     if(findElement(element_name))
     {
@@ -133,7 +133,7 @@ bool AbstractObjectInfo::append(const QString& element_name,
 bool AbstractObjectInfo::appendAt(int num,
                  const QString& element_name,
                  const QVariant& value,
-                 AbstractElement::ElementType element_type)
+                 char element_type)
 {
     if(!inSize(num))
     {
@@ -154,7 +154,7 @@ bool AbstractObjectInfo::appendAt(int num,
 bool AbstractObjectInfo::appendAfter(const QString& element_name,
                  const QString& new_element_name,
                  const QVariant& value,
-                 AbstractElement::ElementType element_type)
+                 char element_type)
 {
     if(findElement(new_element_name))
     {
@@ -244,15 +244,15 @@ bool AbstractObjectInfo::setValue(int num, const QVariant& new_val)
     return true;
 }
 
-QVariant& AbstractObjectInfo::operator[](int num)
+QVariant AbstractObjectInfo::operator[](int num)
 {
-    return _elements_.at(num)->rvalue();
+    return _elements_.at(num)->value();
     //Небяспечны метад - выкарыстоўваць з увагай
 }
 
-QVariant& AbstractObjectInfo::operator()(const QString& element_name)
+QVariant AbstractObjectInfo::operator ()(const QString& element_name)
 {
-    return findElement(element_name)->rvalue();
+    return findElement(element_name)->value();
     //Небяспечны метад - выкарыстоўваць з вельмі ўважлівай увагай
 }
 
@@ -299,7 +299,7 @@ bool AbstractObjectInfo::changeName(int num, const QString& new_name)
     return true;
 }
 
-AbstractElement::ElementType AbstractObjectInfo::widgetType(const QString& element_name) const
+char AbstractObjectInfo::widgetType(const QString& element_name) const
 {
     AbstractElement* elem = findElement(element_name);
     if(!elem)
@@ -309,7 +309,7 @@ AbstractElement::ElementType AbstractObjectInfo::widgetType(const QString& eleme
     return elem->elementType();
 }
 
-AbstractElement::ElementType AbstractObjectInfo::widgetType(int num) const
+char AbstractObjectInfo::widgetType(int num) const
 {
     if(!inSize(num))
     {
@@ -318,7 +318,7 @@ AbstractElement::ElementType AbstractObjectInfo::widgetType(int num) const
     return _elements_.at(num)->elementType();
 }
 
-bool AbstractObjectInfo::setWidgetType(const QString& element_name, AbstractElement::ElementType element_type)
+bool AbstractObjectInfo::setWidgetType(const QString& element_name, char element_type)
 {
     AbstractElement* elem = findElement(element_name);
     if(!elem)
@@ -329,7 +329,7 @@ bool AbstractObjectInfo::setWidgetType(const QString& element_name, AbstractElem
     return true;
 }
 
-bool AbstractObjectInfo::setWidgetType(int num, AbstractElement::ElementType element_type)
+bool AbstractObjectInfo::setWidgetType(int num, char element_type)
 {
     if(!inSize(num))
     {
@@ -362,7 +362,7 @@ QString AbstractObjectInfo::curElementName() const
     return _elements_.at(_active_element_)->elementName();
 }
 
-AbstractElement::ElementType AbstractObjectInfo::curElementType() const
+char AbstractObjectInfo::curElementType() const
 {
     if(!inSize(_active_element_))
     {
@@ -461,4 +461,18 @@ bool AbstractObjectInfo::swapElements(int first_num, int sec_num)
 QWidget *AbstractObjectInfo::getInfoWidget() const
 {
     return _info_widget_;
+}
+
+bool AbstractObjectInfo::eventFilter(QObject* obj, QEvent *event)
+{
+    AbstractElement* elem = findElement(obj->objectName());
+    if(elem)
+    {
+       switch(elem->elementType())
+       {
+            //Трэба перавызначыць гэты метад для атожылкавых класаў
+       }
+       return true;
+    }
+    return QObject::eventFilter(obj,event);
 }

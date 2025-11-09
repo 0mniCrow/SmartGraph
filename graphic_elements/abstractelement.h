@@ -2,7 +2,8 @@
 #define ABSTRACTELEMENT_H
 #include <QVariant>
 #include <QString>
-#include <QObject>
+#include <QWidget>
+//#include <QObject>
 
 class AbstractElement:public QObject
 {
@@ -16,25 +17,27 @@ public:
                      ET_ComboBox = 4,
                      ET_Slider = 5,
                      ET_End = 6};
-    explicit AbstractElement(const QString& element_name, ElementType element_type = ET_Default);
+    explicit AbstractElement(const QString& element_name, char element_type = ET_Default);
     virtual ~AbstractElement();
     virtual QVariant value() const = 0;
-    virtual QVariant& rvalue() = 0;
     virtual void setValue(const QVariant& new_val, bool inform_signal = true) = 0;
     QString elementName() const;
     void setElementName(const QString& new_name);
-    ElementType elementType() const;
-    void setElementType(ElementType type);
+    virtual char elementType() const;
+    void setElementType(char type);
+    virtual QWidget* generateWidget() = 0;  //Метад разлічаны на тое, што
+                                            //іншы элемент возьме кантроль над ім (выдаліць)
 signals:
-    void valueChanged(const QVariant& new_val);
-    void elementChanged(const QString& element_name, const QVariant& new_val);
+    //void valueChanged(const QVariant& new_val);
+    void elementChanged(const QString& element_name, QVariant new_val);
     void elementDestroyed(QString element_name);
 public slots:
     virtual void changeElement(QVariant new_val, bool inform_signal = true) = 0;
-private:
+    //virtual void saveValue() = 0;
+    virtual void setEditable(bool state) = 0;
+protected:
     QString _element_name_;
-    ElementType _element_type_;
-
+    char _element_type_;
 };
 
 #endif // ABSTRACTELEMENT_H

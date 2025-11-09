@@ -1,8 +1,7 @@
 #include "abstractelement.h"
 
-AbstractElement::AbstractElement(
-        const QString &element_name,
-        ElementType element_type):
+AbstractElement::AbstractElement(const QString &element_name,
+        char element_type):
     _element_name_(element_name),
     _element_type_(element_type)
 {
@@ -25,12 +24,12 @@ void AbstractElement::setElementName(const QString& new_name)
     return;
 }
 
-AbstractElement::ElementType AbstractElement::elementType() const
+char AbstractElement::elementType() const
 {
     return _element_type_;
 }
 
-void AbstractElement::setElementType(ElementType type)
+void AbstractElement::setElementType(char type)
 {
     _element_type_ = type;
     return;
