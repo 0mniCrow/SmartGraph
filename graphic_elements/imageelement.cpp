@@ -67,12 +67,61 @@ QWidget* ImageElement::generateWidget()
 
 QWidget* ImageElement::generatePic(char picture_type)
 {
-    //!Зрабіць: Скарыстацца класам imagecropwindow каб стварыць спецыяльныя абсячэнні.
+    if(picture_type == PT_Default)
+    {
+        return generateWidget();
+    }
+
+    QLabel* picture = new QLabel();
+    bool square = _value_.height()==_value_.width();
+    QPixmap sourcePic;
+    if(!square)
+    {
+        int scale_val = std::min(_value_.height(),_value_.width());
+        sourcePic = _value_.scaled(scale_val,scale_val,Qt::IgnoreAspectRatio);
+    }
+    else
+    {
+        sourcePic = _value_;
+    }
+
+    if(picture_type == PT_RoundIcon||
+            picture_type == PT_SquareIcon ||
+            picture_type == PT_TriangleIcon)
+    {
+        picture->setFixedSize(ICON_SIZE,ICON_SIZE);
+        sourcePic = sourcePic.scaled(ICON_SIZE,ICON_SIZE,Qt::KeepAspectRatio);
+    }
+    QImage resultPic(sourcePic.size(),QImage::Format_ARGB32_Premultiplied);
+    resultPic.fill(Qt::transparent);
+    QPainter painter(&resultPic);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(QBrush(QColor(255,0,0)));
+    QRect rect = sourcePic.rect();
     switch(picture_type)
     {
-    case PT_Default:
+    case PT_RoundIcon:
+    case PT_RoundPic:
     {
-
+        painter.drawEllipse(rect.center(),rect.width()/2,rect.height()/2);
+    }
+        break;
+    case PT_SquareIcon:
+    case PT_SquarePic:
+    {
+        painter.drawRect(rect);
+    }
+        break;
+    case PT_TriangleIcon:
+    case PT_TrianglePic:
+    {
+        painter.drawPolygon(
+                        QPolygon()<<
+                        rect.bottomLeft()<<
+                        QPoint(rect.center().x(),0)<<
+                        rect.bottomRight());
     }
         break;
     default:
@@ -80,8 +129,14 @@ QWidget* ImageElement::generatePic(char picture_type)
 
     }
     }
-    return nullptr;
+    painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    painter.drawPixmap(0,0,sourcePic);
+    painter.end();
+    picture->setPixmap(QPixmap::fromImage(resultPic));
+    picture->setObjectName(_element_name_);
+    return picture;
 }
+
 void ImageElement::setImage(const QImage& image, const QRect& rect)
 {
     QPixmap pixmap(QPixmap::fromImage(image));
@@ -95,6 +150,7 @@ void ImageElement::setImage(const QImage& image, const QRect& rect)
     }
     return;
 }
+
 void ImageElement::setImage(const QPixmap& pixmap, qreal radius, const QPointF& central_point)
 {
     //!TODO:

@@ -1,8 +1,11 @@
 #ifndef IMAGEELEMENT_H
 #define IMAGEELEMENT_H
+#define ICON_SIZE 64
 #include <QPixmap>
 #include <QImage>
 #include <QLabel>
+#include <QPainter>
+#include <QPainterPath>
 #include "abstractelement.h"
 
 class ImageElement:public AbstractElement
