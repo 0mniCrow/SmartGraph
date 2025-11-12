@@ -13,6 +13,7 @@ SOURCES += \
     graphic_elements/abstractelement.cpp \
     graphic_elements/abstractobjectinfo.cpp \
     graphic_elements/imageelement.cpp \
+    graphic_elements/infoelement.cpp \
     graphic_elements/nameelement.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexView.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     graphic_elements/abstractelement.h \
     graphic_elements/abstractobjectinfo.h \
     graphic_elements/imageelement.h \
+    graphic_elements/infoelement.h \
     graphic_elements/nameelement.h \
     gview_tableVertexModel.h \
     gview_tableVertexView.h \

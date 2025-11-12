@@ -27,8 +27,8 @@ public:
     char elementType() const override;
     QWidget* generateWidget() override;
     QWidget* generatePic(char picture_type);
-    void setImage(const QImage& image, const QRect& rect= QRect());
-    void setImage(const QPixmap& pixmap, qreal radius, const QPointF& central_point= QPointF());
+    void setImage(const QImage& image, const QRect& rect= QRect(), bool inform_signal = true);
+    void setImage(const QPixmap& pixmap, int side_size, bool keep_aspect_ratio = true, bool inform_signal = true);
 public slots:
     void changeElement(QVariant new_val, bool inform_signal = true) override;
     void setEditable(bool state) override;

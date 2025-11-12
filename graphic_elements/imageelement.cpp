@@ -137,7 +137,7 @@ QWidget* ImageElement::generatePic(char picture_type)
     return picture;
 }
 
-void ImageElement::setImage(const QImage& image, const QRect& rect)
+void ImageElement::setImage(const QImage& image, const QRect& rect,bool inform_signal)
 {
     QPixmap pixmap(QPixmap::fromImage(image));
     if(!rect.isNull())
@@ -148,18 +148,39 @@ void ImageElement::setImage(const QImage& image, const QRect& rect)
     {
         _value_ = std::move(pixmap);
     }
+    if(inform_signal)
+    {
+        emit elementChanged(elementName(),QVariant::fromValue(_value_));
+    }
     return;
 }
 
-void ImageElement::setImage(const QPixmap& pixmap, qreal radius, const QPointF& central_point)
+void ImageElement::setImage(const QPixmap& pixmap, int side_size, bool keep_aspect_ratio, bool inform_signal)
 {
-    //!TODO:
+    if(pixmap.height()==side_size && pixmap.width()==side_size)
+    {
+        _value_ = pixmap;
+        if(inform_signal)
+        {
+            emit elementChanged(elementName(),QVariant::fromValue(_value_));
+        }
+        return;
+    }
+
+    _value_ = pixmap.scaled(side_size,side_size,
+                            keep_aspect_ratio? Qt::KeepAspectRatio:
+                                              Qt::IgnoreAspectRatio,
+                            Qt::SmoothTransformation);
+    if(inform_signal)
+    {
+        emit elementChanged(elementName(),QVariant::fromValue(_value_));
+    }
     return;
 }
 
 void ImageElement::changeElement(QVariant new_val, bool inform_signal)
 {
-    //!TODO:
+    setValue(new_val,inform_signal);
     return;
 }
 
