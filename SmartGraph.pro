@@ -12,6 +12,7 @@ SOURCES += \
     Graph_algorithms.cpp \
     graphic_elements/abstractelement.cpp \
     graphic_elements/abstractobjectinfo.cpp \
+    graphic_elements/dateelement.cpp \
     graphic_elements/imageelement.cpp \
     graphic_elements/infoelement.cpp \
     graphic_elements/nameelement.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     Graph_algorithms_supply.h \
     graphic_elements/abstractelement.h \
     graphic_elements/abstractobjectinfo.h \
+    graphic_elements/dateelement.h \
     graphic_elements/imageelement.h \
     graphic_elements/infoelement.h \
     graphic_elements/nameelement.h \

@@ -2,7 +2,9 @@
 
 InfoElement::InfoElement(const QString &element_name,
                          char element_type):
-    AbstractElement(element_name,element_type)
+    AbstractElement(element_name,element_type),
+    _useHTML_(false),
+    _readOnly_(false)
 {
     return;
 }
@@ -12,7 +14,8 @@ InfoElement::InfoElement(const QString& element_name,
                          char element_type):
     AbstractElement(element_name,element_type),
     _value_(text),
-    _useHTML_(formatHTML)
+    _useHTML_(formatHTML),
+    _readOnly_(false)
 {
     return;
 }
@@ -20,7 +23,8 @@ InfoElement::InfoElement(const QString& element_name,
                          const QVariant& text, bool formatHTML,
                          char element_type):
     AbstractElement(element_name,element_type),
-    _useHTML_(formatHTML)
+    _useHTML_(formatHTML),
+    _readOnly_(false)
 {
     if(text.canConvert<QString>())
     {
@@ -54,6 +58,7 @@ char InfoElement::elementType() const
 {
     return ET_RichTextElement;
 }
+
 QWidget* InfoElement::generateWidget()
 {
     QTextEdit* textEditor;

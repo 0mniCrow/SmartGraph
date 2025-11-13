@@ -25,8 +25,8 @@ public:
     void setElementName(const QString& new_name);
     virtual char elementType() const;
     void setElementType(char type);
-    virtual QWidget* generateWidget() = 0;  //Метад разлічаны на тое, што
-                                            //іншы элемент возьме кантроль над ім (выдаліць)
+    [[nodiscard]] virtual QWidget* generateWidget() = 0;  //Метад разлічаны на тое, што
+                                                            //іншы элемент возьме кантроль над ім (выдаліць)
 signals:
     //void valueChanged(const QVariant& new_val);
     void elementChanged(const QString& element_name, QVariant new_val);
