@@ -1,6 +1,12 @@
 #ifndef DATEELEMENT_H
 #define DATEELEMENT_H
 #include "abstractelement.h"
+#include <QSpinBox>
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <cfenv>
 
 class DateElement:public AbstractElement
 {
@@ -29,6 +35,7 @@ private:
     uint _cur_month_day_;
     uint _cur_month_;
     uint _cur_year_;
+    bool _read_only_;
 
     uint calculateWeekDay() const;
     uint dayOfTheYear() const;

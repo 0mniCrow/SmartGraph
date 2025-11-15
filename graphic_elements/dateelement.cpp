@@ -7,7 +7,11 @@ uint DateElement::_days_in_year_ = 0;
 
 DateElement::DateElement(const QString &element_name,
                          char element_type):
-    AbstractElement(element_name,element_type)
+    AbstractElement(element_name,element_type),
+    _cur_month_day_(0),
+    _cur_month_(0),
+    _cur_year_(0),
+    _read_only_(false)
 {
 
 }
@@ -20,6 +24,18 @@ uint DateElement::calculateWeekDay() const
     {
         passDays = _cur_year_*_days_in_year_;
     }
+    const int saveround = std::fegetround();
+    std::fesetround(FE_TOWARDZERO);
+    for(Loc_Month& month: _months_)
+    {
+        if(month._leap_period_)
+        {
+            int leaps = std::rint(static_cast<double>(_cur_year_)/
+                    static_cast<double>(month._leap_period_));
+            passDays-=leaps;
+        }
+    }
+    std::fesetround(saveround);
     passDays+=dayOfTheYear();
     if(_starting_weekday_)
     {
@@ -35,6 +51,13 @@ uint DateElement::dayOfTheYear() const
     for(uint i = 1; i<_cur_month_;i++)
     {
         passDays+=_months_.at(i-1)._length_;
+        if(_months_.at(toIndex(i))._leap_period_)
+        {
+            if(!(_cur_year_%_months_.at(toIndex(i))._leap_period_))
+            {
+                --passDays;
+            }
+        }
     }
     passDays+=_cur_month_day_;
     return passDays;
@@ -416,7 +439,57 @@ char DateElement::elementType() const
 
 QWidget* DateElement::generateWidget()
 {
-    //!TODO: распрацаваць віджэт для даты спін-бокс/комба-бокс/спін_бокс
-    QWidget * widget = nullptr;
-    return widget;
+    if(!checkDates())
+        return nullptr;
+
+    if(_read_only_)
+    {
+        QLabel* date = new QLabel();
+        date->setObjectName(elementName());
+        QString info = QString::number(_cur_month_day_)+
+                "'га "+_months_.at(toIndex(_cur_month_))._name_+" "+
+                QString::number(_cur_year_)+" года";
+        date->setText(info);
+        return date;
+    }
+
+    QGroupBox* container = new QGroupBox();
+    QHBoxLayout* layout = new QHBoxLayout();
+    QSpinBox* date = new QSpinBox();
+    QComboBox* month = new QComboBox();
+    QSpinBox* year = new QSpinBox();
+    container->setObjectName(elementName());
+    date->setObjectName(elementName()+QString("_date"));
+    month->setObjectName(elementName()+QString("_month"));
+    year->setObjectName(elementName()+QString("_year"));
+    date->setMinimum(1);
+    date->setMaximum(_months_.at(toIndex(_cur_month_))._length_);
+    for(Loc_Month& m_name:_months_)
+    {
+        month->addItem(m_name._name_);
+    }
+    year->setMinimum(0);
+    year->setMaximum(99999);
+
+    date->setValue(_cur_month_day_);
+    month->setCurrentIndex(toIndex(_cur_month_));
+    year->setValue(_cur_year_);
+    layout->addWidget(date);
+    layout->addWidget(month);
+    layout->addWidget(year);
+    container->setFlat(true);
+    container->setLayout(layout);
+    return container;
+}
+
+void DateElement::changeElement(QVariant new_val, bool inform_signal)
+{
+    setValue(new_val,inform_signal);
+    return;
+}
+
+void DateElement::setEditable(bool state)
+{
+    _read_only_ = state;
+    return;
 }
