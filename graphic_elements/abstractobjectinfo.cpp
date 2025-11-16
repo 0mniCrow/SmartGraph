@@ -463,16 +463,16 @@ QWidget *AbstractObjectInfo::getInfoWidget() const
     return _info_widget_;
 }
 
-bool AbstractObjectInfo::eventFilter(QObject* obj, QEvent *event)
-{
-    AbstractElement* elem = findElement(obj->objectName());
-    if(elem)
-    {
-       switch(elem->elementType())
-       {
-            //Трэба перавызначыць гэты метад для атожылкавых класаў
-       }
-       return true;
-    }
-    return QObject::eventFilter(obj,event);
-}
+//bool AbstractObjectInfo::eventFilter(QObject* obj, QEvent *event)
+//{
+//    AbstractElement* elem = findElement(obj->objectName());
+//    if(elem)
+//    {
+//       switch(elem->elementType())
+//       {
+//            //Трэба перавызначыць гэты метад для атожылкавых класаў
+//       }
+//       return true;
+//    }
+//    return QObject::eventFilter(obj,event);
+//}

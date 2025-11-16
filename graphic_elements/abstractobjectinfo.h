@@ -18,13 +18,13 @@ private:
     int findElementNum(const QString& el_name) const;
     bool inSize(int num) const;
 protected:
-    virtual AbstractElement* createElement(const QString& element_name,
+    [[nodiscard]] virtual AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
                                            char element_type = AbstractElement::ET_Default) = 0;
     virtual void destroyElement(AbstractElement* element) = 0;
-    virtual QWidget* createInfoWindow() = 0;
+    [[nodiscard]] virtual QWidget* createInfoWindow() = 0;
     virtual void destroyInfoWindow() = 0;
-    virtual bool eventFilter(QObject* obj, QEvent *event) override;
+    //virtual bool eventFilter(QObject* obj, QEvent *event) override;
 public:
     enum InfoObjectType{IO_Default = 0};
     AbstractObjectInfo();
@@ -74,7 +74,7 @@ public:
     bool setWidgetType(int num, char element_type);
     bool swapElements(const QString& first_name, const QString& sec_name);
     bool swapElements(int first_num, int sec_num);
-    QWidget * getInfoWidget() const;
+    [[nodiscard]] QWidget * getInfoWidget() const;
 public slots:
     virtual void elementValueChanged(const QString& element_name,
                                      const QVariant& value,
