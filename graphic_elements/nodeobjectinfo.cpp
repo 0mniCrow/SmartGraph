@@ -8,17 +8,53 @@ NodeObjectInfo::NodeObjectInfo()
                                        const QVariant& value,
                                        char element_type)
 {
-
+    if(isExist(element_name))
+    {
+        return nullptr;
+    }
+    AbstractElement* element = nullptr;
+    switch(element_type)
+    {
+    case NameElement::ET_NameElement:
+    {
+        element = new NameElement(element_name);
+    }
+        break;
+    case ImageElement::ET_PictureElement:
+    {
+        element = new ImageElement(element_name);
+    }
+        break;
+    case InfoElement::ET_RichTextElement:
+    {
+        element = new InfoElement(element_name);
+    }
+        break;
+    case DateElement::ET_DateElement:
+    {
+        element = new DateElement(element_name);
+    }
+        break;
+    default:
+    {
+        return nullptr;
+    }
+    }
+    element->setValue(value,false);
+    return element;
 }
 
 void NodeObjectInfo::destroyElement(AbstractElement* element)
 {
-
+    delete element;
+    return;
 }
 
 [[nodiscard]] QWidget* NodeObjectInfo::createInfoWindow()
 {
-
+    //Трэба стварыць асобны карыстальніцкі клас акна,
+    //які будзе аўтаматычна падлучаць сігналы сваех
+    //элементаў зь бягучым інфа-класам
 }
 
 void NodeObjectInfo::destroyInfoWindow()
