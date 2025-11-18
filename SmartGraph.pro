@@ -15,6 +15,7 @@ SOURCES += \
     graphic_elements/dateelement.cpp \
     graphic_elements/imageelement.cpp \
     graphic_elements/infoelement.cpp \
+    graphic_elements/infowidget.cpp \
     graphic_elements/nameelement.cpp \
     graphic_elements/nodeobjectinfo.cpp \
     gview_tableVertexModel.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     graphic_elements/dateelement.h \
     graphic_elements/imageelement.h \
     graphic_elements/infoelement.h \
+    graphic_elements/infowidget.h \
     graphic_elements/nameelement.h \
     graphic_elements/nodeobjectinfo.h \
     gview_tableVertexModel.h \
