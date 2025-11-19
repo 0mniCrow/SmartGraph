@@ -10,6 +10,7 @@
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QComboBox>
+#include <QLayout>
 
 class InfoWidget : public QWidget
 {
@@ -19,13 +20,19 @@ private:
     QTimer _hiding_timer_;
     QMap<QString,QWidget*> _elements_;
     char _flags_;
+    void connectElement(const QString& type, QWidget* element);
+    bool loadValue(const QString& type, QWidget* element, const QVariant& value);
+    static bool isContainerClass(const QString& class_name);
+    static bool isEditableClass(const QString& class_name);
+    static bool isAllowedClass(const QString& class_name);
 public:
-    enum IW_Orientation{IW_Horisontal=1, IW_Vertical};
     explicit InfoWidget(QWidget *parent = nullptr);
     ~InfoWidget();
-    void addElement(QWidget* element, IW_Orientation orientation);
+    void addElement(QWidget* element);
+    void save();
     void setReadOnly(bool mode);
     void setImmediateResponce(bool mode);
+    bool setValue(const QString& element_name, const QVariant& value);
 private slots:
     void catchElementSignal();
 public slots:
