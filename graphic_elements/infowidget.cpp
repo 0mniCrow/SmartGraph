@@ -109,6 +109,59 @@ bool InfoWidget::loadValue(const QString& type, QWidget* element, const QVariant
     return true;
 }
 
+QVariant InfoWidget::getValue(QWidget* widget) const
+{
+    QString type(widget->metaObject()->className());
+    QVariant answer;
+    if(type == "QSpinBox")
+    {
+        QSpinBox* element = qobject_cast<QSpinBox*>(widget);
+        if(element)
+        {
+            answer = QVariant::fromValue(element->value());
+        }
+    }
+    else if(type == "QLineEdit")
+    {
+        QLineEdit* element = qobject_cast<QLineEdit*>(widget);
+        if(element)
+        {
+            answer = QVariant::fromValue(element->text());
+        }
+    }
+    else if(type == "QTextEdit")
+    {
+        QTextEdit* element = qobject_cast<QTextEdit*>(widget);
+        if(element)
+        {
+            answer = QVariant::fromValue(element->toHtml());
+        }
+    }
+    else if(type == "QComboBox")
+    {
+        QComboBox* element = qobject_cast<QComboBox*>(widget);
+        if(element)
+        {
+            answer = QVariant::fromValue(element->currentText());
+        }
+    }
+    else if(type == "QGroupBox")
+    {
+        const QObjectList& elem_list = widget->children();
+        QString str_answer;
+        for(QObject* child:elem_list)
+        {
+            QWidget* child_wgt = qobject_cast<QWidget*>(child);
+            if(child_wgt)
+            {
+                str_answer.append(getValue(child_wgt).toString()+" ");
+            }
+        }
+        answer = QVariant::fromValue(str_answer);
+    }
+    return answer;
+}
+
 void InfoWidget::addElement(QWidget* element)
 {
     QString object_class(element->metaObject()->className());
@@ -159,7 +212,12 @@ bool InfoWidget::setValue(const QString& element_name, const QVariant& value)
 
 void InfoWidget::save()
 {
+    QMap<QString,QWidget*>::const_iterator it = _elements_.cbegin();
+    while(it!=_elements_.cend())
+    {
 
+        it++;
+    }
 }
 
 void InfoWidget::externalElementChange(const QString& element_name,const QVariant& value)

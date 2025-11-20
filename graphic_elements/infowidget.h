@@ -22,6 +22,7 @@ private:
     char _flags_;
     void connectElement(const QString& type, QWidget* element);
     bool loadValue(const QString& type, QWidget* element, const QVariant& value);
+    QVariant getValue(QWidget* widget) const;
     static bool isContainerClass(const QString& class_name);
     static bool isEditableClass(const QString& class_name);
     static bool isAllowedClass(const QString& class_name);
@@ -29,12 +30,13 @@ public:
     explicit InfoWidget(QWidget *parent = nullptr);
     ~InfoWidget();
     void addElement(QWidget* element);
-    void save();
     void setReadOnly(bool mode);
     void setImmediateResponce(bool mode);
     bool setValue(const QString& element_name, const QVariant& value);
 private slots:
     void catchElementSignal();
+    void save();
+    void close();
 public slots:
     void externalElementChange(const QString& element_name,const QVariant& value);
 signals:
