@@ -210,13 +210,31 @@ bool InfoWidget::setValue(const QString& element_name, const QVariant& value)
 
 }
 
-void InfoWidget::save()
+QMap<QString,QVariant> InfoWidget::getValues() const
 {
+    QMap<QString,QVariant> answer;
     QMap<QString,QWidget*>::const_iterator it = _elements_.cbegin();
+
     while(it!=_elements_.cend())
     {
-
+        QVariant value = getValue(it.value());
+        answer.insert(it.key(),value);
         it++;
+    }
+    return answer;
+}
+
+void InfoWidget::save()
+{
+    if(_flags_&IW_ImmediateResponce)
+    {
+        QMap<QString,QWidget*>::const_iterator it = _elements_.cbegin();
+        while(it!=_elements_.cend())
+        {
+            QVariant value = getValue(it.value());
+
+            it++;
+        }
     }
 }
 

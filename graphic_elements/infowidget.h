@@ -33,6 +33,7 @@ public:
     void setReadOnly(bool mode);
     void setImmediateResponce(bool mode);
     bool setValue(const QString& element_name, const QVariant& value);
+    QMap<QString,QVariant> getValues() const;
 private slots:
     void catchElementSignal();
     void save();
@@ -41,6 +42,7 @@ public slots:
     void externalElementChange(const QString& element_name,const QVariant& value);
 signals:
     void elementValueChanged(const QString& element_name, const QVariant& value);
+    void hasChanges();
 
 };
 
