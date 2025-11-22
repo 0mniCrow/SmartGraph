@@ -168,14 +168,14 @@ void InfoWidget::addElement(QWidget* element)
 
     if(isAllowedClass(object_class))
     {
-        _elements_.insert(element->objectName(),element);
+        _elements_.insert(element->objectName(),ObjReinforced(element,getValue(element)));
         layout()->addWidget(element);
     }
-    if((_flags_&IW_ImmediateResponce)&&isEditableClass(object_class))
+    if(isEditableClass(object_class))
     {
         connectElement(object_class,element);
     }
-    if((_flags_&IW_ImmediateResponce)&&isContainerClass(object_class))
+    if(isContainerClass(object_class))
     {
         QList<QObject*> child_elements(element->children());
         for(QObject* child: child_elements)
@@ -200,43 +200,53 @@ void InfoWidget::setImmediateResponce(bool mode)
 
 bool InfoWidget::setValue(const QString& element_name, const QVariant& value)
 {
-    QMap<QString,QWidget*>::iterator it =_elements_.find(element_name);
+    QMap<QString,ObjReinforced>::iterator it =_elements_.find(element_name);
     if(it==_elements_.end())
         return false;
     return loadValue(
-                it.value()->metaObject()->className(),
-                it.value(),
+                it.value()._widget_->metaObject()->className(),
+                it.value()._widget_,
                 value);
 
 }
 
-QMap<QString,QVariant> InfoWidget::getValues() const
+QMap<QString,QVariant> InfoWidget::getValues(bool changed_only) const
 {
     QMap<QString,QVariant> answer;
-    QMap<QString,QWidget*>::const_iterator it = _elements_.cbegin();
+    QMap<QString,ObjReinforced>::const_iterator it = _elements_.cbegin();
 
     while(it!=_elements_.cend())
     {
-        QVariant value = getValue(it.value());
-        answer.insert(it.key(),value);
+        QVariant value = getValue(it.value()._widget_);
+        if(changed_only)
+        {
+            if(it->_orig_value_!=value)
+            {
+                answer.insert(it.key(),value);
+            }
+        }
+        else
+        {
+            answer.insert(it.key(),value);
+        }
         it++;
     }
     return answer;
 }
 
-void InfoWidget::save()
-{
-    if(_flags_&IW_ImmediateResponce)
-    {
-        QMap<QString,QWidget*>::const_iterator it = _elements_.cbegin();
-        while(it!=_elements_.cend())
-        {
-            QVariant value = getValue(it.value());
+//void InfoWidget::save()
+//{
+//    if(_flags_&IW_ImmediateResponce)
+//    {
+//        QMap<QString,ObjReinforced>::const_iterator it = _elements_.cbegin();
+//        while(it!=_elements_.cend())
+//        {
+//            QVariant value = getValue(it.value()._widget_);
 
-            it++;
-        }
-    }
-}
+//            it++;
+//        }
+//    }
+//}
 
 void InfoWidget::externalElementChange(const QString& element_name,const QVariant& value)
 {
@@ -250,5 +260,5 @@ void InfoWidget::elementValueChanged(const QString& element_name, const QVariant
 
 void InfoWidget::catchElementSignal()
 {
-
+    QString cur_object(sender()->objectName());
 }
