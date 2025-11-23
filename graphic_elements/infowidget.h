@@ -12,6 +12,8 @@
 #include <QTextEdit>
 #include <QComboBox>
 #include <QLayout>
+#include <QCloseEvent>
+#include <QMessageBox>
 
 struct ObjReinforced
 {
@@ -25,14 +27,22 @@ struct ObjReinforced
 class InfoWidget : public QWidget
 {
     Q_OBJECT
+
+protected:
+    virtual void closeEvent(QCloseEvent*  cl_event) override;
 private:
-    enum IW_InternalFlags {IW_NoFlags = 0x00, IW_ReadOnly = 0x01, IW_ImmediateResponce = 0x02};
+    enum IW_InternalFlags {IW_NoFlags = 0x00,
+                           IW_ReadOnly = 0x01,
+                           IW_ImmediateResponce = 0x02,
+                           IW_OnTimer = 0x04};
     QTimer _hiding_timer_;
     QMap<QString,ObjReinforced> _elements_;
     char _flags_;
     void connectElement(const QString& type, QWidget* element);
+    void lockElement(const QString& type, QWidget* element, bool lock_status);
     bool loadValue(const QString& type, QWidget* element, const QVariant& value);
     QVariant getValue(QWidget* widget) const;
+    bool hasChanged() const;
     static bool isContainerClass(const QString& class_name);
     static bool isEditableClass(const QString& class_name);
     static bool isAllowedClass(const QString& class_name);
@@ -46,13 +56,12 @@ public:
     QMap<QString,QVariant> getValues(bool changed_only) const;
 private slots:
     void catchElementSignal();
-//    void save();
-    void close();
 public slots:
     void externalElementChange(const QString& element_name,const QVariant& value);
 signals:
     void elementValueChanged(const QString& element_name, const QVariant& value);
-    void hasChanges();
+    void saveRequest();
+    void closeRequest();
 
 };
 

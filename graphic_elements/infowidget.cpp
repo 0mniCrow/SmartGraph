@@ -11,6 +11,38 @@ InfoWidget::~InfoWidget()
 
 }
 
+void InfoWidget::closeEvent(QCloseEvent*  cl_event)
+{
+    if((_flags_&IW_ReadOnly)||
+            (_flags_&IW_OnTimer)||
+            !hasChanged())
+    {
+        cl_event->accept();
+        return;
+    }
+    QMessageBox mbx;
+    mbx.setText("Вы ўпэўнены што жадаеце закрыць акно?");
+    mbx.setInformativeText("Пэўныя зьмяненьні не захаваны.");
+    mbx.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
+    mbx.setDefaultButton(QMessageBox::Yes);
+    mbx.setIcon(QMessageBox::Warning);
+    int vynik =mbx.exec();
+    switch(vynik)
+    {
+    case QMessageBox::Yes:
+    {
+        cl_event->accept();
+    }
+        break;
+    case QMessageBox::No:
+    {
+        cl_event->ignore();
+    }
+        break;
+    }
+    return;
+}
+
 bool InfoWidget::isContainerClass(const QString& class_name)
 {
     return class_name == "QGroupBox";
@@ -62,6 +94,33 @@ void InfoWidget::connectElement(const QString& type, QWidget* element)
         return;
     }
     return;
+}
+
+void InfoWidget::lockElement(const QString &type, QWidget* element, bool lock_status)
+{
+    if(!isEditableClass(type))
+        return;
+    element->setEnabled(lock_status);
+}
+
+bool InfoWidget::hasChanged() const
+{
+    QMap<QString,ObjReinforced>::const_iterator it = _elements_.constBegin();
+    while(it!= _elements_.constEnd())
+    {
+        if(!isEditableClass(it.value()._widget_->metaObject()->className()))
+        {
+            ++it;
+            continue;
+        }
+        QVariant val = getValue(it.value()._widget_);
+        if(val!=it.value()._orig_value_)
+        {
+            return true;
+        }
+        ++it;
+    }
+    return false;
 }
 
 bool InfoWidget::loadValue(const QString& type, QWidget* element, const QVariant& value)
@@ -229,7 +288,7 @@ QMap<QString,QVariant> InfoWidget::getValues(bool changed_only) const
         {
             answer.insert(it.key(),value);
         }
-        it++;
+        ++it;
     }
     return answer;
 }
@@ -243,7 +302,7 @@ QMap<QString,QVariant> InfoWidget::getValues(bool changed_only) const
 //        {
 //            QVariant value = getValue(it.value()._widget_);
 
-//            it++;
+//            ++it;
 //        }
 //    }
 //}
