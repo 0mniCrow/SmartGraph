@@ -53,11 +53,10 @@ public:
     void setReadOnly(bool mode);
     void setImmediateResponce(bool mode);
     bool setValue(const QString& element_name, const QVariant& value);
+    bool updElementDefVal(const QString& element_name);
     QMap<QString,QVariant> getValues(bool changed_only) const;
 private slots:
     void catchElementSignal();
-public slots:
-    void externalElementChange(const QString& element_name,const QVariant& value);
 signals:
     void elementValueChanged(const QString& element_name, const QVariant& value);
     void saveRequest();

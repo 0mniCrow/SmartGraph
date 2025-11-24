@@ -21,8 +21,8 @@ void InfoWidget::closeEvent(QCloseEvent*  cl_event)
         return;
     }
     QMessageBox mbx;
-    mbx.setText("Вы ўпэўнены што жадаеце закрыць акно?");
-    mbx.setInformativeText("Пэўныя зьмяненьні не захаваны.");
+    mbx.setText("Не ўсе зробленыя Вамі зьмяненьні захаваны.");
+    mbx.setInformativeText("Ці жадаеце спачатку захаваць зьмяненьні?");
     mbx.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     mbx.setDefaultButton(QMessageBox::Yes);
     mbx.setIcon(QMessageBox::Warning);
@@ -31,12 +31,12 @@ void InfoWidget::closeEvent(QCloseEvent*  cl_event)
     {
     case QMessageBox::Yes:
     {
-        cl_event->accept();
+        cl_event->ignore();
     }
         break;
     case QMessageBox::No:
     {
-        cl_event->ignore();
+        cl_event->accept();
     }
         break;
     }
@@ -266,7 +266,6 @@ bool InfoWidget::setValue(const QString& element_name, const QVariant& value)
                 it.value()._widget_->metaObject()->className(),
                 it.value()._widget_,
                 value);
-
 }
 
 QMap<QString,QVariant> InfoWidget::getValues(bool changed_only) const
@@ -293,31 +292,34 @@ QMap<QString,QVariant> InfoWidget::getValues(bool changed_only) const
     return answer;
 }
 
-//void InfoWidget::save()
-//{
-//    if(_flags_&IW_ImmediateResponce)
-//    {
-//        QMap<QString,ObjReinforced>::const_iterator it = _elements_.cbegin();
-//        while(it!=_elements_.cend())
-//        {
-//            QVariant value = getValue(it.value()._widget_);
-
-//            ++it;
-//        }
-//    }
-//}
-
-void InfoWidget::externalElementChange(const QString& element_name,const QVariant& value)
+bool InfoWidget::updElementDefVal(const QString& element_name)
 {
-
-}
-
-void InfoWidget::elementValueChanged(const QString& element_name, const QVariant& value)
-{
-
+    QMap<QString,ObjReinforced>::iterator it = _elements_.find(element_name);
+    if(it==_elements_.end())
+    {
+        return false;
+    }
+    it.value()._orig_value_ = getValue(it.value()._widget_);
+    return true;
 }
 
 void InfoWidget::catchElementSignal()
 {
-    QString cur_object(sender()->objectName());
+    if(_flags_&IW_ImmediateResponce)
+    {
+        QString cur_object(sender()->objectName());
+        QMap<QString,ObjReinforced>::const_iterator it = _elements_.find(cur_object);
+        if(it==_elements_.constEnd())
+        {
+            return;
+        }
+        QString obj_type(it.value()._widget_->metaObject()->className());
+        if(!InfoWidget::isEditableClass(obj_type))
+        {
+            return;
+        }
+        QVariant new_val(getValue(it.value()._widget_));
+        emit elementValueChanged(cur_object,new_val);
+    }
+    return;
 }
