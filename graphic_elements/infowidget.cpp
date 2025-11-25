@@ -1,14 +1,46 @@
 #include "infowidget.h"
 
-InfoWidget::InfoWidget(QWidget *parent)
-    : QWidget{parent}
+InfoWidget::InfoWidget(bool read_only, QWidget *parent)
+    : QWidget{parent},_hiding_timer_(this),_control_panel_(nullptr),
+      _save_opt_(nullptr),_close_opt_(nullptr),_flags_(IW_NoFlags)
 {
+    //Таймер
+    _hiding_timer_.setSingleShot(true);
+    connect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::close);
 
+    //Слой для элементаў кіравання
+    QLayout* cur_layout = layout();
+    if(cur_layout)
+    {
+        delete cur_layout;
+    }
+    QVBoxLayout* new_layout = new QVBoxLayout();
+    setLayout(new_layout);
+
+    //Панэль кіравання для рэдактыруемых палёў
+    QHBoxLayout* h_layout = new QHBoxLayout;
+    _save_opt_ = new QPushButton(QIcon::fromTheme("save"),"Зах.");
+    _close_opt_ = new QPushButton(QIcon::fromTheme("close"),"Закр.");
+    h_layout->addWidget(_save_opt_);
+    h_layout->addWidget(_close_opt_);
+    connect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::save);
+    connect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::close);
+    _control_panel_ = new QGroupBox();
+    _control_panel_->setLayout(h_layout);
+    layout()->addWidget(_control_panel_);
+    if(read_only)
+    {
+        _flags_|=IW_ReadOnly;
+        _control_panel_->setVisible(false);
+    }
+    return;
 }
 
 InfoWidget::~InfoWidget()
 {
-
+    disconnect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::close);
+    disconnect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::save);
+    disconnect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::close);
 }
 
 void InfoWidget::closeEvent(QCloseEvent*  cl_event)
@@ -17,6 +49,7 @@ void InfoWidget::closeEvent(QCloseEvent*  cl_event)
             (_flags_&IW_OnTimer)||
             !hasChanged())
     {
+        _flags_&=~IW_OnTimer;
         cl_event->accept();
         return;
     }
@@ -30,16 +63,46 @@ void InfoWidget::closeEvent(QCloseEvent*  cl_event)
     switch(vynik)
     {
     case QMessageBox::Yes:
-    {
-        cl_event->ignore();
-    }
-        break;
+        emit saveRequest();
+        [[fallthrough]];
     case QMessageBox::No:
     {
         cl_event->accept();
     }
         break;
     }
+    emit closeRequest();
+    return;
+}
+
+void InfoWidget::enterEvent(QEnterEvent* ent_event)
+{
+    if(_flags_&(IW_ReadOnly | IW_OnTimer))
+    {
+        _hiding_timer_.stop();
+        _flags_&=~IW_OnTimer;
+    }
+    QWidget::enterEvent(ent_event);
+    return;
+}
+
+void InfoWidget::leaveEvent(QEvent* lef_event)
+{
+    if(_flags_&IW_ReadOnly)
+    {
+        startClosingTimer();
+    }
+    QWidget::leaveEvent(lef_event);
+    return;
+}
+
+void InfoWidget::mouseDoubleClickEvent(QMouseEvent* m_event)
+{
+    if(_flags_&IW_ReadOnly)
+    {
+        setReadOnly(false);
+    }
+    QWidget::mouseDoubleClickEvent(m_event);
     return;
 }
 
@@ -65,33 +128,30 @@ bool InfoWidget::isAllowedClass(const QString& class_name)
 
 void InfoWidget::connectElement(const QString& type, QWidget* element)
 {
-    while(true)
+    if(type == "QSpinBox")
     {
-        if(type == "QSpinBox")
-        {
-                QSpinBox* obj = qobject_cast<QSpinBox*>(element);
-                connect(obj,&QSpinBox::valueChanged,this,&InfoWidget::catchElementSignal);
-                break;
-        }
-        if(type == "QTextEdit")
-        {
-                QTextEdit* obj = qobject_cast<QTextEdit*>(element);
-                connect(obj,&QTextEdit::textChanged,this,&InfoWidget::catchElementSignal);
-                break;
-        }
-        if(type == "QLineEdit")
-        {
-                QLineEdit* obj = qobject_cast<QLineEdit*>(element);
-                connect(obj,&QLineEdit::textEdited,this,&InfoWidget::catchElementSignal);
-                break;
-        }
-        if(type == "QComboBox")
-        {
-                QComboBox* obj = qobject_cast<QComboBox*>(element);
-                connect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
-                break;
-        }
-        return;
+        QSpinBox* obj = qobject_cast<QSpinBox*>(element);
+        connect(obj,&QSpinBox::valueChanged,this,&InfoWidget::catchElementSignal);
+
+    }
+    else if(type == "QTextEdit")
+    {
+        QTextEdit* obj = qobject_cast<QTextEdit*>(element);
+        connect(obj,&QTextEdit::textChanged,this,&InfoWidget::catchElementSignal);
+
+    }
+    else if(type == "QLineEdit")
+    {
+        QLineEdit* obj = qobject_cast<QLineEdit*>(element);
+        connect(obj,&QLineEdit::textEdited,this,&InfoWidget::catchElementSignal);
+
+    }
+    else if(type == "QComboBox")
+    {
+        QComboBox* obj = qobject_cast<QComboBox*>(element);
+        connect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
+
+
     }
     return;
 }
@@ -125,44 +185,40 @@ bool InfoWidget::hasChanged() const
 
 bool InfoWidget::loadValue(const QString& type, QWidget* element, const QVariant& value)
 {
-    while(true)
+    if(type == "QSpinBox")
     {
-        if(type == "QSpinBox")
+        QSpinBox* obj = qobject_cast<QSpinBox*>(element);
+        if(value.canConvert<int>())
         {
-                QSpinBox* obj = qobject_cast<QSpinBox*>(element);
-                if(value.canConvert<int>())
-                {
-                    obj->setValue(value.toInt());
-                    break;
-                }
+            obj->setValue(value.toInt());
         }
-        if(type == "QTextEdit")
+    }
+    else if(type == "QTextEdit")
+    {
+        QTextEdit* obj = qobject_cast<QTextEdit*>(element);
+        if(value.canConvert<QString>())
         {
-                QTextEdit* obj = qobject_cast<QTextEdit*>(element);
-                if(value.canConvert<QString>())
-                {
-                    obj->setText(value.toString());
-                    break;
-                }
+            obj->setText(value.toString());
         }
-        if(type == "QLineEdit")
+    }
+    else if(type == "QLineEdit")
+    {
+        QLineEdit* obj = qobject_cast<QLineEdit*>(element);
+        if(value.canConvert<QString>())
         {
-                QLineEdit* obj = qobject_cast<QLineEdit*>(element);
-                if(value.canConvert<QString>())
-                {
-                    obj->setText(value.toString());
-                    break;
-                }
+            obj->setText(value.toString());
         }
-        if(type == "QComboBox")
+    }
+    else if(type == "QComboBox")
+    {
+        QComboBox* obj = qobject_cast<QComboBox*>(element);
+        if(value.canConvert<int>())
         {
-                QComboBox* obj = qobject_cast<QComboBox*>(element);
-                if(value.canConvert<int>())
-                {
-                    obj->setCurrentIndex(value.toInt());
-                    break;
-                }
+            obj->setCurrentIndex(value.toInt());
         }
+    }
+    else
+    {
         return false;
     }
     return true;
@@ -228,7 +284,13 @@ void InfoWidget::addElement(QWidget* element)
     if(isAllowedClass(object_class))
     {
         _elements_.insert(element->objectName(),ObjReinforced(element,getValue(element)));
-        layout()->addWidget(element);
+        //Перасоўванне панэлі кіравання на апошні шэраг на віджэце
+        layout()->removeWidget(_control_panel_);
+        layout()->addWidget(_control_panel_);
+//        QVBoxLayout * cur_layout = qobject_cast<QVBoxLayout*>(layout());
+//        cur_layout->addWidget(element);
+//        int index = cur_layout->indexOf(_control_panel_);
+
     }
     if(isEditableClass(object_class))
     {
@@ -250,11 +312,33 @@ void InfoWidget::setReadOnly(bool mode)
 {
     //_flags_ = mode? _flags_|IW_ReadOnly : _flags_& ~IW_ReadOnly;
     mode? _flags_|=IW_ReadOnly: _flags_&=~IW_ReadOnly;
+    if(mode)
+    {
+        if(!isActiveWindow())
+        {
+            startClosingTimer();
+        }
+    }
+    else
+    {
+        if(_flags_&IW_OnTimer)
+        {
+            _hiding_timer_.stop();
+            _flags_&=~IW_OnTimer;
+        }
+    }
+    QMap<QString,ObjReinforced>::iterator it = _elements_.begin();
+    while(it!=_elements_.end())
+    {
+        lockElement(it.value()._widget_->metaObject()->className(),it.value()._widget_,!mode);
+    }
+    return;
 }
 
 void InfoWidget::setImmediateResponce(bool mode)
 {
     mode? _flags_|=IW_ImmediateResponce: _flags_&=~IW_ImmediateResponce;
+    return;
 }
 
 bool InfoWidget::setValue(const QString& element_name, const QVariant& value)
@@ -321,5 +405,32 @@ void InfoWidget::catchElementSignal()
         QVariant new_val(getValue(it.value()._widget_));
         emit elementValueChanged(cur_object,new_val);
     }
+    return;
+}
+
+void InfoWidget::save()
+{
+    emit saveRequest();
+    return;
+}
+
+void InfoWidget::close()
+{
+
+    emit closeRequest();
+    return;
+}
+
+void InfoWidget::catchExternalChange(const QString& element_name, const QVariant& value)
+{
+    setValue(element_name,value);
+    return;
+}
+
+void InfoWidget::startClosingTimer(int msec)
+{
+    _hiding_timer_.start(msec<0?DEF_CLOSING_TIME:msec);
+    _flags_|=IW_OnTimer;
+    //QTimer::singleShot(msec<0?DEF_CLOSING_TIME:msec,this,&InfoWidget::close);
     return;
 }
