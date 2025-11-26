@@ -11,13 +11,14 @@ class AbstractObjectInfo:public QObject
 {
     Q_OBJECT
 private:
-    QList<AbstractElement*> _elements_;
+
     int _active_element_;
     QWidget* _info_widget_;
     AbstractElement* findElement(const QString& el_name) const;
     int findElementNum(const QString& el_name) const;
     bool inSize(int num) const;
 protected:
+    QList<AbstractElement*> _elements_;
     [[nodiscard]] virtual AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
                                            char element_type = AbstractElement::ET_Default) = 0;

@@ -52,9 +52,12 @@ void NodeObjectInfo::destroyElement(AbstractElement* element)
 
 [[nodiscard]] QWidget* NodeObjectInfo::createInfoWindow()
 {
-    //Трэба стварыць асобны карыстальніцкі клас акна,
-    //які будзе аўтаматычна падлучаць сігналы сваех
-    //элементаў зь бягучым інфа-класам
+     InfoWidget * widget = new InfoWidget();
+     for(AbstractElement* element: _elements_)
+     {
+         widget->addElement(element->generateWidget());
+     }
+     return widget;
 }
 
 void NodeObjectInfo::destroyInfoWindow()

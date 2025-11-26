@@ -1,6 +1,7 @@
 #ifndef NODEOBJECTINFO_H
 #define NODEOBJECTINFO_H
 
+#include "infowidget.h"
 #include "abstractobjectinfo.h"
 #include "nameelement.h"
 #include "imageelement.h"
@@ -9,6 +10,8 @@
 
 class NodeObjectInfo:public AbstractObjectInfo
 {
+private:
+    InfoWidget* _widget_;
 public:
     NodeObjectInfo();
 protected:
