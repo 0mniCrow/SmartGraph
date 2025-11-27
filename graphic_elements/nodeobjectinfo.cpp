@@ -1,9 +1,15 @@
 #include "nodeobjectinfo.h"
 
-NodeObjectInfo::NodeObjectInfo()
+NodeObjectInfo::NodeObjectInfo():_widget_(nullptr)
 {
 
 }
+
+NodeObjectInfo::~NodeObjectInfo()
+{
+    destroyInfoWindow();
+}
+
 [[nodiscard]] AbstractElement* NodeObjectInfo::createElement(const QString& element_name,
                                        const QVariant& value,
                                        char element_type)
@@ -50,17 +56,84 @@ void NodeObjectInfo::destroyElement(AbstractElement* element)
     return;
 }
 
+void NodeObjectInfo::setReadOnly(bool mode)
+{
+    if(_widget_)
+    {
+        _widget_->setReadOnly(mode);
+    }
+
+    for(AbstractElement* element: _elements_)
+    {
+        element->setEditable(!mode);
+    }
+    return;
+}
+
 [[nodiscard]] QWidget* NodeObjectInfo::createInfoWindow()
 {
-     InfoWidget * widget = new InfoWidget();
+     if(_widget_)
+     {
+        destroyInfoWindow();
+     }
+     _widget_ = new InfoWidget();
+     connect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
+     connect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
+     connect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
+     connect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
      for(AbstractElement* element: _elements_)
      {
-         widget->addElement(element->generateWidget());
+         _widget_->addElement(element->generateWidget());
      }
-     return widget;
+     return _widget_;
 }
 
 void NodeObjectInfo::destroyInfoWindow()
 {
+    disconnect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
+    disconnect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
+    disconnect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
+    disconnect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
+    _widget_->close();
+    delete _widget_;
+    _widget_ = nullptr;
+    return;
+}
 
+void NodeObjectInfo::widgetValueChanged(const QString& element_name,
+                                 const QVariant& value)
+{
+    setValue(element_name,value);
+    return;
+}
+
+void NodeObjectInfo::externalValueChanged(const QString& element_name,
+                                  const QVariant& value)
+{
+    setValue(element_name,value);
+    if(_widget_)
+    {
+        _widget_->setValue(element_name,value);
+    }
+    return;
+}
+
+void NodeObjectInfo::saveRequest()
+{
+    QMap<QString,QVariant> elements(_widget_->getValues(true));
+    QMap<QString,QVariant>::iterator it = elements.begin();
+    while(it!=elements.end())
+    {
+        setValue(it.key(),it.value());
+        ++it;
+    }
+    return;
+}
+void NodeObjectInfo::closeRequest()
+{
+    if(_widget_)
+    {
+        _widget_->close();
+    }
+    return;
 }

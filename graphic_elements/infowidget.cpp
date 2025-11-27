@@ -6,7 +6,7 @@ InfoWidget::InfoWidget(bool read_only, QWidget *parent)
 {
     //Таймер
     _hiding_timer_.setSingleShot(true);
-    connect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::close);
+    connect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::closeLocal);
 
     //Слой для элементаў кіравання
     QLayout* cur_layout = layout();
@@ -23,8 +23,8 @@ InfoWidget::InfoWidget(bool read_only, QWidget *parent)
     _close_opt_ = new QPushButton(QIcon::fromTheme("close"),"Закр.");
     h_layout->addWidget(_save_opt_);
     h_layout->addWidget(_close_opt_);
-    connect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::save);
-    connect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::close);
+    connect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::saveLocal);
+    connect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::closeLocal);
     _control_panel_ = new QGroupBox();
     _control_panel_->setLayout(h_layout);
     layout()->addWidget(_control_panel_);
@@ -38,9 +38,9 @@ InfoWidget::InfoWidget(bool read_only, QWidget *parent)
 
 InfoWidget::~InfoWidget()
 {
-    disconnect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::close);
-    disconnect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::save);
-    disconnect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::close);
+    disconnect(&_hiding_timer_,&QTimer::timeout,this,&InfoWidget::closeLocal);
+    disconnect(_save_opt_,&QPushButton::clicked,this,&InfoWidget::saveLocal);
+    disconnect(_close_opt_,&QPushButton::clicked,this,&InfoWidget::closeLocal);
 }
 
 void InfoWidget::closeEvent(QCloseEvent*  cl_event)
@@ -314,7 +314,7 @@ void InfoWidget::setReadOnly(bool mode)
     mode? _flags_|=IW_ReadOnly: _flags_&=~IW_ReadOnly;
     if(mode)
     {
-        if(!isActiveWindow())
+        if(!isHidden() && !isActiveWindow())
         {
             startClosingTimer();
         }
@@ -408,15 +408,14 @@ void InfoWidget::catchElementSignal()
     return;
 }
 
-void InfoWidget::save()
+void InfoWidget::saveLocal()
 {
     emit saveRequest();
     return;
 }
 
-void InfoWidget::close()
+void InfoWidget::closeLocal()
 {
-
     emit closeRequest();
     return;
 }

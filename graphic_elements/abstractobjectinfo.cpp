@@ -1,16 +1,15 @@
 #include "abstractobjectinfo.h"
 
 AbstractObjectInfo::AbstractObjectInfo():
-    _active_element_(EMPTY_ACTIVE_ELEMENT),
-    _info_widget_(nullptr)
+    _active_element_(EMPTY_ACTIVE_ELEMENT)
 {
     return;
 }
 
 AbstractObjectInfo::AbstractObjectInfo(std::initializer_list<AbstractElement*> list):
-    _elements_(list),_active_element_(_elements_.size()?0:EMPTY_ACTIVE_ELEMENT),
-    _info_widget_(nullptr)
+    _elements_(list)
 {
+    _active_element_ = _elements_.size()?0:EMPTY_ACTIVE_ELEMENT;
     return;
 }
 
@@ -457,22 +456,3 @@ bool AbstractObjectInfo::swapElements(int first_num, int sec_num)
     _elements_.swapItemsAt(first_num,sec_num);
     return true;
 }
-
-QWidget *AbstractObjectInfo::getInfoWidget() const
-{
-    return _info_widget_;
-}
-
-//bool AbstractObjectInfo::eventFilter(QObject* obj, QEvent *event)
-//{
-//    AbstractElement* elem = findElement(obj->objectName());
-//    if(elem)
-//    {
-//       switch(elem->elementType())
-//       {
-//            //Трэба перавызначыць гэты метад для атожылкавых класаў
-//       }
-//       return true;
-//    }
-//    return QObject::eventFilter(obj,event);
-//}

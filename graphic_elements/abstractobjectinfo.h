@@ -11,14 +11,13 @@ class AbstractObjectInfo:public QObject
 {
     Q_OBJECT
 private:
-
     int _active_element_;
-    QWidget* _info_widget_;
     AbstractElement* findElement(const QString& el_name) const;
     int findElementNum(const QString& el_name) const;
     bool inSize(int num) const;
 protected:
     QList<AbstractElement*> _elements_;
+    QWidget* _info_widget_;
     [[nodiscard]] virtual AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
                                            char element_type = AbstractElement::ET_Default) = 0;
@@ -75,13 +74,16 @@ public:
     bool setWidgetType(int num, char element_type);
     bool swapElements(const QString& first_name, const QString& sec_name);
     bool swapElements(int first_num, int sec_num);
-    [[nodiscard]] QWidget * getInfoWidget() const;
+    [[nodiscard]] virtual QWidget * getInfoWidget() const = 0;
 public slots:
-    virtual void elementValueChanged(const QString& element_name,
-                                     const QVariant& value,
-                                     bool sendChangeSignal = false) = 0;
+    virtual void widgetValueChanged(const QString& element_name,
+                                     const QVariant& value) = 0;
+    virtual void externalValueChanged(const QString& element_name,
+                                      const QVariant& value) = 0;
+    virtual void saveRequest() = 0;
+    virtual void closeRequest() = 0;
 signals:
-    void elementChange(const QString& element_name, const QVariant& value);
+    void elementValueChanged(const QString& element_name, const QVariant& value);
 };
 
 #endif // ABSTRACTOBJECTINFO_H

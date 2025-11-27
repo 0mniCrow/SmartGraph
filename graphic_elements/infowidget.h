@@ -67,8 +67,8 @@ public:
     QMap<QString,QVariant> getValues(bool changed_only) const;
 private slots:
     void catchElementSignal();
-    void save();
-    void close();
+    void saveLocal();
+    void closeLocal();
 public slots:
     void catchExternalChange(const QString& element_name, const QVariant& value);
     void startClosingTimer(int msec = -1);

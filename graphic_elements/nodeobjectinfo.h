@@ -14,6 +14,7 @@ private:
     InfoWidget* _widget_;
 public:
     NodeObjectInfo();
+    ~NodeObjectInfo();
 protected:
     [[nodiscard]] AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
@@ -21,7 +22,16 @@ protected:
     void destroyElement(AbstractElement* element) override;
     [[nodiscard]] QWidget* createInfoWindow() override;
     void destroyInfoWindow() override;
-
+public:
+    [[nodiscard]] virtual QWidget * getInfoWidget() const override;
+    void setReadOnly(bool mode);
+public slots:
+    void widgetValueChanged(const QString& element_name,
+                                     const QVariant& value) override;
+    void externalValueChanged(const QString& element_name,
+                                      const QVariant& value) override;
+    void saveRequest() override;
+    void closeRequest() override;
 };
 
 #endif // NODEOBJECTINFO_H
