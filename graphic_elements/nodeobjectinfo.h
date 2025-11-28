@@ -12,9 +12,7 @@ class NodeObjectInfo:public AbstractObjectInfo
 {
 private:
     InfoWidget* _widget_;
-public:
-    NodeObjectInfo();
-    ~NodeObjectInfo();
+    void clearWidget();
 protected:
     [[nodiscard]] AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
@@ -23,8 +21,11 @@ protected:
     [[nodiscard]] QWidget* createInfoWindow() override;
     void destroyInfoWindow() override;
 public:
-    [[nodiscard]] virtual QWidget * getInfoWidget() const override;
+    NodeObjectInfo();
+    ~NodeObjectInfo();
+    [[nodiscard]] virtual QWidget * getInfoWidget() override;
     void setReadOnly(bool mode);
+    void resetWidget();
 public slots:
     void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) override;

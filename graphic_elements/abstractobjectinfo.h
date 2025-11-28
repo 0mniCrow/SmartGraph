@@ -29,7 +29,7 @@ public:
     enum InfoObjectType{IO_Default = 0};
     AbstractObjectInfo();
     AbstractObjectInfo(std::initializer_list<AbstractElement*> list);
-    virtual ~AbstractObjectInfo() =0;
+    virtual ~AbstractObjectInfo();
     virtual InfoObjectType getType() const {return IO_Default;};
     int size() const;
     bool isExist(const QString& element_name) const;
@@ -74,7 +74,7 @@ public:
     bool setWidgetType(int num, char element_type);
     bool swapElements(const QString& first_name, const QString& sec_name);
     bool swapElements(int first_num, int sec_num);
-    [[nodiscard]] virtual QWidget * getInfoWidget() const = 0;
+    [[nodiscard]] virtual QWidget * getInfoWidget() = 0;
 public slots:
     virtual void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) = 0;

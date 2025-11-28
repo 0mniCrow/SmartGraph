@@ -7,7 +7,19 @@ NodeObjectInfo::NodeObjectInfo():_widget_(nullptr)
 
 NodeObjectInfo::~NodeObjectInfo()
 {
-    destroyInfoWindow();
+    clearWidget();
+}
+
+void NodeObjectInfo::clearWidget()
+{
+    disconnect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
+    disconnect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
+    disconnect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
+    disconnect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
+    _widget_->close();
+    delete _widget_;
+    _widget_ = nullptr;
+    return;
 }
 
 [[nodiscard]] AbstractElement* NodeObjectInfo::createElement(const QString& element_name,
@@ -52,6 +64,11 @@ NodeObjectInfo::~NodeObjectInfo()
 
 void NodeObjectInfo::destroyElement(AbstractElement* element)
 {
+    if(_widget_)
+    {
+        _widget_->close();
+        _widget_->deleteElement(element->elementName());
+    }
     delete element;
     return;
 }
@@ -67,6 +84,21 @@ void NodeObjectInfo::setReadOnly(bool mode)
     {
         element->setEditable(!mode);
     }
+    return;
+}
+
+[[nodiscard]] QWidget * NodeObjectInfo::getInfoWidget()
+{
+    if(_widget_)
+    {
+        return _widget_;
+    }
+    return createInfoWindow();
+}
+
+void NodeObjectInfo::resetWidget()
+{
+    clearWidget();
     return;
 }
 
@@ -90,13 +122,7 @@ void NodeObjectInfo::setReadOnly(bool mode)
 
 void NodeObjectInfo::destroyInfoWindow()
 {
-    disconnect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
-    disconnect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
-    disconnect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
-    disconnect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
-    _widget_->close();
-    delete _widget_;
-    _widget_ = nullptr;
+    clearWidget();
     return;
 }
 

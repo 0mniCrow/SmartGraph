@@ -132,26 +132,46 @@ void InfoWidget::connectElement(const QString& type, QWidget* element)
     {
         QSpinBox* obj = qobject_cast<QSpinBox*>(element);
         connect(obj,&QSpinBox::valueChanged,this,&InfoWidget::catchElementSignal);
-
     }
     else if(type == "QTextEdit")
     {
         QTextEdit* obj = qobject_cast<QTextEdit*>(element);
         connect(obj,&QTextEdit::textChanged,this,&InfoWidget::catchElementSignal);
-
     }
     else if(type == "QLineEdit")
     {
         QLineEdit* obj = qobject_cast<QLineEdit*>(element);
         connect(obj,&QLineEdit::textEdited,this,&InfoWidget::catchElementSignal);
-
     }
     else if(type == "QComboBox")
     {
         QComboBox* obj = qobject_cast<QComboBox*>(element);
         connect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
+    }
+    return;
+}
 
-
+void InfoWidget::disconnectElement(const QString& type, QWidget* element)
+{
+    if(type == "QSpinBox")
+    {
+        QSpinBox* obj = qobject_cast<QSpinBox*>(element);
+        disconnect(obj,&QSpinBox::valueChanged,this,&InfoWidget::catchElementSignal);
+    }
+    else if(type == "QTextEdit")
+    {
+        QTextEdit* obj = qobject_cast<QTextEdit*>(element);
+        disconnect(obj,&QTextEdit::textChanged,this,&InfoWidget::catchElementSignal);
+    }
+    else if(type == "QLineEdit")
+    {
+        QLineEdit* obj = qobject_cast<QLineEdit*>(element);
+        disconnect(obj,&QLineEdit::textEdited,this,&InfoWidget::catchElementSignal);
+    }
+    else if(type == "QComboBox")
+    {
+        QComboBox* obj = qobject_cast<QComboBox*>(element);
+        disconnect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
     }
     return;
 }
@@ -305,6 +325,24 @@ void InfoWidget::addElement(QWidget* element)
             connectElement(child_widget->objectName(),child_widget);
         }
     }
+    return;
+}
+
+void InfoWidget::deleteElement(const QString& element_name)
+{
+    QMap<QString,ObjReinforced>::iterator it = _elements_.find(element_name);
+    if(it==_elements_.end())
+    {
+        return;
+    }
+    layout()->removeWidget(it.value()._widget_);
+    QString className(it.value()._widget_->metaObject()->className());
+    if(isEditableClass(className))
+    {
+        disconnectElement(className,it.value()._widget_);
+    }
+    delete it.value()._widget_;
+    _elements_.erase(it);
     return;
 }
 

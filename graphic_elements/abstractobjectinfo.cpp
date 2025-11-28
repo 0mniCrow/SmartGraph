@@ -13,6 +13,11 @@ AbstractObjectInfo::AbstractObjectInfo(std::initializer_list<AbstractElement*> l
     return;
 }
 
+AbstractObjectInfo::~AbstractObjectInfo()
+{
+
+}
+
 void AbstractObjectInfo::clear()
 {
     if(_elements_.size())

@@ -49,6 +49,7 @@ private:
     QPushButton* _close_opt_;
     char _flags_;
     void connectElement(const QString& type, QWidget* element);
+    void disconnectElement(const QString& type, QWidget* element);
     void lockElement(const QString& type, QWidget* element, bool lock_status);
     bool loadValue(const QString& type, QWidget* element, const QVariant& value);
     QVariant getValue(QWidget* widget) const;
@@ -60,6 +61,7 @@ public:
     explicit InfoWidget(bool read_only = true, QWidget *parent = nullptr);
     ~InfoWidget();
     void addElement(QWidget* element);
+    void deleteElement(const QString& element_name);
     void setReadOnly(bool mode);
     void setImmediateResponce(bool mode);
     bool setValue(const QString& element_name, const QVariant& value);
