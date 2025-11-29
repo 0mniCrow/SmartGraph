@@ -33,6 +33,10 @@ InfoWidget::InfoWidget(bool read_only, QWidget *parent)
         _flags_|=IW_ReadOnly;
         _control_panel_->setVisible(false);
     }
+
+    //Налады акна:
+    setWindowFlags(Qt::Popup);
+
     return;
 }
 
@@ -77,10 +81,14 @@ void InfoWidget::closeEvent(QCloseEvent*  cl_event)
 
 void InfoWidget::enterEvent(QEnterEvent* ent_event)
 {
-    if(_flags_&(IW_ReadOnly | IW_OnTimer))
+    if(_flags_&IW_ReadOnly)
     {
-        _hiding_timer_.stop();
-        _flags_&=~IW_OnTimer;
+        setOpacity(1.0);
+        if(_flags_& IW_OnTimer)
+        {
+            _hiding_timer_.stop();
+            _flags_&=~IW_OnTimer;
+        }
     }
     QWidget::enterEvent(ent_event);
     return;
@@ -91,6 +99,7 @@ void InfoWidget::leaveEvent(QEvent* lef_event)
     if(_flags_&IW_ReadOnly)
     {
         startClosingTimer();
+        setOpacity(0.7);
     }
     QWidget::leaveEvent(lef_event);
     return;
@@ -201,6 +210,14 @@ bool InfoWidget::hasChanged() const
         ++it;
     }
     return false;
+}
+
+void InfoWidget::setOpacity(qreal opacity)
+{
+    QGraphicsOpacityEffect * op_effect = new QGraphicsOpacityEffect();
+    op_effect->setOpacity(opacity);
+    setGraphicsEffect(op_effect);
+    return;
 }
 
 bool InfoWidget::loadValue(const QString& type, QWidget* element, const QVariant& value)

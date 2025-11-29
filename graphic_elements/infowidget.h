@@ -16,6 +16,7 @@
 #include <QLayout>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QGraphicsOpacityEffect>
 
 #define DEF_CLOSING_TIME 3000
 
@@ -54,6 +55,7 @@ private:
     bool loadValue(const QString& type, QWidget* element, const QVariant& value);
     QVariant getValue(QWidget* widget) const;
     bool hasChanged() const;
+    void setOpacity(qreal opacity);
     static bool isContainerClass(const QString& class_name);
     static bool isEditableClass(const QString& class_name);
     static bool isAllowedClass(const QString& class_name);
