@@ -113,7 +113,7 @@ class ImageCropWindow : public QWidget
 public:
     explicit ImageCropWindow(QWidget *parent = nullptr);
     ~ImageCropWindow();
-
+    QPixmap getCroppedImage();
 private:
     Ui::ImageCropWindow *ui;
     CropScene* _scene_;
