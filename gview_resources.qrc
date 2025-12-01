@@ -6,5 +6,6 @@
         <file>icons/vertex_remove.svg</file>
         <file>icons/pin_free.svg</file>
         <file>icons/pin_lock.svg</file>
+        <file>icons/no_image.svg</file>
     </qresource>
 </RCC>

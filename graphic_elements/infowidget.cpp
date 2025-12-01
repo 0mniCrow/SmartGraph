@@ -1,4 +1,5 @@
 #include "infowidget.h"
+#include "imageelement.h"
 
 InfoWidget::InfoWidget(bool read_only, QWidget *parent)
     : QWidget{parent},_hiding_timer_(this),_control_panel_(nullptr),
@@ -125,14 +126,15 @@ bool InfoWidget::isEditableClass(const QString& class_name)
     return class_name == "QSpinBox" ||
             class_name == "QTextEdit" ||
             class_name == "QLineEdit" ||
-            class_name == "QComboBox";
+            class_name == "QComboBox" ||
+            class_name == "ImageLabel"||
+            class_name == "QLabel";
 }
 
 bool InfoWidget::isAllowedClass(const QString& class_name)
 {
     return InfoWidget::isContainerClass(class_name) ||
-            InfoWidget::isEditableClass(class_name)||
-            class_name == "QLabel";
+            InfoWidget::isEditableClass(class_name);
 }
 
 void InfoWidget::connectElement(const QString& type, QWidget* element)
@@ -156,6 +158,14 @@ void InfoWidget::connectElement(const QString& type, QWidget* element)
     {
         QComboBox* obj = qobject_cast<QComboBox*>(element);
         connect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
+    }
+    else if(type == "QLabel" || type == "ImageLabel")
+    {
+        ImageLabel* obj = dynamic_cast<ImageLabel*>(element);
+        if(obj)
+        {
+            connect(obj,&ImageLabel::doubleClickEvent,this,&InfoWidget::catchElementSignal);
+        }
     }
     return;
 }
@@ -181,6 +191,14 @@ void InfoWidget::disconnectElement(const QString& type, QWidget* element)
     {
         QComboBox* obj = qobject_cast<QComboBox*>(element);
         disconnect(obj,&QComboBox::currentIndexChanged,this,&InfoWidget::catchElementSignal);
+    }
+    else if(type == "QLabel" || type == "ImageLabel")
+    {
+        ImageLabel* obj = dynamic_cast<ImageLabel*>(element);
+        if(obj)
+        {
+            disconnect(obj,&ImageLabel::doubleClickEvent,this,&InfoWidget::catchElementSignal);
+        }
     }
     return;
 }
@@ -254,6 +272,17 @@ bool InfoWidget::loadValue(const QString& type, QWidget* element, const QVariant
             obj->setCurrentIndex(value.toInt());
         }
     }
+    else if(type == "QLabel" || type == "ImageLabel")
+    {
+        if(value.canConvert<QPixmap>())
+        {
+            ImageLabel* obj = dynamic_cast<ImageLabel*>(element);
+            if(obj)
+            {
+                obj->setPixmap(value.value<QPixmap>());
+            }
+        }
+    }
     else
     {
         return false;
@@ -310,6 +339,11 @@ QVariant InfoWidget::getValue(QWidget* widget) const
             }
         }
         answer = QVariant::fromValue(str_answer);
+    }
+    else if(type == "QLabel" || type == "ImageLabel")
+    {
+        ImageLabel* element = dynamic_cast<ImageLabel*>(widget);
+        answer = QVariant::fromValue(element->getPixmap());
     }
     return answer;
 }
@@ -444,7 +478,13 @@ bool InfoWidget::updElementDefVal(const QString& element_name)
 
 void InfoWidget::catchElementSignal()
 {
-    if(_flags_&IW_ImmediateResponce)
+    QString cur_type(sender()->metaObject()->className());
+    if(cur_type == "ImageLabel"||
+            cur_type == "QLabel")
+    {
+        //! TODO: адкрыць акно imagecrop і злавіць яго сігнал
+    }
+    else if(_flags_&IW_ImmediateResponce)
     {
         QString cur_object(sender()->objectName());
         QMap<QString,ObjReinforced>::const_iterator it = _elements_.find(cur_object);

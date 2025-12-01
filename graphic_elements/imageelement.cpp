@@ -59,7 +59,11 @@ char ImageElement::elementType() const
 }
 QWidget* ImageElement::generateWidget()
 {
-    QLabel* picture = new QLabel();
+    if(_value_.isNull())
+    {
+        _value_.load(":/res/icons/icons/no_image.svg");
+    }
+    ImageLabel* picture = new ImageLabel();
     picture->setPixmap(_value_);
     picture->setObjectName(_element_name_);
     return picture;
@@ -67,12 +71,12 @@ QWidget* ImageElement::generateWidget()
 
 QWidget* ImageElement::generatePic(char picture_type)
 {
-    if(picture_type == PT_Default)
+    if(picture_type == PT_Default || _value_.isNull())
     {
         return generateWidget();
     }
 
-    QLabel* picture = new QLabel();
+    ImageLabel* picture = new ImageLabel();
     bool square = _value_.height()==_value_.width();
     QPixmap sourcePic;
     if(!square)
@@ -187,5 +191,17 @@ void ImageElement::changeElement(QVariant new_val, bool inform_signal)
 void ImageElement::setEditable(bool state)
 {
     Q_UNUSED(state);
+    return;
+}
+
+void ImageLabel::mousePressEvent(QMouseEvent * m_event)
+{
+    if(m_event->type() == QEvent::MouseButtonDblClick)
+    {
+        emit doubleClickEvent();
+        m_event->accept();
+        return;
+    }
+    QLabel::mousePressEvent(m_event);
     return;
 }

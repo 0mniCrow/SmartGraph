@@ -4,9 +4,24 @@
 #include <QPixmap>
 #include <QImage>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include "abstractelement.h"
+
+class ImageLabel:public QLabel
+{
+private:
+    QPixmap _cur_pixmap_;
+public:
+    ImageLabel(QWidget* tata = nullptr):QLabel(tata){};
+    void setPixmap(const QPixmap& val){_cur_pixmap_ = val; QLabel::setPixmap(_cur_pixmap_);};
+    QPixmap getPixmap() const {return _cur_pixmap_;};
+protected:
+    void mousePressEvent(QMouseEvent * m_event) override;
+signals:
+    void doubleClickEvent();
+};
 
 class ImageElement:public AbstractElement
 {

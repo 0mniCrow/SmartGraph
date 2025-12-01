@@ -121,6 +121,8 @@ private:
     ResizeItem* _r_item_;
     ShadowItem* _s_item_;
     QPixmap getIMG();
+signals:
+    void getCroppedImageSignal();
 private slots:
     void chooseFile();
     void loadImage();
