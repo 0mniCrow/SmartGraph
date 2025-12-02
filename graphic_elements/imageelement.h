@@ -1,6 +1,6 @@
 #ifndef IMAGEELEMENT_H
 #define IMAGEELEMENT_H
-#define ICON_SIZE 64
+#define IMAGE_ICON_SIZE 64
 #include <QPixmap>
 #include <QImage>
 #include <QLabel>

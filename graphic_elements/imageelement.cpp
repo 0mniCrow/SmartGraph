@@ -93,8 +93,8 @@ QWidget* ImageElement::generatePic(char picture_type)
             picture_type == PT_SquareIcon ||
             picture_type == PT_TriangleIcon)
     {
-        picture->setFixedSize(ICON_SIZE,ICON_SIZE);
-        sourcePic = sourcePic.scaled(ICON_SIZE,ICON_SIZE,Qt::KeepAspectRatio);
+        picture->setFixedSize(IMAGE_ICON_SIZE,IMAGE_ICON_SIZE);
+        sourcePic = sourcePic.scaled(IMAGE_ICON_SIZE,IMAGE_ICON_SIZE,Qt::KeepAspectRatio);
     }
     QImage resultPic(sourcePic.size(),QImage::Format_ARGB32_Premultiplied);
     resultPic.fill(Qt::transparent);

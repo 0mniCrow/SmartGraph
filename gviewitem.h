@@ -23,6 +23,10 @@
 #include <QCursor>
 #include <QMenu>
 #include <QIcon>
+#include "graphic_elements/nodeobjectinfo.h"
+
+using info_type = QString;
+//using info_type = NodeObjectInfo;
 
 #define ICON_SIZE QSize(32,32)
 
