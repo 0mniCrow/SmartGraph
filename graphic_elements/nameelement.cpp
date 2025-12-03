@@ -75,6 +75,10 @@ QWidget* NameElement::generateWidget()
     return widget;
 }
 
+QString NameElement::internalDataType() const
+{
+    return QString("QString");
+}
 
 void NameElement::changeElement(QVariant new_val, bool inform_signal)
 {

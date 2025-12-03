@@ -27,6 +27,7 @@ public:
     void setElementType(char type);
     [[nodiscard]] virtual QWidget* generateWidget() = 0;  //Метад разлічаны на тое, што
                                                             //іншы элемент возьме кантроль над ім (выдаліць)
+    virtual QString internalDataType() const = 0;
 signals:
     //void valueChanged(const QVariant& new_val);
     void elementChanged(const QString& element_name, QVariant new_val);

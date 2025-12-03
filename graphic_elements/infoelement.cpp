@@ -59,6 +59,11 @@ char InfoElement::elementType() const
     return ET_RichTextElement;
 }
 
+QString InfoElement::internalDataType() const
+{
+    return QString("QString");
+}
+
 QWidget* InfoElement::generateWidget()
 {
     QTextEdit* textEditor;

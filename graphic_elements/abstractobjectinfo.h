@@ -74,7 +74,11 @@ public:
     bool setWidgetType(int num, char element_type);
     bool swapElements(const QString& first_name, const QString& sec_name);
     bool swapElements(int first_num, int sec_num);
+    QSet<QString> possibleTypes() const;
     [[nodiscard]] virtual QWidget * getInfoWidget() = 0;
+    virtual QList<QVariant> shortInfo() const = 0;
+    virtual QList<QVariant> fullInfo() const = 0;
+
 public slots:
     virtual void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) = 0;

@@ -461,3 +461,13 @@ bool AbstractObjectInfo::swapElements(int first_num, int sec_num)
     _elements_.swapItemsAt(first_num,sec_num);
     return true;
 }
+
+QSet<QString> AbstractObjectInfo::possibleTypes() const
+{
+    QSet<QString> answer;
+    for(const AbstractElement* element: _elements_)
+    {
+        answer.insert(element->internalDataType());
+    }
+    return answer;
+}

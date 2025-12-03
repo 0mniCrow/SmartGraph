@@ -13,6 +13,11 @@ class NodeObjectInfo:public AbstractObjectInfo
 private:
     InfoWidget* _widget_;
     void clearWidget();
+    template<typename T>
+    static T transElem(AbstractElement* element)
+    {
+        return dynamic_cast<T>(element);
+    }
 protected:
     [[nodiscard]] AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
@@ -24,6 +29,8 @@ public:
     NodeObjectInfo();
     ~NodeObjectInfo();
     [[nodiscard]] virtual QWidget * getInfoWidget() override;
+    QList<QVariant> shortInfo() const override;
+    QList<QVariant> fullInfo() const override;
     void setReadOnly(bool mode);
     void resetWidget();
 public slots:

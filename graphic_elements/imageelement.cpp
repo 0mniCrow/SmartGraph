@@ -69,6 +69,11 @@ QWidget* ImageElement::generateWidget()
     return picture;
 }
 
+QString ImageElement::internalDataType() const
+{
+    return QString("QPixmap");
+}
+
 QWidget* ImageElement::generatePic(char picture_type)
 {
     if(picture_type == PT_Default || _value_.isNull())

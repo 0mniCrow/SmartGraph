@@ -493,3 +493,8 @@ void DateElement::setEditable(bool state)
     _read_only_ = state;
     return;
 }
+
+QString DateElement::internalDataType() const
+{
+    return QString("QString");
+}

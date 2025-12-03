@@ -96,6 +96,58 @@ void NodeObjectInfo::setReadOnly(bool mode)
     return createInfoWindow();
 }
 
+QList<QVariant> NodeObjectInfo::shortInfo() const
+{
+    ImageElement* e_icon = nullptr;
+    NameElement* f_name = nullptr;
+    NameElement* l_name = nullptr;
+    for(AbstractElement* element:_elements_)
+    {
+        if(element->elementType() == ImageElement::ET_PictureElement)
+        {
+            if(!e_icon)
+            {
+                e_icon = transElem<ImageElement*>(element);
+            }
+        }
+        else if(element->elementType()==NameElement::ET_NameElement)
+        {
+            if(!f_name)
+            {
+                f_name = transElem<NameElement*>(element);
+            }
+            else if(!l_name)
+            {
+                l_name = transElem<NameElement*>(element);
+            }
+        }
+    }
+    QList<QVariant> answer;
+    if(e_icon)
+    {
+        answer.append(e_icon->value()); //!TODO дадаць метад вяртаючы непасрэдна піскельную мапу
+    }
+    if(f_name)
+    {
+        answer.append(f_name->value());
+    }
+    if(l_name)
+    {
+        answer.append(l_name->value());
+    }
+    return answer;
+}
+
+QList<QVariant> NodeObjectInfo::fullInfo() const
+{
+    QList<QVariant> answer;
+    for(const AbstractElement* element:_elements_)
+    {
+        answer.append(element->value());
+    }
+    return answer;
+}
+
 void NodeObjectInfo::resetWidget()
 {
     clearWidget();

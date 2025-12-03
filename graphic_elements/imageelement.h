@@ -41,6 +41,7 @@ public:
     void setValue(const QVariant& new_val, bool inform_signal = true) override;
     char elementType() const override;
     QWidget* generateWidget() override;
+    QString internalDataType() const override;
     QWidget* generatePic(char picture_type);
     void setImage(const QImage& image, const QRect& rect= QRect(), bool inform_signal = true);
     void setImage(const QPixmap& pixmap, int side_size, bool keep_aspect_ratio = true, bool inform_signal = true);
