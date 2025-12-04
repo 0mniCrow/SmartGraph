@@ -2,7 +2,12 @@
 #include "gviewedge.h"
 #include "gviewport.h"
 
-GViewItem::GViewItem(int radius, const QString &info,
+GViewItem::GViewItem(int radius,
+                     #ifdef INFO_COMPLEX_OBJECT
+                     const NodeObjectInfo& info,
+                     #else
+                     const QString &info,
+                     #endif
                      const QColor &color):_info_(info),
     _color_(color),_radius_(radius),
     _flags_(GV_None)
@@ -12,6 +17,20 @@ GViewItem::GViewItem(int radius, const QString &info,
     setAcceptHoverEvents(true);
     return;
 }
+
+#ifdef INFO_COMPLEX_OBJECT
+    GViewItem::GViewItem(int radius,
+              NodeObjectInfo&& info,
+              const QColor& color):_info_(std::move(info)),
+        _color_(color),_radius_(radius),
+        _flags_(GV_None)
+    {
+        setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+        setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+        setAcceptHoverEvents(true);
+        return;
+    }
+#endif
 
 GViewItem::GViewItem(int radius, const QColor& color):
     _color_(color),_radius_(radius),
@@ -130,15 +149,39 @@ void GViewItem::setColor(const QColor& color)
     _color_=color;
     return;
 }
-void GViewItem::setInfo(const QString& info)
+
+#ifdef INFO_COMPLEX_OBJECT
+void GViewItem::setInfo(NodeObjectInfo&& info)
+{
+    _info_=std::move(info);
+    return;
+}
+
+const NodeObjectInfo& GViewItem::info()const
+{
+    return _info_;
+}
+
+#else
+
+void GViewItem::setInfo        const QString& info)
 {
     _info_=info;
     return;
 }
+
 QString GViewItem::info()const
 {
     return _info_;
 }
+#endif
+
+
+
+
+
+
+
 QColor GViewItem::color()const
 {
     return _color_;

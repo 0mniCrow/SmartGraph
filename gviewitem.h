@@ -25,8 +25,13 @@
 #include <QIcon>
 #include "graphic_elements/nodeobjectinfo.h"
 
-using info_type = QString;
-//using info_type = NodeObjectInfo;
+#define INFO_COMPLEX_OBJECT
+
+#ifdef INFO_COMPLEX_OBJECT
+    using info_type = NodeObjectInfo;
+#else
+    using info_type = QString;
+#endif
 
 #define ICON_SIZE QSize(32,32)
 
@@ -39,7 +44,7 @@ private:
                   GV_Ignore_Next_Move = 0x02,
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08};
     QVector<GViewEdge*> _edges_;
-    QString _info_;
+    info_type _info_;
     QColor _color_;
     QPointF _adv_pos_;
     int _radius_;
@@ -51,7 +56,21 @@ private:
     void setGVFlag(char flag, bool state=true) { _flags_= state? _flags_|flag : _flags_ & ~flag;}
     void setGVFlags(char flags) {_flags_ = flags;}
 public:
-    GViewItem(int radius, const QString& info = QString(), const QColor& color = QColor());
+
+
+#ifdef INFO_COMPLEX_OBJECT
+    GViewItem(int radius,
+              const NodeObjectInfo& info,
+              const QColor& color = QColor());
+    GViewItem(int radius,
+              NodeObjectInfo&& info,
+              const QColor& color = QColor());
+#else
+    GViewItem(int radius,
+              const QString& info = QString(),
+              const QColor& color = QColor());
+#endif
+
     GViewItem(int radius, const QColor& color);
     ~GViewItem();
     void addEdge(GViewEdge* edge);
@@ -59,8 +78,14 @@ public:
     int radius()const{return _radius_;}
     void setRadius(int radius);
     void setColor(const QColor& color);
+     #ifdef INFO_COMPLEX_OBJECT
+    void setInfo(NodeObjectInfo&& info);
+    const NodeObjectInfo& info()const;
+    #else
     void setInfo(const QString& info);
     QString info()const;
+    #endif
+
     QColor color()const;
     bool isForceCalc()const {return _flags_&GV_Is_Forced;}
     void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}

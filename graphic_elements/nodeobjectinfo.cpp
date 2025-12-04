@@ -2,15 +2,61 @@
 
 NodeObjectInfo::NodeObjectInfo():_widget_(nullptr)
 {
+    return;
+}
 
+void NodeObjectInfo::copyObject(const NodeObjectInfo& other)
+{
+    for(const AbstractElement* element:other._elements_)
+    {
+        AbstractElement* n_element = createElementLoc(element->elementName(),
+                                                      element->value(),
+                                                      element->elementType());
+        if(n_element)
+        {
+            _elements_.append(n_element);
+        }
+    }
+    _active_element_ = other._active_element_;
+    if(other._widget_)
+    {
+        createInfoWidgetLoc();
+    }
+    return;
+}
+
+void NodeObjectInfo::deepCopyObject(NodeObjectInfo&& other)
+{
+    _elements_=std::move(other._elements_);
+    other._elements_.clear();
+    _active_element_ = other._active_element_;
+    other._active_element_ = EMPTY_ACTIVE_ELEMENT;
+    if(other._widget_)
+    {
+        other.destroyInfoWindowLoc();
+        createInfoWidgetLoc();
+    }
+    return;
+}
+
+NodeObjectInfo::NodeObjectInfo(const NodeObjectInfo& other):_widget_(nullptr)
+{
+    copyObject(other);
+    return;
+}
+
+NodeObjectInfo::NodeObjectInfo(NodeObjectInfo&& other)
+{
+    deepCopyObject(std::move(other));
+    return;
 }
 
 NodeObjectInfo::~NodeObjectInfo()
 {
-    clearWidget();
+    destroyInfoWindowLoc();
 }
 
-void NodeObjectInfo::clearWidget()
+void NodeObjectInfo::destroyInfoWindowLoc()
 {
     disconnect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
     disconnect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
@@ -22,9 +68,9 @@ void NodeObjectInfo::clearWidget()
     return;
 }
 
-[[nodiscard]] AbstractElement* NodeObjectInfo::createElement(const QString& element_name,
-                                       const QVariant& value,
-                                       char element_type)
+[[nodiscard]]AbstractElement* NodeObjectInfo::createElementLoc(const QString& element_name,
+                                   const QVariant& value,
+                                   char element_type)
 {
     if(isExist(element_name))
     {
@@ -62,14 +108,28 @@ void NodeObjectInfo::clearWidget()
     return element;
 }
 
-void NodeObjectInfo::destroyElement(AbstractElement* element)
+[[nodiscard]] AbstractElement* NodeObjectInfo::createElement(const QString& element_name,
+                                       const QVariant& value,
+                                       char element_type)
+{
+    return createElementLoc(element_name, value, element_type);
+}
+
+void NodeObjectInfo::destroyElementLoc(AbstractElement * element)
 {
     if(_widget_)
     {
         _widget_->close();
         _widget_->deleteElement(element->elementName());
     }
+    emit elementDestroyed(element->elementName());
     delete element;
+    return;
+}
+
+void NodeObjectInfo::destroyElement(AbstractElement* element)
+{
+    destroyElementLoc(element);
     return;
 }
 
@@ -150,31 +210,55 @@ QList<QVariant> NodeObjectInfo::fullInfo() const
 
 void NodeObjectInfo::resetWidget()
 {
-    clearWidget();
+    destroyInfoWindowLoc();
+    return;
+}
+
+void NodeObjectInfo::clearObject()
+{
+    if(_widget_)
+    {
+        destroyInfoWindowLoc();
+    }
+    if(_elements_.size())
+    {
+        for(AbstractElement* element:_elements_)
+        {
+            destroyElementLoc(element);
+        }
+        _elements_.clear();
+    }
+    _active_element_ = EMPTY_ACTIVE_ELEMENT;
+    return;
+}
+
+void NodeObjectInfo::createInfoWidgetLoc()
+{
+    if(_widget_)
+    {
+       destroyInfoWindow();
+    }
+    _widget_ = new InfoWidget();
+    connect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
+    connect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
+    connect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
+    connect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
+    for(AbstractElement* element: _elements_)
+    {
+        _widget_->addElement(element->generateWidget());
+    }
     return;
 }
 
 [[nodiscard]] QWidget* NodeObjectInfo::createInfoWindow()
 {
-     if(_widget_)
-     {
-        destroyInfoWindow();
-     }
-     _widget_ = new InfoWidget();
-     connect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
-     connect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
-     connect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
-     connect(this,&NodeObjectInfo::elementValueChanged,_widget_,&InfoWidget::catchExternalChange);
-     for(AbstractElement* element: _elements_)
-     {
-         _widget_->addElement(element->generateWidget());
-     }
+     createInfoWidgetLoc();
      return _widget_;
 }
 
 void NodeObjectInfo::destroyInfoWindow()
 {
-    clearWidget();
+    destroyInfoWindowLoc();
     return;
 }
 
@@ -214,4 +298,18 @@ void NodeObjectInfo::closeRequest()
         _widget_->close();
     }
     return;
+}
+
+NodeObjectInfo& NodeObjectInfo::operator=(const NodeObjectInfo&other)
+{
+    clearObject();
+    copyObject(other);
+    return *this;
+}
+
+NodeObjectInfo& NodeObjectInfo::operator=(NodeObjectInfo&&other)
+{
+    clearObject();
+    deepCopyObject(std::move(other));
+    return *this;
 }

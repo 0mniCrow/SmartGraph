@@ -11,13 +11,12 @@ class AbstractObjectInfo:public QObject
 {
     Q_OBJECT
 private:
-    int _active_element_;
     AbstractElement* findElement(const QString& el_name) const;
     int findElementNum(const QString& el_name) const;
     bool inSize(int num) const;
 protected:
     QList<AbstractElement*> _elements_;
-    QWidget* _info_widget_;
+    int _active_element_;
     [[nodiscard]] virtual AbstractElement* createElement(const QString& element_name,
                                            const QVariant& value,
                                            char element_type = AbstractElement::ET_Default) = 0;
@@ -78,7 +77,6 @@ public:
     [[nodiscard]] virtual QWidget * getInfoWidget() = 0;
     virtual QList<QVariant> shortInfo() const = 0;
     virtual QList<QVariant> fullInfo() const = 0;
-
 public slots:
     virtual void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) = 0;
@@ -88,6 +86,7 @@ public slots:
     virtual void closeRequest() = 0;
 signals:
     void elementValueChanged(const QString& element_name, const QVariant& value);
+    void elementDestroyed(const QString& element_name);
 };
 
 #endif // ABSTRACTOBJECTINFO_H

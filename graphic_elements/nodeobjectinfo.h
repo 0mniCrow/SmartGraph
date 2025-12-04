@@ -12,7 +12,16 @@ class NodeObjectInfo:public AbstractObjectInfo
 {
 private:
     InfoWidget* _widget_;
-    void clearWidget();
+
+    [[nodiscard]] AbstractElement* createElementLoc(const QString& element_name,
+                                   const QVariant& value,
+                                   char element_type = AbstractElement::ET_Default);
+    void destroyElementLoc(AbstractElement * element);
+    void createInfoWidgetLoc();
+    void destroyInfoWindowLoc();
+    void copyObject(const NodeObjectInfo& other);
+    void deepCopyObject(NodeObjectInfo&& other);
+
     template<typename T>
     static T transElem(AbstractElement* element)
     {
@@ -27,12 +36,17 @@ protected:
     void destroyInfoWindow() override;
 public:
     NodeObjectInfo();
+    NodeObjectInfo(const NodeObjectInfo& other);
+    NodeObjectInfo(NodeObjectInfo&& other);
     ~NodeObjectInfo();
     [[nodiscard]] virtual QWidget * getInfoWidget() override;
     QList<QVariant> shortInfo() const override;
     QList<QVariant> fullInfo() const override;
     void setReadOnly(bool mode);
     void resetWidget();
+    void clearObject();
+    NodeObjectInfo& operator=(const NodeObjectInfo&other);
+    NodeObjectInfo& operator=(NodeObjectInfo&&other);
 public slots:
     void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) override;

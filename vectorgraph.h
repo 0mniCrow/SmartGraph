@@ -5,6 +5,7 @@
 
 #define DEF_INT_EDGE 1
 #define DEF_INT_VAL 0
+
 using cur_type = int;
 using std::vector;
 using std::pair;
