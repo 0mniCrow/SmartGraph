@@ -23,7 +23,6 @@ protected:
     virtual void destroyElement(AbstractElement* element) = 0;
     [[nodiscard]] virtual QWidget* createInfoWindow() = 0;
     virtual void destroyInfoWindow() = 0;
-    //virtual bool eventFilter(QObject* obj, QEvent *event) override;
 public:
     enum InfoObjectType{IO_Default = 0};
     AbstractObjectInfo();

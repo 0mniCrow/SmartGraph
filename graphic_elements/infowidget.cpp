@@ -1,4 +1,5 @@
 #include "infowidget.h"
+#include "imagecropwindow.h"
 #include "imageelement.h"
 
 InfoWidget::InfoWidget(bool read_only, QWidget *parent)
@@ -482,6 +483,8 @@ void InfoWidget::catchElementSignal()
     if(cur_type == "ImageLabel"||
             cur_type == "QLabel")
     {
+        ImageCropWindow* imageWindow = new ImageCropWindow();
+        connect(imageWindow,ImageCropWindo)
         //! TODO: адкрыць акно imagecrop і злавіць яго сігнал
     }
     else if(_flags_&IW_ImmediateResponce)

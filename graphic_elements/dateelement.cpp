@@ -437,7 +437,7 @@ char DateElement::elementType() const
     return ET_DateElement;
 }
 
-QWidget* DateElement::generateWidget()
+[[nodiscard]] QWidget* DateElement::generateWidget()
 {
     if(!checkDates())
         return nullptr;

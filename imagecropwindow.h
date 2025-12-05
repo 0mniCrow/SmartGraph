@@ -109,7 +109,8 @@ class ImageCropWindow;
 class ImageCropWindow : public QWidget
 {
     Q_OBJECT
-
+protected:
+    void closeEvent(QCloseEvent* c_event) override;
 public:
     explicit ImageCropWindow(QWidget *parent = nullptr);
     ~ImageCropWindow();
@@ -122,7 +123,8 @@ private:
     ShadowItem* _s_item_;
     QPixmap getIMG();
 signals:
-    void getCroppedImageSignal();
+    void imageHasBeenCropped(QPixmap croppedPixmap);
+    void wasClosed();
 private slots:
     void chooseFile();
     void loadImage();

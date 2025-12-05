@@ -58,7 +58,7 @@ char NameElement::elementType() const
     return _element_type_;
 }
 
-QWidget* NameElement::generateWidget()
+[[nodiscard]] QWidget* NameElement::generateWidget()
 {
     QWidget* widget;
     if(_is_editable_)

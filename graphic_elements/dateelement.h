@@ -87,7 +87,7 @@ public:
     QVariant value() const override;
     void setValue(const QVariant& new_val, bool inform_signal = true) override;
     char elementType() const override;
-    QWidget* generateWidget() override;
+    [[nodiscard]] QWidget* generateWidget() override;
     QString internalDataType() const override;
 public slots:
     void changeElement(QVariant new_val, bool inform_signal = true) override;

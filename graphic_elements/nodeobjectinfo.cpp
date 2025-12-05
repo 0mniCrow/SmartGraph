@@ -58,6 +58,10 @@ NodeObjectInfo::~NodeObjectInfo()
 
 void NodeObjectInfo::destroyInfoWindowLoc()
 {
+    if(!_widget_)
+    {
+        return;
+    }
     disconnect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
     disconnect(_widget_,&InfoWidget::saveRequest,this,&NodeObjectInfo::saveRequest);
     disconnect(_widget_,&InfoWidget::elementValueChanged,this,&NodeObjectInfo::widgetValueChanged);
@@ -236,7 +240,7 @@ void NodeObjectInfo::createInfoWidgetLoc()
 {
     if(_widget_)
     {
-       destroyInfoWindow();
+       destroyInfoWindowLoc();
     }
     _widget_ = new InfoWidget();
     connect(_widget_,&InfoWidget::closeRequest,this,&NodeObjectInfo::closeRequest);
@@ -312,4 +316,16 @@ NodeObjectInfo& NodeObjectInfo::operator=(NodeObjectInfo&&other)
     clearObject();
     deepCopyObject(std::move(other));
     return *this;
+}
+
+NodeObjectInfo NodeObjectInfo::generateNodeInfo(const QMap<QString,std::pair<QVariant,char>>& elements)
+{
+    NodeObjectInfo answer;
+    auto it = elements.constBegin();
+    while(it!= elements.constEnd())
+    {
+        answer.append(it.key(),it.value().first,it.value().second);
+        it++;
+    }
+    return answer;
 }

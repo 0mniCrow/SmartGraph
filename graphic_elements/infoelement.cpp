@@ -64,7 +64,7 @@ QString InfoElement::internalDataType() const
     return QString("QString");
 }
 
-QWidget* InfoElement::generateWidget()
+[[nodiscard]] QWidget* InfoElement::generateWidget()
 {
     QTextEdit* textEditor;
     if(_useHTML_)

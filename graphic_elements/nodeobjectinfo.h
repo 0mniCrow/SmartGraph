@@ -47,6 +47,7 @@ public:
     void clearObject();
     NodeObjectInfo& operator=(const NodeObjectInfo&other);
     NodeObjectInfo& operator=(NodeObjectInfo&&other);
+    static NodeObjectInfo generateNodeInfo(const QMap<QString,std::pair<QVariant,char>>& elements);
 public slots:
     void widgetValueChanged(const QString& element_name,
                                      const QVariant& value) override;

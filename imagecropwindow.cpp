@@ -27,6 +27,13 @@ ImageCropWindow::~ImageCropWindow()
     delete ui;
 }
 
+void ImageCropWindow::closeEvent(QCloseEvent* c_event)
+{
+    emit wasClosed();
+    c_event->accept();
+    return;
+}
+
 void ImageCropWindow::chooseFile()
 {
     QString filename(QFileDialog::getOpenFileName(
@@ -129,6 +136,7 @@ void ImageCropWindow::cropImage()
     QPixmap copy(bg.copy(target.toRect()));
     painter.drawPixmap(crop.rect(),copy);
     painter.end();
+    emit imageHasBeenCropped(crop);
     LocWidget* widget = new LocWidget;
     widget->setAttribute(Qt::WA_TranslucentBackground);
     widget->setPixmap(crop);
@@ -141,6 +149,7 @@ void ImageCropWindow::cropImage()
     vert_layout->addStretch(1);
     widget->setLayout(vert_layout);
     widget->show();
+
     return;
 }
 

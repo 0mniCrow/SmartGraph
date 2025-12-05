@@ -57,14 +57,27 @@ char ImageElement::elementType() const
     }
     return _element_type_;
 }
-QWidget* ImageElement::generateWidget()
+[[nodiscard]] QWidget* ImageElement::generateWidget()
+{
+//    if(_value_.isNull())
+//    {
+//        _value_.load(":/res/icons/icons/no_image.svg");
+//    }
+//    ImageLabel* picture = new ImageLabel();
+//    picture->setPixmap(_value_);
+//    picture->setObjectName(_element_name_);
+    return generateSpecWidget(PT_Default);//picture;
+}
+
+[[nodiscard]] QWidget* ImageElement::generateSpecWidget(char picture_type, int icon_size)
 {
     if(_value_.isNull())
     {
         _value_.load(":/res/icons/icons/no_image.svg");
     }
     ImageLabel* picture = new ImageLabel();
-    picture->setPixmap(_value_);
+    QPixmap pixmap(generatePixmap(picture_type,icon_size));
+    picture->setPixmap(pixmap);
     picture->setObjectName(_element_name_);
     return picture;
 }
@@ -74,14 +87,12 @@ QString ImageElement::internalDataType() const
     return QString("QPixmap");
 }
 
-QWidget* ImageElement::generatePic(char picture_type)
+QPixmap ImageElement::generatePixmap(char picture_type, int icon_size)
 {
     if(picture_type == PT_Default || _value_.isNull())
     {
-        return generateWidget();
+        return _value_;
     }
-
-    ImageLabel* picture = new ImageLabel();
     bool square = _value_.height()==_value_.width();
     QPixmap sourcePic;
     if(!square)
@@ -98,8 +109,7 @@ QWidget* ImageElement::generatePic(char picture_type)
             picture_type == PT_SquareIcon ||
             picture_type == PT_TriangleIcon)
     {
-        picture->setFixedSize(IMAGE_ICON_SIZE,IMAGE_ICON_SIZE);
-        sourcePic = sourcePic.scaled(IMAGE_ICON_SIZE,IMAGE_ICON_SIZE,Qt::KeepAspectRatio);
+        sourcePic = sourcePic.scaled(icon_size,icon_size,Qt::KeepAspectRatio);
     }
     QImage resultPic(sourcePic.size(),QImage::Format_ARGB32_Premultiplied);
     resultPic.fill(Qt::transparent);
@@ -141,9 +151,7 @@ QWidget* ImageElement::generatePic(char picture_type)
     painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
     painter.drawPixmap(0,0,sourcePic);
     painter.end();
-    picture->setPixmap(QPixmap::fromImage(resultPic));
-    picture->setObjectName(_element_name_);
-    return picture;
+    return QPixmap::fromImage(resultPic);
 }
 
 void ImageElement::setImage(const QImage& image, const QRect& rect,bool inform_signal)

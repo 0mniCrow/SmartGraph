@@ -25,16 +25,13 @@ public:
     void setElementName(const QString& new_name);
     virtual char elementType() const;
     void setElementType(char type);
-    [[nodiscard]] virtual QWidget* generateWidget() = 0;  //Метад разлічаны на тое, што
-                                                            //іншы элемент возьме кантроль над ім (выдаліць)
+    [[nodiscard]] virtual QWidget* generateWidget() = 0;
     virtual QString internalDataType() const = 0;
 signals:
-    //void valueChanged(const QVariant& new_val);
     void elementChanged(const QString& element_name, QVariant new_val);
     void elementDestroyed(QString element_name);
 public slots:
     virtual void changeElement(QVariant new_val, bool inform_signal = true) = 0;
-    //virtual void saveValue() = 0;
     virtual void setEditable(bool state) = 0;
 protected:
     QString _element_name_;
