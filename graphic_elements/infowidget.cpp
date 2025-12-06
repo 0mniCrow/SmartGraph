@@ -483,9 +483,10 @@ void InfoWidget::catchElementSignal()
     if(cur_type == "ImageLabel"||
             cur_type == "QLabel")
     {
-        ImageCropWindow* imageWindow = new ImageCropWindow();
-        connect(imageWindow,ImageCropWindo)
-        //! TODO: адкрыць акно imagecrop і злавіць яго сігнал
+        ImageCropWindow* imageWindow = new ImageCropWindow(sender()->objectName());
+        connect(imageWindow,&ImageCropWindow::wasClosed,imageWindow,&QObject::deleteLater);
+        connect(imageWindow,&ImageCropWindow::imageHasBeenCropped,this,&InfoWidget::catchChosenPixmap);
+        imageWindow->show();
     }
     else if(_flags_&IW_ImmediateResponce)
     {
@@ -503,6 +504,12 @@ void InfoWidget::catchElementSignal()
         QVariant new_val(getValue(it.value()._widget_));
         emit elementValueChanged(cur_object,new_val);
     }
+    return;
+}
+
+void InfoWidget::catchChosenPixmap(QString element_name, QPixmap picture)
+{
+    setValue(element_name,QVariant::fromValue(picture));
     return;
 }
 

@@ -77,7 +77,7 @@ QString InfoElement::internalDataType() const
         textEditor = new QTextEdit(_value_);
     }
 
-    textEditor->setReadOnly(_readOnly_);
+    textEditor->setEnabled(!_readOnly_);
     textEditor->setObjectName(elementName());
     return textEditor;
 }

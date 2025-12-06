@@ -442,16 +442,16 @@ char DateElement::elementType() const
     if(!checkDates())
         return nullptr;
 
-    if(_read_only_)
-    {
-        QLabel* date = new QLabel();
-        date->setObjectName(elementName());
-        QString info = QString::number(_cur_month_day_)+
-                "'га "+_months_.at(toIndex(_cur_month_))._name_+" "+
-                QString::number(_cur_year_)+" года";
-        date->setText(info);
-        return date;
-    }
+//    if(_read_only_)
+//    {
+//        QLabel* date = new QLabel();
+//        date->setObjectName(elementName());
+//        QString info = QString::number(_cur_month_day_)+
+//                "'га "+_months_.at(toIndex(_cur_month_))._name_+" "+
+//                QString::number(_cur_year_)+" года";
+//        date->setText(info);
+//        return date;
+//    }
 
     QGroupBox* container = new QGroupBox();
     QHBoxLayout* layout = new QHBoxLayout();
@@ -477,6 +477,13 @@ char DateElement::elementType() const
     layout->addWidget(date);
     layout->addWidget(month);
     layout->addWidget(year);
+    if(_read_only_)
+    {
+//        date->setEnabled(false);
+//        month->setEnabled(false);
+//        year->setEnabled(false);
+        container->setEnabled(false);
+    }
     container->setFlat(true);
     container->setLayout(layout);
     return container;

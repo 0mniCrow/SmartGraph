@@ -113,17 +113,20 @@ protected:
     void closeEvent(QCloseEvent* c_event) override;
 public:
     explicit ImageCropWindow(QWidget *parent = nullptr);
+    explicit ImageCropWindow(const QString& called_element_name, QWidget* parent = nullptr);
     ~ImageCropWindow();
     QPixmap getCroppedImage();
+    void setElementName(const QString& called_element_name);
 private:
     Ui::ImageCropWindow *ui;
     CropScene* _scene_;
     CropItem* _item_;
     ResizeItem* _r_item_;
     ShadowItem* _s_item_;
+    QString _called_element_name_;
     QPixmap getIMG();
 signals:
-    void imageHasBeenCropped(QPixmap croppedPixmap);
+    void imageHasBeenCropped(QString element_name, QPixmap croppedPixmap);
     void wasClosed();
 private slots:
     void chooseFile();

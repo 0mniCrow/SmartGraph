@@ -20,10 +20,53 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     _item_ = nullptr;
     _r_item_ = nullptr;
     _s_item_ = nullptr;
+    return;
+}
+
+ImageCropWindow::ImageCropWindow(
+        const QString& called_element_name,
+        QWidget* parent):
+                QWidget(parent),
+                 ui(new Ui::ImageCropWindow),
+                 _called_element_name_(called_element_name)
+{
+    ui->setupUi(this);
+    ui->spin_crop_width->setValue(DEF_WIDTH);
+    connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
+    connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
+    connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
+    connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
+    connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
+    connect(ui->spin_crop_width,&QSpinBox::valueChanged,this,&ImageCropWindow::thicknessChanged);
+    connect(ui->spin_resize_width,&QSpinBox::valueChanged,this,&ImageCropWindow::resThicknessChanged);
+    _scene_ = new CropScene(ui->graphicsView);
+    ui->graphicsView->setScene(_scene_);
+    _item_ = nullptr;
+    _r_item_ = nullptr;
+    _s_item_ = nullptr;
+    return;
+}
+
+void ImageCropWindow::setElementName(const QString& called_element_name)
+{
+    _called_element_name_=called_element_name;
+    return;
 }
 
 ImageCropWindow::~ImageCropWindow()
 {
+    if(_item_)
+    {
+        delete _item_;
+    }
+    if(_r_item_)
+    {
+        delete _r_item_;
+    }
+    if(_s_item_)
+    {
+        delete _s_item_;
+    }
     delete ui;
 }
 
@@ -136,19 +179,20 @@ void ImageCropWindow::cropImage()
     QPixmap copy(bg.copy(target.toRect()));
     painter.drawPixmap(crop.rect(),copy);
     painter.end();
-    emit imageHasBeenCropped(crop);
-    LocWidget* widget = new LocWidget;
-    widget->setAttribute(Qt::WA_TranslucentBackground);
-    widget->setPixmap(crop);
-    QPushButton* exit = new QPushButton("X");
-    exit->setFixedSize(20,20);
-    QObject::connect(exit,&QPushButton::clicked,widget,&QWidget::close);
-    QObject::connect(this,&QObject::destroyed,widget,&QObject::deleteLater);
-    QVBoxLayout* vert_layout = new QVBoxLayout;
-    vert_layout->addWidget(exit);
-    vert_layout->addStretch(1);
-    widget->setLayout(vert_layout);
-    widget->show();
+    emit imageHasBeenCropped(_called_element_name_,crop);
+    close();
+//    LocWidget* widget = new LocWidget;
+//    widget->setAttribute(Qt::WA_TranslucentBackground);
+//    widget->setPixmap(crop);
+//    QPushButton* exit = new QPushButton("X");
+//    exit->setFixedSize(20,20);
+//    QObject::connect(exit,&QPushButton::clicked,widget,&QWidget::close);
+//    QObject::connect(this,&QObject::destroyed,widget,&QObject::deleteLater);
+//    QVBoxLayout* vert_layout = new QVBoxLayout;
+//    vert_layout->addWidget(exit);
+//    vert_layout->addStretch(1);
+//    widget->setLayout(vert_layout);
+//    widget->show();
 
     return;
 }

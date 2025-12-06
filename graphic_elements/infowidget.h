@@ -76,6 +76,7 @@ private slots:
 public slots:
     void catchExternalChange(const QString& element_name, const QVariant& value);
     void startClosingTimer(int msec = -1);
+    void catchChosenPixmap(QString element_name, QPixmap picture);
 signals:
     void elementValueChanged(const QString& element_name, const QVariant& value);
     void saveRequest();

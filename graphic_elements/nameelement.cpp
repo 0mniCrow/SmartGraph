@@ -61,16 +61,20 @@ char NameElement::elementType() const
 [[nodiscard]] QWidget* NameElement::generateWidget()
 {
     QWidget* widget;
-    if(_is_editable_)
+//    if(_is_editable_)
+//    {
+    QLineEdit* l_edit = new QLineEdit(_value_);
+    l_edit->setMaxLength(NAME_ELEMENT_MAX_LEN);
+    widget = l_edit;
+    if(!_is_editable_)
     {
-        QLineEdit* l_edit = new QLineEdit(_value_);
-        l_edit->setMaxLength(NAME_ELEMENT_MAX_LEN);
-        widget = l_edit;
+        widget->setEnabled(false);
     }
-    else
-    {
-        widget = new QLabel(_value_);
-    }
+//    }
+//    else
+//    {
+//        widget = new QLabel(_value_);
+//    }
     widget->setObjectName(_element_name_);
     return widget;
 }

@@ -2,14 +2,14 @@
 
 ImageElement::ImageElement(const QString& element_name,
                            char element_type):
-    AbstractElement(element_name,element_type)
+    AbstractElement(element_name,element_type),_read_only_(false)
 {
     return;
 }
 ImageElement::ImageElement(const QString& element_name,
                            const QPixmap& value,
                            char element_type):
-    AbstractElement(element_name,element_type),_value_(value)
+    AbstractElement(element_name,element_type),_value_(value),_read_only_(false)
 {
     return;
 }
@@ -75,7 +75,7 @@ char ImageElement::elementType() const
     {
         _value_.load(":/res/icons/icons/no_image.svg");
     }
-    ImageLabel* picture = new ImageLabel();
+    ImageLabel* picture = new ImageLabel(_read_only_);
     QPixmap pixmap(generatePixmap(picture_type,icon_size));
     picture->setPixmap(pixmap);
     picture->setObjectName(_element_name_);
@@ -203,13 +203,13 @@ void ImageElement::changeElement(QVariant new_val, bool inform_signal)
 
 void ImageElement::setEditable(bool state)
 {
-    Q_UNUSED(state);
+    _read_only_ = !state;
     return;
 }
 
 void ImageLabel::mousePressEvent(QMouseEvent * m_event)
 {
-    if(m_event->type() == QEvent::MouseButtonDblClick)
+    if(!_read_only_ && (m_event->type() == QEvent::MouseButtonDblClick))
     {
         emit doubleClickEvent();
         m_event->accept();

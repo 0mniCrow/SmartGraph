@@ -13,10 +13,13 @@ class ImageLabel:public QLabel
 {
 private:
     QPixmap _cur_pixmap_;
+    bool _read_only_;
 public:
-    ImageLabel(QWidget* tata = nullptr):QLabel(tata){};
+    ImageLabel(bool read_only = false, QWidget* tata = nullptr):QLabel(tata),_read_only_(read_only){};
     void setPixmap(const QPixmap& val){_cur_pixmap_ = val; QLabel::setPixmap(_cur_pixmap_);};
     QPixmap getPixmap() const {return _cur_pixmap_;};
+    void setReadOnly(bool state){_read_only_ = state;}
+    bool readOnly()const{return _read_only_;}
 protected:
     void mousePressEvent(QMouseEvent * m_event) override;
 signals:
@@ -27,6 +30,7 @@ class ImageElement:public AbstractElement
 {
 private:
     QPixmap _value_;
+    bool _read_only_;
 public:
     enum PicType{PT_Default = 0, PT_RoundIcon = 1,
                  PT_RoundPic = 2, PT_SquareIcon = 3,
