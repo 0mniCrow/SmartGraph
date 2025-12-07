@@ -19,6 +19,7 @@ SOURCES += \
     graphic_elements/nameelement.cpp \
     graphic_elements/nodeobjectinfo.cpp \
     gview_tableVertexModel.cpp \
+    gview_tableVertexTableDelegate.cpp \
     gview_tableVertexView.cpp \
     gviewedge.cpp \
     gviewitem.cpp \
@@ -45,6 +46,7 @@ HEADERS += \
     graphic_elements/nameelement.h \
     graphic_elements/nodeobjectinfo.h \
     gview_tableVertexModel.h \
+    gview_tableVertexTableDelegate.h \
     gview_tableVertexView.h \
     gviewedge.h \
     gviewitem.h \
