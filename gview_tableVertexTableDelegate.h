@@ -1,6 +1,32 @@
 #ifndef VERTEXTABLEDELEGATE_H
 #define VERTEXTABLEDELEGATE_H
 #include <QStyledItemDelegate>
+#include <QFontMetrics>
+
+
+class TableInfo
+{
+private:
+    QPixmap _image_;
+    QString _info_;
+    QString _additional_info_;
+public:
+    enum class Mode{ReadMode,EditMode};
+    TableInfo(const QPixmap& image, const QString& info,
+                       const QString& additional_info = QString());
+    bool setImage(const QPixmap& new_image);
+    bool setInfo(const QString& new_info);
+    bool setAdditionalInfo(const QString& new_add_info);
+    QPixmap getImage() const;
+    QString getInfo() const;
+    QString getAdditionalInfo() const;
+    QSize sizeHint() const;
+    void paint(QPainter* painter, const QRect& rect,
+               const QPalette& palette, Mode mode) const;
+
+};
+
+Q_DECLARE_METATYPE(TableInfo)
 
 class VertexTableDelegate:public QStyledItemDelegate
 {
