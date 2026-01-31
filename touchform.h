@@ -21,6 +21,7 @@
 #include <QGraphicsView>
 #include <QMovie>
 #include <QTimer>
+#include <QFontMetrics>
 //#include "graphwidget.h"
 
 namespace Ui {

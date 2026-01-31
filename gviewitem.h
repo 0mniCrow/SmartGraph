@@ -25,7 +25,7 @@
 #include <QIcon>
 #include "graphic_elements/nodeobjectinfo.h"
 
-#define INFO_COMPLEX_OBJECT
+/*#define INFO_COMPLEX_OBJECT*/
 
 #ifdef INFO_COMPLEX_OBJECT
     using info_type = NodeObjectInfo;

@@ -580,6 +580,28 @@ void TouchForm::paintEvent(QPaintEvent* p_event)
 
     }
         break;
+    case 21:
+    {
+        QString str("Short");
+        QString str1("Long Long String 2 ");
+        QFont cur_font("Times",12, QFont::Normal);
+        QFontMetrics font_metrics(cur_font);
+        int max_str_p_size = std::max(font_metrics.horizontalAdvance(str),font_metrics.horizontalAdvance(str1));
+        const int ellipce_size = 64;
+        const int space = 10;
+        QRect rectangle(0,0,ellipce_size+space*2+max_str_p_size,ellipce_size);
+        painter.setRenderHint(QPainter::Antialiasing,true);
+        painter.setBrush(QBrush(Qt::darkRed));
+        painter.setPen(QPen(Qt::black,2));
+        painter.drawRect(rectangle);
+        painter.drawEllipse(0,0,ellipce_size,ellipce_size);
+        QRect text_rectangle(ellipce_size+space,0,max_str_p_size,ellipce_size/2);
+        QRect text_rectangle2(ellipce_size+space,ellipce_size/2,max_str_p_size,ellipce_size/2);
+        painter.setFont(cur_font);
+        painter.drawText(text_rectangle,Qt::AlignCenter,str);
+        painter.drawText(text_rectangle2,Qt::AlignCenter,str1);
+    }
+        break;
     default:
     {
 

@@ -3,7 +3,7 @@
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
 
-
+/*
 class TableInfo
 {
 private:
@@ -49,5 +49,5 @@ public:
                       const QModelIndex& index) const override;
 
 };
-
+*/
 #endif // VERTEXTABLEDELEGATE_H

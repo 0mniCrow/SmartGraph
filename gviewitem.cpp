@@ -164,7 +164,7 @@ const NodeObjectInfo& GViewItem::info()const
 
 #else
 
-void GViewItem::setInfo        const QString& info)
+void GViewItem::setInfo(const QString& info)
 {
     _info_=info;
     return;

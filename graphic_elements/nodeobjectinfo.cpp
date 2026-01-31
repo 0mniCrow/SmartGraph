@@ -39,7 +39,7 @@ void NodeObjectInfo::deepCopyObject(NodeObjectInfo&& other)
     return;
 }
 
-NodeObjectInfo::NodeObjectInfo(const NodeObjectInfo& other):_widget_(nullptr)
+NodeObjectInfo::NodeObjectInfo(const NodeObjectInfo& other):AbstractObjectInfo(),_widget_(nullptr)
 {
     copyObject(other);
     return;

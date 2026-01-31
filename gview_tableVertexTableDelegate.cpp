@@ -1,6 +1,6 @@
 #include "gview_tableVertexTableDelegate.h"
 #include "qapplication.h"
-
+/*
 TableInfo::TableInfo(const QPixmap& image, const QString& info,
                    const QString& additional_info)
 {
@@ -73,3 +73,4 @@ void VertexTableDelegate::paint(QPainter* painter,
 {
 
 }
+*/

@@ -11,6 +11,7 @@
 
 class ImageLabel:public QLabel
 {
+    Q_OBJECT
 private:
     QPixmap _cur_pixmap_;
     bool _read_only_;
@@ -28,6 +29,7 @@ signals:
 
 class ImageElement:public AbstractElement
 {
+    Q_OBJECT
 private:
     QPixmap _value_;
     bool _read_only_;
