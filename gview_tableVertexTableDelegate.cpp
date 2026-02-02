@@ -1,5 +1,55 @@
 #include "gview_tableVertexTableDelegate.h"
 #include "qapplication.h"
+#include "qpainter.h"
+
+IconDelegate::IconDelegate(QObject* tata):
+    QStyledItemDelegate(tata)
+{
+    return;
+}
+
+QPixmap IconDelegate::loadDefImg() const
+{
+    ///!TODO default image
+    return QPixmap();
+}
+
+void IconDelegate::paint(QPainter* painter,
+           const QStyleOptionViewItem& option,
+           const QModelIndex& index) const
+{
+    painter->save();
+    QPixmap image;
+    ///!TODO get image form index
+    painter->fillRect(option.rect,option.state & QStyle::State_Selected?
+                          option.palette.highlight():
+                          option.palette.base());
+    if(image.isNull())
+    {
+        image = loadDefImg();
+    }
+    QSize size = image.size();
+
+
+}
+
+QWidget* IconDelegate::createEditor(QWidget* tata,
+                           const QStyleOptionViewItem& option,
+                           const QModelIndex& index) const
+{
+
+}
+
+bool IconDelegate::editorEvent(QEvent* event,
+                      QAbstractItemModel* model,
+                      const QStyleOptionViewItem& option,
+                      const QModelIndex& index)
+{
+
+}
+
+
+
 /*
 TableInfo::TableInfo(const QPixmap& image, const QString& info,
                    const QString& additional_info)

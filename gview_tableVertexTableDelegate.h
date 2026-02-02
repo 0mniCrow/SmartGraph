@@ -1,5 +1,6 @@
 #ifndef VERTEXTABLEDELEGATE_H
 #define VERTEXTABLEDELEGATE_H
+#include <QVBoxLayout>
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
 
@@ -9,12 +10,9 @@ class IconDelegate: public QStyledItemDelegate
 {
     Q_OBJECT
 private:
-    QPixmap _image_;
+    QPixmap loadDefImg() const;
 public:
-    explicit IconDelegate(const QPixmap& image = QPixmap(),
-                          QObject* tata = nullptr);
-    void setImage(const QPixmap& image);
-    const QPixmap& getImage() const;
+    explicit IconDelegate(QObject* tata = nullptr);
     void paint(QPainter* painter,
                const QStyleOptionViewItem& option,
                const QModelIndex& index) const override;
@@ -27,6 +25,18 @@ public:
                      const QModelIndex& index) override;
 signals:
     void doubleClickEvent_occured(const QModelIndex& index);
+};
+
+struct NameEditor:public QWidget
+{
+private:
+    Q_OBJECT
+public:
+    QLineEdit* _first_name_;
+    QLineEdit* _last_name_;
+    QVBoxLayout* _layout_;
+    explicit NameEditor(QWidget* tata = nullptr);
+
 };
 
 class NameDelegate:public QStyledItemDelegate
