@@ -4,7 +4,7 @@
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
 
-const int max_icon_size = 64;
+const int pref_icon_size = 64;
 
 class IconDelegate: public QStyledItemDelegate
 {
@@ -16,9 +16,9 @@ public:
     void paint(QPainter* painter,
                const QStyleOptionViewItem& option,
                const QModelIndex& index) const override;
-    QWidget* createEditor(QWidget* tata,
-                          const QStyleOptionViewItem& option,
-                          const QModelIndex& index) const override;
+//    QWidget* createEditor(QWidget* tata,
+//                          const QStyleOptionViewItem& option,
+//                          const QModelIndex& index) const override;
     bool editorEvent(QEvent* event,
                      QAbstractItemModel* model,
                      const QStyleOptionViewItem& option,
@@ -42,17 +42,8 @@ public:
 class NameDelegate:public QStyledItemDelegate
 {
     Q_OBJECT
-private:
-    QString _f_name_;
-    QString _l_name_;
 public:
-    explicit NameDelegate(const QString& first_name = QString(),
-                          const QString& last_name = QString(),
-                          QObject* tata = nullptr);
-    void setFirstName(const QString& first_name);
-    void setLastName(const QString& last_name);
-    QString getFirstName()const;
-    QString getLastName()const;
+    explicit NameDelegate(QObject* tata = nullptr);
     void paint(QPainter* painter,
                const QStyleOptionViewItem& option,
                const QModelIndex& index) const override;

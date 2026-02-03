@@ -1,6 +1,7 @@
 #include "gview_tableVertexTableDelegate.h"
 #include "qapplication.h"
 #include "qpainter.h"
+#include <QLineEdit>
 
 IconDelegate::IconDelegate(QObject* tata):
     QStyledItemDelegate(tata)
@@ -29,26 +30,66 @@ void IconDelegate::paint(QPainter* painter,
         image = loadDefImg();
     }
     QSize size = image.size();
-
-
+    if(size.height()!=pref_icon_size || size.width()!=pref_icon_size)
+    {
+        image = image.scaled(pref_icon_size,pref_icon_size);
+    }
+    QPoint center = option.rect.center();
+    painter->drawPixmap(center,image);
+    painter->restore();
+    return;
 }
 
-QWidget* IconDelegate::createEditor(QWidget* tata,
-                           const QStyleOptionViewItem& option,
-                           const QModelIndex& index) const
-{
-
-}
+//QWidget* IconDelegate::createEditor([[maybe_unused]]QWidget* tata,
+//                           [[maybe_unused]]const QStyleOptionViewItem& option,
+//                           [[maybe_unused]]const QModelIndex& index) const
+//{
+//    Q_UNUSED(tata)
+//    Q_UNUSED(option)
+//    Q_UNUSED(index)
+//    return nullptr;
+//}
 
 bool IconDelegate::editorEvent(QEvent* event,
                       QAbstractItemModel* model,
                       const QStyleOptionViewItem& option,
                       const QModelIndex& index)
 {
-
+    Q_UNUSED(model)
+    Q_UNUSED(option)
+    if(event->type() == QEvent::MouseButtonDblClick)
+    {
+        emit doubleClickEvent_occured(index);
+    }
+    return false;
 }
 
+NameEditor::NameEditor(QWidget* tata):QWidget(tata)
+{
+    _layout_ = new QVBoxLayout(this);
+    _first_name_ = new QLineEdit(this);
+    _last_name_ = new QLineEdit(this);
+    _layout_->addWidget(_first_name_);
+    _layout_->addWidget(_last_name_);
+    return;
+}
 
+NameDelegate::NameDelegate(QObject* tata):
+    QStyledItemDelegate(tata)
+{
+    return;
+}
+
+void NameDelegate::paint(QPainter* painter,
+           const QStyleOptionViewItem& option,
+           const QModelIndex& index) const
+{
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    QString f_name,l_name;
+    ///!TODO get values from index' data
+    painter->restore();
+}
 
 /*
 TableInfo::TableInfo(const QPixmap& image, const QString& info,
