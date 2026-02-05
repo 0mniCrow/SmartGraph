@@ -65,13 +65,19 @@ bool IconDelegate::editorEvent(QEvent* event,
     return false;
 }
 
-NameEditor::NameEditor(QWidget* tata):QWidget(tata)
+NameEditor::NameEditor(const QString &first_name,
+                       const QString &last_name,
+                       QWidget* tata):QWidget(tata),
+    _f_name_(first_name),_l_name_(last_name)
 {
-    _layout_ = new QVBoxLayout(this);
-    _first_name_ = new QLineEdit(this);
-    _last_name_ = new QLineEdit(this);
-    _layout_->addWidget(_first_name_);
-    _layout_->addWidget(_last_name_);
+    QLineEdit* f_name_edit = new QLineEdit();
+    QLineEdit* l_name_edit = new QLineEdit();
+    QVBoxLayout* loc_layout = new QVBoxLayout();
+    f_name_edit->setText(first_name);
+    l_name_edit->setText(last_name);
+    loc_layout->addWidget(f_name_edit);
+    loc_layout->addWidget(l_name_edit);
+    setLayout(loc_layout);
     return;
 }
 
@@ -94,6 +100,10 @@ void NameDelegate::paint(QPainter* painter,
     int max_str_p_size = std::max(font_metrics.horizontalAdvance(f_name),font_metrics.horizontalAdvance(l_name));
     QRect text_rectangle1(0,0,max_str_p_size,pref_icon_size/2);
     QRect text_rectangle2(0,pref_icon_size/2,max_str_p_size,pref_icon_size/2);
+    if (option.state & QStyle::State_Selected)
+    {
+        painter->fillRect(option.rect, option.palette.highlight());
+    }
     painter->setFont(cur_font);
     painter->drawText(text_rectangle1,Qt::AlignCenter|Qt::AlignVCenter,f_name);
     painter->drawText(text_rectangle2,Qt::AlignCenter|Qt::AlignVCenter,l_name);
@@ -123,3 +133,13 @@ void NameDelegate::paint(QPainter* painter,
     painter->restore();
 }
 
+
+QWidget* NameDelegate::createEditor(QWidget* tata,
+                      const QStyleOptionViewItem& option,
+                      const QModelIndex& index) const
+{
+    QString f_name,l_name;
+    ///!TODO - get names from index and connect signals
+    QWidget* name_editor = new NameEditor(f_name,l_name,tata);
+    return name_editor;
+}

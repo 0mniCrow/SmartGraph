@@ -27,17 +27,23 @@ signals:
     void doubleClickEvent_occured(const QModelIndex& index);
 };
 
-struct NameEditor:public QWidget
+class NameEditor:public QWidget
 {
-private:
     Q_OBJECT
+private:
+    QString _f_name_;
+    QString _l_name_;
 public:
-    QLineEdit* _first_name_;
-    QLineEdit* _last_name_;
-    QVBoxLayout* _layout_;
-    explicit NameEditor(QWidget* tata = nullptr);
+    //QLineEdit* _first_name_;
+    //QLineEdit* _last_name_;
+    //QVBoxLayout* _layout_;
+    explicit NameEditor(const QString& first_name,
+                        const QString& last_name,
+                        QWidget* tata = nullptr);
 
 };
+
+
 
 class NameDelegate:public QStyledItemDelegate
 {
