@@ -3,7 +3,7 @@
 #include <QVBoxLayout>
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
-
+/*
 const int pref_icon_size = 64;
 
 class IconDelegate: public QStyledItemDelegate
@@ -63,7 +63,7 @@ public:
     QSize sizeHint(const QStyleOptionViewItem& option,
                    const QModelIndex& index) const override;
 };
-
+*/
 /*
 class TableInfo
 {

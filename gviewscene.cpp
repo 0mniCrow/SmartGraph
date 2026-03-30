@@ -32,3 +32,20 @@ void GViewScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
     }
     return;
 }
+
+void GViewScene::drawBackground(QPainter* painter, const QRectF& rect)
+{
+    if(_bg_.isNull())
+    {
+        return;
+    }
+    painter->save();
+    painter->drawPixmap(rect,_bg_.copy(),rect);
+    painter->restore();
+}
+
+bool GViewScene::setBG(const QPixmap& source_bg)
+{
+    _bg_ = source_bg;
+    return true;
+}

@@ -43,6 +43,7 @@ private slots:
     void ChangeSize(int radius);
     void updateInfo(QString info);
     void fixEdges(bool status);
+    void setBG();
     //_______________End______________________
 private:
     TouchForm * touchform;

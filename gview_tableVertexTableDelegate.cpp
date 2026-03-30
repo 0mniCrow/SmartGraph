@@ -2,7 +2,7 @@
 #include "qapplication.h"
 #include "qpainter.h"
 #include <QLineEdit>
-
+/*
 IconDelegate::IconDelegate(QObject* tata):
     QStyledItemDelegate(tata)
 {
@@ -107,7 +107,7 @@ void NameDelegate::paint(QPainter* painter,
     painter->setFont(cur_font);
     painter->drawText(text_rectangle1,Qt::AlignCenter|Qt::AlignVCenter,f_name);
     painter->drawText(text_rectangle2,Qt::AlignCenter|Qt::AlignVCenter,l_name);
-
+*/
     /*
         QString str("Short");
         QString str1("Long Long String 2 ");
@@ -128,7 +128,7 @@ void NameDelegate::paint(QPainter* painter,
         painter.drawText(text_rectangle,Qt::AlignCenter,str);
         painter.drawText(text_rectangle2,Qt::AlignCenter,str1);
 */
-
+/*
 
     painter->restore();
 }
@@ -143,3 +143,4 @@ QWidget* NameDelegate::createEditor(QWidget* tata,
     QWidget* name_editor = new NameEditor(f_name,l_name,tata);
     return name_editor;
 }
+*/
