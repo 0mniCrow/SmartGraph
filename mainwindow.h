@@ -23,6 +23,8 @@ QT_END_NAMESPACE
 using std::vector;
 using std::string;
 
+#define MINIMAL_BG_SIZE 1000
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

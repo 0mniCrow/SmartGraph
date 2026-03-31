@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
     connect(ui->check_Fix_edge_length,&QCheckBox::clicked,this,&MainWindow::fixEdges);
+    connect(ui->Button_SetBG,&QPushButton::clicked,this,&MainWindow::setBG);
 
     initiateGraphicsView();
     execute();
@@ -739,7 +740,7 @@ void MainWindow::initiateGraphicsView()
     _model_ = new VertexModel();
     _view_ = new GViewPort(ui->spin_Radius->value(),_model_);
     _scene_ = new GViewScene(_view_);
-    _scene_->setSceneRect(QRectF(-500,500,1000,1000));
+    _scene_->setSceneRect(QRectF(/*-500*/0,/*500*/0,1000,1000));
     _view_->setScene(_scene_);
     QVBoxLayout * layout = new QVBoxLayout();
     layout->addWidget(_view_);
@@ -837,5 +838,20 @@ void MainWindow::fixEdges(bool status)
 
 void MainWindow::setBG()
 {
-
+    QString filename(QFileDialog::getOpenFileName(
+                         this,"Open Image to set as background",QDir::currentPath(),
+                         "Images (*.jpg *.png *.bmp)",nullptr,QFileDialog::DontUseNativeDialog));
+    QPixmap bg(filename);
+    if(!bg)
+    {
+        return;
+    }
+    if((bg.height()<MINIMAL_BG_SIZE)||
+            (bg.width()<MINIMAL_BG_SIZE))
+    {
+       bg = bg.scaled(MINIMAL_BG_SIZE,MINIMAL_BG_SIZE,Qt::KeepAspectRatioByExpanding);
+    }
+    _scene_->setBG(bg);
+    _scene_->setSceneRect(0,0,bg.width(),bg.height());
+    _view_->updateSceneRect(_scene_->sceneRect());
 }
