@@ -855,3 +855,12 @@ void MainWindow::setBG()
     _scene_->setSceneRect(0,0,bg.width(),bg.height());
     _view_->updateSceneRect(_scene_->sceneRect());
 }
+
+void MainWindow::SaveProject()
+{
+
+}
+void MainWindow::LoadProject()
+{
+
+}

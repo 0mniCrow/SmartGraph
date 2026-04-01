@@ -489,3 +489,13 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
     QGraphicsItem::hoverLeaveEvent(h_event);
 }
 
+QDomElement GViewItem::gatherInfo() const
+{
+    QDomElement xml_element;
+    xml_element.setTagName("node"+_info_);
+    xml_element.setAttribute("color",_color_.rgb());
+    xml_element.setAttribute("x",scenePos().x());
+    xml_element.setAttribute("y",scenePos().y());
+    xml_element.setAttribute("radius",_radius_);
+    return xml_element;
+}

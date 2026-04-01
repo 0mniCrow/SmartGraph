@@ -46,6 +46,8 @@ private slots:
     void updateInfo(QString info);
     void fixEdges(bool status);
     void setBG();
+    void SaveProject();
+    void LoadProject();
     //_______________End______________________
 private:
     TouchForm * touchform;

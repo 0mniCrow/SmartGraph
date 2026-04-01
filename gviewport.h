@@ -17,7 +17,7 @@
 #include <QBasicTimer>
 #include <QSet>
 #include <chrono>
-
+#include <QDomNode>
 
 class GViewPort:public QGraphicsView
 {
@@ -39,6 +39,7 @@ public:
     void itemMoved();
     void setForceCalc(bool state, bool fixateEdgeLength = true);
     void clear();
+    QDomNode gatherInfo();
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;

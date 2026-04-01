@@ -65,6 +65,7 @@ public:
     void clearPhantomRow();
     void setDraggedRow(int dragged_row);
     void clearDraggedRow();
+    QMap<GViewItem*,QDomElement> gatherItemInfo() const;
 protected:
     virtual bool sortVM(GViewItem* left, GViewItem* right);
     virtual bool filter(GViewItem* element);

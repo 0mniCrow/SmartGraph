@@ -698,7 +698,7 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
                 edges.push_back(new_edge);
             }
         }
-        iter++;
+        ++iter;
     }
     clear();
     iter = items.cbegin();
@@ -740,7 +740,7 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
         scene()->addItem(iter->second);
         iter->second->setPos(central_p);
         _vertices_->addItem(iter->second);
-        iter++;
+        ++iter;
     }
     for(GViewEdge* edge:edges)
     {
@@ -773,7 +773,7 @@ void GViewPort::timerEvent(QTimerEvent * t_event)
     while(it!= _vertices_->end())
     {
         (*it)->calcForce();
-        it++;
+        ++it;
     }
     bool item_mov = false;
     it = _vertices_->begin();
@@ -783,7 +783,7 @@ void GViewPort::timerEvent(QTimerEvent * t_event)
         {
             item_mov = true;
         }
-        it++;
+        ++it;
     }
     if(!item_mov)
     {
@@ -805,9 +805,32 @@ void GViewPort::setForceCalc(bool state, bool fixateEdgeLength)
     while(it!=_vertices_->end())
     {
         (*it)->setForceCalc(state);
-        it++;
+        ++it;
     }
     if(state)
         itemMoved();
     return;
+}
+
+QDomNode GViewPort::gatherInfo()
+{
+    QDomNode rootNode;
+    QMap<GViewItem*,QDomElement> vertices_data(_vertices_->gatherItemInfo());
+    auto m_it = vertices_data.begin();
+    int counter = 0;
+    while(m_it!=vertices_data.end())
+    {
+        QDomNode edges;
+
+        int cur_num = counter;
+        for(GViewEdge* s_edge:_edges_)
+        {
+
+        }
+        ++m_it;
+        ++counter;
+    }
+
+
+    return rootNode;
 }

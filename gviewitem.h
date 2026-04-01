@@ -23,6 +23,7 @@
 #include <QCursor>
 #include <QMenu>
 #include <QIcon>
+#include <QDomElement>
 #include "graphic_elements/nodeobjectinfo.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
@@ -94,6 +95,7 @@ public:
     enum {Type = UserType+1};
     int type() const override{return Type;}
 
+    QDomElement gatherInfo() const;
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

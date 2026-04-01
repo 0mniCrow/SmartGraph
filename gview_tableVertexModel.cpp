@@ -484,3 +484,15 @@ bool VertexModel::filter(GViewItem* element)
 {
     return !element->info().isEmpty();
 }
+
+QMap<GViewItem*,QDomElement> VertexModel::gatherItemInfo() const
+{
+    QMap<GViewItem*,QDomElement> internalInfo;
+    QVector<GViewItem*>::ConstIterator it = _vertices_.cbegin();
+    while(it!=_vertices_.cend())
+    {
+        internalInfo.insert(*it,(*it)->gatherInfo());
+        it++;
+    }
+    return internalInfo;
+}
