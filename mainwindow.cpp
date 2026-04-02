@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
     connect(ui->check_Fix_edge_length,&QCheckBox::clicked,this,&MainWindow::fixEdges);
     connect(ui->Button_SetBG,&QPushButton::clicked,this,&MainWindow::setBG);
+    connect(ui->Button_ViewSave,&QPushButton::clicked,this,&MainWindow::SaveProject);
 
     initiateGraphicsView();
     execute();
@@ -846,6 +847,7 @@ void MainWindow::setBG()
     {
         return;
     }
+    _bg_filename_=filename;
     if((bg.height()<MINIMAL_BG_SIZE)||
             (bg.width()<MINIMAL_BG_SIZE))
     {
@@ -858,7 +860,66 @@ void MainWindow::setBG()
 
 void MainWindow::SaveProject()
 {
-
+    QString addr = QFileDialog::getSaveFileName(this,"Chose file to save",
+                                                QDir::currentPath(),
+                                                "XML files (*.xml)",nullptr,
+                                                QFileDialog::DontUseNativeDialog);
+    QFile xml_file(addr);
+    if(!xml_file.open(QFile::WriteOnly|QFile::Text))
+    {
+        return;
+    }
+    QTextStream xml_stream(&xml_file);
+    QDomDocument main_doc;
+    QDomElement root = main_doc.createElement("project");
+    main_doc.appendChild(root);
+    nest_vert_map vertices;
+    nest_vert_map edges;
+    _view_->gatherInfo(vertices,edges);
+    QDomElement DOM_vertices  = main_doc.createElement("vertices");
+    for(vert_map*vertex:vertices)
+    {
+        QDomElement DOM_vertex = main_doc.createElement("vertex");
+        auto it = vertex->cbegin();
+        while(it!=vertex->cend())
+        {
+            QDomElement DOM_elem = main_doc.createElement(it.key());
+            QDomText DOM_val = main_doc.createTextNode(it.value());
+            DOM_elem.appendChild(DOM_val);
+            DOM_vertex.appendChild(DOM_elem);
+            it++;
+        }
+        DOM_vertices.appendChild(DOM_vertex);
+    }
+    root.appendChild(DOM_vertices);
+    QDomElement DOM_edges = main_doc.createElement("edges");
+    for(vert_map*edge:edges)
+    {
+        QDomElement DOM_edge = main_doc.createElement("edge");
+        auto it = edge->cbegin();
+        while(it!=edge->cend())
+        {
+            QDomElement DOM_elem = main_doc.createElement(it.key());
+            QDomText DOM_val = main_doc.createTextNode(it.value());
+            DOM_elem.appendChild(DOM_val);
+            DOM_edge.appendChild(DOM_elem);
+            it++;
+        }
+        DOM_edges.appendChild(DOM_edge);
+    }
+    root.appendChild(DOM_edges);
+    if(!_bg_filename_.isEmpty())
+    {
+        QDomElement DOM_bg = main_doc.createElement("bgImage");
+        QDomText DOM_img_addr = main_doc.createTextNode("imgAddr");
+        DOM_img_addr.setData(_bg_filename_);
+        DOM_bg.appendChild(DOM_img_addr);
+        root.appendChild(DOM_bg);
+    }
+    xml_stream<<main_doc.toString();
+    xml_file.flush();
+    xml_file.close();
+    return;
 }
 void MainWindow::LoadProject()
 {

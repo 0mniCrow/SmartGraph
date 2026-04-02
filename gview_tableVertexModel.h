@@ -8,6 +8,8 @@
 #include <QMimeData>
 #include <QDataStream>
 
+typedef QList<vert_map*> nest_vert_map;
+
 class VertexModel:public QAbstractTableModel
 {
 private:
@@ -65,7 +67,7 @@ public:
     void clearPhantomRow();
     void setDraggedRow(int dragged_row);
     void clearDraggedRow();
-    QMap<GViewItem*,QDomElement> gatherItemInfo() const;
+    void gatherItemInfo(nest_vert_map& vertices) const;
 protected:
     virtual bool sortVM(GViewItem* left, GViewItem* right);
     virtual bool filter(GViewItem* element);

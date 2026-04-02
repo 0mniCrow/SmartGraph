@@ -812,25 +812,25 @@ void GViewPort::setForceCalc(bool state, bool fixateEdgeLength)
     return;
 }
 
-QDomNode GViewPort::gatherInfo()
+void GViewPort::gatherInfo(nest_vert_map &vertices,
+                           nest_vert_map &edges)
 {
-    QDomNode rootNode;
-    QMap<GViewItem*,QDomElement> vertices_data(_vertices_->gatherItemInfo());
-    auto m_it = vertices_data.begin();
-    int counter = 0;
-    while(m_it!=vertices_data.end())
+
+    if(!vertices.empty())
     {
-        QDomNode edges;
-
-        int cur_num = counter;
-        for(GViewEdge* s_edge:_edges_)
-        {
-
-        }
-        ++m_it;
-        ++counter;
+        qDeleteAll(vertices);
+        vertices.clear();
     }
-
-
-    return rootNode;
+    if(!edges.empty())
+    {
+        qDeleteAll(edges);
+        edges.clear();
+    }
+    _vertices_->gatherItemInfo(vertices);
+    for(GViewEdge* edge:_edges_)
+    {
+        vert_map* vertex_m= new vert_map;
+        edge->gatherInfo(vertex_m);
+        edges.append(vertex_m);
+    }
 }

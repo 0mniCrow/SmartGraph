@@ -489,13 +489,30 @@ void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
     QGraphicsItem::hoverLeaveEvent(h_event);
 }
 
-QDomElement GViewItem::gatherInfo() const
+void GViewItem::gatherInfo(vert_map *container) const
 {
-    QDomElement xml_element;
-    xml_element.setTagName("node"+_info_);
-    xml_element.setAttribute("color",_color_.rgb());
-    xml_element.setAttribute("x",scenePos().x());
-    xml_element.setAttribute("y",scenePos().y());
-    xml_element.setAttribute("radius",_radius_);
-    return xml_element;
+    if(!container)
+    {
+        return;
+    }
+    if(!container->empty())
+    {
+        container->clear();
+    }
+    auto addr = reinterpret_cast<std::uintptr_t>(this);
+    container->insert("ptr_id",QString::number(addr,16));
+    container->insert("x",QString::number(scenePos().x()));
+    container->insert("y",QString::number(scenePos().y()));
+    container->insert("color",QString::number(_color_.rgb()));
+    container->insert("radius",QString::number(_radius_));
+    container->insert("data",QString(_info_));
+    return;
+//    QDomElement xml_element;
+//    xml_element.setAttribute()
+//    xml_element.setTagName("Vertex");
+//    xml_element.setAttribute("color",_color_.rgb());
+//    xml_element.setAttribute("x",scenePos().x());
+//    xml_element.setAttribute("y",scenePos().y());
+//    xml_element.setAttribute("radius",_radius_);
+
 }

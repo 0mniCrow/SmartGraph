@@ -27,6 +27,7 @@
 #include "graphic_elements/nodeobjectinfo.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
+typedef QMap<QString,QString> vert_map;
 
 #ifdef INFO_COMPLEX_OBJECT
     using info_type = NodeObjectInfo;
@@ -95,7 +96,8 @@ public:
     enum {Type = UserType+1};
     int type() const override{return Type;}
 
-    QDomElement gatherInfo() const;
+    void gatherInfo(vert_map* item_container) const;
+    //void loadInfo(vert_map* item_container);
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;

@@ -237,3 +237,21 @@ void GViewEdge::paint(QPainter* painter,
                 QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
     return;
 }
+
+void GViewEdge::gatherInfo(vert_map *container) const
+{
+    if(!container)
+    {
+        return;
+    }
+    if(!container->empty())
+    {
+        container->clear();
+    }
+    auto s_addr = reinterpret_cast<std::uintptr_t>(_src_item_);
+    auto d_addr = reinterpret_cast<std::uintptr_t>(_dest_item_);
+    container->insert("source",QString::number(s_addr,16));
+    container->insert("destination",QString::number(d_addr,16));
+    container->insert("directed",_directed_?"1":"0");
+    return;
+}

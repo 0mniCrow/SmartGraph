@@ -39,6 +39,7 @@ public:
     enum {Type = UserType+2};
     int type() const override {return Type;}
     QPainterPath shape() const override;
+    void gatherInfo(vert_map* container) const;
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter,

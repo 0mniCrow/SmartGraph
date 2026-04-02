@@ -59,6 +59,7 @@ private:
     GViewPort* _view_;
     VertexModel* _model_;
     VertexList* _vert_list_;
+    QString _bg_filename_;
     //______________End________________________
     void keyPressEvent(QKeyEvent* pe) override;
     void initiateGraphicsView();

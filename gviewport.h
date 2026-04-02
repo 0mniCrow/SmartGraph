@@ -39,7 +39,8 @@ public:
     void itemMoved();
     void setForceCalc(bool state, bool fixateEdgeLength = true);
     void clear();
-    QDomNode gatherInfo();
+    void gatherInfo(nest_vert_map& vertices,
+                    nest_vert_map& edges);
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
