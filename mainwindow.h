@@ -63,6 +63,7 @@ private:
     //______________End________________________
     void keyPressEvent(QKeyEvent* pe) override;
     void initiateGraphicsView();
+    void LoadBGFromFile(const QString& addr);
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

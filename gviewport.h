@@ -40,7 +40,9 @@ public:
     void setForceCalc(bool state, bool fixateEdgeLength = true);
     void clear();
     void gatherInfo(nest_vert_map& vertices,
-                    nest_vert_map& edges);
+                    nest_vert_map& edges) const;
+    void loadInfo(const nest_vert_map& vertices,
+                  const nest_vert_map& edges);
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;

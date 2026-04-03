@@ -813,7 +813,7 @@ void GViewPort::setForceCalc(bool state, bool fixateEdgeLength)
 }
 
 void GViewPort::gatherInfo(nest_vert_map &vertices,
-                           nest_vert_map &edges)
+                           nest_vert_map &edges) const
 {
 
     if(!vertices.empty())
@@ -833,4 +833,98 @@ void GViewPort::gatherInfo(nest_vert_map &vertices,
         edge->gatherInfo(vertex_m);
         edges.append(vertex_m);
     }
+    return;
+}
+
+void GViewPort::loadInfo(const nest_vert_map& vertices,
+              const nest_vert_map& edges)
+{
+    clear();
+    QMap<QString,GViewItem*> obj_map;
+    for(const vert_map*vertex:vertices)
+    {
+        qreal x = 0;
+        qreal y = 0;
+        int radius = 0;
+        QRgb colour;
+        QString data;
+        QString code;
+        vert_map::const_iterator it = vertex->find("x");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        x = it.value().toDouble();
+        it = vertex->find("y");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        y = it.value().toDouble();
+        it = vertex->find("radius");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        radius = it.value().toInt();
+        it = vertex->find("color");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        colour = it.value().toInt();
+        it = vertex->find("ptr_id");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        code = it.value();
+        it = vertex->find("data");
+        if(it==vertex->constEnd())
+        {
+            continue;
+        }
+        data = it.value();
+
+        GViewItem* item = new GViewItem(radius,
+                                        data,
+                                        colour);
+        setMode(GPort_add);
+        addItem(item,mapFromScene(x,y));
+        obj_map.insert(code,item);
+    }
+    for(const vert_map*edge:edges)
+    {
+        GViewItem* source = nullptr;
+        GViewItem* dest = nullptr;
+        bool directed = false;
+        vert_map::const_iterator it = edge->find("source");
+        if(it==edge->constEnd())
+        {
+            continue;
+        }
+        if(!obj_map.contains(it.value()))
+        {
+            continue;
+        }
+        source = obj_map.value(it.value());
+        it = edge->find("destination");
+        if(it==edge->constEnd())
+        {
+            continue;
+        }
+        if(!obj_map.contains(it.value()))
+        {
+            continue;
+        }
+        dest = obj_map.value(it.value());
+        it = edge->find("directed");
+        if(it==edge->constEnd())
+        {
+            continue;
+        }
+        directed = it.value().toInt();
+        addEdge(source,dest,directed);
+    }
+    return;
 }
