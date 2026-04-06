@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Button_SetBG,&QPushButton::clicked,this,&MainWindow::setBG);
     connect(ui->Button_ViewSave,&QPushButton::clicked,this,&MainWindow::SaveProject);
     connect(ui->Button_ViewLoad,&QPushButton::clicked,this,&MainWindow::LoadProject);
+    connect(ui->Button_UI_Hide,&QPushButton::clicked,this,&MainWindow::HideShowUI);
 
     initiateGraphicsView();
     execute();
@@ -1031,4 +1032,18 @@ void MainWindow::LoadProject()
     qDeleteAll(vertices);
     qDeleteAll(edges);
     return;
+}
+
+void MainWindow::HideShowUI()
+{
+    if(ui->group_ui->isVisible())
+    {
+        ui->Button_UI_Hide->setText("<\n<\n<\n<\n<");
+        ui->group_ui->setVisible(false);
+    }
+    else
+    {
+        ui->Button_UI_Hide->setText(">\n>\n>\n>\n>");
+        ui->group_ui->setVisible(true);
+    }
 }
