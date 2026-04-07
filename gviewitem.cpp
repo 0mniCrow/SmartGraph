@@ -9,12 +9,14 @@ GViewItem::GViewItem(int radius,
                      const QString &info,
                      #endif
                      const QColor &color):_info_(info),
-    _color_(color),_radius_(radius),
-    _flags_(GV_None)
+    _color_(color),_editable_tip_(nullptr),
+    _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
+    connect(&_show_timer_,&QTimer::timeout,this,&GViewItem::showTipWindow);
+    _show_timer_.setSingleShot(true);
     return;
 }
 
@@ -33,18 +35,23 @@ GViewItem::GViewItem(int radius,
 #endif
 
 GViewItem::GViewItem(int radius, const QColor& color):
-    _color_(color),_radius_(radius),
-    _flags_(GV_None)
+    _color_(color),_editable_tip_(nullptr),
+    _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
+    connect(&_show_timer_,&QTimer::timeout,this,&GViewItem::showTipWindow);
+    _show_timer_.setSingleShot(true);
     return;
 }
 
 GViewItem::~GViewItem()
 {
-
+    if(_editable_tip_)
+    {
+        delete _editable_tip_;
+    }
 }
 
 
@@ -175,12 +182,6 @@ QString GViewItem::info()const
     return _info_;
 }
 #endif
-
-
-
-
-
-
 
 QColor GViewItem::color()const
 {
@@ -480,11 +481,15 @@ void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 
 void GViewItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
 {
+    _last_screen_pos_ = h_event->screenPos();
+    startTipTimer();
     update();
     QGraphicsItem::hoverEnterEvent(h_event);
 }
 void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
+    _last_screen_pos_ = QPoint();
+    breakTipTimer();
     update();
     QGraphicsItem::hoverLeaveEvent(h_event);
 }
@@ -507,12 +512,55 @@ void GViewItem::gatherInfo(vert_map *container) const
     container->insert("radius",QString::number(_radius_));
     container->insert("data",QString(_info_));
     return;
-//    QDomElement xml_element;
-//    xml_element.setAttribute()
-//    xml_element.setTagName("Vertex");
-//    xml_element.setAttribute("color",_color_.rgb());
-//    xml_element.setAttribute("x",scenePos().x());
-//    xml_element.setAttribute("y",scenePos().y());
-//    xml_element.setAttribute("radius",_radius_);
+}
 
+void GViewItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
+{
+    callTipWindow(m_event);
+    m_event->accept();
+    return;
+}
+
+void GViewItem::showTipWindow()
+{
+    callTipWindow();
+    return;
+}
+
+void GViewItem::callTipWindow(QGraphicsSceneMouseEvent* m_event)
+{
+    if(!_editable_tip_)
+    {
+        _editable_tip_ = new QWidget();
+    }
+    if(m_event)
+    {
+        _editable_tip_->move(m_event->screenPos());
+    }
+    else if(!_last_screen_pos_.isNull())
+    {
+        _editable_tip_->move(_last_screen_pos_);
+    }
+    _editable_tip_->show();
+    return;
+}
+
+void GViewItem::startTipTimer()
+{
+    if(_show_timer_.isActive())
+    {
+        return;
+    }
+    _show_timer_.setInterval(2000);
+    _show_timer_.start();
+    return;
+}
+
+void GViewItem::breakTipTimer()
+{
+    if(_show_timer_.isActive())
+    {
+        _show_timer_.stop();
+    }
+    return;
 }

@@ -49,6 +49,7 @@ private slots:
     void SaveProject();
     void LoadProject();
     void HideShowUI();
+
     //_______________End______________________
 private:
     TouchForm * touchform;

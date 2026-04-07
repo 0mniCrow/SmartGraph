@@ -23,7 +23,7 @@
 #include <QCursor>
 #include <QMenu>
 #include <QIcon>
-#include <QDomElement>
+#include <QTimer>
 #include "graphic_elements/nodeobjectinfo.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
@@ -39,7 +39,7 @@ typedef QMap<QString,QString> vert_map;
 
 class GViewEdge;
 
-class GViewItem:public QGraphicsItem
+class GViewItem:public QGraphicsObject
 {
 private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
@@ -49,6 +49,9 @@ private:
     info_type _info_;
     QColor _color_;
     QPointF _adv_pos_;
+    QWidget * _editable_tip_;
+    QPoint _last_screen_pos_;
+    QTimer _show_timer_;
     int _radius_;
     bool _is_clicked_;
     char _flags_;
@@ -57,6 +60,9 @@ private:
     char GVflags() const {return _flags_;}
     void setGVFlag(char flag, bool state=true) { _flags_= state? _flags_|flag : _flags_ & ~flag;}
     void setGVFlags(char flags) {_flags_ = flags;}
+    void startTipTimer();
+    void breakTipTimer();
+    void callTipWindow(QGraphicsSceneMouseEvent *m_event = nullptr);
 public:
 
 
@@ -106,11 +112,13 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
     void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
     void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-
+private slots:
+    void showTipWindow();
 };
 
 
