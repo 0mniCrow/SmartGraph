@@ -393,10 +393,13 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 //    };
 //    ::ClipCursor(&clipRect);
 //#endif
+//    qDebug()<<"mousePress occured";
     if(flags()&ItemIsMovable)
     {
         setCursor(Qt::BlankCursor);
         setGVFlag(GV_Is_Clicked, true);
+        _last_screen_pos_ = QPoint();
+        breakTipTimer();
     }
     update();
 
@@ -404,6 +407,7 @@ void GViewItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 }
 void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
+//    qDebug()<<"mouseRelease occured";
     if(flags()&ItemIsMovable)
     {
         if(scene() && !scene()->views().isEmpty())
@@ -426,6 +430,7 @@ void GViewItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 
 void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
+//    qDebug()<<"mouseMove occured";
     if(!(flags()&ItemIsMovable))
     {
         m_event->ignore();
@@ -517,6 +522,7 @@ void GViewItem::gatherInfo(vert_map *container) const
 void GViewItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
 {
     callTipWindow(m_event);
+//    qDebug()<<"doubleClick occured";
     m_event->accept();
     return;
 }
@@ -532,6 +538,10 @@ void GViewItem::callTipWindow(QGraphicsSceneMouseEvent* m_event)
     if(!_editable_tip_)
     {
         _editable_tip_ = new QWidget();
+        _editable_tip_->setStyleSheet("color:blue;"
+                                      "background-color:pink");
+        //_editable_tip_->setWindowFlag(Qt::Popup,true);
+        _editable_tip_->resize(200,100);
     }
     if(m_event)
     {

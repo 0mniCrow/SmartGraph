@@ -12,6 +12,7 @@ void GViewScene::mousePressEvent(QGraphicsSceneMouseEvent* m_event)
     if(qgraphicsitem_cast<GViewItem*>(itemAt(m_event->scenePos(),QTransform())))
     {
         QGraphicsScene::mousePressEvent(m_event);
+//        qDebug()<<"scene mousePress occured";
     }
     else
     {
@@ -24,6 +25,7 @@ void GViewScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
 {
     if(qgraphicsitem_cast<GViewItem*>(itemAt(m_event->scenePos(),QTransform())))
     {
+//        qDebug()<<"scene doubleClick occured";
         QGraphicsScene::mouseDoubleClickEvent(m_event);
     }
     else
