@@ -174,6 +174,7 @@ const NodeObjectInfo& GViewItem::info()const
 void GViewItem::setInfo(const QString& info)
 {
     _info_=info;
+    emit changedExternally(_info_);
     return;
 }
 
@@ -537,11 +538,9 @@ void GViewItem::callTipWindow(QGraphicsSceneMouseEvent* m_event)
 {
     if(!_editable_tip_)
     {
-        _editable_tip_ = new QWidget();
-        _editable_tip_->setStyleSheet("color:blue;"
-                                      "background-color:pink");
-        //_editable_tip_->setWindowFlag(Qt::Popup,true);
-        _editable_tip_->resize(200,100);
+        _editable_tip_ = new GViewToolTip(_info_);
+        connect(_editable_tip_,&GViewToolTip::valueChanged,this,&GViewItem::getNewInfo);
+        connect(this,&GViewItem::changedExternally,_editable_tip_,&GViewToolTip::acceptChanges);
     }
     if(m_event)
     {
@@ -572,5 +571,12 @@ void GViewItem::breakTipTimer()
     {
         _show_timer_.stop();
     }
+    return;
+}
+
+void GViewItem::getNewInfo(const QString& new_val)
+{
+    _info_ = new_val;
+    emit changedInternally(this);
     return;
 }

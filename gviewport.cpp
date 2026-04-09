@@ -651,7 +651,11 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     QList<QPair<int,GViewItem*>> items;
     for(const int& id:vert_ids)
     {
+#ifdef LIST_STR_VAL
+        GViewItem* item = new GViewItem(_vertex_radius_,QString(graph.value(id).c_str()),Qt::gray);
+#else
         GViewItem* item = new GViewItem(_vertex_radius_,QString::number(graph.value(id)),Qt::gray);
+#endif
         items.push_back(qMakePair(id,item));
     }
     QList<GViewEdge*> edges;
@@ -677,7 +681,8 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
                 bool is_exist= false;
                 for(GViewEdge* exst_edge:edges)
                 {
-                    if(exst_edge->destination()==iter->second)
+                    if(exst_edge->destination()==iter->second &&
+                            exst_edge->source()==edged_item->second)
                     {
                         exst_edge->setDirected(false);
                        is_exist = true;

@@ -52,12 +52,13 @@ std::string Breadth_first_search(ListGraph& obj, int root_index)            //П
     //У сутнасьці мы ствараем сьпіс усіх унікальных элементаў графа.
 }
 
+
 std::string Breadth_first_search(VectorGraph& obj, int root_index)
 {
     std::string answer;
     std::queue<int> BFS_queue;
     std::unordered_set<int> visited_vertices;
-    std::vector<std::vector<cur_type>>& graph_matrix = obj._adj_matrix_;
+    std::vector<std::vector<cur_vect_type>>& graph_matrix = obj._adj_matrix_;
     int matrix_size = static_cast<int>(graph_matrix.size());
     if(matrix_size<=root_index) return answer;
 
@@ -70,7 +71,7 @@ std::string Breadth_first_search(VectorGraph& obj, int root_index)
     {
         int cur_index = BFS_queue.front();
         BFS_queue.pop();
-        std::vector<cur_type>& node = graph_matrix.at(cur_index);
+        std::vector<cur_vect_type>& node = graph_matrix.at(cur_index);
         int node_size = static_cast<int>(node.size());
         answer.append("Visited["+std::to_string(cur_index)+"], ");
         for(int i = 0; i<node_size;i++)
@@ -951,7 +952,7 @@ int floodFill_BFS(Vector2D<int>& matrix, int row, int col, int newColour, std::v
 //___________________________________________________________________________________________________________________
 //__________________________________________________Bipartite-check----------------
 
-
+#ifndef LIST_STR_VAL
 bool isBipartite_BFS(ListGraph& obj, std::string& actions)
 {
     actions.clear();
@@ -1010,7 +1011,9 @@ bool isBipartite_BFS(ListGraph& obj, std::string& actions)
     actions.append("\nGraph is bipartite;");
     return true;
 }
+#endif
 
+#ifndef LIST_STR_VAL
 bool isBipartite_DFS(int cur_index,int cur_val, ListGraph& obj, string& actions)
 {
     actions.append("Vertex ["+std::to_string(cur_index)+
@@ -1052,7 +1055,9 @@ bool isBipartite_DFS(int cur_index,int cur_val, ListGraph& obj, string& actions)
     }
     return true;
 }
+#endif
 
+#ifndef LIST_STR_VAL
 bool isBipartite_DFS_Base(ListGraph& obj, string& actions)
 {
     actions.clear();
@@ -1078,7 +1083,7 @@ bool isBipartite_DFS_Base(ListGraph& obj, string& actions)
     actions.append("\nGraph is bipartite;");
     return true;
 }
-
+#endif
 
 
 //________________________________________________________________________________________________________________________
@@ -1183,7 +1188,7 @@ int wordLadder_BFS(string& start, string& target, vector<string>& variants, stri
 
 
 //________________________________________________SnakesNLadders___________________________________________________________
-
+#ifndef LIST_STR_VAL
 int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions)
 {
     actions.clear();
@@ -1271,7 +1276,9 @@ int SnakesNLadders_minDiceThrow_BFS(ListGraph& obj, string& actions)
     actions.append("The algorithm can't reach the end of the borad;");
     return -1;
 }
+#endif
 
+#ifndef LIST_STR_VAL
 void SnL_algorithm_DFS(int cur_vertex, int cur_roll_count, int& rolls, ListGraph& obj, string& actions, vector<int> prev_rolls)
 {
     if(cur_roll_count>=rolls)
@@ -1376,7 +1383,7 @@ int SnakesNLadders_minDiceThrow_DFS(ListGraph& obj, string& actions)
                    "];\n");
     return rolls==INT_MAX?-1:rolls;
 }
-
+#endif
 
 //___________________________________________________WaterJigProblem________________________________________________________
 
@@ -1866,7 +1873,7 @@ int shortPathLength_BFS(Vector2D<LandNode>& matrix,
 
 //________________________________Clone Graph_______________________________________________
 
-
+#ifndef LIST_STR_VAL
 
 Snode * cloneGraph_BFS(Snode * original, string&actions)
 {
@@ -2014,7 +2021,7 @@ bool compareSnodeGraphs(Snode * first_node, Snode* sec_node, std::unordered_map<
     return true;
 }
 
-
+#endif
 //_______________________________Find cycles________________________________________________
 
 namespace CyclSearch
@@ -2173,6 +2180,8 @@ bool hasCycle_BFS_Kahn_alg(ListGraph& graph, string& actions)
 }
 
 //___________________________________Cycle detection for undirected graphs_____________________________
+
+#ifndef LIST_STR_VAL
 
 namespace CyclSearch
 {
@@ -2538,7 +2547,8 @@ namespace CyclSearch
         return false;
     }
 }
-
+#endif
+#ifndef LIST_STR_VAL
 //пераважны метад для пошука цыклаў
 bool hasCycle_Undirected_BFS(ListGraph& graph, string& actions)
 {
@@ -2630,7 +2640,6 @@ bool hasCycle_Colour(ListGraph& graph, string& actions)
                    " within current graph;\n");
     return false;
 }
-
 
 bool hasNegCycle(ListGraph& graph, int start_id, string& actions)
 {
@@ -2786,3 +2795,4 @@ int n_sizeCyclesSearch(Vector2D<bool> &graph, int size, string& actions)
 
     return count/2;
 }
+#endif

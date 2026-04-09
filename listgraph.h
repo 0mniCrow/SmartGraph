@@ -5,11 +5,16 @@
 #include <list>
 #include <string>
 #include <algorithm>
-#define DEF_VAL -1
+//#define DEF_VAL -1
+#define LIST_STR_VAL
+#define DEF_VAL "vertex"
 #define DEF_WEIGHT 0
 
-using cur_type = int; //default
+//using cur_type = int; //default
 //using cur_type = bool;
+using cur_type = std::string;
+
+
 
 struct ListEdge
 {
@@ -50,7 +55,7 @@ public:
     ListGraph(int size, cur_type def_val, char params = Gr_Unweighted_Undirected);
     bool addEdge(int vert_id_src, int vert_id_dest, int weight = 1);
     bool setWeight(int  vert_id_src, int vert_id_dest, int weight);
-    int addVertex(int vert_id = -1, cur_type val = 0);
+    int addVertex(int vert_id = -1, cur_type val = std::string()/*0*/);
     bool setValue(int vertex_id,cur_type val);
     bool isExists(int vertex_id);
     cur_type value(int vertex_id) const;

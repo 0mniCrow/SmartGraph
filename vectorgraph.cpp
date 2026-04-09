@@ -3,20 +3,20 @@
 VectorGraph::VectorGraph():_flags_(Gr_Unweighted_Undirected){}
 
 VectorGraph::VectorGraph(int quadr_size,char flags):
-    _adj_matrix_(quadr_size,std::vector<cur_type>(quadr_size,0)),
+    _adj_matrix_(quadr_size,std::vector<cur_vect_type>(quadr_size,0)),
     _flags_(flags)
 {
     return;
 }
 
-VectorGraph::VectorGraph(int quadr_size, cur_type def_val, char flags):
-    _adj_matrix_(quadr_size,vector<cur_type>(quadr_size,def_val)),
+VectorGraph::VectorGraph(int quadr_size, cur_vect_type def_val, char flags):
+    _adj_matrix_(quadr_size,vector<cur_vect_type>(quadr_size,def_val)),
     _flags_(flags)
 {
     return;
 }
 
-VectorGraph::VectorGraph(const vector<vector<cur_type>>& model, char flags):
+VectorGraph::VectorGraph(const vector<vector<cur_vect_type>>& model, char flags):
     _flags_(flags)
 {
     fill(model);
@@ -33,7 +33,7 @@ void VectorGraph::resize(int quadr_size)
     if(quadr_size!=model_size)
     {
         _adj_matrix_.resize(quadr_size);
-        for(vector<cur_type>& edges:_adj_matrix_)
+        for(vector<cur_vect_type>& edges:_adj_matrix_)
         {
             edges.resize(quadr_size);
         }
@@ -41,11 +41,11 @@ void VectorGraph::resize(int quadr_size)
     return;
 }
 
-void VectorGraph::fill(cur_type def_val)
+void VectorGraph::fill(cur_vect_type def_val)
 {
-    for(vector<cur_type>& edges: _adj_matrix_)
+    for(vector<cur_vect_type>& edges: _adj_matrix_)
     {
-        for(cur_type& edge:edges)
+        for(cur_vect_type& edge:edges)
         {
             edge = def_val;
         }
@@ -53,7 +53,7 @@ void VectorGraph::fill(cur_type def_val)
     return;
 }
 
-void VectorGraph::fill(const vector<vector<cur_type>>&model)
+void VectorGraph::fill(const vector<vector<cur_vect_type>>&model)
 {
     int model_size = static_cast<int>(model.size());
     if(model_size)
@@ -71,12 +71,12 @@ void VectorGraph::setFlags(char flags) {_flags_=flags;return;}
 char VectorGraph::flags() const {return _flags_;}
 
 
-bool VectorGraph::addEdge(int vert_id_src, int vert_id_dest, cur_type val)
+bool VectorGraph::addEdge(int vert_id_src, int vert_id_dest, cur_vect_type val)
 {
     return setVal(vert_id_src,vert_id_dest,val);
 }
 
-bool VectorGraph::setVal(int vert_id_src, int vert_id_dest, cur_type val)
+bool VectorGraph::setVal(int vert_id_src, int vert_id_dest, cur_vect_type val)
 {
     int sz = size();
     if((sz>=vert_id_src)&&
@@ -105,15 +105,15 @@ void VectorGraph::clear()
 int VectorGraph::addVertex()
 {
     int sz(size());
-    _adj_matrix_.push_back(vector<cur_type>(sz,DEF_INT_VAL));
-    for(vector<cur_type>& edges: _adj_matrix_)
+    _adj_matrix_.push_back(vector<cur_vect_type>(sz,DEF_INT_VAL));
+    for(vector<cur_vect_type>& edges: _adj_matrix_)
     {
         edges.push_back(DEF_INT_VAL);
     }
     return sz;
 }
 
-int VectorGraph::addVerts(int count, cur_type def_val, int at)
+int VectorGraph::addVerts(int count, cur_vect_type def_val, int at)
 {
     MatrIter it;
     if(at>=0)
@@ -124,11 +124,11 @@ int VectorGraph::addVerts(int count, cur_type def_val, int at)
     {
         it = _adj_matrix_.end();
     }
-    _adj_matrix_.insert(it,count, std::vector<cur_type>(size(),def_val));
-    for(vector<cur_type>& edges: _adj_matrix_)
+    _adj_matrix_.insert(it,count, std::vector<cur_vect_type>(size(),def_val));
+    for(vector<cur_vect_type>& edges: _adj_matrix_)
     {
 
-        vector<cur_type>::iterator jt;
+        vector<cur_vect_type>::iterator jt;
         if(at>=0)
         {
             jt = std::next(edges.begin(),at);
@@ -150,7 +150,7 @@ void VectorGraph::deleteVert(int vert_id, int count)
                            (vert_id+count<size())?
                                std::next(_adj_matrix_.begin(),vert_id+count):
                                _adj_matrix_.end());
-        for(vector<cur_type>& edges: _adj_matrix_)
+        for(vector<cur_vect_type>& edges: _adj_matrix_)
         {
             edges.erase(std::next(edges.begin(),vert_id),
                         (vert_id+count<size())?
@@ -160,7 +160,7 @@ void VectorGraph::deleteVert(int vert_id, int count)
     }
 }
 
-cur_type& VectorGraph::operator()(int vert_id, int edge_id)
+cur_vect_type& VectorGraph::operator()(int vert_id, int edge_id)
 {
     if(vert_id<size() && edge_id<size())
     {
@@ -172,12 +172,12 @@ cur_type& VectorGraph::operator()(int vert_id, int edge_id)
     }
 }
 
-cur_type& VectorGraph::at(int vert_id, int edge_id)
+cur_vect_type& VectorGraph::at(int vert_id, int edge_id)
 {
     return operator()(vert_id,edge_id);
 }
 
-cur_type VectorGraph::value(int vert_id, int edge_id) const
+cur_vect_type VectorGraph::value(int vert_id, int edge_id) const
 {
     if(vert_id<size() && edge_id<size())
     {
@@ -190,7 +190,7 @@ cur_type VectorGraph::value(int vert_id, int edge_id) const
 }
 
 
-std::vector<std::vector<cur_type>> VectorGraph::getMatrix() const
+std::vector<std::vector<cur_vect_type>> VectorGraph::getMatrix() const
 {
     return _adj_matrix_;
 }

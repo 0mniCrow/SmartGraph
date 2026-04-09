@@ -409,10 +409,10 @@ std::string ListGraph::getValueTable(int row_count) const
     while(it!= _list_graph_.cend())
     {
         answer.append("["+std::to_string(it->first)+"](");
-        //answer.append(static_cast<std::string>(it->second._value_));  //hypotetical
+        answer.append(static_cast<std::string>(it->second._value_));  //hypotetical
         //answer.append(std::to_string(it->second._value_));            // for integer
         //answer.append(std::string(1,it->second._value_));             // for character
-        answer.append(it->second._value_?"True":"False");               // for boolean
+        //answer.append(it->second._value_?"True":"False");             // for boolean
         answer.append("), ");
         it++;
         counter++;

@@ -332,6 +332,7 @@ void VertexModel::addItem(GViewItem* item, int row)
         row = getActualList()->size();
     }
     beginInsertRows(QModelIndex(),row,row);
+    connect(item,&GViewItem::changedInternally,this,&VertexModel::objectChangedFromInside);
     getActualList()->insert(row,item);
     endInsertRows();
     return;
@@ -346,6 +347,7 @@ void VertexModel::removeItem(GViewItem* item)
         return;
     }
     beginRemoveRows(QModelIndex(),index,index);
+    disconnect(item,&GViewItem::changedInternally,this,&VertexModel::objectChangedFromInside);
     getActualList()->remove(index);
     endRemoveRows();
     return;
@@ -493,5 +495,25 @@ void VertexModel::gatherItemInfo(nest_vert_map& vertices) const
         item->gatherInfo(vertex_m);
         vertices.append(vertex_m);
     }
+    return;
+}
+
+void VertexModel::objectChangedFromInside(GViewItem* item)
+{
+    int row = 0;
+    if(_vm_flags_&VM_Proxy_isActive)
+    {
+        row = _proxy_vector_.indexOf(item);
+    }
+    else
+    {
+        row = _vertices_.indexOf(item);
+    }
+    if(row<0)
+    {
+        return;
+    }
+    QModelIndex index = createIndex(row,0);
+    emit dataChanged(index,index);
     return;
 }

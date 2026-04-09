@@ -585,22 +585,22 @@ void MainWindow::execute()
 
 //_____________________________________Finding negative cycles________________________________________________________
 
-    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
-    list_graph.addVertex();
+//    ListGraph list_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
+//    list_graph.addVertex();
 
-    list_graph.addEdge(0,1,-1);
-    list_graph.addEdge(0,2,4);
-    list_graph.addEdge(1,2,3);
-    list_graph.addEdge(1,3,2);
-    list_graph.addEdge(1,4,2);
-    list_graph.addEdge(3,2,5);
-    list_graph.addEdge(3,1,1);
-    list_graph.addEdge(4,3,-3);
-    _view_->loadListGraph(list_graph);
+//    list_graph.addEdge(0,1,-1);
+//    list_graph.addEdge(0,2,4);
+//    list_graph.addEdge(1,2,3);
+//    list_graph.addEdge(1,3,2);
+//    list_graph.addEdge(1,4,2);
+//    list_graph.addEdge(3,2,5);
+//    list_graph.addEdge(3,1,1);
+//    list_graph.addEdge(4,3,-3);
+//    _view_->loadListGraph(list_graph);
 //    string actions;
 //    ui->textEdit->append(QString(list_graph.getAdjacencyList().c_str()));
 //    ui->textEdit->append("Current graph" + QString(hasNegCycle(list_graph,0,actions)?" has negative cycle;":" has no neg cycles;"));
@@ -640,7 +640,21 @@ void MainWindow::execute()
 //                                 )+"] "+QString::number(cyc_length)+"-length cycles;");
 //        ui->textEdit->append(QString(actions.c_str()));
 
-
+    ListGraph list_character_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
+    int cimocha_id = list_character_graph.addVertex(-1,"Цімоха");
+    int milaslava_id = list_character_graph.addVertex(-1,"Міласлава");
+    int nadzeja_id = list_character_graph.addVertex(-1,"Надзея");
+    int hryscina_id = list_character_graph.addVertex(-1,"Хрысціна");
+    int karalina_id = list_character_graph.addVertex(-1,"Караліна");
+    int jadzviha_id = list_character_graph.addVertex(-1,"Ядзьвіга");
+    list_character_graph.addEdge(milaslava_id,cimocha_id);
+    list_character_graph.addEdge(milaslava_id,nadzeja_id);
+    list_character_graph.addEdge(nadzeja_id,milaslava_id);
+    list_character_graph.addEdge(nadzeja_id,hryscina_id);
+    list_character_graph.addEdge(nadzeja_id,karalina_id);
+    list_character_graph.addEdge(cimocha_id,jadzviha_id);
+    list_character_graph.addEdge(jadzviha_id,cimocha_id);
+    _view_->loadListGraph(list_character_graph);
     return;
 }
 
@@ -872,6 +886,10 @@ void MainWindow::SaveProject()
                                                 QDir::currentPath(),
                                                 "XML files (*.xml)",nullptr,
                                                 QFileDialog::DontUseNativeDialog);
+    if(!addr.endsWith(".xml"))
+    {
+        addr.append(".xml");
+    }
     QFile xml_file(addr);
     if(!xml_file.open(QFile::WriteOnly|QFile::Text))
     {

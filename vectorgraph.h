@@ -6,12 +6,13 @@
 #define DEF_INT_EDGE 1
 #define DEF_INT_VAL 0
 
-using cur_type = int;
+using cur_vect_type = int;
+//using cur_vect_type = std::string;
 using std::vector;
 using std::pair;
 
 
-using Matrix = vector<vector<cur_type>>;
+using Matrix = vector<vector<cur_vect_type>>;
 using MatrIter = Matrix::iterator;
 using MatrCIter = Matrix::const_iterator;
 
@@ -27,12 +28,12 @@ public:
 
     VectorGraph();
     VectorGraph(int quadr_size, char flags = Gr_Unweighted_Undirected);
-    VectorGraph(int quadr_size, cur_type def_val, char flags = Gr_Unweighted_Undirected);
-    VectorGraph(const vector<vector<cur_type>>& model, char flags = Gr_Unweighted_Undirected);
+    VectorGraph(int quadr_size, cur_vect_type def_val, char flags = Gr_Unweighted_Undirected);
+    VectorGraph(const vector<vector<cur_vect_type>>& model, char flags = Gr_Unweighted_Undirected);
     ~VectorGraph();
 
-    void fill(cur_type def_val);
-    void fill(const vector<vector<cur_type>>&model);
+    void fill(cur_vect_type def_val);
+    void fill(const vector<vector<cur_vect_type>>&model);
 
 
     void setFlags(char flags);
@@ -40,19 +41,19 @@ public:
     int size() const;
     void clear();
 
-    bool addEdge(int vert_id_src, int vert_id_dest, cur_type val = DEF_INT_EDGE);
-    bool setVal(int vert_id_src, int vert_id_dest, cur_type val);
+    bool addEdge(int vert_id_src, int vert_id_dest, cur_vect_type val = DEF_INT_EDGE);
+    bool setVal(int vert_id_src, int vert_id_dest, cur_vect_type val);
 
     int addVertex();
-    int addVerts(int count, cur_type def_val = DEF_INT_VAL, int at = -1);
+    int addVerts(int count, cur_vect_type def_val = DEF_INT_VAL, int at = -1);
     void deleteVert(int vert_id, int count = 1);
 
-    cur_type& operator()(int vert_id, int edge_id);
-    cur_type& at(int vert_id, int edge_id);
-    cur_type value(int vert_id, int edge_id) const;
+    cur_vect_type& operator()(int vert_id, int edge_id);
+    cur_vect_type& at(int vert_id, int edge_id);
+    cur_vect_type value(int vert_id, int edge_id) const;
 
 
-    std::vector<std::vector<cur_type>> getMatrix() const;
+    std::vector<std::vector<cur_vect_type>> getMatrix() const;
     std::string getAdjacencyMatrix() const;
     std::string getEdgeTable() const;
 

@@ -12,6 +12,7 @@ typedef QList<vert_map*> nest_vert_map;
 
 class VertexModel:public QAbstractTableModel
 {
+    Q_OBJECT
 private:
     QVector<GViewItem*> _vertices_;
     QVector<GViewItem*> _proxy_vector_;
@@ -71,6 +72,8 @@ public:
 protected:
     virtual bool sortVM(GViewItem* left, GViewItem* right);
     virtual bool filter(GViewItem* element);
+private slots:
+    void objectChangedFromInside(GViewItem* item);
 };
 
 
