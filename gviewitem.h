@@ -25,6 +25,8 @@
 #include <QIcon>
 #include <QTimer>
 #include "graphic_elements/nodeobjectinfo.h"
+#include "widgets/gview_tooltip_window.h"
+#include "widgets/gview_edit_window.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
 typedef QMap<QString,QString> vert_map;
@@ -39,61 +41,6 @@ typedef QMap<QString,QString> vert_map;
 
 class GViewEdge;
 
-class GViewToolTip:public QWidget
-{
-    Q_OBJECT
-private:
-    QLineEdit* _text_;
-    QPushButton* _button_;
-public:
-    GViewToolTip(const QString& data, QWidget* tata = nullptr):QWidget(tata)
-    {
-        _button_ = new QPushButton;
-        _button_->setText("Change");
-        connect(_button_,&QPushButton::clicked,this,&GViewToolTip::saveChanges);
-        _text_ = new QLineEdit;
-        _text_->setText(data);
-        QVBoxLayout * layout = new QVBoxLayout;
-        layout->addWidget(_text_);
-        layout->addWidget(_button_);
-        setLayout(layout);
-        setStyleSheet(
-                                      "QLineEdit {color : darkRed; "
-                                      "background-color:yellow} "
-                                      "QPushButton {"
-                                      "background-color: red;"
-                                      "border-style: outset;"
-                                      "border-width: 2px;"
-                                      "border-radius: 10px;"
-                                      "border-color: beige;"
-                                      "font: bold 14px;"
-                                      "min-width: 10em;"
-                                      "padding: 6px;"
-                                      "}"
-                                      "QPushButton:pressed {"
-                                      "background-color: rgb(224, 12, 77);"
-                                      "border-style: inset;}");
-        //_editable_tip_->setWindowFlag(Qt::Popup,true);
-        //connect(_text_,&QLineEdit::textChanged,this,&GViewToolTip::valueChanged);
-        resize(200,100);
-        return;
-    }
-private slots:
-    void saveChanges()
-    {
-        emit valueChanged(_text_->text());
-        return;
-    }
-public slots:
-    void acceptChanges(const QString& new_val)
-    {
-        _text_->setText(new_val);
-        return;
-    }
-signals:
-    void valueChanged(QString changed_value);
-};
-
 class GViewItem:public QGraphicsObject
 {
     Q_OBJECT
@@ -105,7 +52,8 @@ private:
     info_type _info_;
     QColor _color_;
     QPointF _adv_pos_;
-    GViewToolTip * _editable_tip_;
+    GViewToolTip * _tooltip_window_;
+    GViewEdit * _edit_window_;
     QPoint _last_screen_pos_;
     QTimer _show_timer_;
     int _radius_;
@@ -118,7 +66,8 @@ private:
     void setGVFlags(char flags) {_flags_ = flags;}
     void startTipTimer();
     void breakTipTimer();
-    void callTipWindow(QGraphicsSceneMouseEvent *m_event = nullptr);
+    void callTipWindow(QGraphicsSceneMouseEvent* m_event = nullptr);
+    void callEditWindow(QGraphicsSceneMouseEvent* m_event = nullptr);
 public:
 
 

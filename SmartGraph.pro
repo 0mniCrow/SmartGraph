@@ -32,7 +32,9 @@ SOURCES += \
     matrixmodel.cpp \
     nodegraph.cpp \
     touchform.cpp \
-    vectorgraph.cpp
+    vectorgraph.cpp \
+    widgets/gview_edit_window.cpp \
+    widgets/gview_tooltip_window.cpp
 
 HEADERS += \
     Graph_algorithms.h \
@@ -58,7 +60,9 @@ HEADERS += \
     matrixmodel.h \
     nodegraph.h \
     touchform.h \
-    vectorgraph.h
+    vectorgraph.h \
+    widgets/gview_edit_window.h \
+    widgets/gview_tooltip_window.h
 
 FORMS += \
     imagecropwindow.ui \

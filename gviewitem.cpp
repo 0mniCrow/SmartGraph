@@ -9,7 +9,7 @@ GViewItem::GViewItem(int radius,
                      const QString &info,
                      #endif
                      const QColor &color):_info_(info),
-    _color_(color),_editable_tip_(nullptr),
+    _color_(color),_tooltip_window_(nullptr),_edit_window_(nullptr),
     _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
@@ -35,7 +35,7 @@ GViewItem::GViewItem(int radius,
 #endif
 
 GViewItem::GViewItem(int radius, const QColor& color):
-    _color_(color),_editable_tip_(nullptr),
+    _color_(color),_tooltip_window_(nullptr),_edit_window_(nullptr),
     _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
@@ -48,9 +48,13 @@ GViewItem::GViewItem(int radius, const QColor& color):
 
 GViewItem::~GViewItem()
 {
-    if(_editable_tip_)
+    if(_tooltip_window_)
     {
-        delete _editable_tip_;
+        delete _tooltip_window_;
+    }
+    if(_edit_window_)
+    {
+        delete _edit_window_;
     }
 }
 
@@ -522,7 +526,7 @@ void GViewItem::gatherInfo(vert_map *container) const
 
 void GViewItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
 {
-    callTipWindow(m_event);
+    callEditWindow(m_event);
 //    qDebug()<<"doubleClick occured";
     m_event->accept();
     return;
@@ -536,21 +540,40 @@ void GViewItem::showTipWindow()
 
 void GViewItem::callTipWindow(QGraphicsSceneMouseEvent* m_event)
 {
-    if(!_editable_tip_)
+    if(!_tooltip_window_)
     {
-        _editable_tip_ = new GViewToolTip(_info_);
-        connect(_editable_tip_,&GViewToolTip::valueChanged,this,&GViewItem::getNewInfo);
-        connect(this,&GViewItem::changedExternally,_editable_tip_,&GViewToolTip::acceptChanges);
+        _tooltip_window_ = new GViewToolTip(_info_);
+        connect(this,&GViewItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
     }
     if(m_event)
     {
-        _editable_tip_->move(m_event->screenPos());
+        _tooltip_window_->move(m_event->screenPos());
     }
     else if(!_last_screen_pos_.isNull())
     {
-        _editable_tip_->move(_last_screen_pos_);
+        _tooltip_window_->move(_last_screen_pos_);
     }
-    _editable_tip_->show();
+    _tooltip_window_->show();
+    return;
+}
+
+void GViewItem::callEditWindow(QGraphicsSceneMouseEvent* m_event)
+{
+    if(!_edit_window_)
+    {
+        _edit_window_ = new GViewEdit(_info_);
+        connect(_edit_window_,&GViewEdit::valueChanged,this,&GViewItem::getNewInfo);
+        connect(this,&GViewItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
+    }
+    if(m_event)
+    {
+        _edit_window_->move(m_event->screenPos());
+    }
+    else if(!_last_screen_pos_.isNull())
+    {
+        _edit_window_->move(_last_screen_pos_);
+    }
+    _edit_window_->show();
     return;
 }
 
