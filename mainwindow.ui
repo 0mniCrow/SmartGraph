@@ -168,6 +168,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QCheckBox" name="check_Zoom_mode">
+                <property name="text">
+                 <string>Рэжым прыбліж.</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>

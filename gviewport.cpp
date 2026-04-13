@@ -13,7 +13,8 @@
 */
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
-    _vertices_(model),_vertex_radius_(vertex_radius),_counter_(0)
+    _vertices_(model),_vertex_radius_(vertex_radius),
+    _counter_(0),_zoom_mode_(false)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -930,6 +931,59 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
         }
         directed = it.value().toInt();
         addEdge(source,dest,directed);
+    }
+    return;
+}
+
+void GViewPort::wheelEvent(QWheelEvent* w_event)
+{
+    if(!_zoom_mode_)
+    {
+        w_event->ignore();
+        return QGraphicsView::wheelEvent(w_event);
+    }
+
+    if(w_event->angleDelta().y()>0)
+    {
+        zoomIn();
+    }
+    else
+    {
+        zoomOut();
+    }
+    return;
+}
+
+void GViewPort::zoomIn()
+{
+    qreal cur_scale = transform().m11();
+    if(cur_scale<3.0)
+    {
+        scale(1.25,1.25);
+    }
+    return;
+}
+
+void GViewPort::zoomOut()
+{
+    qreal cur_scale = transform().m11();
+    if(cur_scale>0.2)
+    {
+        scale(0.8,0.8);
+    }
+    return;
+}
+
+void GViewPort::setZoomMode(bool state)
+{
+    _zoom_mode_=state;
+    if(state)
+    {
+        setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    }
+    else
+    {
+        setTransformationAnchor(QGraphicsView::NoAnchor);
     }
     return;
 }

@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Button_ViewSave,&QPushButton::clicked,this,&MainWindow::SaveProject);
     connect(ui->Button_ViewLoad,&QPushButton::clicked,this,&MainWindow::LoadProject);
     connect(ui->Button_UI_Hide,&QPushButton::clicked,this,&MainWindow::HideShowUI);
+    connect(ui->check_Zoom_mode,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
 
     initiateGraphicsView();
     execute();
@@ -1064,4 +1065,24 @@ void MainWindow::HideShowUI()
         ui->Button_UI_Hide->setText(">\n>\n>\n>\n>");
         ui->group_ui->setVisible(true);
     }
+    return;
+}
+
+void MainWindow::setZoomMode(int state)
+{
+    switch(state)
+    {
+    case Qt::Unchecked:
+    {
+        _view_->setZoomMode(false);
+    }
+        break;
+    case Qt::PartiallyChecked:
+    case Qt::Checked:
+    {
+        _view_->setZoomMode(true);
+    }
+        break;
+    }
+    return;
 }

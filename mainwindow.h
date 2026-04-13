@@ -49,6 +49,7 @@ private slots:
     void SaveProject();
     void LoadProject();
     void HideShowUI();
+    void setZoomMode(int state);
 
     //_______________End______________________
 private:

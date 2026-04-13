@@ -43,11 +43,13 @@ public:
                     nest_vert_map& edges) const;
     void loadInfo(const nest_vert_map& vertices,
                   const nest_vert_map& edges);
+    void setZoomMode(bool state);
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
     void mouseMoveEvent(QMouseEvent* m_event) override;
     void contextMenuEvent(QContextMenuEvent* c_event) override;
+    void wheelEvent(QWheelEvent* w_event) override;
     void timerEvent(QTimerEvent * t_event) override;
 private:
     VertexModel * _vertices_;
@@ -59,6 +61,7 @@ private:
     int _vertex_radius_;
     GPort_Mode _mode_;
     int _counter_;
+    bool _zoom_mode_;
 
     void delLinkedEdges(GViewItem* vertex);
     bool addEdge(GViewItem* source, GViewItem* dest,bool directed = true);
@@ -72,6 +75,8 @@ private:
     void createItem(const QPoint& pos);
     void deleteItem(GViewItem* vertex);
     void selectItem(GViewItem* selected_item, bool outside = false);
+    void zoomIn();
+    void zoomOut();
 
 signals:
     void gviewMessage(QString info);
@@ -79,6 +84,7 @@ signals:
     void internalForceArrangeAct();
 public slots:
     void outsideNewSelect(GViewItem* selected_item);
+
 };
 
 #endif // GVIEWPORT_H
