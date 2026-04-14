@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Button_ViewLoad,&QPushButton::clicked,this,&MainWindow::LoadProject);
     connect(ui->Button_UI_Hide,&QPushButton::clicked,this,&MainWindow::HideShowUI);
     connect(ui->check_Zoom_mode,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
+    connect(ui->check_DragScene_mode,&QCheckBox::stateChanged,this,&MainWindow::setDragMode);
 
     initiateGraphicsView();
     execute();
@@ -1074,15 +1075,34 @@ void MainWindow::setZoomMode(int state)
     {
     case Qt::Unchecked:
     {
-        _view_->setZoomMode(false);
+        _view_->setControlState(GViewPort::GPort_Ctr_Zoom,false);
+        //_view_->setZoomMode(false);
     }
         break;
     case Qt::PartiallyChecked:
     case Qt::Checked:
     {
-        _view_->setZoomMode(true);
+        _view_->setControlState(GViewPort::GPort_Ctr_Zoom,true);
+        //_view_->setZoomMode(true);
     }
         break;
     }
     return;
+}
+void MainWindow::setDragMode(int state)
+{
+    switch(state)
+    {
+    case Qt::Unchecked:
+    {
+        _view_->setControlState(GViewPort::GPort_Ctr_SceneDrag,false);
+    }
+        break;
+    case Qt::PartiallyChecked:
+    case Qt::Checked:
+    {
+        _view_->setControlState(GViewPort::GPort_Ctr_SceneDrag,true);
+    }
+        break;
+    }
 }

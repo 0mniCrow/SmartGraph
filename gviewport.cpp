@@ -14,7 +14,7 @@
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
     _vertices_(model),_vertex_radius_(vertex_radius),
-    _counter_(0),_zoom_mode_(false)
+    _controls_state_(0),_counter_(0)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
@@ -24,6 +24,7 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     setCacheMode(QGraphicsView::CacheBackground);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     setRenderHint(QPainter::Antialiasing);
+    //setDragMode(QGraphicsView::ScrollHandDrag);
     return;
 }
 
@@ -378,6 +379,12 @@ void GViewPort::setMode(GPort_Mode mode)
     _mode_ = mode;
 
 }
+void GViewPort::setControlState(GPort_Controls mode, bool state)
+{
+    state?_controls_state_|=mode:_controls_state_&=~mode;
+    return;
+}
+
 
 void GViewPort::setRadius(int radius)
 {
@@ -402,6 +409,14 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
     GViewItem* item = grabGItem(m_event);
     if(!item)
     {
+        if(_controls_state_&GPort_Ctr_SceneDrag)
+        {
+            _last_pos_ = m_event->pos();
+            setControlState(GPort_Ctr_SceneDragMode,true);
+            _saved_cursor_=cursor();
+            setCursor(Qt::ClosedHandCursor);
+            m_event->accept();
+        }
         QGraphicsView::mousePressEvent(m_event);
         return;
     }
@@ -498,6 +513,12 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         selectItem(item);
     }
     }
+    if(_controls_state_&GPort_Ctr_SceneDrag)
+    {
+        setControlState(GPort_Ctr_SceneDragMode,false);
+        setCursor(_saved_cursor_);
+        m_event->accept();
+    }
     QGraphicsView::mouseReleaseEvent(m_event);
     return;
 }
@@ -517,6 +538,14 @@ void GViewPort::mouseMoveEvent(QMouseEvent* m_event)
         break;
     default:
     {
+        if(_controls_state_&GPort_Ctr_SceneDragMode)
+        {
+            QPoint diff = m_event->pos()-_last_pos_;
+            horizontalScrollBar()->setValue(horizontalScrollBar()->value()-diff.x());
+            verticalScrollBar()->setValue(verticalScrollBar()->value()-diff.y());
+            _last_pos_ =m_event->pos();
+            m_event->accept();
+        }
     }
     }
     QGraphicsView::mouseMoveEvent(m_event);
@@ -937,7 +966,7 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
 
 void GViewPort::wheelEvent(QWheelEvent* w_event)
 {
-    if(!_zoom_mode_)
+    if(!(_controls_state_&GPort_Ctr_Zoom)/*_zoom_mode_*/)
     {
         w_event->ignore();
         return QGraphicsView::wheelEvent(w_event);
@@ -976,7 +1005,6 @@ void GViewPort::zoomOut()
 
 void GViewPort::setZoomMode(bool state)
 {
-    _zoom_mode_=state;
     if(state)
     {
         setTransformationAnchor(QGraphicsView::AnchorUnderMouse);

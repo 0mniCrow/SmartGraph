@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QScrollBar>
 #include "gviewscene.h"
 #include "gview_tableVertexModel.h"
 #include <QPixmap>
@@ -30,9 +31,15 @@ public:
                     GPort_finAddEdge,
                     GPort_startDelEdge,
                     GPort_finDelEdge};
+    enum GPort_Controls{GPort_Ctr_NoMode = 0x00,
+                        GPort_Ctr_Zoom = 0x01,
+                        GPort_Ctr_SceneDrag = 0x02,
+                        GPort_Ctr_SceneDragMode = 0x04};
     GViewPort(int vertex_radius, VertexModel* model, QWidget* tata = nullptr);
     void setMode(GPort_Mode mode);
+    void setControlState(GPort_Controls mode, bool state);
     GPort_Mode mode() const {return _mode_;}
+    char controlState() const {return _controls_state_;}
     int vertRadius()const {return _vertex_radius_;}
     void setRadius(int radius);
     bool loadListGraph(const ListGraph& graph);
@@ -59,9 +66,12 @@ private:
     GViewItem* _selected_vertex_;
     QBasicTimer _timer_;
     int _vertex_radius_;
+    QPoint _last_pos_;
+    QCursor _saved_cursor_;
     GPort_Mode _mode_;
+    char _controls_state_;
     int _counter_;
-    bool _zoom_mode_;
+
 
     void delLinkedEdges(GViewItem* vertex);
     bool addEdge(GViewItem* source, GViewItem* dest,bool directed = true);

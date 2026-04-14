@@ -50,6 +50,7 @@ private slots:
     void LoadProject();
     void HideShowUI();
     void setZoomMode(int state);
+    void setDragMode(int state);
 
     //_______________End______________________
 private:
