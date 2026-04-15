@@ -20,7 +20,7 @@
    <string>Хітры граф</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,0,0">
+   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10,0,1">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
       <item>
@@ -97,7 +97,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <property name="bottomMargin">
-               <number>12</number>
+               <number>0</number>
               </property>
               <item>
                <widget class="QPushButton" name="button_AddEdge">
@@ -213,6 +213,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="Button_SetBG">
+                <property name="text">
+                 <string>Шпалеры</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -247,13 +254,6 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QPushButton" name="Button_SetBG">
-             <property name="text">
-              <string>Шпалеры</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
          <item>
@@ -282,8 +282,95 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoad"/>
+    <addaction name="actionSave"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionAdd_vertex"/>
+    <addaction name="actionRemove_vertex"/>
+    <addaction name="actionAdd_edge"/>
+    <addaction name="actionRemove_Edge"/>
+    <addaction name="actionAdd_background"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="actionFix_vertices"/>
+    <addaction name="actionZoom_mode"/>
+    <addaction name="actionDrag_hand_mode"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionAdd_vertex">
+   <property name="text">
+    <string>Add vertex</string>
+   </property>
+  </action>
+  <action name="actionRemove_vertex">
+   <property name="text">
+    <string>Remove vertex</string>
+   </property>
+  </action>
+  <action name="actionAdd_edge">
+   <property name="text">
+    <string>Add edge</string>
+   </property>
+  </action>
+  <action name="actionRemove_Edge">
+   <property name="text">
+    <string>Remove Edge</string>
+   </property>
+  </action>
+  <action name="actionAdd_background">
+   <property name="text">
+    <string>Add background</string>
+   </property>
+  </action>
+  <action name="actionFix_vertices">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fix vertices</string>
+   </property>
+  </action>
+  <action name="actionZoom_mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Zoom mode</string>
+   </property>
+  </action>
+  <action name="actionDrag_hand_mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Drag hand mode</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

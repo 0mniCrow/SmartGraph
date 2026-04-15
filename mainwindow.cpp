@@ -18,6 +18,20 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->check_Zoom_mode,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
     connect(ui->check_DragScene_mode,&QCheckBox::stateChanged,this,&MainWindow::setDragMode);
 
+    connect(ui->actionLoad,&QAction::triggered,this,&MainWindow::LoadProject);
+    connect(ui->actionSave,&QAction::triggered,this,&MainWindow::SaveProject);
+    connect(ui->actionZoom_mode,&QAction::triggered,this,&MainWindow::setZoomMode);
+    connect(ui->actionZoom_mode,&QAction::triggered,ui->check_Zoom_mode,&QCheckBox::setChecked);
+    connect(ui->check_Zoom_mode,&QCheckBox::toggled,ui->actionZoom_mode,&QAction::setChecked);
+    connect(ui->actionDrag_hand_mode,&QAction::triggered,this,&MainWindow::setDragMode);
+    connect(ui->actionDrag_hand_mode,&QAction::triggered,ui->check_DragScene_mode,&QCheckBox::setChecked);
+    connect(ui->check_DragScene_mode,&QCheckBox::toggled,ui->actionDrag_hand_mode,&QAction::setChecked);
+    connect(ui->actionFix_vertices,&QAction::triggered,this,&MainWindow::fixEdges);
+    connect(ui->actionFix_vertices,&QAction::triggered,ui->check_Fix_edge_length,&QCheckBox::setChecked);
+    connect(ui->check_Fix_edge_length,&QCheckBox::toggled,ui->actionFix_vertices,&QAction::setChecked);
+
+
+
     initiateGraphicsView();
     execute();
 }
@@ -642,6 +656,7 @@ void MainWindow::execute()
 //                                 )+"] "+QString::number(cyc_length)+"-length cycles;");
 //        ui->textEdit->append(QString(actions.c_str()));
 
+
     ListGraph list_character_graph(ListGraph::Gr_Directed|ListGraph::Gr_Weighted);
     int cimocha_id = list_character_graph.addVertex(-1,"Цімоха");
     int milaslava_id = list_character_graph.addVertex(-1,"Міласлава");
@@ -785,7 +800,13 @@ void MainWindow::initiateGraphicsView()
     connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
     connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
     connect(_view_,&GViewPort::internalForceArrangeAct,
-            this,[this](){ui->check_Fix_edge_length->setChecked(true);});
+            this,[this](){ui->check_Fix_edge_length->setChecked(true);
+                          ui->actionFix_vertices->setChecked(true);});
+
+    connect(ui->actionAdd_vertex,&QAction::triggered,this,&MainWindow::AddObject);
+    connect(ui->actionRemove_vertex,&QAction::triggered,this,&MainWindow::RemoveObject);
+    connect(ui->actionAdd_edge,&QAction::triggered,this,&MainWindow::CreateEdge);
+    connect(ui->actionRemove_Edge,&QAction::triggered,this,&MainWindow::RemoveEdge);
 }
 
 void MainWindow::AddObject()

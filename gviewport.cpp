@@ -86,26 +86,35 @@ void GViewPort::deleteItem(GViewItem* vertex)
     {
         return;
     }
-    if(vertex->isSelected())
-    {
+    if(vertex->isSelected())    //Калі вертэкс быў выбраны падначаленым механізмам
+    {                           //выбар здымаецца на ўзроўні элемента.
         vertex->setSelected(false);
-        _selected_vertex_ = nullptr;
+        //_selected_vertex_ = nullptr;
     }
+    if(vertex==_selected_vertex_) //Калі вертэкс быў выбраны карыстальнікам
+    {                             //спасылка на элемент выдаляецца са сховішча
+        _selected_vertex_=nullptr;
+    }
+
     auto it = _vertices_->find(vertex);
     //QList<GViewItem*>::const_iterator it = std::find(_vertices_.cbegin(),_vertices_.cend(),vertex);
-    if(it!=_vertices_->end())//if(it!=_vertices_.end())
+    if(it!=_vertices_->end())
     {
 
         delLinkedEdges(vertex);
-        scene()->removeItem(*it);
-        if(*it == _selected_vertex_)
-        {
-            _selected_vertex_ = nullptr;
-        }
-        delete *it;
-        _vertices_->removeItem(*it);
-        //_vertices_.erase(it);
+        scene()->removeItem(vertex);
+//        if(*it == _selected_vertex_)
+//        {
+//            _selected_vertex_ = nullptr;
+//        }
+
+        _vertices_->removeItem(vertex);
+        delete vertex;
         setMode(GPort_NoMode);
+    }
+    if(_selected_vertex_)
+    {
+        selectItem(_selected_vertex_,true);
     }
     return;
 }
@@ -425,8 +434,9 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
     case GPort_add:
     case GPort_delete:
     {
-        QGraphicsView::mousePressEvent(m_event);
-        return;
+        m_event->accept();
+        //QGraphicsView::mousePressEvent(m_event);
+        //return;
     }
         break;
     case GPort_finAddEdge:
@@ -473,6 +483,7 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
     case GPort_add:
     {
         createItem(m_event->pos());
+        m_event->accept();
     }
         break;
     case GPort_delete:
@@ -481,6 +492,7 @@ void GViewPort::mouseReleaseEvent(QMouseEvent* m_event)
         {
             deleteItem(g_item);
             QApplication::restoreOverrideCursor();
+            m_event->accept();
         }
     }
         break;
