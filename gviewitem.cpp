@@ -2,15 +2,15 @@
 #include "gviewedge.h"
 #include "gviewport.h"
 
-GViewItem::GViewItem(int radius,
+GViewItem::GViewItem(int radius, QPixmap *def_image,
                      #ifdef INFO_COMPLEX_OBJECT
                      const NodeObjectInfo& info,
                      #else
                      const QString &info,
                      #endif
-                     const QColor &color):_info_(info),
-    _color_(color),_tooltip_window_(nullptr),_edit_window_(nullptr),
-    _radius_(radius),_flags_(GV_None)
+                     const QColor &color):_no_image_(def_image),
+    _info_(info),_color_(color),_tooltip_window_(nullptr),
+    _edit_window_(nullptr),_radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
@@ -34,9 +34,9 @@ GViewItem::GViewItem(int radius,
     }
 #endif
 
-GViewItem::GViewItem(int radius, const QColor& color):
-    _color_(color),_tooltip_window_(nullptr),_edit_window_(nullptr),
-    _radius_(radius),_flags_(GV_None)
+GViewItem::GViewItem(int radius, QPixmap *def_image, const QColor& color):
+    _no_image_(def_image),_color_(color),_tooltip_window_(nullptr),
+    _edit_window_(nullptr),_radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
@@ -314,6 +314,18 @@ void GViewItem::paint(QPainter* painter,
 //                          _color_.blueF()+2.0);
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
     painter->drawEllipse(ellipse_rect/*-_radius_,-_radius_,_radius_*2,_radius_*2*/);
+    if(_icon_.isNull())
+    {
+        painter->setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        painter->drawPixmap(-_radius_,-_radius_,*_no_image_);
+        painter->setBrush(Qt::NoBrush);
+        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    }
+    else
+    {
+
+    }
     if(!(flags()&ItemIsMovable))
     {
         QPolygonF pin_needle;

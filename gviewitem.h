@@ -48,6 +48,8 @@ private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08};
+    QPixmap * _no_image_;
+    QPixmap _icon_;
     QVector<GViewEdge*> _edges_;
     info_type _info_;
     QColor _color_;
@@ -79,12 +81,12 @@ public:
               NodeObjectInfo&& info,
               const QColor& color = QColor());
 #else
-    GViewItem(int radius,
+    GViewItem(int radius,QPixmap* def_image,
               const QString& info = QString(),
               const QColor& color = QColor());
 #endif
 
-    GViewItem(int radius, const QColor& color);
+    GViewItem(int radius, QPixmap* def_image, const QColor& color);
     ~GViewItem();
     void addEdge(GViewEdge* edge);
     void delEdge(GViewEdge* edge);

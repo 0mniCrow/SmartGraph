@@ -13,17 +13,20 @@
 */
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
-    _vertices_(model),_vertex_radius_(vertex_radius),
+    _vertices_(model),
+    _vertex_radius_(vertex_radius),
     _controls_state_(0),_counter_(0)
 {
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
     _selected_vertex_= nullptr;
     setMouseTracking(true);
-
+    _no_image_ = QPixmap(":/res/icons/icons/no_image3.svg").
+            scaled(_vertex_radius_*2,_vertex_radius_*2,Qt::KeepAspectRatio);
     setCacheMode(QGraphicsView::CacheBackground);
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     setRenderHint(QPainter::Antialiasing);
+
     //setDragMode(QGraphicsView::ScrollHandDrag);
     return;
 }
@@ -462,7 +465,7 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
 
 void GViewPort::createItem(const QPoint& pos)
 {
-    GViewItem* item = new GViewItem(_vertex_radius_,
+    GViewItem* item = new GViewItem(_vertex_radius_, &_no_image_,
                                     "Vertex N"+
                                     QString::number(_counter_++),
                                     Qt::gray
@@ -694,7 +697,8 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     for(const int& id:vert_ids)
     {
 #ifdef LIST_STR_VAL
-        GViewItem* item = new GViewItem(_vertex_radius_,QString(graph.value(id).c_str()),Qt::gray);
+        GViewItem* item = new GViewItem(_vertex_radius_,&_no_image_,
+                                        QString(graph.value(id).c_str()),Qt::gray);
 #else
         GViewItem* item = new GViewItem(_vertex_radius_,QString::number(graph.value(id)),Qt::gray);
 #endif
@@ -933,7 +937,7 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
         }
         data = it.value();
 
-        GViewItem* item = new GViewItem(radius,
+        GViewItem* item = new GViewItem(radius, &_no_image_,
                                         data,
                                         colour);
         setMode(GPort_add);

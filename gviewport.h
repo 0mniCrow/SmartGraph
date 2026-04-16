@@ -65,6 +65,7 @@ private:
     GViewItem* _del_edge_;
     GViewItem* _selected_vertex_;
     QBasicTimer _timer_;
+    QPixmap _no_image_;                 //дэфолтны відарыс для аб'ектаў
     int _vertex_radius_;
     QPoint _last_pos_;
     QCursor _saved_cursor_;
