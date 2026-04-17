@@ -4,19 +4,21 @@
 
 GViewItem::GViewItem(int radius, QPixmap *def_image,
                      #ifdef INFO_COMPLEX_OBJECT
-                     const NodeObjectInfo& info,
+                     const NodeObjectInfo& info
                      #else
-                     const QString &info,
+                     const QString &info
                      #endif
-                     const QColor &color):_no_image_(def_image),
-    _info_(info),_color_(color),_tooltip_window_(nullptr),
-    _edit_window_(nullptr),_radius_(radius),_flags_(GV_None)
+                     ):_default_pixmap_(def_image),
+    _info_(info),_tooltip_window_(nullptr),
+    _edit_window_(nullptr),_pic_load_dialog_(nullptr),
+    _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     connect(&_show_timer_,&QTimer::timeout,this,&GViewItem::showTipWindow);
     _show_timer_.setSingleShot(true);
+    iconResize();
     return;
 }
 
@@ -24,7 +26,7 @@ GViewItem::GViewItem(int radius, QPixmap *def_image,
     GViewItem::GViewItem(int radius,
               NodeObjectInfo&& info,
               const QColor& color):_info_(std::move(info)),
-        _color_(color),_radius_(radius),
+        _radius_(radius),
         _flags_(GV_None)
     {
         setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
@@ -34,15 +36,17 @@ GViewItem::GViewItem(int radius, QPixmap *def_image,
     }
 #endif
 
-GViewItem::GViewItem(int radius, QPixmap *def_image, const QColor& color):
-    _no_image_(def_image),_color_(color),_tooltip_window_(nullptr),
-    _edit_window_(nullptr),_radius_(radius),_flags_(GV_None)
+GViewItem::GViewItem(int radius, QPixmap *def_image):
+    _default_pixmap_(def_image),_tooltip_window_(nullptr),
+    _edit_window_(nullptr),_pic_load_dialog_(nullptr),
+    _radius_(radius),_flags_(GV_None)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
     connect(&_show_timer_,&QTimer::timeout,this,&GViewItem::showTipWindow);
     _show_timer_.setSingleShot(true);
+    iconResize();
     return;
 }
 
@@ -80,7 +84,7 @@ void GViewItem::calcForce()
 
     qreal vel_x = 0.0;
     qreal vel_y = 0.0;
-    //Пошук зоны каля вяршыні
+                                                                    //Пошук зоны каля вяршыні
     QRectF sceneRect = scene()->sceneRect();
     QPointF cur_pos = scenePos();
     QPointF zone_TL,zone_BR;
@@ -93,7 +97,7 @@ void GViewItem::calcForce()
                       +zone_width,sceneRect.bottom()));
     QRectF zone_rect(zone_TL,zone_BR);
 
-    //Пошук графічных аб'ектаў у зоне каля вяршыні
+                                                                    //Пошук графічных аб'ектаў у зоне каля вяршыні
     const QList<QGraphicsItem*> items(scene()->items(zone_rect));
     for(QGraphicsItem* item:items)
     {
@@ -155,9 +159,53 @@ bool GViewItem::advPosition()
     return true;
 }
 
-void GViewItem::setColor(const QColor& color)
+void GViewItem::setImage(const QPixmap& image)
 {
-    _color_=color;
+    if(image.isNull())
+    {
+        return;
+    }
+    _orig_pixmap_=image;
+    iconResize();
+    update();
+    return;
+}
+
+void GViewItem::iconResize()
+{
+    if(_orig_pixmap_.isNull() &&
+            (!_default_pixmap_ ||
+             _default_pixmap_->isNull()))
+    {
+        return;
+    }
+    QImage temp_icon(_radius_*2,_radius_*2,QImage::Format_ARGB32_Premultiplied);
+    temp_icon.fill(Qt::transparent);
+    QPainter painter;
+    painter.begin(&temp_icon);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    QPixmap scaled_pxm;
+    if(_orig_pixmap_.isNull())
+    {
+        scaled_pxm = _default_pixmap_->scaled(QSize(_radius_*2,_radius_*2),Qt::IgnoreAspectRatio);
+    }
+    else
+    {
+        scaled_pxm = _orig_pixmap_.scaled(QSize(_radius_*2,_radius_*2),Qt::IgnoreAspectRatio);
+    }
+    painter.drawPixmap(0,0,scaled_pxm);
+    painter.end();
+    QImage result_icon(_radius_*2,_radius_*2,QImage::Format_ARGB32_Premultiplied);
+    result_icon.fill(Qt::transparent);
+    painter.begin(&result_icon);
+    painter.setRenderHint(QPainter::Antialiasing,true);
+    painter.setCompositionMode(QPainter::CompositionMode::CompositionMode_SourceOver);
+    painter.setBrush(Qt::gray);
+    painter.drawEllipse(QPoint(_radius_,_radius_),_radius_,_radius_);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+    painter.drawImage(temp_icon.rect(),temp_icon);
+    painter.end();
+    _icon_ = QPixmap::fromImage(result_icon);
     return;
 }
 
@@ -188,10 +236,6 @@ QString GViewItem::info()const
 }
 #endif
 
-QColor GViewItem::color()const
-{
-    return _color_;
-}
 
 void GViewItem::addEdge(GViewEdge* edge)
 {
@@ -259,15 +303,101 @@ void GViewItem::paint(QPainter* painter,
 {
     Q_UNUSED(option) Q_UNUSED(widget)
     painter->save();
-//    QRect workingRect(-20.0,-40.0,40.0,80.0);
-//    QPolygon triangle;
-//    triangle<<workingRect.bottomRight()
-//           <<QPoint(workingRect.center().x(),0)
-//          <<workingRect.bottomLeft();
-//    painter->drawPolygon(triangle);
-
     painter->setRenderHint(QPainter::Antialiasing,true);
-    //painter->drawEllipse(-7,-7,20,20);
+    if(_icon_.isNull())
+    {
+        drawVertexCircle(painter);
+    }
+    else
+    {
+        drawVertexIcon(painter);
+    }
+    if(!(flags()&ItemIsMovable))
+    {
+        drawPinNeedle(painter);
+    }
+    /*
+    QColor cur_color;
+    QPen cur_pen;
+    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
+    {
+        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        cur_color = QColorConstants::Svg::orange;
+    }
+    else
+    {
+        if(isUnderMouse())
+        {
+            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        Qt::yellow:
+                        QColorConstants::Svg::lightcyan;
+        }
+        else if(isSelected())
+        {
+            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::palegoldenrod:
+                        QColorConstants::Svg::lightskyblue;
+        }
+        else
+        {
+            cur_pen.setColor(QColorConstants::Svg::black);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::slategray:
+                        QColorConstants::Svg::powderblue;
+        }
+    }
+    painter->setBrush(cur_color);
+    painter->setPen(cur_pen);
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    painter->drawEllipse(ellipse_rect);
+    if(_icon_.isNull())
+    {
+        painter->setCompositionMode(QPainter::CompositionMode_SourceAtop);
+        painter->drawPixmap(-_radius_,-_radius_,*_default_pixmap_);
+        painter->setBrush(Qt::NoBrush);
+        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+        painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    }
+    else
+    {
+
+    }
+    if(!(flags()&ItemIsMovable))
+    {
+        QPolygonF pin_needle;
+        qreal pin_stem_rad = 220*M_PI/180;
+        QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
+                             ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
+        QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
+        qreal ux = pin_stem_line.dx()/pin_stem_line.length();
+        qreal uy = pin_stem_line.dy()/pin_stem_line.length();
+        qreal vx = -uy;
+        qreal vy = ux;
+        QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
+                                  pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
+        QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
+                                  pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
+        pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
+        painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
+        painter->setPen(QPen(Qt::black,1));
+        painter->drawPolygon(pin_needle);
+        painter->setBrush(QBrush(Qt::red));
+        painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
+    }
+    */
+    painter->restore();
+    return;
+}
+
+void GViewItem::drawVertexCircle(QPainter* painter)
+{
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
     QColor cur_color;
     QPen cur_pen;
     if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
@@ -306,49 +436,79 @@ void GViewItem::paint(QPainter* painter,
     painter->setBrush(cur_color);
     painter->setPen(cur_pen);
 
-//        cur_color.setRed(_color_.red()<235?_color_.red()+20:_color_.red()-20);
-//        cur_color.setGreen(_color_.green()<235?_color_.green()+20:_color_.green()-20);
-//        cur_color.setBlue(_color_.blue()<235?_color_.blue()+20:_color_.blue()-20);
-//        cur_color.setRgbF(_color_.redF()+2.0,
-//                          _color_.greenF()+2.0,
-//                          _color_.blueF()+2.0);
+    painter->drawEllipse(ellipse_rect);
+    return;
+}
+void GViewItem::drawVertexIcon(QPainter* painter)
+{
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    painter->drawEllipse(ellipse_rect/*-_radius_,-_radius_,_radius_*2,_radius_*2*/);
-    if(_icon_.isNull())
+    painter->drawPixmap(-_radius_,-_radius_,_icon_);
+    QColor mask_color;
+    QPen cur_pen;
+    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
     {
-        painter->setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        painter->drawPixmap(-_radius_,-_radius_,*_no_image_);
-        painter->setBrush(Qt::NoBrush);
-        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-        painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
+        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        mask_color = QColorConstants::Svg::orange;
+        mask_color.setAlpha(20);
     }
     else
     {
+        if(isUnderMouse())
+        {
+            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            mask_color = (flags()&ItemIsMovable)?
+                        Qt::yellow:
+                        QColorConstants::Svg::lightcyan;
+            mask_color.setAlpha(20);
+        }
+        else if(isSelected())
+        {
+            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            mask_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::palegoldenrod:
+                        QColorConstants::Svg::lightskyblue;
+            mask_color.setAlpha(20);
+        }
+        else
+        {
+            cur_pen.setColor(QColorConstants::Svg::ghostwhite);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            mask_color = Qt::NoBrush;
+        }
+    }
+    painter->setBrush(mask_color);
+    painter->setPen(cur_pen);
+    //painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
+    painter->drawEllipse(ellipse_rect);
+    return;
 
-    }
-    if(!(flags()&ItemIsMovable))
-    {
-        QPolygonF pin_needle;
-        qreal pin_stem_rad = 220*M_PI/180;
-        QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
-                             ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
-        QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
-        qreal ux = pin_stem_line.dx()/pin_stem_line.length();
-        qreal uy = pin_stem_line.dy()/pin_stem_line.length();
-        qreal vx = -uy;
-        qreal vy = ux;
-        QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
-                                  pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
-        QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
-                                  pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
-        pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
-        painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
-        painter->setPen(QPen(Qt::black,1));
-        painter->drawPolygon(pin_needle);
-        painter->setBrush(QBrush(Qt::red));
-        painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
-    }
-    painter->restore();
+}
+void GViewItem::drawPinNeedle(QPainter* painter)
+{
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    QPolygonF pin_needle;
+    qreal pin_stem_rad = 220*M_PI/180;
+    QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
+                         ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
+    QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
+    qreal ux = pin_stem_line.dx()/pin_stem_line.length();
+    qreal uy = pin_stem_line.dy()/pin_stem_line.length();
+    qreal vx = -uy;
+    qreal vy = ux;
+    QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
+                              pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
+    QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
+                              pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
+    pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
+    painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
+    painter->setPen(QPen(Qt::black,1));
+    painter->drawPolygon(pin_needle);
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
+    return;
 }
 
 QVariant GViewItem::itemChange(GraphicsItemChange change, const QVariant& value)
@@ -390,6 +550,7 @@ void GViewItem::setRadius(int radius)
 {
     prepareGeometryChange();
     _radius_=radius;
+    iconResize();
     return;
 }
 
@@ -499,6 +660,7 @@ void GViewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
     //setPos(pos()+delta*MOUSE_SENSE_DECR);
     m_event->accept();
     //QGraphicsItem::mouseMoveEvent(m_event);
+    return;
 }
 
 void GViewItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
@@ -506,14 +668,14 @@ void GViewItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
     _last_screen_pos_ = h_event->screenPos();
     startTipTimer();
     update();
-    QGraphicsItem::hoverEnterEvent(h_event);
+    return QGraphicsItem::hoverEnterEvent(h_event);
 }
 void GViewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
     _last_screen_pos_ = QPoint();
     breakTipTimer();
     update();
-    QGraphicsItem::hoverLeaveEvent(h_event);
+    return QGraphicsItem::hoverLeaveEvent(h_event);
 }
 
 void GViewItem::gatherInfo(vert_map *container) const
@@ -530,7 +692,6 @@ void GViewItem::gatherInfo(vert_map *container) const
     container->insert("ptr_id",QString::number(addr,16));
     container->insert("x",QString::number(scenePos().x()));
     container->insert("y",QString::number(scenePos().y()));
-    container->insert("color",QString::number(_color_.rgb()));
     container->insert("radius",QString::number(_radius_));
     container->insert("data",QString(_info_));
     return;
@@ -613,5 +774,27 @@ void GViewItem::getNewInfo(const QString& new_val)
 {
     _info_ = new_val;
     emit changedInternally(this);
+    return;
+}
+
+void GViewItem::callPicDialog()
+{
+    if(_pic_load_dialog_)
+    {
+        delete _pic_load_dialog_;
+    }
+    _pic_load_dialog_ = new ImageCropWindow();
+    connect(_pic_load_dialog_,&ImageCropWindow::readyForLoad,this,&GViewItem::loadImageFromDialog);
+    _pic_load_dialog_->show();
+    return;
+}
+
+void GViewItem::loadImageFromDialog()
+{
+    setImage(_pic_load_dialog_->getCroppedImage2());
+    _pic_load_dialog_->close();
+    disconnect(_pic_load_dialog_,&ImageCropWindow::readyForLoad,this,&GViewItem::loadImageFromDialog);
+    _pic_load_dialog_->deleteLater();
+    _pic_load_dialog_ = nullptr;
     return;
 }

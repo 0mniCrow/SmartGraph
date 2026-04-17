@@ -14,6 +14,7 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
+#include <QDialog>
 
 class CropItem;
 class ShadowItem;
@@ -116,6 +117,7 @@ public:
     explicit ImageCropWindow(const QString& called_element_name, QWidget* parent = nullptr);
     ~ImageCropWindow();
     QPixmap getCroppedImage();
+    QPixmap getCroppedImage2();
     void setElementName(const QString& called_element_name);
 private:
     Ui::ImageCropWindow *ui;
@@ -124,9 +126,11 @@ private:
     ResizeItem* _r_item_;
     ShadowItem* _s_item_;
     QString _called_element_name_;
+    QPixmap _cropped_image_;
     QPixmap getIMG();
 signals:
     void imageHasBeenCropped(QString element_name, QPixmap croppedPixmap);
+    void readyForLoad();
     void wasClosed();
 private slots:
     void chooseFile();

@@ -20,6 +20,7 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
     _item_ = nullptr;
     _r_item_ = nullptr;
     _s_item_ = nullptr;
+    setWindowModality(Qt::WindowModality::ApplicationModal);
     return;
 }
 
@@ -55,17 +56,21 @@ void ImageCropWindow::setElementName(const QString& called_element_name)
 
 ImageCropWindow::~ImageCropWindow()
 {
-    if(_item_)
+
+    if(_s_item_)
     {
-        delete _item_;
+        _scene_->removeItem(_s_item_);
+        delete _s_item_;
     }
     if(_r_item_)
     {
+        _scene_->removeItem(_r_item_);
         delete _r_item_;
     }
-    if(_s_item_)
+    if(_item_)
     {
-        delete _s_item_;
+        _scene_->removeItem(_item_);
+        delete _item_;
     }
     delete ui;
 }
@@ -103,9 +108,11 @@ void ImageCropWindow::loadImage()
         {
             _scene_->removeItem(_s_item_);
             delete _s_item_;
+            _s_item_=nullptr;
         }
         _scene_->removeItem(_r_item_);
         delete _r_item_;
+        _r_item_ = nullptr;
     }
     if(_item_)
     {       
@@ -179,7 +186,9 @@ void ImageCropWindow::cropImage()
     QPixmap copy(bg.copy(target.toRect()));
     painter.drawPixmap(crop.rect(),copy);
     painter.end();
-    emit imageHasBeenCropped(_called_element_name_,crop);
+    _cropped_image_ = crop;
+    //emit imageHasBeenCropped(_called_element_name_,crop);
+    emit readyForLoad();
     close();
 //    LocWidget* widget = new LocWidget;
 //    widget->setAttribute(Qt::WA_TranslucentBackground);
@@ -243,6 +252,12 @@ QPixmap ImageCropWindow::getCroppedImage()
     painter.drawPixmap(crop.rect(),copy);
     painter.end();
     return crop;
+}
+
+QPixmap ImageCropWindow::getCroppedImage2()
+{
+    return _cropped_image_;
+    setWindowModality(Qt::WindowModality::NonModal);
 }
 
 void ImageCropWindow::radiusChanged(int radius)

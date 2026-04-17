@@ -27,6 +27,7 @@
 #include "graphic_elements/nodeobjectinfo.h"
 #include "widgets/gview_tooltip_window.h"
 #include "widgets/gview_edit_window.h"
+#include "imagecropwindow.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
 typedef QMap<QString,QString> vert_map;
@@ -48,19 +49,19 @@ private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08};
-    QPixmap * _no_image_;
-    QPixmap _icon_;
-    QVector<GViewEdge*> _edges_;
-    info_type _info_;
-    QColor _color_;
-    QPointF _adv_pos_;
-    GViewToolTip * _tooltip_window_;
-    GViewEdit * _edit_window_;
-    QPoint _last_screen_pos_;
-    QTimer _show_timer_;
-    int _radius_;
-    bool _is_clicked_;
-    char _flags_;
+    QVector<GViewEdge*>     _edges_;
+    QPixmap*                _default_pixmap_;
+    QPixmap                 _orig_pixmap_;
+    QPixmap                 _icon_;
+    info_type               _info_;
+    GViewToolTip *          _tooltip_window_;
+    GViewEdit *             _edit_window_;
+    ImageCropWindow *       _pic_load_dialog_;
+    QPointF                 _adv_pos_;
+    QPoint                  _last_screen_pos_;
+    QTimer                  _show_timer_;
+    int                     _radius_;
+    char                    _flags_;
 
     void checkBorders();
     char GVflags() const {return _flags_;}
@@ -70,6 +71,10 @@ private:
     void breakTipTimer();
     void callTipWindow(QGraphicsSceneMouseEvent* m_event = nullptr);
     void callEditWindow(QGraphicsSceneMouseEvent* m_event = nullptr);
+    void iconResize();
+    void drawVertexCircle(QPainter* painter);
+    void drawVertexIcon(QPainter* painter);
+    void drawPinNeedle(QPainter* painter);
 public:
 
 
@@ -82,17 +87,17 @@ public:
               const QColor& color = QColor());
 #else
     GViewItem(int radius,QPixmap* def_image,
-              const QString& info = QString(),
-              const QColor& color = QColor());
+              const QString& info = QString());
 #endif
 
-    GViewItem(int radius, QPixmap* def_image, const QColor& color);
+    GViewItem(int radius, QPixmap* def_image);
     ~GViewItem();
     void addEdge(GViewEdge* edge);
     void delEdge(GViewEdge* edge);
     int radius()const{return _radius_;}
     void setRadius(int radius);
-    void setColor(const QColor& color);
+    void setImage(const QPixmap& image);
+    QPixmap getImage() const { return _orig_pixmap_;}
      #ifdef INFO_COMPLEX_OBJECT
     void setInfo(NodeObjectInfo&& info);
     const NodeObjectInfo& info()const;
@@ -101,7 +106,6 @@ public:
     QString info()const;
     #endif
 
-    QColor color()const;
     bool isForceCalc()const {return _flags_&GV_Is_Forced;}
     void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}
     void calcForce();
@@ -110,7 +114,7 @@ public:
     int type() const override{return Type;}
 
     void gatherInfo(vert_map* item_container) const;
-    //void loadInfo(vert_map* item_container);
+    void callPicDialog();
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -126,6 +130,7 @@ protected:
     void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
 private slots:
     void showTipWindow();
+    void loadImageFromDialog();
     void getNewInfo(const QString& new_val);
 signals:
     void changedInternally(GViewItem* self);

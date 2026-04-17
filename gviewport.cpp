@@ -467,9 +467,7 @@ void GViewPort::createItem(const QPoint& pos)
 {
     GViewItem* item = new GViewItem(_vertex_radius_, &_no_image_,
                                     "Vertex N"+
-                                    QString::number(_counter_++),
-                                    Qt::gray
-                                    );
+                                    QString::number(_counter_++));
     addItem(item,pos);
     selectItem(item);
     if(QApplication::overrideCursor())
@@ -591,6 +589,7 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
         QAction* act_edge = menu->addAction(QIcon(QPixmap(
                              ":/res/icons/icons/edge_start.svg").
                                 scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Пачаць сувязь");
+        QAction* act_pic = menu->addAction("Усталяваць відарыс");
         QAction* act_select = menu->exec(c_event->globalPos());
         if(act_select== act_pin)
         {
@@ -614,6 +613,10 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
         {
             setMode(GPort_startAddEdge);
             startAddEdge(g_item);
+        }
+        else if(act_select == act_pic)
+        {
+            g_item->callPicDialog();
         }
         else
         {
@@ -698,7 +701,7 @@ bool GViewPort::loadListGraph(const ListGraph& graph)
     {
 #ifdef LIST_STR_VAL
         GViewItem* item = new GViewItem(_vertex_radius_,&_no_image_,
-                                        QString(graph.value(id).c_str()),Qt::gray);
+                                        QString(graph.value(id).c_str()));
 #else
         GViewItem* item = new GViewItem(_vertex_radius_,QString::number(graph.value(id)),Qt::gray);
 #endif
@@ -897,7 +900,7 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
         qreal x = 0;
         qreal y = 0;
         int radius = 0;
-        QRgb colour;
+        //QRgb colour;
         QString data;
         QString code;
         vert_map::const_iterator it = vertex->find("x");
@@ -918,12 +921,12 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
             continue;
         }
         radius = it.value().toInt();
-        it = vertex->find("color");
-        if(it==vertex->constEnd())
-        {
-            continue;
-        }
-        colour = it.value().toInt();
+//        it = vertex->find("color");
+//        if(it==vertex->constEnd())
+//        {
+//            continue;
+//        }
+//        colour = it.value().toInt();
         it = vertex->find("ptr_id");
         if(it==vertex->constEnd())
         {
@@ -938,8 +941,7 @@ void GViewPort::loadInfo(const nest_vert_map& vertices,
         data = it.value();
 
         GViewItem* item = new GViewItem(radius, &_no_image_,
-                                        data,
-                                        colour);
+                                        data);
         setMode(GPort_add);
         addItem(item,mapFromScene(x,y));
         obj_map.insert(code,item);
