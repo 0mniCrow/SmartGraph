@@ -18,6 +18,7 @@ SOURCES += \
     graphic_elements/infowidget.cpp \
     graphic_elements/nameelement.cpp \
     graphic_elements/nodeobjectinfo.cpp \
+    gview_localization_controller.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexTableDelegate.cpp \
     gview_tableVertexView.cpp \
@@ -47,6 +48,7 @@ HEADERS += \
     graphic_elements/infowidget.h \
     graphic_elements/nameelement.h \
     graphic_elements/nodeobjectinfo.h \
+    gview_localization_controller.h \
     gview_tableVertexModel.h \
     gview_tableVertexTableDelegate.h \
     gview_tableVertexView.h \

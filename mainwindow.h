@@ -55,8 +55,8 @@ private slots:
     //_______________End______________________
 private:
     TouchForm * touchform;
-    ImageCropWindow _crop_window_;
-    //VisualisationGraphForm *vis_form;
+//  ImageCropWindow _crop_window_;
+//  VisualisationGraphForm *vis_form;
     MatrixModel * model;
     //____________Visual graph_______________
     GViewScene* _scene_;

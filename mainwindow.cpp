@@ -680,6 +680,7 @@ void MainWindow::setProgressBar(int val, int max)
 {
     ui->progressBar->setValue(val*100/max);
 }
+
 MainWindow::~MainWindow()
 {
     if(touchform)
@@ -720,15 +721,15 @@ void MainWindow::keyPressEvent(QKeyEvent* pe)
 //        }
     }
         break;
-    case Qt::Key_R:
-    {
-        if(pe->modifiers()&Qt::ControlModifier)
-        {
-            _crop_window_.show();
-            pe->accept();
-        }
-    }
-        break;
+//    case Qt::Key_R:
+//    {
+//        if(pe->modifiers()&Qt::ControlModifier)
+//        {
+//            _crop_window_.show();
+//            pe->accept();
+//        }
+//    }
+//        break;
     default:
     {
         pe->ignore();

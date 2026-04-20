@@ -371,6 +371,11 @@
     <string>Drag hand mode</string>
    </property>
   </action>
+  <action name="actionSome_subaction">
+   <property name="text">
+    <string>Some subaction</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
