@@ -15,6 +15,7 @@
 //______________________End____________________________
 //#include "visualisationgraphform.h"
 #include "imagecropwindow.h"
+#include "xmlparser.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

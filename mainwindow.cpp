@@ -914,6 +914,18 @@ void MainWindow::SaveProject()
     {
         addr.append(".xml");
     }
+    nest_vert_map vertices;
+    nest_vert_map edges;
+    _view_->gatherInfo(vertices,edges);
+    if(!XMLParser::saveProject(addr,vertices,edges,_bg_filename_))
+    {
+        ui->textEdit->append("XML file ["+addr+"] failed to save");
+    }
+    qDeleteAll(vertices);
+    vertices.clear();
+    qDeleteAll(edges);
+    edges.clear();
+    /*
     QFile xml_file(addr);
     if(!xml_file.open(QFile::WriteOnly|QFile::Text))
     {
@@ -976,6 +988,7 @@ void MainWindow::SaveProject()
     xml_stream<<main_doc.toString();
     xml_file.flush();
     xml_file.close();
+    */
     return;
 }
 void MainWindow::LoadProject()
@@ -985,7 +998,22 @@ void MainWindow::LoadProject()
                          QDir::currentPath(),
                          "XML files (*.xml)",nullptr,
                          QFileDialog::DontUseNativeDialog));
-
+    nest_vert_map vertices;
+    nest_vert_map edges;
+    QString BG_addr;
+    if(!XMLParser::loadProject(addr,vertices,edges,BG_addr))
+    {
+        ui->textEdit->append("XML file ["+addr+"] failed to load");
+        return;
+    }
+    if(!BG_addr.isEmpty())
+    {
+        LoadBGFromFile(BG_addr);
+    }
+    _view_->loadInfo(vertices,edges);
+    qDeleteAll(vertices);
+    qDeleteAll(edges);
+    /*
     QFile xml_file(addr);
     if(!xml_file.open(QFile::ReadOnly|QFile::Text))
     {
@@ -1073,6 +1101,8 @@ void MainWindow::LoadProject()
     _view_->loadInfo(vertices,edges);
     qDeleteAll(vertices);
     qDeleteAll(edges);
+    */
+
     return;
 }
 

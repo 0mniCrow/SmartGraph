@@ -35,7 +35,8 @@ SOURCES += \
     touchform.cpp \
     vectorgraph.cpp \
     widgets/gview_edit_window.cpp \
-    widgets/gview_tooltip_window.cpp
+    widgets/gview_tooltip_window.cpp \
+    xmlparser.cpp
 
 HEADERS += \
     Graph_algorithms.h \
@@ -64,7 +65,8 @@ HEADERS += \
     touchform.h \
     vectorgraph.h \
     widgets/gview_edit_window.h \
-    widgets/gview_tooltip_window.h
+    widgets/gview_tooltip_window.h \
+    xmlparser.h
 
 FORMS += \
     imagecropwindow.ui \
