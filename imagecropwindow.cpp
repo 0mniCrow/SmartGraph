@@ -8,9 +8,9 @@ ImageCropWindow::ImageCropWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->spin_crop_width->setValue(DEF_WIDTH);
-    connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
-    connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
-    connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
+    connect(ui->button_imgFileDialog_trsl,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
+    connect(ui->button_loadImage_trsl,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
+    connect(ui->button_Crop_trsl,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
     connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
     connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
     connect(ui->spin_crop_width,&QSpinBox::valueChanged,this,&ImageCropWindow::thicknessChanged);
@@ -33,9 +33,9 @@ ImageCropWindow::ImageCropWindow(
 {
     ui->setupUi(this);
     ui->spin_crop_width->setValue(DEF_WIDTH);
-    connect(ui->button_imgFileDialog,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
-    connect(ui->button_loadImage,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
-    connect(ui->button_Crop,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
+    connect(ui->button_imgFileDialog_trsl,&QPushButton::clicked,this,&ImageCropWindow::chooseFile);
+    connect(ui->button_loadImage_trsl,&QPushButton::clicked,this,&ImageCropWindow::loadImage);
+    connect(ui->button_Crop_trsl,&QPushButton::clicked,this,&ImageCropWindow::cropImage);
     connect(ui->spinBox_radius,&QSpinBox::valueChanged,this,&ImageCropWindow::radiusChanged);
     connect(ui->combo_form,&QComboBox::currentIndexChanged,this,&ImageCropWindow::geometryChange);
     connect(ui->spin_crop_width,&QSpinBox::valueChanged,this,&ImageCropWindow::thicknessChanged);

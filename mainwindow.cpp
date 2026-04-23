@@ -8,30 +8,36 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     touchform->paintState(20);
-    connect(ui->pushButton_exe,&QPushButton::clicked,this,&MainWindow::execute);
-    connect(ui->Button_OpenTouchForm,&QPushButton::clicked,touchform,&QWidget::show);
-    connect(ui->check_Fix_edge_length,&QCheckBox::clicked,this,&MainWindow::fixEdges);
-    connect(ui->Button_SetBG,&QPushButton::clicked,this,&MainWindow::setBG);
-    connect(ui->Button_ViewSave,&QPushButton::clicked,this,&MainWindow::SaveProject);
-    connect(ui->Button_ViewLoad,&QPushButton::clicked,this,&MainWindow::LoadProject);
+    connect(ui->pushButton_exe_trsl,&QPushButton::clicked,this,&MainWindow::execute);
+    connect(ui->Button_OpenTouchForm_trsl,&QPushButton::clicked,touchform,&QWidget::show);
+    connect(ui->check_Fix_edge_length_trsl,&QCheckBox::clicked,this,&MainWindow::fixEdges);
+    connect(ui->Button_SetBG_trsl,&QPushButton::clicked,this,&MainWindow::setBG);
+    connect(ui->Button_ViewSave_trsl,&QPushButton::clicked,this,&MainWindow::SaveProject);
+    connect(ui->Button_ViewLoad_trsl,&QPushButton::clicked,this,&MainWindow::LoadProject);
     connect(ui->Button_UI_Hide,&QPushButton::clicked,this,&MainWindow::HideShowUI);
-    connect(ui->check_Zoom_mode,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
-    connect(ui->check_DragScene_mode,&QCheckBox::stateChanged,this,&MainWindow::setDragMode);
+    connect(ui->check_Zoom_mode_trsl,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
+    connect(ui->check_DragScene_mode_trsl,&QCheckBox::stateChanged,this,&MainWindow::setDragMode);
 
-    connect(ui->actionLoad,&QAction::triggered,this,&MainWindow::LoadProject);
-    connect(ui->actionSave,&QAction::triggered,this,&MainWindow::SaveProject);
-    connect(ui->actionZoom_mode,&QAction::triggered,this,&MainWindow::setZoomMode);
-    connect(ui->actionZoom_mode,&QAction::triggered,ui->check_Zoom_mode,&QCheckBox::setChecked);
-    connect(ui->check_Zoom_mode,&QCheckBox::toggled,ui->actionZoom_mode,&QAction::setChecked);
-    connect(ui->actionDrag_hand_mode,&QAction::triggered,this,&MainWindow::setDragMode);
-    connect(ui->actionDrag_hand_mode,&QAction::triggered,ui->check_DragScene_mode,&QCheckBox::setChecked);
-    connect(ui->check_DragScene_mode,&QCheckBox::toggled,ui->actionDrag_hand_mode,&QAction::setChecked);
-    connect(ui->actionFix_vertices,&QAction::triggered,this,&MainWindow::fixEdges);
-    connect(ui->actionFix_vertices,&QAction::triggered,ui->check_Fix_edge_length,&QCheckBox::setChecked);
-    connect(ui->check_Fix_edge_length,&QCheckBox::toggled,ui->actionFix_vertices,&QAction::setChecked);
+    connect(ui->actionLoad_trsl,&QAction::triggered,this,&MainWindow::LoadProject);
+    connect(ui->actionSave_trsl,&QAction::triggered,this,&MainWindow::SaveProject);
+    connect(ui->actionZoom_mode_trsl,&QAction::triggered,this,&MainWindow::setZoomMode);
+    connect(ui->actionZoom_mode_trsl,&QAction::triggered,ui->check_Zoom_mode_trsl,&QCheckBox::setChecked);
+    connect(ui->check_Zoom_mode_trsl,&QCheckBox::toggled,ui->actionZoom_mode_trsl,&QAction::setChecked);
+    connect(ui->actionDrag_hand_mode_trsl,&QAction::triggered,this,&MainWindow::setDragMode);
+    connect(ui->actionDrag_hand_mode_trsl,&QAction::triggered,ui->check_DragScene_mode_trsl,&QCheckBox::setChecked);
+    connect(ui->check_DragScene_mode_trsl,&QCheckBox::toggled,ui->actionDrag_hand_mode_trsl,&QAction::setChecked);
+    connect(ui->actionFix_vertices_trsl,&QAction::triggered,this,&MainWindow::fixEdges);
+    connect(ui->actionFix_vertices_trsl,&QAction::triggered,ui->check_Fix_edge_length_trsl,&QCheckBox::setChecked);
+    connect(ui->check_Fix_edge_length_trsl,&QCheckBox::toggled,ui->actionFix_vertices_trsl,&QAction::setChecked);
+
+#ifdef DEVELOPER_MODE
+    connect(ui->Button_SaveObjList_trsl,&QPushButton::clicked,this,&MainWindow::SaveObjectList);
+#else
+    ui->Button_SaveObjList_trsl->hide();
+#endif
 
 
-
+    _translation_control_.loadWindow(this);
     initiateGraphicsView();
     execute();
 }
@@ -791,23 +797,23 @@ void MainWindow::initiateGraphicsView()
     _vert_list_->setSelectConn();
     QVBoxLayout* layout2 = new QVBoxLayout();
     layout2->addWidget(_vert_list_);
-    ui->group_forTableView->setLayout(layout2);
-    connect(ui->button_GView_add,&QPushButton::clicked,this,&MainWindow::AddObject);
-    connect(ui->button_GView_remove,&QPushButton::clicked,this,&MainWindow::RemoveObject);
-    connect(ui->button_AddEdge,&QPushButton::clicked,this,&MainWindow::CreateEdge);
-    connect(ui->button_removeEdge,&QPushButton::clicked,this,&MainWindow::RemoveEdge);
+    ui->group_forTableView_trsl->setLayout(layout2);
+    connect(ui->button_GView_add_trsl,&QPushButton::clicked,this,&MainWindow::AddObject);
+    connect(ui->button_GView_remove_trsl,&QPushButton::clicked,this,&MainWindow::RemoveObject);
+    connect(ui->button_AddEdge_trsl,&QPushButton::clicked,this,&MainWindow::CreateEdge);
+    connect(ui->button_removeEdge_trsl,&QPushButton::clicked,this,&MainWindow::RemoveEdge);
     connect(ui->spin_Radius,&QSpinBox::valueChanged,this,&MainWindow::ChangeSize);
     connect(_view_,&GViewPort::gviewMessage,this,&MainWindow::updateInfo);
     connect(_view_,&GViewPort::viewNewSelect,_vert_list_,&VertexList::outsideNewSelect);
     connect(_vert_list_,&VertexList::listNewSelect,_view_,&GViewPort::outsideNewSelect);
     connect(_view_,&GViewPort::internalForceArrangeAct,
-            this,[this](){ui->check_Fix_edge_length->setChecked(true);
-                          ui->actionFix_vertices->setChecked(true);});
+            this,[this](){ui->check_Fix_edge_length_trsl->setChecked(true);
+                          ui->actionFix_vertices_trsl->setChecked(true);});
 
-    connect(ui->actionAdd_vertex,&QAction::triggered,this,&MainWindow::AddObject);
-    connect(ui->actionRemove_vertex,&QAction::triggered,this,&MainWindow::RemoveObject);
-    connect(ui->actionAdd_edge,&QAction::triggered,this,&MainWindow::CreateEdge);
-    connect(ui->actionRemove_Edge,&QAction::triggered,this,&MainWindow::RemoveEdge);
+    connect(ui->actionAdd_vertex_trsl,&QAction::triggered,this,&MainWindow::AddObject);
+    connect(ui->actionRemove_vertex_trsl,&QAction::triggered,this,&MainWindow::RemoveObject);
+    connect(ui->actionAdd_edge_trsl,&QAction::triggered,this,&MainWindow::CreateEdge);
+    connect(ui->actionRemove_Edge_trsl,&QAction::triggered,this,&MainWindow::RemoveEdge);
 }
 
 void MainWindow::AddObject()
@@ -902,6 +908,7 @@ void MainWindow::LoadBGFromFile(const QString& addr)
     _scene_->setBG(bg);
     _scene_->setSceneRect(0,0,bg.width(),bg.height());
     _view_->updateSceneRect(_scene_->sceneRect());
+    return;
 }
 
 void MainWindow::SaveProject()
@@ -1157,4 +1164,30 @@ void MainWindow::setDragMode(int state)
     }
         break;
     }
+    return;
+}
+
+void MainWindow::SaveObjectList()
+{
+
+    QMap<QString,QMap<QString,QString>> object_map(_translation_control_.getObjectMap());
+    if(object_map.empty())
+    {
+        ui->textEdit->append("Object list failed to be collected");
+        return;
+    }
+    QString addr = QFileDialog::getSaveFileName(this,"Chose file to save object list",
+                                                QDir::currentPath(),
+                                                "XML files (*.xml)",nullptr,
+                                                QFileDialog::DontUseNativeDialog);
+    if(!XMLParser::saveObjectMap(addr,object_map))
+    {
+        ui->textEdit->append("Object list failed to be saved in file ["+addr+"]");
+    }
+    return;
+}
+
+void MainWindow::LoadLanguageFile()
+{
+    return;
 }

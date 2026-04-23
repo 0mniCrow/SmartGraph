@@ -203,3 +203,27 @@ void GviewLangControl::objectAboutToBeDestroyed(QWidget* window)
     _windows_.remove(window);
     return;
 }
+
+bool GviewLangControl::loadObjectByName(QWidget* parent_widget, const QString& object_name)
+{
+    if((!parent_widget)||!_windows_.contains(parent_widget))
+    {
+        return false;
+    }
+    _windows_.value(parent_widget).insert(object_name,GViewTranslObj());
+    return true;
+}
+
+QString GviewLangControl::getTranslationForObject(QWidget* parent_widget, const QString& object_name, const QString& language)
+{
+    QString answer;
+    if((!parent_widget)||
+            (!_windows_.contains(parent_widget))||
+            (!_windows_.value(parent_widget).contains(object_name))||
+            (!_translations_.contains(language)))
+    {
+        return answer;
+    }
+    answer = _windows_.value(parent_widget).value(object_name)._obj_text_translations_.value(language);
+    return answer;
+}

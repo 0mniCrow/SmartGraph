@@ -140,7 +140,7 @@ bool XMLParser::loadTranslation(const QString& file_addr,
                             QMap<QWidget*,QMap<QString,GViewTranslObj>>& container)
 {
     QFile xml_file(file_addr);
-    if(!xml_file.open(QFile::WriteOnly|QFile::Text))
+    if(!xml_file.open(QFile::ReadOnly|QFile::Text))
     {
         return false;
     }
@@ -152,13 +152,14 @@ bool XMLParser::saveObjectMap(const QString& file_addr,
                           const QMap<QString,QMap<QString,QString>>& object_map)
 {
     QFile xml_file(file_addr);
-    if(!xml_file.open(QFile::ReadOnly|QFile::Text))
+    if(!xml_file.open(QFile::WriteOnly|QFile::Text))
     {
         return false;
     }
     QTextStream xml_stream(&xml_file);
     QDomDocument main_doc;
     QDomElement root = main_doc.createElement("translation");
+    main_doc.appendChild(root);
     auto window_it = object_map.cbegin();
     while(window_it!= object_map.cend())
     {

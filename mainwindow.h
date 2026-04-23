@@ -16,6 +16,7 @@
 //#include "visualisationgraphform.h"
 #include "imagecropwindow.h"
 #include "xmlparser.h"
+#include "gview_localization_controller.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +25,7 @@ QT_END_NAMESPACE
 using std::vector;
 using std::string;
 
+#define DEVELOPER_MODE
 #define MINIMAL_BG_SIZE 1000
 
 class MainWindow : public QMainWindow
@@ -49,6 +51,8 @@ private slots:
     void setBG();
     void SaveProject();
     void LoadProject();
+    void SaveObjectList();
+    void LoadLanguageFile();
     void HideShowUI();
     void setZoomMode(int state);
     void setDragMode(int state);
@@ -59,6 +63,7 @@ private:
 //  ImageCropWindow _crop_window_;
 //  VisualisationGraphForm *vis_form;
     MatrixModel * model;
+    GviewLangControl _translation_control_;
     //____________Visual graph_______________
     GViewScene* _scene_;
     GViewPort* _view_;

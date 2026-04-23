@@ -35,6 +35,8 @@ private:
 public:
     explicit GviewLangControl(QObject* tata = nullptr);
     bool loadWindow(QWidget* window);
+    bool loadObjectByName(QWidget* parent_widget, const QString& object_name);
+    QString getTranslationForObject(QWidget* parent_widget, const QString& object_name, const QString& language);
     bool loadTextTranslations(QWidget* window, const QMap<QString,GViewTranslObj>& window_dict);
     const QSet<QString>&  translations() const;
     const QMap<QWidget*,QMap<QString,GViewTranslObj>>& getTranslatableObjectMap()const;

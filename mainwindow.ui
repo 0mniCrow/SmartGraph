@@ -64,14 +64,14 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QGroupBox" name="group_forTableView">
+          <widget class="QGroupBox" name="group_forTableView_trsl">
            <property name="title">
             <string>Вяршыні</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="group_controls">
+          <widget class="QGroupBox" name="group_controls_trsl">
            <property name="title">
             <string>Кіраванне</string>
            </property>
@@ -79,14 +79,14 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QPushButton" name="button_GView_add">
+               <widget class="QPushButton" name="button_GView_add_trsl">
                 <property name="text">
                  <string>Дадаць</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="button_GView_remove">
+               <widget class="QPushButton" name="button_GView_remove_trsl">
                 <property name="text">
                  <string>Выдаліць</string>
                 </property>
@@ -100,14 +100,14 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QPushButton" name="button_AddEdge">
+               <widget class="QPushButton" name="button_AddEdge_trsl">
                 <property name="text">
                  <string>Стварыць сувязь</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="button_removeEdge">
+               <widget class="QPushButton" name="button_removeEdge_trsl">
                 <property name="text">
                  <string>Адсячы сувязь</string>
                 </property>
@@ -118,14 +118,14 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QPushButton" name="button_GView_zoomin">
+               <widget class="QPushButton" name="button_GView_zoomin_trsl">
                 <property name="text">
                  <string>Прыблізіць</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="button_GView_zoomout">
+               <widget class="QPushButton" name="button_GView_zoomout_trsl">
                 <property name="text">
                  <string>Аддаліць</string>
                 </property>
@@ -139,7 +139,7 @@
                <number>8</number>
               </property>
               <item>
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="label_vert_radius_trsl">
                 <property name="text">
                  <string>Радыюс</string>
                 </property>
@@ -162,7 +162,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="check_Fix_edge_length">
+               <widget class="QCheckBox" name="check_Fix_edge_length_trsl">
                 <property name="text">
                  <string>Зафікс.рэбры</string>
                 </property>
@@ -176,14 +176,14 @@
                <number>13</number>
               </property>
               <item>
-               <widget class="QCheckBox" name="check_Zoom_mode">
+               <widget class="QCheckBox" name="check_Zoom_mode_trsl">
                 <property name="text">
                  <string>Рэжым прыбліж.</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="check_DragScene_mode">
+               <widget class="QCheckBox" name="check_DragScene_mode_trsl">
                 <property name="text">
                  <string>Рэжым перацяг.</string>
                 </property>
@@ -200,23 +200,37 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QPushButton" name="Button_ViewSave">
+               <widget class="QPushButton" name="Button_ViewSave_trsl">
                 <property name="text">
                  <string>Захаваць</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="Button_ViewLoad">
+               <widget class="QPushButton" name="Button_ViewLoad_trsl">
                 <property name="text">
                  <string>Запампаваць</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="Button_SetBG">
+               <widget class="QPushButton" name="Button_SetBG_trsl">
                 <property name="text">
                  <string>Шпалеры</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="Button_SaveObjList_trsl">
+                <property name="text">
+                 <string>Захаваць сьпіс абхектаў</string>
                 </property>
                </widget>
               </item>
@@ -234,21 +248,21 @@
             <number>0</number>
            </property>
            <item>
-            <widget class="QPushButton" name="pushButton_exe">
+            <widget class="QPushButton" name="pushButton_exe_trsl">
              <property name="text">
               <string>Выканаць алг.</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_play">
+            <widget class="QPushButton" name="pushButton_play_trsl">
              <property name="text">
               <string>Матр. граф</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="Button_OpenTouchForm">
+            <widget class="QPushButton" name="Button_OpenTouchForm_trsl">
              <property name="text">
               <string>Акно гр.тэст</string>
              </property>
@@ -282,72 +296,72 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menuFile_trsl">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionLoad"/>
-    <addaction name="actionSave"/>
+    <addaction name="actionLoad_trsl"/>
+    <addaction name="actionSave_trsl"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menuEdit_trsl">
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionAdd_vertex"/>
-    <addaction name="actionRemove_vertex"/>
-    <addaction name="actionAdd_edge"/>
-    <addaction name="actionRemove_Edge"/>
-    <addaction name="actionAdd_background"/>
+    <addaction name="actionAdd_vertex_trsl"/>
+    <addaction name="actionRemove_vertex_trsl"/>
+    <addaction name="actionAdd_edge_trsl"/>
+    <addaction name="actionRemove_Edge_trsl"/>
+    <addaction name="actionAdd_background_trsl"/>
    </widget>
-   <widget class="QMenu" name="menuOptions">
+   <widget class="QMenu" name="menuOptions_trsl">
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actionFix_vertices"/>
-    <addaction name="actionZoom_mode"/>
-    <addaction name="actionDrag_hand_mode"/>
+    <addaction name="actionFix_vertices_trsl"/>
+    <addaction name="actionZoom_mode_trsl"/>
+    <addaction name="actionDrag_hand_mode_trsl"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
-   <addaction name="menuOptions"/>
+   <addaction name="menuFile_trsl"/>
+   <addaction name="menuEdit_trsl"/>
+   <addaction name="menuOptions_trsl"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionLoad">
+  <action name="actionLoad_trsl">
    <property name="text">
     <string>Load</string>
    </property>
   </action>
-  <action name="actionSave">
+  <action name="actionSave_trsl">
    <property name="text">
     <string>Save</string>
    </property>
   </action>
-  <action name="actionAdd_vertex">
+  <action name="actionAdd_vertex_trsl">
    <property name="text">
     <string>Add vertex</string>
    </property>
   </action>
-  <action name="actionRemove_vertex">
+  <action name="actionRemove_vertex_trsl">
    <property name="text">
     <string>Remove vertex</string>
    </property>
   </action>
-  <action name="actionAdd_edge">
+  <action name="actionAdd_edge_trsl">
    <property name="text">
     <string>Add edge</string>
    </property>
   </action>
-  <action name="actionRemove_Edge">
+  <action name="actionRemove_Edge_trsl">
    <property name="text">
     <string>Remove Edge</string>
    </property>
   </action>
-  <action name="actionAdd_background">
+  <action name="actionAdd_background_trsl">
    <property name="text">
     <string>Add background</string>
    </property>
   </action>
-  <action name="actionFix_vertices">
+  <action name="actionFix_vertices_trsl">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -355,7 +369,7 @@
     <string>Fix vertices</string>
    </property>
   </action>
-  <action name="actionZoom_mode">
+  <action name="actionZoom_mode_trsl">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -363,7 +377,7 @@
     <string>Zoom mode</string>
    </property>
   </action>
-  <action name="actionDrag_hand_mode">
+  <action name="actionDrag_hand_mode_trsl">
    <property name="checkable">
     <bool>true</bool>
    </property>

@@ -20,14 +20,14 @@
       <widget class="QLineEdit" name="line_imgAddr"/>
      </item>
      <item>
-      <widget class="QPushButton" name="button_imgFileDialog">
+      <widget class="QPushButton" name="button_imgFileDialog_trsl">
        <property name="text">
         <string>Відарыс</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button_loadImage">
+      <widget class="QPushButton" name="button_loadImage_trsl">
        <property name="text">
         <string>Запамп.</string>
        </property>
@@ -41,7 +41,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="label_4">
+      <widget class="QLabel" name="label_geometry_trsl">
        <property name="text">
         <string>Геамэтрыя</string>
        </property>
@@ -67,7 +67,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_radius_trsl">
        <property name="text">
         <string>Радыюс</string>
        </property>
@@ -87,7 +87,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="label_thickness_trsl">
        <property name="text">
         <string>Таўшчыня</string>
        </property>
@@ -104,7 +104,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="label_cutter_thickness_trsl">
        <property name="text">
         <string>Таўшчыня абрэзчыка</string>
        </property>
@@ -114,14 +114,14 @@
       <widget class="QSpinBox" name="spin_resize_width"/>
      </item>
      <item>
-      <widget class="QPushButton" name="button_Crop">
+      <widget class="QPushButton" name="button_Crop_trsl">
        <property name="text">
         <string>Адсячы</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="button_CropSignal">
+      <widget class="QPushButton" name="button_CropSignal_trsl">
        <property name="text">
         <string>Сігнал</string>
        </property>
