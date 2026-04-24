@@ -144,7 +144,76 @@ bool XMLParser::loadTranslation(const QString& file_addr,
     {
         return false;
     }
-
+    QDomDocument xml_doc("xmlTrnslDoc");
+    if(!xml_doc.setContent(&xml_file))
+    {
+        xml_file.close();
+        return false;
+    }
+    QDomElement root = xml_doc.documentElement();
+    QDomNode cur_node = root.firstChild();
+    while(!cur_node.isNull())
+    {
+        QDomElement cur_window = cur_node.toElement();
+        if(cur_window.nodeName()!="window")
+        {
+            cur_node = cur_node.nextSibling();
+            continue;
+        }
+        QDomAttr cur_window_name = cur_window.attributeNode("name");
+        QString window_name(cur_window_name.value());
+        auto window = container.begin();
+        while(window!=container.end())
+        {
+            if(window.key()->objectName()==window_name)
+            {
+                break;
+            }
+            ++window;
+        }
+        if(window==container.end())
+        {
+            cur_node = cur_node.nextSibling();
+            continue;
+        }
+        QDomNode cur_window_obj = cur_window.firstChild();
+        while(!cur_window_obj.isNull())
+        {
+            while(true)
+            {
+            if(cur_window_obj.nodeName()!="object")
+            {
+                break;
+            }
+            QDomElement cur_obj = cur_window_obj.toElement();
+            QDomElement cur_obj_name = cur_obj.firstChildElement("name");
+            if(cur_obj_name.isNull())
+            {
+                break;
+            }
+            auto object = window.value().find(cur_obj_name.text());
+            if(object==window.value().end())
+            {
+                break;
+            }
+            QDomElement translations = cur_obj.firstChildElement("translations");
+            if(translations.isNull())
+            {
+                break;
+            }
+            QDomNode cur_translation = translations.firstChild();
+            while(!cur_translation.isNull())
+            {
+                QDomElement cur_transl_element = cur_translation.toElement();
+                object.value()._obj_text_translations_.insert(cur_transl_element.tagName(),
+                                                              cur_transl_element.text());
+                cur_translation = cur_translation.nextSibling();
+            }
+            }
+            cur_window_obj = cur_window_obj.nextSibling();
+        }
+        cur_node = cur_node.nextSibling();
+    }
     return true;
 }
 
