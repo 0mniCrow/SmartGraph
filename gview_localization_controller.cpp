@@ -16,8 +16,9 @@ bool GviewLangControl::canBeTranslated(const QString& class_name) const
             (class_name == QMenu::staticMetaObject.className())||
             (class_name == QGroupBox::staticMetaObject.className())||
            (class_name == QCheckBox::staticMetaObject.className())||
-           (class_name == QRadioButton::staticMetaObject.className()));
-
+           (class_name == QRadioButton::staticMetaObject.className())||
+           (class_name == QWidget::staticMetaObject.className())||
+           (class_name==QMainWindow::staticMetaObject.className()));
 }
 
 bool GviewLangControl::setTranslation(QObject *cur_obj, const QString& text, const QString& tooltip)
@@ -77,6 +78,12 @@ bool GviewLangControl::setTranslation(QObject *cur_obj, const QString& text, con
         QRadioButton* elem = qobject_cast<QRadioButton*>(cur_obj);
         elem->setText(text);
     }
+    else if(class_name == QWidget::staticMetaObject.className()||
+            class_name== QMainWindow::staticMetaObject.className())
+    {
+        QWidget* window = qobject_cast<QWidget*>(cur_obj);
+        window->setWindowTitle(text);
+    }
     else
     {
         return false;
@@ -92,7 +99,9 @@ bool GviewLangControl::setTranslation(QObject *cur_obj, const QString& text, con
     return true;
 }
 
-void GviewLangControl::loadObject(QObject* cur_elem, QMap<QString,GViewTranslObj>& cur_dict)
+void GviewLangControl::loadObject(QObject* cur_elem,
+                                  LangLinkMap&  cur_dict,
+                                  LangObjMap*   obj_map)
 {
     QObjectList elements = cur_elem->children();
     for(QObject* element:elements)
@@ -100,7 +109,7 @@ void GviewLangControl::loadObject(QObject* cur_elem, QMap<QString,GViewTranslObj
         if(qobject_cast<QWidget*>(element)||
                 qobject_cast<QAction*>(element))
         {
-            loadObject(element,cur_dict);
+            loadObject(element,cur_dict,obj_map);
         }
     }
     QString obj_name(cur_elem->objectName());
@@ -111,7 +120,11 @@ void GviewLangControl::loadObject(QObject* cur_elem, QMap<QString,GViewTranslObj
     QString class_name(cur_elem->metaObject()->className());
     if(canBeTranslated(class_name))
     {
-        cur_dict.insert(obj_name,GViewTranslObj(cur_elem));
+        cur_dict.insert(obj_name,cur_elem);
+        if(obj_map)
+        {
+            obj_map->insert(obj_name,class_name);
+        }
     }
     return;
 }
@@ -123,64 +136,87 @@ bool GviewLangControl::loadWindow(QWidget* window)
     {
         return false;
     }
-    QMap<QString,GViewTranslObj> dictionary;
-    loadObject(window,dictionary);
+    LangLinkMap dictionary;
+    dictionary.insert(window->objectName(),window);
+    if(_object_map_.contains(window->objectName()))
+    {
+        loadObject(window,dictionary);
+    }
+    else
+    {
+        LangObjMap obj_map;
+        obj_map.insert(window->objectName(),window->metaObject()->className());
+        loadObject(window,dictionary,&obj_map);
+        _object_map_.insert(window->objectName(),std::move(obj_map));
+    }
+    connect(window,&QObject::destroyed,this,&GviewLangControl::objectAboutToBeDestroyed);
     _windows_.insert(window,dictionary);
     return true;
 }
 
-bool GviewLangControl::loadTextTranslations(QWidget* window,
-                                            const QMap<QString,GViewTranslObj>& window_dict)
+bool GviewLangControl::loadTextTranslations(const QMap<QString, LangObjMap> &object_map)
 {
-    if((!window)||
-            (!_windows_.contains(window)))
-        return false;
-    auto cur_window = _windows_.find(window);
-    auto cur_dict_it= window_dict.cbegin();
-    while(cur_dict_it!=window_dict.cend())
+    bool full_success = true;
+    QMap<QString,LangObjMap>::const_iterator it = object_map.cbegin();
+    while(it!=object_map.cend())
     {
-        auto inner_dict_elem = cur_window.value().find(cur_dict_it.key());
-        inner_dict_elem->_obj_text_translations_ = std::move(cur_dict_it->_obj_text_translations_);
-        inner_dict_elem->_obj_tooltip_translation_=std::move(cur_dict_it->_obj_tooltip_translation_);
-        ++cur_dict_it;
+        auto inner_it = _object_map_.find(it.key());
+        if(inner_it==_object_map_.end())
+        {
+            full_success = false;
+        }
+        else
+        {
+            LangObjMap::const_iterator obj_it = it->cbegin();
+            while(obj_it!=it->cend())
+            {
+                auto inner_obj_it = inner_it->find(obj_it.key());
+                if(inner_obj_it==inner_it->end())
+                {
+                    full_success = false;
+                }
+                else
+                {
+                    inner_obj_it->_text_translation_ = obj_it->_text_translation_;
+                    inner_obj_it->_tooltip_translation_ = obj_it->_tooltip_translation_;
+                }
+                ++obj_it;
+            }
+        }
+        ++it;
     }
-    return true;
+    return full_success;
 }
 const QSet<QString>& GviewLangControl::translations() const
 {
     return _translations_;
 }
 
-const QMap<QWidget*,QMap<QString,GViewTranslObj>>& GviewLangControl::getTranslatableObjectMap()const
+const QMap<QString, LangObjMap> &GviewLangControl::getObjectMap() const
 {
-    return _windows_;
-}
-
-QMap<QString,QMap<QString,QString>> GviewLangControl::getObjectMap() const
-{
-    QMap<QString,QMap<QString,QString>> windows;
-    auto window_iter = _windows_.cbegin();
-    while(window_iter!=_windows_.cend())
-    {
-        QMap<QString,QString> objects;
-        auto object_iter = window_iter->cbegin();
-        while(object_iter!= window_iter->cend())
-        {
-            if(object_iter->_obj_pointer_)
-            {
-                objects.insert(object_iter->_obj_pointer_->objectName(),
-                           object_iter->_obj_pointer_->metaObject()->className());
-            }
-            else
-            {
-                objects.insert(object_iter.key(),"QString");
-            }
-            ++object_iter;
-        }
-        windows.insert(window_iter.key()->objectName(),objects);
-        ++window_iter;
-    }
-    return windows;
+//    QMap<QString,QMap<QString,QString>> windows;
+//    auto window_iter = _windows_.cbegin();
+//    while(window_iter!=_windows_.cend())
+//    {
+//        QMap<QString,QString> objects;
+//        auto object_iter = window_iter->cbegin();
+//        while(object_iter!= window_iter->cend())
+//        {
+//            if(object_iter->_obj_pointer_)
+//            {
+//                objects.insert(object_iter->_obj_pointer_->objectName(),
+//                           object_iter->_obj_pointer_->metaObject()->className());
+//            }
+//            else
+//            {
+//                objects.insert(object_iter.key(),"QString");
+//            }
+//            ++object_iter;
+//        }
+//        windows.insert(window_iter.key()->objectName(),objects);
+//        ++window_iter;
+//    }
+    return _object_map_;
 }
 
 bool GviewLangControl::changeLanguage(const QString& lang)
@@ -192,13 +228,21 @@ bool GviewLangControl::changeLanguage(const QString& lang)
     auto window_iter = _windows_.begin();
     while(window_iter!=_windows_.end())
     {
-        auto obj_iter = window_iter.value().begin();
-        while(obj_iter!= window_iter.value().end())
+        auto obj_iter = _object_map_.find(window_iter.key()->objectName());
+        if(obj_iter!=_object_map_.end())
         {
-            setTranslation(obj_iter->_obj_pointer_,
-                           obj_iter->_obj_text_translations_.value(lang),
-                           obj_iter->_obj_tooltip_translation_.value(lang));
-            ++obj_iter;
+            auto win_elem_iter = window_iter->begin();
+            while(win_elem_iter!= window_iter->end())
+            {
+                auto obj_elem_iter = obj_iter->find(win_elem_iter.key());
+                if(obj_elem_iter!=obj_iter->end())
+                {
+                    setTranslation(win_elem_iter.value(),
+                           obj_elem_iter->_text_translation_.value(lang),
+                           obj_elem_iter->_tooltip_translation_.value(lang));
+                }
+                ++win_elem_iter;
+            }
         }
         ++window_iter;
     }
@@ -206,39 +250,60 @@ bool GviewLangControl::changeLanguage(const QString& lang)
     return true;
 }
 
-void GviewLangControl::objectAboutToBeDestroyed(QWidget* window)
+void GviewLangControl::objectAboutToBeDestroyed()
 {
+    QWidget* window = qobject_cast<QWidget*>(sender());
+    disconnect(window,&QObject::destroyed,this,&GviewLangControl::objectAboutToBeDestroyed);
     _windows_.remove(window);
     return;
 }
 
-bool GviewLangControl::loadObjectByName(QWidget* parent_widget, const QString& object_name)
+bool GviewLangControl::loadStringObj(QWidget* parent_widget, const QString& object_name)
 {
     if((!parent_widget)||
-            (!_windows_.contains(parent_widget))||
-            (_windows_.value(parent_widget).contains(object_name)))
+            (!_windows_.contains(parent_widget)))
     {
         return false;
     }
-    _windows_[parent_widget].insert(object_name,GViewTranslObj());
+    auto obj_it = _object_map_.find(parent_widget->objectName());
+    if(obj_it==_object_map_.end())
+    {
+        return false;
+    }
+    auto obj_elem_it = obj_it->find(object_name);
+    if(obj_elem_it!=obj_it->end())
+    {
+        return false;
+    }
+    obj_it->insert(object_name,"QString");
     return true;
 }
 
-QString GviewLangControl::getTranslationForObject(QWidget* parent_widget, const QString& object_name, const QString& language)
+QString GviewLangControl::stringObjTransl(QWidget* parent_widget, const QString& object_name, const QString& language)
 {
     QString answer;
     if((!parent_widget)||
-            (!_windows_.contains(parent_widget))||
-            (!_windows_.value(parent_widget).contains(object_name))||
-            (!_translations_.contains(language)))
+            (!_windows_.contains(parent_widget)))
     {
         return answer;
     }
     QString lang(language.isEmpty()?_cur_lang_:language);
-    if(lang.isEmpty())
+    if(lang.isEmpty()||!_translations_.contains(lang))
     {
         return answer;
     }
-    answer = _windows_[parent_widget][object_name]._obj_text_translations_.value(lang);
+    auto it = _object_map_.find(parent_widget->objectName());
+    if(it!=_object_map_.end())
+    {
+        auto elem_it = it->find(object_name);
+        if(elem_it!=it->end())
+        {
+            auto transl_it = elem_it->_text_translation_.find(lang);
+            if(transl_it!=elem_it->_text_translation_.end())
+            {
+                answer = transl_it.value();
+            }
+        }
+    }
     return answer;
 }

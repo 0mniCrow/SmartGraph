@@ -75,6 +75,7 @@ private:
     void initiateGraphicsView();
     void LoadBGFromFile(const QString& addr);
     void loadTranslatableMessages();
+    void loadTranslatableWindows();
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

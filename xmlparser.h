@@ -24,7 +24,7 @@ public:
     static bool loadTranslation(const QString& file_addr,
                                 QMap<QWidget*,QMap<QString,GViewTranslObj>>& container);
     static bool saveObjectMap(const QString& file_addr,
-                              const QMap<QString,QMap<QString,QString>>& object_map);
+                              const QMap<QString, LangObjMap> &object_map);
 };
 
 #endif // XMLPARSER_H

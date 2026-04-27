@@ -218,7 +218,7 @@ bool XMLParser::loadTranslation(const QString& file_addr,
 }
 
 bool XMLParser::saveObjectMap(const QString& file_addr,
-                          const QMap<QString,QMap<QString,QString>>& object_map)
+                          const QMap<QString,LangObjMap>& object_map)
 {
     QFile xml_file(file_addr);
     if(!xml_file.open(QFile::WriteOnly|QFile::Text))
@@ -243,7 +243,7 @@ bool XMLParser::saveObjectMap(const QString& file_addr,
             DOM_obj_name.appendChild(DOM_obj_name_text);
             DOM_obj.appendChild(DOM_obj_name);
             QDomElement DOM_obj_type = main_doc.createElement("type");
-            QDomText DOM_obj_type_text = main_doc.createTextNode(it.value());
+            QDomText DOM_obj_type_text = main_doc.createTextNode(it->_class_name_);
             DOM_obj_type.appendChild(DOM_obj_type_text);
             DOM_obj.appendChild(DOM_obj_type);
             DOM_window.appendChild(DOM_obj);

@@ -14,6 +14,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QRadioButton>
+#include <QMainWindow>
 
 struct GViewTranslObj
 {
@@ -23,30 +24,44 @@ struct GViewTranslObj
     GViewTranslObj(QObject* pointer=nullptr):_obj_pointer_(pointer){}
 };
 
+struct LangObject
+{
+    QString                 _class_name_;
+    QMap<QString,QString>   _text_translation_;
+    QMap<QString,QString>   _tooltip_translation_;
+    LangObject(const QString& class_name):_class_name_(class_name){}
+    LangObject(const char * class_name):_class_name_(class_name){}
+};
+
+using LangObjMap = QMap<QString,LangObject>;
+using LangLinkMap = QMap<QString,QObject*>;
+
 class GviewLangControl : public QObject
 {
     Q_OBJECT
 private:
-    QMap<QWidget*,QMap<QString,GViewTranslObj>> _windows_;
-    QSet<QString> _translations_;
-    QString _cur_lang_;
-    void loadObject(QObject* next_elem, QMap<QString,GViewTranslObj>& cur_dict);
+    QMap<QString, LangObjMap>      _object_map_;
+    QMap<QWidget*,LangLinkMap>     _windows_;
+    QSet<QString>                  _translations_;
+    QString                        _cur_lang_;
+    void loadObject(QObject* next_elem,
+                    LangLinkMap& cur_dict,
+                    LangObjMap* obj_map = nullptr);
     bool canBeTranslated(const QString& class_name) const;
     bool setTranslation(QObject* cur_obj, const QString& text, const QString& tooltip = QString());
 public:
     explicit GviewLangControl(QObject* tata = nullptr);
     bool loadWindow(QWidget* window);
-    bool loadObjectByName(QWidget* parent_widget, const QString& object_name);
-    QString getTranslationForObject(QWidget* parent_widget,
+    bool loadStringObj(QWidget* parent_widget, const QString& object_name);
+    QString stringObjTransl(QWidget* parent_widget,
                                     const QString& object_name,
                                     const QString& language = QString());
-    bool loadTextTranslations(QWidget* window, const QMap<QString,GViewTranslObj>& window_dict);
+    bool loadTextTranslations(const QMap<QString,LangObjMap>& object_map);
     const QSet<QString>&  translations() const;
-    const QMap<QWidget*,QMap<QString,GViewTranslObj>>& getTranslatableObjectMap()const;
-    QMap<QString,QMap<QString,QString>> getObjectMap() const;
+    const QMap<QString,LangObjMap>& getObjectMap() const;
     bool changeLanguage(const QString& lang);
 public slots:
-    void objectAboutToBeDestroyed(QWidget* window);
+    void objectAboutToBeDestroyed();
 
 
 };

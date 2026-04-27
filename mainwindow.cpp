@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
 
-    _translation_control_.loadWindow(this);
+    loadTranslatableWindows();
+    loadTranslatableMessages();
     initiateGraphicsView();
     execute();
     return;
@@ -682,18 +683,27 @@ void MainWindow::execute()
     return;
 }
 
+void MainWindow::loadTranslatableWindows()
+{
+    _translation_control_.loadWindow(this);
+    ImageCropWindow* window_for_translation = new ImageCropWindow();
+    _translation_control_.loadWindow(window_for_translation);
+    delete window_for_translation;
+    return;
+}
+
 void MainWindow::loadTranslatableMessages()
 {
-    _translation_control_.loadObjectByName(this,"Close_mbx_Text");
-    _translation_control_.loadObjectByName(this,"Close_mbx_InfoText");
-    _translation_control_.loadObjectByName(this,"LoadBG_Dialog");
-    _translation_control_.loadObjectByName(this,"SaveProject_Dialog");
-    _translation_control_.loadObjectByName(this,"SaveProject_Error");
-    _translation_control_.loadObjectByName(this,"LoadProject_Dialog");
-    _translation_control_.loadObjectByName(this,"LoadProject_Error");
-    _translation_control_.loadObjectByName(this,"SaveObjectList_CollectError");
-    _translation_control_.loadObjectByName(this,"SaveObjectList_Dialog");
-    _translation_control_.loadObjectByName(this,"SaveObjectList_SaveError");
+    _translation_control_.loadStringObj(this,"Close_mbx_Text");
+    _translation_control_.loadStringObj(this,"Close_mbx_InfoText");
+    _translation_control_.loadStringObj(this,"LoadBG_Dialog");
+    _translation_control_.loadStringObj(this,"SaveProject_Dialog");
+    _translation_control_.loadStringObj(this,"SaveProject_Error");
+    _translation_control_.loadStringObj(this,"LoadProject_Dialog");
+    _translation_control_.loadStringObj(this,"LoadProject_Error");
+    _translation_control_.loadStringObj(this,"SaveObjectList_CollectError");
+    _translation_control_.loadStringObj(this,"SaveObjectList_Dialog");
+    _translation_control_.loadStringObj(this,"SaveObjectList_SaveError");
     return;
 }
 
@@ -1030,16 +1040,21 @@ void MainWindow::setDragMode(int state)
 void MainWindow::SaveObjectList()
 {
 
-    QMap<QString,QMap<QString,QString>> object_map(_translation_control_.getObjectMap());
+    const QMap<QString,LangObjMap>& object_map(_translation_control_.getObjectMap());
     if(object_map.empty())
     {
         ui->textEdit->append("Object list failed to be collected");
         return;
     }
+
     QString addr = QFileDialog::getSaveFileName(this,"Chose file to save object list",
                                                 QDir::currentPath(),
                                                 "XML files (*.xml)",nullptr,
                                                 QFileDialog::DontUseNativeDialog);
+    if(addr.isEmpty())
+    {
+        ui->textEdit->append("Saving cancelled");
+    }
     if(!XMLParser::saveObjectMap(addr,object_map))
     {
         ui->textEdit->append("Object list failed to be saved in file ["+addr+"]");
@@ -1054,5 +1069,9 @@ void MainWindow::LoadLanguageFile()
                          QDir::currentPath(),
                          "XML files (*.xml)",nullptr,
                          QFileDialog::DontUseNativeDialog));
+    if(addr.isEmpty())
+    {
+       ui->textEdit->append("Loading cancelled");
+    }
     return;
 }
