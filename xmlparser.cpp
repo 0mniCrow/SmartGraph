@@ -5,6 +5,57 @@ XMLParser::XMLParser()
 
 }
 
+bool XMLParser::loadWindow(QDomElement& window_element, LangObjMap& container)
+{
+    QDomNode obj_node = window_element.firstChild();
+    while(!obj_node.isNull())
+    {
+        if(obj_node.nodeName()!="object")
+        {
+            obj_node = obj_node.nextSibling();
+            continue;
+        }
+        QDomElement obj_name = obj_node.firstChildElement("name");
+        if(obj_name.isNull())
+        {
+            obj_node = obj_node.nextSibling();
+            continue;
+        }
+        QDomElement obj_class = obj_node.firstChildElement("type");
+        if(obj_class.isNull())
+        {
+            obj_node = obj_node.nextSibling();
+            continue;
+        }
+        LangObject new_object(obj_class.text());
+        QDomElement obj_transl = obj_node.firstChildElement("translations");
+        if(!obj_transl.isNull())
+        {
+            QDomNode transl_node = obj_transl.firstChild();
+            while(!transl_node.isNull())
+            {
+                QDomElement transl_elem = transl_node.toElement();
+                new_object._text_translation_.insert(transl_elem.tagName(),transl_elem.text());
+                transl_node = transl_node.nextSibling();
+            }
+        }
+        container.insert(obj_name.text(),new_object);
+        obj_node = obj_node.nextSibling();
+    }
+    return true;
+}
+
+bool XMLParser::loadLanguages(QDomElement& lang_element, QSet<QString>& container)
+{
+     QDomNode obj_node = lang_element.firstChild();
+     while(!obj_node.isNull())
+     {
+        QDomElement language = obj_node.toElement();
+        container.insert(language.text());
+         obj_node = obj_node.nextSibling();
+     }
+     return true;
+}
 
 bool XMLParser::loadProject(const QString& file_addr,
                         nest_vert_map& vertices,
@@ -137,7 +188,8 @@ bool XMLParser::saveProject(const QString& file_addr,
 }
 
 bool XMLParser::loadTranslation(const QString& file_addr,
-                            QMap<QWidget*,QMap<QString,GViewTranslObj>>& container)
+                            QMap<QString, LangObjMap> &window_map,
+                                QSet<QString> &languages)
 {
     QFile xml_file(file_addr);
     if(!xml_file.open(QFile::ReadOnly|QFile::Text))
@@ -155,62 +207,16 @@ bool XMLParser::loadTranslation(const QString& file_addr,
     while(!cur_node.isNull())
     {
         QDomElement cur_window = cur_node.toElement();
-        if(cur_window.nodeName()!="window")
+        if(cur_window.nodeName()=="window")
         {
-            cur_node = cur_node.nextSibling();
-            continue;
+            QString window_name(cur_window.attribute("name"));
+            LangObjMap object_map;
+            loadWindow(cur_window,object_map);
+            window_map.insert(window_name,object_map);
         }
-        QDomAttr cur_window_name = cur_window.attributeNode("name");
-        QString window_name(cur_window_name.value());
-        auto window = container.begin();
-        while(window!=container.end())
+        else if(cur_window.nodeName()=="languages")
         {
-            if(window.key()->objectName()==window_name)
-            {
-                break;
-            }
-            ++window;
-        }
-        if(window==container.end())
-        {
-            cur_node = cur_node.nextSibling();
-            continue;
-        }
-        QDomNode cur_window_obj = cur_window.firstChild();
-        while(!cur_window_obj.isNull())
-        {
-            while(true)
-            {
-            if(cur_window_obj.nodeName()!="object")
-            {
-                break;
-            }
-            QDomElement cur_obj = cur_window_obj.toElement();
-            QDomElement cur_obj_name = cur_obj.firstChildElement("name");
-            if(cur_obj_name.isNull())
-            {
-                break;
-            }
-            auto object = window.value().find(cur_obj_name.text());
-            if(object==window.value().end())
-            {
-                break;
-            }
-            QDomElement translations = cur_obj.firstChildElement("translations");
-            if(translations.isNull())
-            {
-                break;
-            }
-            QDomNode cur_translation = translations.firstChild();
-            while(!cur_translation.isNull())
-            {
-                QDomElement cur_transl_element = cur_translation.toElement();
-                object.value()._obj_text_translations_.insert(cur_transl_element.tagName(),
-                                                              cur_transl_element.text());
-                cur_translation = cur_translation.nextSibling();
-            }
-            }
-            cur_window_obj = cur_window_obj.nextSibling();
+            loadLanguages(cur_window,languages);
         }
         cur_node = cur_node.nextSibling();
     }

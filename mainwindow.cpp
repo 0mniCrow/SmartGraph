@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 #ifdef DEVELOPER_MODE
     connect(ui->Button_SaveObjList_trsl,&QPushButton::clicked,this,&MainWindow::SaveObjectList);
+    connect(ui->Button_loadTranslations,&QPushButton::clicked,this,&MainWindow::LoadLanguageFile);
 #else
     ui->Button_SaveObjList_trsl->hide();
 #endif
@@ -1073,5 +1074,14 @@ void MainWindow::LoadLanguageFile()
     {
        ui->textEdit->append("Loading cancelled");
     }
+    QMap<QString,LangObjMap> window_map;
+    QSet<QString> languages;
+    XMLParser::loadTranslation(addr,window_map,languages);
+    ui->combo_lang->clear();
+    for(const QString& language:languages)
+    {
+        ui->combo_lang->addItem(language);
+    }
+    _translation_control_.loadTextTranslations(window_map,languages);
     return;
 }

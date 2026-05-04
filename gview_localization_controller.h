@@ -31,6 +31,10 @@ struct LangObject
     QMap<QString,QString>   _tooltip_translation_;
     LangObject(const QString& class_name):_class_name_(class_name){}
     LangObject(const char * class_name):_class_name_(class_name){}
+    LangObject(const LangObject& other);
+    LangObject(LangObject&& other);
+    LangObject& operator=(const LangObject& other);
+    LangObject& operator=(LangObject&& other);
 };
 
 using LangObjMap = QMap<QString,LangObject>;
@@ -56,7 +60,8 @@ public:
     QString stringObjTransl(QWidget* parent_widget,
                                     const QString& object_name,
                                     const QString& language = QString());
-    bool loadTextTranslations(const QMap<QString,LangObjMap>& object_map);
+    bool loadTextTranslations(const QMap<QString,LangObjMap>& object_map,
+                              const QSet<QString>& languages);
     const QSet<QString>&  translations() const;
     const QMap<QString,LangObjMap>& getObjectMap() const;
     bool changeLanguage(const QString& lang);

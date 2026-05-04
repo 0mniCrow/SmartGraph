@@ -1,5 +1,49 @@
 #include "gview_localization_controller.h"
 
+
+///___________________LangObject___________________
+
+LangObject::LangObject(const LangObject& other):
+    _class_name_(other._class_name_),
+    _text_translation_(other._text_translation_),
+    _tooltip_translation_(other._tooltip_translation_)
+{
+    _text_translation_.detach();
+    _tooltip_translation_.detach();
+    return;
+}
+
+LangObject::LangObject(LangObject&& other):
+    _class_name_(std::move(other._class_name_)),
+    _text_translation_(std::move(other._text_translation_)),
+    _tooltip_translation_(std::move(other._tooltip_translation_))
+{
+    return;
+}
+
+LangObject& LangObject::operator=(const LangObject& other)
+{
+    _class_name_ = other._class_name_;
+    _text_translation_ = other._text_translation_;
+    _tooltip_translation_ = other._tooltip_translation_;
+    _text_translation_.detach();
+    _tooltip_translation_.detach();
+    return *this;
+}
+
+LangObject& LangObject::operator=(LangObject&& other)
+{
+    _class_name_ = std::move(other._class_name_);
+    _text_translation_ = std::move(other._text_translation_);
+    _tooltip_translation_ = std::move(other._tooltip_translation_);
+    return *this;
+}
+
+
+///________________GviewLangControl________________
+
+
+
 GviewLangControl::GviewLangControl(QObject *tata)
     : QObject{tata}
 {
@@ -154,10 +198,12 @@ bool GviewLangControl::loadWindow(QWidget* window)
     return true;
 }
 
-bool GviewLangControl::loadTextTranslations(const QMap<QString, LangObjMap> &object_map)
+bool GviewLangControl::loadTextTranslations(const QMap<QString, LangObjMap> &object_map,
+                                            const QSet<QString> &languages)
 {
     bool full_success = true;
     QMap<QString,LangObjMap>::const_iterator it = object_map.cbegin();
+    _translations_ = languages;
     while(it!=object_map.cend())
     {
         auto inner_it = _object_map_.find(it.key());
