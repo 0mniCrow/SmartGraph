@@ -56,6 +56,7 @@ private slots:
     void HideShowUI();
     void setZoomMode(int state);
     void setDragMode(int state);
+    void changeLanguage(int index);
 
     //_______________End______________________
 private:

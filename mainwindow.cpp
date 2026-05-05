@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionFix_vertices_trsl,&QAction::triggered,this,&MainWindow::fixEdges);
     connect(ui->actionFix_vertices_trsl,&QAction::triggered,ui->check_Fix_edge_length_trsl,&QCheckBox::setChecked);
     connect(ui->check_Fix_edge_length_trsl,&QCheckBox::toggled,ui->actionFix_vertices_trsl,&QAction::setChecked);
+    connect(ui->combo_lang,&QComboBox::currentIndexChanged,this,&MainWindow::changeLanguage);
 
 #ifdef DEVELOPER_MODE
     connect(ui->Button_SaveObjList_trsl,&QPushButton::clicked,this,&MainWindow::SaveObjectList);
@@ -1083,5 +1084,19 @@ void MainWindow::LoadLanguageFile()
         ui->combo_lang->addItem(language);
     }
     _translation_control_.loadTextTranslations(window_map,languages);
+    return;
+}
+
+void MainWindow::changeLanguage(int index)
+{
+    if(index<0)
+    {
+        return;
+    }
+    QString lang(ui->combo_lang->itemText(index));
+    if(!lang.isEmpty())
+    {
+        _translation_control_.changeLanguage(/*ui->combo_lang->currentText()*/lang);
+    }
     return;
 }
