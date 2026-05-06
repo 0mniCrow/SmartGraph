@@ -14,6 +14,7 @@
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
     _vertices_(model),
+    _translation_tool_(nullptr),
     _vertex_radius_(vertex_radius),
     _controls_state_(0),_counter_(0)
 {
@@ -1032,4 +1033,15 @@ void GViewPort::setZoomMode(bool state)
         setTransformationAnchor(QGraphicsView::NoAnchor);
     }
     return;
+}
+
+GviewLangControl* GViewPort::setTranslationTool(GviewLangControl* translation_tool)
+{
+    GviewLangControl* prev_tool = _translation_tool_;
+    _translation_tool_ = translation_tool;
+    return prev_tool;
+}
+GviewLangControl* GViewPort::getTranslationTool() const
+{
+    return _translation_tool_;
 }

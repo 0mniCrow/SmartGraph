@@ -784,6 +784,13 @@ void GViewItem::callPicDialog()
         delete _pic_load_dialog_;
     }
     _pic_load_dialog_ = new ImageCropWindow();
+    GViewPort* port = dynamic_cast<GViewPort*>(scene()->views().first());
+    if(port)
+    {
+        GviewLangControl * translation_tool = port->getTranslationTool();
+        //translation_tool->loadWindow(_pic_load_dialog_);
+        _pic_load_dialog_->setTranslationTool(translation_tool);
+    }
     connect(_pic_load_dialog_,&ImageCropWindow::readyForLoad,this,&GViewItem::loadImageFromDialog);
     _pic_load_dialog_->show();
     return;

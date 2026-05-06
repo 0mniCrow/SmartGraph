@@ -296,9 +296,9 @@ bool GviewLangControl::changeLanguage(const QString& lang)
     return true;
 }
 
-void GviewLangControl::objectAboutToBeDestroyed()
+void GviewLangControl::objectAboutToBeDestroyed(QObject* obj)
 {
-    QWidget* window = qobject_cast<QWidget*>(sender());
+    QWidget* window = qobject_cast<QWidget*>(obj);
     disconnect(window,&QObject::destroyed,this,&GviewLangControl::objectAboutToBeDestroyed);
     _windows_.remove(window);
     return;

@@ -65,8 +65,9 @@ public:
     const QSet<QString>&  translations() const;
     const QMap<QString,LangObjMap>& getObjectMap() const;
     bool changeLanguage(const QString& lang);
+
 public slots:
-    void objectAboutToBeDestroyed();
+    void objectAboutToBeDestroyed(QObject *obj);
 
 
 };

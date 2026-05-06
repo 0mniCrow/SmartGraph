@@ -84,8 +84,17 @@ void ImageCropWindow::closeEvent(QCloseEvent* c_event)
 
 void ImageCropWindow::chooseFile()
 {
+    QString transl_dialog;
+    if(_translation_tool_)
+    {
+       transl_dialog = _translation_tool_->stringObjTransl(this,"Choose_file_to_crop");
+    }
+    if(transl_dialog.isEmpty())
+    {
+        transl_dialog = "Open Image to crop";
+    }
     QString filename(QFileDialog::getOpenFileName(
-                         this,"Open Image to crop",QDir::currentPath(),
+                         this,transl_dialog,QDir::currentPath(),
                          "Images (*.jpg *.png *.bmp)",nullptr,QFileDialog::DontUseNativeDialog));
     ui->line_imgAddr->setText(filename);
 }
@@ -989,4 +998,23 @@ void ShadowItem::paint(QPainter* painter,
     painter->setBrush(brush);
     painter->drawPath(path);
     painter->restore();
+}
+
+void ImageCropWindow::setTranslationTool(GviewLangControl * translation_tool)
+{
+    if(!translation_tool)
+    {
+        return;
+    }
+    _translation_tool_ = translation_tool;
+    _translation_tool_->loadWindow(this);
+    //_translation_tool_->loadStringObj(this,"Choose_file_to_crop");
+    return;
+}
+
+QStringList ImageCropWindow::getTranslatableStringObjects()const
+{
+    QStringList transl_list;
+    transl_list.append("Choose_file_to_crop");
+    return transl_list;
 }

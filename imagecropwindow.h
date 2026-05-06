@@ -15,6 +15,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 #include <QDialog>
+#include "gview_localization_controller.h"
 
 class CropItem;
 class ShadowItem;
@@ -119,12 +120,15 @@ public:
     QPixmap getCroppedImage();
     QPixmap getCroppedImage2();
     void setElementName(const QString& called_element_name);
+    void setTranslationTool(GviewLangControl * translation_tool);
+    QStringList getTranslatableStringObjects()const;
 private:
     Ui::ImageCropWindow *ui;
     CropScene* _scene_;
     CropItem* _item_;
     ResizeItem* _r_item_;
     ShadowItem* _s_item_;
+    GviewLangControl * _translation_tool_;
     QString _called_element_name_;
     QPixmap _cropped_image_;
     QPixmap getIMG();

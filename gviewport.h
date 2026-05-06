@@ -51,6 +51,8 @@ public:
     void loadInfo(const nest_vert_map& vertices,
                   const nest_vert_map& edges);
     void setZoomMode(bool state);
+    GviewLangControl* setTranslationTool(GviewLangControl* translation_tool);
+    GviewLangControl* getTranslationTool() const;
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
@@ -64,6 +66,7 @@ private:
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
     GViewItem* _selected_vertex_;
+    GviewLangControl * _translation_tool_;
     QBasicTimer _timer_;
     QPixmap _no_image_;                 //дэфолтны відарыс для аб'ектаў
     int _vertex_radius_;

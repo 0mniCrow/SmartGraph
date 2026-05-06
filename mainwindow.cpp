@@ -690,6 +690,11 @@ void MainWindow::loadTranslatableWindows()
     _translation_control_.loadWindow(this);
     ImageCropWindow* window_for_translation = new ImageCropWindow();
     _translation_control_.loadWindow(window_for_translation);
+    QStringList transl_strings(window_for_translation->getTranslatableStringObjects());
+    for(QString& str:transl_strings)
+    {
+        _translation_control_.loadStringObj(window_for_translation,str);
+    }
     delete window_for_translation;
     return;
 }
@@ -706,6 +711,9 @@ void MainWindow::loadTranslatableMessages()
     _translation_control_.loadStringObj(this,"SaveObjectList_CollectError");
     _translation_control_.loadStringObj(this,"SaveObjectList_Dialog");
     _translation_control_.loadStringObj(this,"SaveObjectList_SaveError");
+    _translation_control_.loadStringObj(this,"SaveObjectList_EmptyAddress");
+    _translation_control_.loadStringObj(this,"LoadTranslationFile_Dialog");
+    _translation_control_.loadStringObj(this,"LoadTranslationFile_EmptyAddress");
     return;
 }
 
@@ -775,9 +783,19 @@ void MainWindow::keyPressEvent(QKeyEvent* pe)
 
 void MainWindow::closeEvent(QCloseEvent*  cl_event)
 {
+    QString mbx_text(_translation_control_.stringObjTransl(this,"Close_mbx_Text"));
+    QString mbx_infotext(_translation_control_.stringObjTransl(this,"Close_mbx_InfoText"));
+    if(mbx_text.isEmpty())
+    {
+        mbx_text = "Вы ўпэўнены што жадаеце закрыць акно?";
+    }
+    if(mbx_infotext.isEmpty())
+    {
+        mbx_infotext = "Астатнія вокны зачыняцца";
+    }
     QMessageBox mbx;
-    mbx.setText("Вы ўпэўнены што жадаеце закрыць акно?");
-    mbx.setInformativeText("Астатнія вокны зачыняцца");
+    mbx.setText(mbx_text);
+    mbx.setInformativeText(mbx_infotext);
     mbx.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
     mbx.setDefaultButton(QMessageBox::Yes);
     mbx.setIcon(QMessageBox::Warning);
@@ -912,8 +930,13 @@ void MainWindow::fixEdges(bool status)
 
 void MainWindow::setBG()
 {
+    QString dialog_text(_translation_control_.stringObjTransl(this,"LoadBG_Dialog"));
+    if(dialog_text.isEmpty())
+    {
+        dialog_text = "Open Image to set as background";
+    }
     QString filename(QFileDialog::getOpenFileName(
-                         this,"Open Image to set as background",QDir::currentPath(),
+                         this,dialog_text,QDir::currentPath(),
                          "Images (*.jpg *.png *.bmp)",nullptr,QFileDialog::DontUseNativeDialog));
     LoadBGFromFile(filename);
 
@@ -940,10 +963,19 @@ void MainWindow::LoadBGFromFile(const QString& addr)
 
 void MainWindow::SaveProject()
 {
-    QString addr = QFileDialog::getSaveFileName(this,"Chose file to save",
+    QString dialog_text(_translation_control_.stringObjTransl(this,"SaveProject_Dialog"));
+    if(dialog_text.isEmpty())
+    {
+        dialog_text = "Chose file to save";
+    }
+    QString addr = QFileDialog::getSaveFileName(this,dialog_text,
                                                 QDir::currentPath(),
                                                 "XML files (*.xml)",nullptr,
                                                 QFileDialog::DontUseNativeDialog);
+    if(addr.isEmpty())
+    {
+        return;
+    }
     if(!addr.endsWith(".xml"))
     {
         addr.append(".xml");
@@ -953,7 +985,16 @@ void MainWindow::SaveProject()
     _view_->gatherInfo(vertices,edges);
     if(!XMLParser::saveProject(addr,vertices,edges,_bg_filename_))
     {
-        ui->textEdit->append("XML file ["+addr+"] failed to save");
+        QString error_text(_translation_control_.stringObjTransl(this,"SaveProject_Error"));
+        if(error_text.isEmpty())
+        {
+            error_text = "XML file ["+addr+"] failed to save";
+        }
+        else
+        {
+            error_text.append("["+addr+"]");
+        }
+        ui->textEdit->append(error_text);
     }
     qDeleteAll(vertices);
     vertices.clear();
@@ -963,17 +1004,35 @@ void MainWindow::SaveProject()
 }
 void MainWindow::LoadProject()
 {
+    QString dialog_text(_translation_control_.stringObjTransl(this,"LoadProject_Dialog"));
+    if(dialog_text.isEmpty())
+    {
+        dialog_text = "Chose file to load";
+    }
     QString addr(QFileDialog::getOpenFileName(
-                         this,"Chose file to load",
+                         this,dialog_text,
                          QDir::currentPath(),
                          "XML files (*.xml)",nullptr,
                          QFileDialog::DontUseNativeDialog));
+    if(addr.isEmpty())
+    {
+        return;
+    }
     nest_vert_map vertices;
     nest_vert_map edges;
     QString BG_addr;
     if(!XMLParser::loadProject(addr,vertices,edges,BG_addr))
     {
-        ui->textEdit->append("XML file ["+addr+"] failed to load");
+        QString error_text(_translation_control_.stringObjTransl(this,"LoadProject_Error"));
+        if(error_text.isEmpty())
+        {
+            error_text = "XML file ["+addr+"] failed to save";
+        }
+        else
+        {
+            error_text.append("["+addr+"]");
+        }
+        ui->textEdit->append(error_text);
         return;
     }
     if(!BG_addr.isEmpty())
@@ -1045,42 +1104,77 @@ void MainWindow::SaveObjectList()
     const QMap<QString,LangObjMap>& object_map(_translation_control_.getObjectMap());
     if(object_map.empty())
     {
-        ui->textEdit->append("Object list failed to be collected");
+        QString error_text(_translation_control_.stringObjTransl(this,"SaveObjectList_CollectError"));
+        if(error_text.isEmpty())
+        {
+            error_text = "Object list failed to be collected";
+        }
+        ui->textEdit->append(error_text);
         return;
     }
 
-    QString addr = QFileDialog::getSaveFileName(this,"Chose file to save object list",
+    QString dialog_text(_translation_control_.stringObjTransl(this,"SaveObjectList_Dialog"));
+    if(dialog_text.isEmpty())
+    {
+        dialog_text = "Chose file to save object list";
+    }
+    QString addr = QFileDialog::getSaveFileName(this,dialog_text,
                                                 QDir::currentPath(),
                                                 "XML files (*.xml)",nullptr,
                                                 QFileDialog::DontUseNativeDialog);
     if(addr.isEmpty())
     {
-        ui->textEdit->append("Saving cancelled");
+        QString error_text(_translation_control_.stringObjTransl(this,"SaveObjectList_EmptyAddress"));
+        if(error_text.isEmpty())
+        {
+            error_text = "Saving cancelled";
+        }
+        ui->textEdit->append(error_text);
     }
     if(!XMLParser::saveObjectMap(addr,object_map))
     {
-        ui->textEdit->append("Object list failed to be saved in file ["+addr+"]");
+        QString error_text(_translation_control_.stringObjTransl(this,"SaveObjectList_SaveError"));
+        if(error_text.isEmpty())
+        {
+            error_text = "XML file ["+addr+"] failed to save";
+        }
+        else
+        {
+            error_text.append("["+addr+"]");
+        }
+        ui->textEdit->append(error_text);
     }
     return;
 }
 
 void MainWindow::LoadLanguageFile()
 {
+    QString dialog_text(_translation_control_.stringObjTransl(this,"LoadTranslationFile_Dialog"));
+    if(dialog_text.isEmpty())
+    {
+        dialog_text = "Chose file to load translation";
+    }
     QString addr(QFileDialog::getOpenFileName(
-                         this,"Chose file to load translation",
+                         this,dialog_text,
                          QDir::currentPath(),
                          "XML files (*.xml)",nullptr,
                          QFileDialog::DontUseNativeDialog));
     if(addr.isEmpty())
     {
-       ui->textEdit->append("Loading cancelled");
+        QString error_text(_translation_control_.stringObjTransl(this,"LoadTranslationFile_EmptyAddress"));
+        if(error_text.isEmpty())
+        {
+            error_text = "Loading cancelled";
+        }
+       ui->textEdit->append(error_text);
     }
     QMap<QString,LangObjMap> window_map;
     QSet<QString> languages;
     XMLParser::loadTranslation(addr,window_map,languages);
     ui->combo_lang->clear();
-    for(const QString& language:languages)
+    for(const QString& language:qAsConst(languages))
     {
+
         ui->combo_lang->addItem(language);
     }
     _translation_control_.loadTextTranslations(window_map,languages);
