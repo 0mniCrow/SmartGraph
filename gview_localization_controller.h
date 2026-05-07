@@ -53,6 +53,7 @@ private:
                     LangObjMap* obj_map = nullptr);
     bool canBeTranslated(const QString& class_name) const;
     bool setTranslation(QObject* cur_obj, const QString& text, const QString& tooltip = QString());
+    bool changeObjectLang(const QString& lang, const QString& window_name, LangLinkMap& _window_map_);
 public:
     explicit GviewLangControl(QObject* tata = nullptr);
     bool loadWindow(QWidget* window);
@@ -65,6 +66,8 @@ public:
     const QSet<QString>&  translations() const;
     const QMap<QString,LangObjMap>& getObjectMap() const;
     bool changeLanguage(const QString& lang);
+    bool changeWindowLang(QWidget* parent_widget, const QString& lang = QString());
+    QString getCurLang() const {return _cur_lang_;}
 
 public slots:
     void objectAboutToBeDestroyed(QObject *obj);

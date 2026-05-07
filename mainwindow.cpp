@@ -825,6 +825,13 @@ void MainWindow::initiateGraphicsView()
 {
     _model_ = new VertexModel();
     _view_ = new GViewPort(ui->spin_Radius->value(),_model_);
+    _view_->setTranslationTool(&_translation_control_);
+    _translation_control_.loadWindow(_view_);
+    QStringList view_transl_objs(_view_->getTranslatableObjects());
+    for(const QString& obj:view_transl_objs)
+    {
+        _translation_control_.loadStringObj(_view_,obj);
+    }
     _scene_ = new GViewScene(_view_);
     _scene_->setSceneRect(QRectF(/*-500*/0,/*500*/0,1000,1000));
     _view_->setScene(_scene_);
@@ -1131,7 +1138,11 @@ void MainWindow::SaveObjectList()
         }
         ui->textEdit->append(error_text);
     }
-    if(!XMLParser::saveObjectMap(addr,object_map))
+    if(!addr.endsWith(".xml"))
+    {
+        addr.append(".xml");
+    }
+    if(!XMLParser::saveObjectMap(addr,object_map,_translation_control_.translations()))
     {
         QString error_text(_translation_control_.stringObjTransl(this,"SaveObjectList_SaveError"));
         if(error_text.isEmpty())
@@ -1178,6 +1189,10 @@ void MainWindow::LoadLanguageFile()
         ui->combo_lang->addItem(language);
     }
     _translation_control_.loadTextTranslations(window_map,languages);
+    if(ui->combo_lang->count())
+    {
+        _translation_control_.changeLanguage(ui->combo_lang->currentText());
+    }
     return;
 }
 

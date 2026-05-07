@@ -1008,6 +1008,7 @@ void ImageCropWindow::setTranslationTool(GviewLangControl * translation_tool)
     }
     _translation_tool_ = translation_tool;
     _translation_tool_->loadWindow(this);
+    _translation_tool_->changeWindowLang(this);
     //_translation_tool_->loadStringObj(this,"Choose_file_to_crop");
     return;
 }

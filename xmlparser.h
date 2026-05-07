@@ -28,7 +28,8 @@ public:
                                 QMap<QString,LangObjMap>& window_map,
                                 QSet<QString>& languages);
     static bool saveObjectMap(const QString& file_addr,
-                              const QMap<QString, LangObjMap> &object_map);
+                              const QMap<QString, LangObjMap> &object_map,
+                              const QSet<QString> &languages);
 };
 
 #endif // XMLPARSER_H

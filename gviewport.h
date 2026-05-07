@@ -53,6 +53,7 @@ public:
     void setZoomMode(bool state);
     GviewLangControl* setTranslationTool(GviewLangControl* translation_tool);
     GviewLangControl* getTranslationTool() const;
+    QStringList getTranslatableObjects() const;
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
@@ -91,7 +92,7 @@ private:
     void selectItem(GViewItem* selected_item, bool outside = false);
     void zoomIn();
     void zoomOut();
-
+    QString getTranslObjText(const char * obj_text, const char * def_text);
 signals:
     void gviewMessage(QString info);
     void viewNewSelect(GViewItem* new_item);

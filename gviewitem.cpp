@@ -792,6 +792,7 @@ void GViewItem::callPicDialog()
         _pic_load_dialog_->setTranslationTool(translation_tool);
     }
     connect(_pic_load_dialog_,&ImageCropWindow::readyForLoad,this,&GViewItem::loadImageFromDialog);
+    connect(_pic_load_dialog_,&ImageCropWindow::wasClosed,this,&GViewItem::deleteImageDialog);
     _pic_load_dialog_->show();
     return;
 }
@@ -800,8 +801,13 @@ void GViewItem::loadImageFromDialog()
 {
     setImage(_pic_load_dialog_->getCroppedImage2());
     _pic_load_dialog_->close();
+    return;
+}
+
+void GViewItem::deleteImageDialog()
+{
     disconnect(_pic_load_dialog_,&ImageCropWindow::readyForLoad,this,&GViewItem::loadImageFromDialog);
+    disconnect(_pic_load_dialog_,&ImageCropWindow::wasClosed,this,&GViewItem::deleteImageDialog);
     _pic_load_dialog_->deleteLater();
     _pic_load_dialog_ = nullptr;
-    return;
 }

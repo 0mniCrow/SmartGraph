@@ -224,7 +224,8 @@ bool XMLParser::loadTranslation(const QString& file_addr,
 }
 
 bool XMLParser::saveObjectMap(const QString& file_addr,
-                          const QMap<QString,LangObjMap>& object_map)
+                          const QMap<QString,LangObjMap>& object_map,
+                             const  QSet<QString>& languages)
 {
     QFile xml_file(file_addr);
     if(!xml_file.open(QFile::WriteOnly|QFile::Text))
@@ -252,11 +253,37 @@ bool XMLParser::saveObjectMap(const QString& file_addr,
             QDomText DOM_obj_type_text = main_doc.createTextNode(it->_class_name_);
             DOM_obj_type.appendChild(DOM_obj_type_text);
             DOM_obj.appendChild(DOM_obj_type);
+            if(!it->_text_translation_.isEmpty())
+            {
+                QDomElement DOM_transl_section = main_doc.createElement("translations");
+                auto transl_it = it->_text_translation_.cbegin();
+                while(transl_it!=it->_text_translation_.cend())
+                {
+                    QDomElement DOM_translation = main_doc.createElement(transl_it.key());
+                    QDomText DOM_translation_text = main_doc.createTextNode(transl_it.value());
+                    DOM_translation.appendChild(DOM_translation_text);
+                    DOM_transl_section.appendChild(DOM_translation);
+                    ++transl_it;
+                }
+                DOM_obj.appendChild(DOM_transl_section);
+            }
             DOM_window.appendChild(DOM_obj);
             ++it;
         }
         root.appendChild(DOM_window);
         ++window_it;
+    }
+    if(!languages.isEmpty())
+    {
+        QDomElement DOM_langs = main_doc.createElement("languages");
+        for(const QString& lang:languages)
+        {
+            QDomElement DOM_lang = main_doc.createElement("language");
+            QDomText DOM_lang_text = main_doc.createTextNode(lang);
+            DOM_lang.appendChild(DOM_lang_text);
+            DOM_langs.appendChild(DOM_lang);
+        }
+        root.appendChild(DOM_langs);
     }
     xml_stream<<main_doc.toString();
     xml_file.flush();

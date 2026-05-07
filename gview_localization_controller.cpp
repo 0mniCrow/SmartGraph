@@ -265,6 +265,33 @@ const QMap<QString, LangObjMap> &GviewLangControl::getObjectMap() const
     return _object_map_;
 }
 
+bool GviewLangControl::changeObjectLang(const QString& lang,
+                                        const QString& window_name,
+                                        LangLinkMap& window_map)
+{
+    auto obj_iter = _object_map_.find(window_name);
+    if(obj_iter!=_object_map_.end())
+    {
+        auto win_elem_iter = window_map.begin();
+        while(win_elem_iter!= window_map.end())
+        {
+            auto obj_elem_iter = obj_iter->find(win_elem_iter.key());
+            if(obj_elem_iter!=obj_iter->end())
+            {
+                setTranslation(win_elem_iter.value(),
+                       obj_elem_iter->_text_translation_.value(lang),
+                       obj_elem_iter->_tooltip_translation_.value(lang));
+            }
+            ++win_elem_iter;
+        }
+    }
+    else
+    {
+        return false;
+    }
+    return true;
+}
+
 bool GviewLangControl::changeLanguage(const QString& lang)
 {
     if(!_translations_.contains(lang))
@@ -274,22 +301,23 @@ bool GviewLangControl::changeLanguage(const QString& lang)
     auto window_iter = _windows_.begin();
     while(window_iter!=_windows_.end())
     {
-        auto obj_iter = _object_map_.find(window_iter.key()->objectName());
-        if(obj_iter!=_object_map_.end())
-        {
-            auto win_elem_iter = window_iter->begin();
-            while(win_elem_iter!= window_iter->end())
-            {
-                auto obj_elem_iter = obj_iter->find(win_elem_iter.key());
-                if(obj_elem_iter!=obj_iter->end())
-                {
-                    setTranslation(win_elem_iter.value(),
-                           obj_elem_iter->_text_translation_.value(lang),
-                           obj_elem_iter->_tooltip_translation_.value(lang));
-                }
-                ++win_elem_iter;
-            }
-        }
+        changeObjectLang(lang,window_iter.key()->objectName(),*window_iter);
+//        auto obj_iter = _object_map_.find(window_iter.key()->objectName());
+//        if(obj_iter!=_object_map_.end())
+//        {
+//            auto win_elem_iter = window_iter->begin();
+//            while(win_elem_iter!= window_iter->end())
+//            {
+//                auto obj_elem_iter = obj_iter->find(win_elem_iter.key());
+//                if(obj_elem_iter!=obj_iter->end())
+//                {
+//                    setTranslation(win_elem_iter.value(),
+//                           obj_elem_iter->_text_translation_.value(lang),
+//                           obj_elem_iter->_tooltip_translation_.value(lang));
+//                }
+//                ++win_elem_iter;
+//            }
+//        }
         ++window_iter;
     }
     _cur_lang_ = lang;
@@ -352,4 +380,27 @@ QString GviewLangControl::stringObjTransl(QWidget* parent_widget, const QString&
         }
     }
     return answer;
+}
+
+bool GviewLangControl::changeWindowLang(QWidget* parent_widget, const QString& lang)
+{
+    if((!parent_widget)||
+            (!_windows_.contains(parent_widget)))
+    {
+        return false;
+    }
+    QString use_lang = lang;
+    if(lang.isNull()||
+            !_translations_.contains(lang))
+    {
+        use_lang = _cur_lang_;
+    }
+    auto window_iter = _windows_.find(parent_widget);
+    if(window_iter==_windows_.end())
+    {
+        return false;
+    }
+    return changeObjectLang(use_lang,
+                            window_iter.key()->objectName(),
+                            *window_iter);
 }

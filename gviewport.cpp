@@ -18,6 +18,7 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     _vertex_radius_(vertex_radius),
     _controls_state_(0),_counter_(0)
 {
+    setObjectName("GViewPort");
     _new_edge_=  nullptr;
     _del_edge_=  nullptr;
     _selected_vertex_= nullptr;
@@ -30,6 +31,37 @@ GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
 
     //setDragMode(QGraphicsView::ScrollHandDrag);
     return;
+}
+
+QStringList GViewPort::getTranslatableObjects() const
+{
+    QStringList objects;
+    objects.append("CreateItem_Vertex_def_name");
+    objects.append("contextMenuEvent_menu_name");
+    objects.append("contextMenuEvent_menu_pin_fix");
+    objects.append("contextMenuEvent_menu_pin_unfix");
+    objects.append("contextMenuEvent_menu_delete");
+    objects.append("contextMenuEvent_menu_start_edge");
+    objects.append("contextMenuEvent_menu_install_picture");
+    objects.append("contextMenuEvent_menu_error_option");
+    objects.append("contextMenuEvent_freemenu_name");
+    objects.append("contextMenuEvent_freemenu_add");
+    objects.append("selectItem_selected_item");
+    return objects;
+}
+
+QString GViewPort::getTranslObjText(const char * obj_text,const char * def_text)
+{
+    QString text;
+    if(_translation_tool_)
+    {
+        text = _translation_tool_->stringObjTransl(this,obj_text);
+    }
+    if(text.isEmpty())
+    {
+        text = def_text;
+    }
+    return text;
 }
 
 void GViewPort::clear()
@@ -390,8 +422,9 @@ void GViewPort::setMode(GPort_Mode mode)
     }
 
     _mode_ = mode;
-
+    return;
 }
+
 void GViewPort::setControlState(GPort_Controls mode, bool state)
 {
     state?_controls_state_|=mode:_controls_state_&=~mode;
@@ -466,8 +499,9 @@ void GViewPort::mousePressEvent(QMouseEvent* m_event)
 
 void GViewPort::createItem(const QPoint& pos)
 {
+    QString vertex_name(getTranslObjText("CreateItem_Vertex_def_name","Vertex N"));
     GViewItem* item = new GViewItem(_vertex_radius_, &_no_image_,
-                                    "Vertex N"+
+                                    vertex_name+
                                     QString::number(_counter_++));
     addItem(item,pos);
     selectItem(item);
@@ -573,24 +607,29 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
     GViewItem* g_item = qgraphicsitem_cast<GViewItem*>(cap_item);
     if(g_item)
     {
-        menu = new QMenu("Дзеянні з вяршыняй:");
+        QString menu_text(getTranslObjText("contextMenuEvent_menu_name","Дзеянні з вяршыняй:"));
+        QString pin_text(getTranslObjText("contextMenuEvent_menu_pin_fix","Прычапіць"));
+        QString unpin_text(getTranslObjText("contextMenuEvent_menu_pin_unfix","Адчапіць"));
+        menu = new QMenu(menu_text);
         QAction* act_pin = menu->addAction(QIcon(QPixmap(
                               (g_item->flags()&QGraphicsItem::ItemIsMovable)?
                                    ":/res/icons/icons/pin_free.svg":
                                    ":/res/icons/icons/pin_lock.svg").scaled(
                                                         ICON_SIZE,Qt::KeepAspectRatio)),
                               (g_item->flags()&QGraphicsItem::ItemIsMovable)?
-                                               "Прычапіць":"Адчапіць");
+                                               pin_text:unpin_text);
         act_pin->setCheckable(true);
         act_pin->setChecked(!(g_item->flags()&QGraphicsItem::ItemIsMovable));
-
+        QString del_text(getTranslObjText("contextMenuEvent_menu_delete","Выдаліць"));
         QAction* act_del = menu->addAction(QIcon(QPixmap(
                              ":/res/icons/icons/vertex_remove.svg").
-                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Выдаліць");
+                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),del_text);
+        QString edge_text(getTranslObjText("contextMenuEvent_menu_start_edge","Пачаць сувязь"));
         QAction* act_edge = menu->addAction(QIcon(QPixmap(
                              ":/res/icons/icons/edge_start.svg").
-                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Пачаць сувязь");
-        QAction* act_pic = menu->addAction("Усталяваць відарыс");
+                                scaled(ICON_SIZE,Qt::KeepAspectRatio)),edge_text);
+        QString pic_text(getTranslObjText("contextMenuEvent_menu_install_picture","Усталяваць відарыс"));
+        QAction* act_pic = menu->addAction(pic_text);
         QAction* act_select = menu->exec(c_event->globalPos());
         if(act_select== act_pin)
         {
@@ -621,16 +660,20 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
         }
         else
         {
-            emit gviewMessage("Menu called an imposible action.");
+            QString err_text(getTranslObjText("contextMenuEvent_menu_error_option",
+                                              "Menu called an imposible action."));
+            emit gviewMessage(err_text);
         }
 
     }
     else if(!cap_item)
     {
-        menu = new QMenu("Опцыі:");
+        QString menu_text(getTranslObjText("contextMenuEvent_freemenu_name","Опцыі:"));
+        menu = new QMenu(menu_text);
+        QString add_text(getTranslObjText("contextMenuEvent_freemenu_add","Дадаць"));
         QAction* act_add = menu->addAction(
                     QIcon(QPixmap(":/res/icons/icons/vertex_add.svg").
-                          scaled(ICON_SIZE,Qt::KeepAspectRatio)),"Дадаць");
+                          scaled(ICON_SIZE,Qt::KeepAspectRatio)),add_text);
         QAction* act_select = menu->exec(c_event->globalPos());
         if(act_select == act_add)
         {
@@ -639,7 +682,9 @@ void GViewPort::contextMenuEvent(QContextMenuEvent* c_event)
         }
         else
         {
-            emit gviewMessage("Menu called an imposible action.");
+            QString err_text(getTranslObjText("contextMenuEvent_menu_error_option",
+                                              "Menu called an imposible action."));
+            emit gviewMessage(err_text);
         }
     }
     else
@@ -669,7 +714,8 @@ void GViewPort::selectItem(GViewItem* selected_item, bool outside)
             {
                 return;
             }
-            QString selected("Selected Item: ");
+
+            QString selected(getTranslObjText("selectItem_selected_item","Selected Item: "));
             selected.append(_selected_vertex_->info());
             emit gviewMessage(selected);
             emit viewNewSelect(_selected_vertex_);

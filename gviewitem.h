@@ -131,6 +131,7 @@ protected:
 private slots:
     void showTipWindow();
     void loadImageFromDialog();
+    void deleteImageDialog();
     void getNewInfo(const QString& new_val);
 signals:
     void changedInternally(GViewItem* self);
