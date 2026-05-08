@@ -389,6 +389,10 @@ bool GviewLangControl::changeWindowLang(QWidget* parent_widget, const QString& l
     {
         return false;
     }
+    if(_translations_.isEmpty())
+    {
+        return false;
+    }
     QString use_lang = lang;
     if(lang.isNull()||
             !_translations_.contains(lang))

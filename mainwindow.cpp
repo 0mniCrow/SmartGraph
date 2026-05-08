@@ -1178,6 +1178,7 @@ void MainWindow::LoadLanguageFile()
             error_text = "Loading cancelled";
         }
        ui->textEdit->append(error_text);
+       return;
     }
     QMap<QString,LangObjMap> window_map;
     QSet<QString> languages;

@@ -179,7 +179,8 @@ void GViewItem::iconResize()
     {
         return;
     }
-    QImage temp_icon(_radius_*2,_radius_*2,QImage::Format_ARGB32_Premultiplied);
+    int diameter = _radius_*2;
+    QImage temp_icon(diameter,diameter,QImage::Format_ARGB32_Premultiplied);
     temp_icon.fill(Qt::transparent);
     QPainter painter;
     painter.begin(&temp_icon);
@@ -187,14 +188,26 @@ void GViewItem::iconResize()
     QPixmap scaled_pxm;
     if(_orig_pixmap_.isNull())
     {
-        scaled_pxm = _default_pixmap_->scaled(QSize(_radius_*2,_radius_*2),Qt::IgnoreAspectRatio);
+        scaled_pxm = _default_pixmap_->scaled(QSize(diameter,diameter),Qt::IgnoreAspectRatio);
+        setGVFlag(GV_Def_Icon,true);
     }
     else
     {
-        scaled_pxm = _orig_pixmap_.scaled(QSize(_radius_*2,_radius_*2),Qt::IgnoreAspectRatio);
+        scaled_pxm = _orig_pixmap_.scaled(QSize(diameter,diameter),Qt::IgnoreAspectRatio);
+        setGVFlag(GV_Def_Icon,false);
     }
     painter.drawPixmap(0,0,scaled_pxm);
     painter.end();
+    QImage result_icon(diameter,diameter,QImage::Format_ARGB32_Premultiplied);
+    result_icon.fill(Qt::transparent);
+    painter.begin(&result_icon);
+    QPainterPath cut_mask;
+    cut_mask.addEllipse(0,0,diameter,diameter);
+    painter.setClipPath(cut_mask);
+    painter.drawImage(temp_icon.rect(),temp_icon);
+    painter.end();
+    _icon_ = QPixmap::fromImage(result_icon);
+    /*
     QImage result_icon(_radius_*2,_radius_*2,QImage::Format_ARGB32_Premultiplied);
     result_icon.fill(Qt::transparent);
     painter.begin(&result_icon);
@@ -206,6 +219,7 @@ void GViewItem::iconResize()
     painter.drawImage(temp_icon.rect(),temp_icon);
     painter.end();
     _icon_ = QPixmap::fromImage(result_icon);
+    */
     return;
 }
 
@@ -255,8 +269,8 @@ void GViewItem::delEdge(GViewEdge* edge)
 
 QRectF GViewItem::boundingRect() const
 {
-    int select_inflate = isSelected()?SELECTED_RISE:0;
-    int borders = 0;
+    int select_inflate = isSelected()?SELECTED_RISE:0.0;
+    double borders = 0;
     if(_flags_&GV_Is_Clicked)
     {
         borders = LINE_CLICKED_WIDTH;
@@ -316,81 +330,6 @@ void GViewItem::paint(QPainter* painter,
     {
         drawPinNeedle(painter);
     }
-    /*
-    QColor cur_color;
-    QPen cur_pen;
-    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
-    {
-        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
-        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
-        cur_color = QColorConstants::Svg::orange;
-    }
-    else
-    {
-        if(isUnderMouse())
-        {
-            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        Qt::yellow:
-                        QColorConstants::Svg::lightcyan;
-        }
-        else if(isSelected())
-        {
-            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
-            cur_pen.setWidthF(LINE_SELECT_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::palegoldenrod:
-                        QColorConstants::Svg::lightskyblue;
-        }
-        else
-        {
-            cur_pen.setColor(QColorConstants::Svg::black);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::slategray:
-                        QColorConstants::Svg::powderblue;
-        }
-    }
-    painter->setBrush(cur_color);
-    painter->setPen(cur_pen);
-    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    painter->drawEllipse(ellipse_rect);
-    if(_icon_.isNull())
-    {
-        painter->setCompositionMode(QPainter::CompositionMode_SourceAtop);
-        painter->drawPixmap(-_radius_,-_radius_,*_default_pixmap_);
-        painter->setBrush(Qt::NoBrush);
-        painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
-        painter->drawEllipse(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    }
-    else
-    {
-
-    }
-    if(!(flags()&ItemIsMovable))
-    {
-        QPolygonF pin_needle;
-        qreal pin_stem_rad = 220*M_PI/180;
-        QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
-                             ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
-        QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
-        qreal ux = pin_stem_line.dx()/pin_stem_line.length();
-        qreal uy = pin_stem_line.dy()/pin_stem_line.length();
-        qreal vx = -uy;
-        qreal vy = ux;
-        QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
-                                  pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
-        QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
-                                  pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
-        pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
-        painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
-        painter->setPen(QPen(Qt::black,1));
-        painter->drawPolygon(pin_needle);
-        painter->setBrush(QBrush(Qt::red));
-        painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
-    }
-    */
     painter->restore();
     return;
 }
@@ -426,7 +365,7 @@ void GViewItem::drawVertexCircle(QPainter* painter)
         }
         else
         {
-            cur_pen.setColor(QColorConstants::Svg::black);
+            cur_pen.setColor(QColorConstants::Svg::white);
             cur_pen.setWidthF(LINE_BASE_WIDTH);
             cur_color = (flags()&ItemIsMovable)?
                         QColorConstants::Svg::slategray:
@@ -442,47 +381,78 @@ void GViewItem::drawVertexCircle(QPainter* painter)
 void GViewItem::drawVertexIcon(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    painter->drawPixmap(-_radius_,-_radius_,_icon_);
     QColor mask_color;
     QPen cur_pen;
     if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
     {
-        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
+        cur_pen.setColor(QColorConstants::Svg::orangered);
         cur_pen.setWidthF(LINE_CLICKED_WIDTH);
-        mask_color = QColorConstants::Svg::orange;
-        mask_color.setAlpha(20);
+        mask_color = QColorConstants::Svg::cyan;
+        if(!(_flags_&GV_Def_Icon))
+        {
+            mask_color.setAlpha(40);
+        }
     }
     else
     {
         if(isUnderMouse())
         {
-            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
+            cur_pen.setColor(QColorConstants::Svg::yellow);
             cur_pen.setWidthF(LINE_BASE_WIDTH);
             mask_color = (flags()&ItemIsMovable)?
-                        Qt::yellow:
-                        QColorConstants::Svg::lightcyan;
-            mask_color.setAlpha(20);
+                        QColorConstants::Svg::wheat:
+                        QColorConstants::Svg::tomato;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(50);
+            }
         }
         else if(isSelected())
         {
-            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
+            cur_pen.setColor(QColorConstants::Svg::orange);
             cur_pen.setWidthF(LINE_SELECT_WIDTH);
             mask_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::palegoldenrod:
-                        QColorConstants::Svg::lightskyblue;
-            mask_color.setAlpha(20);
+                        QColorConstants::Svg::gold:
+                        QColorConstants::Svg::cornsilk;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(30);
+            }
         }
         else
         {
-            cur_pen.setColor(QColorConstants::Svg::ghostwhite);
+            cur_pen.setColor(QColorConstants::Svg::lightslategrey);
             cur_pen.setWidthF(LINE_BASE_WIDTH);
-            mask_color = Qt::NoBrush;
+            mask_color = Qt::gray;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(75);
+            }
         }
     }
-    painter->setBrush(mask_color);
-    painter->setPen(cur_pen);
+    if(_flags_&GV_Def_Icon)
+    {
+        painter->setBrush(mask_color);
+        painter->drawEllipse(ellipse_rect);
+        painter->drawPixmap(-_radius_,-_radius_,_icon_);
+        painter->setBrush(Qt::NoBrush);
+        painter->setPen(cur_pen);
+        painter->drawEllipse(ellipse_rect);
+    }
+    else
+    {
+        painter->drawPixmap(-_radius_,-_radius_,_icon_);
+        painter->setBrush(mask_color);
+        painter->setPen(cur_pen);
+        painter->drawEllipse(ellipse_rect);
+    }
+    //painter->setPen(cur_pen);
     //painter->setCompositionMode(QPainter::CompositionMode_DestinationIn);
-    painter->drawEllipse(ellipse_rect);
+//    painter->drawEllipse(ellipse_rect);
+//    painter->drawPixmap(-_radius_,-_radius_,_icon_);
+//    painter->setBrush(Qt::NoBrush);
+//    painter->setPen(cur_pen);
+//    painter->drawEllipse(ellipse_rect);
     return;
 
 }

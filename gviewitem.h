@@ -7,9 +7,9 @@
 
 
 #define LINE_CLICKED_WIDTH 3.0
-#define LINE_SELECT_WIDTH 2.0
-#define LINE_BASE_WIDTH 1.0
-#define SELECTED_RISE 5
+#define LINE_SELECT_WIDTH 2.5
+#define LINE_BASE_WIDTH 2.0
+#define SELECTED_RISE 5.0
 #define MOUSE_SENSE_DECR 0.5
 #define PIN_HEAD_RADIUS 3
 
@@ -48,7 +48,8 @@ class GViewItem:public QGraphicsObject
 private:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
-                  GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08};
+                  GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
+                  GV_Def_Icon = 0x10};
     QVector<GViewEdge*>     _edges_;
     QPixmap*                _default_pixmap_;
     QPixmap                 _orig_pixmap_;
