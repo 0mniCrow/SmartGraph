@@ -54,6 +54,7 @@ private slots:
     void SaveObjectList();
     void LoadLanguageFile();
     void HideShowUI();
+    void HideShowTimeLine();
     void setZoomMode(int state);
     void setDragMode(int state);
     void changeLanguage(int index);

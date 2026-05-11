@@ -1068,6 +1068,21 @@ void MainWindow::HideShowUI()
     return;
 }
 
+void MainWindow::HideShowTimeLine()
+{
+    if(ui->group_forTimeline->isVisible())
+    {
+        ui->Button_timeline_hide->setText("ʌ ʌ ʌ ʌ ʌ");
+        ui->group_forTimeline->setVisible(false);
+    }
+    else
+    {
+        ui->Button_timeline_hide->setText("v v v v v");
+        ui->group_forTimeline->setVisible(true);
+    }
+    return;
+}
+
 void MainWindow::setZoomMode(int state)
 {
     switch(state)

@@ -35,6 +35,7 @@ SOURCES += \
     touchform.cpp \
     vectorgraph.cpp \
     widgets/gview_edit_window.cpp \
+    widgets/gview_timeline_tool.cpp \
     widgets/gview_tooltip_window.cpp \
     xmlparser.cpp
 
@@ -65,6 +66,7 @@ HEADERS += \
     touchform.h \
     vectorgraph.h \
     widgets/gview_edit_window.h \
+    widgets/gview_timeline_tool.h \
     widgets/gview_tooltip_window.h \
     xmlparser.h
 

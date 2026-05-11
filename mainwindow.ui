@@ -22,11 +22,40 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="10,0,1">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1">
+     <layout class="QVBoxLayout" name="verticalLayout_3" stretch="50,0,0">
+      <property name="rightMargin">
+       <number>14</number>
+      </property>
+      <property name="bottomMargin">
+       <number>15</number>
+      </property>
       <item>
        <widget class="QGroupBox" name="group_forGView">
         <property name="title">
          <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Button_timeline_hide">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>15</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>v v v v v</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="group_forTimeline">
+        <property name="title">
+         <string/>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -416,11 +445,6 @@
    </property>
    <property name="text">
     <string>Drag hand mode</string>
-   </property>
-  </action>
-  <action name="actionSome_subaction">
-   <property name="text">
-    <string>Some subaction</string>
    </property>
   </action>
  </widget>
