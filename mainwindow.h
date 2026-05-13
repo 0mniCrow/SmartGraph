@@ -17,6 +17,7 @@
 #include "imagecropwindow.h"
 #include "xmlparser.h"
 #include "gview_localization_controller.h"
+#include "widgets/gview_timeline_tool.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,7 @@ using std::string;
 
 #define DEVELOPER_MODE
 #define MINIMAL_BG_SIZE 1000
+#define TEST_TIMELINE_TICKS 12
 
 class MainWindow : public QMainWindow
 {
@@ -66,6 +68,7 @@ private:
 //  VisualisationGraphForm *vis_form;
     MatrixModel * model;
     GviewLangControl _translation_control_;
+    GViewTimeTool _timeline_tool_;
     //____________Visual graph_______________
     GViewScene* _scene_;
     GViewPort* _view_;
@@ -78,6 +81,7 @@ private:
     void LoadBGFromFile(const QString& addr);
     void loadTranslatableMessages();
     void loadTranslatableWindows();
+    void updateTimeTool();
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

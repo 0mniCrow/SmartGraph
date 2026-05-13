@@ -38,7 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->Button_SaveObjList_trsl->hide();
 #endif
 
-
+    _timeline_tool_.setTickNumber(TEST_TIMELINE_TICKS);
+    updateTimeTool();
     loadTranslatableWindows();
     loadTranslatableMessages();
     initiateGraphicsView();
@@ -1223,5 +1224,12 @@ void MainWindow::changeLanguage(int index)
     {
         _translation_control_.changeLanguage(/*ui->combo_lang->currentText()*/lang);
     }
+    return;
+}
+
+void MainWindow::updateTimeTool()
+{
+    QGridLayout* t_layout = _timeline_tool_.getTimelineWidget();
+    ui->group_forTimeline->setLayout(t_layout);
     return;
 }
