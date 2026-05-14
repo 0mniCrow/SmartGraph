@@ -4,11 +4,14 @@
 #include <QObject>
 #include <QSlider>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
 #include <QGroupBox>
 #include <QGridLayout>
 #include <QMap>
 #include <QLabel>
+#include <QStyleOptionSlider>
+#include <QPainter>
 /*
 ///______________________________Time Objects__________________________________________________
 
@@ -199,16 +202,34 @@ public:
 };
 */
 
+class TimeSlider: public QSlider
+{
+    Q_OBJECT
+private:
+    QStringList _text_;
+public:
+
+    explicit TimeSlider(Qt::Orientation orientation = Qt::Horizontal,
+                        QWidget*parent = nullptr):QSlider(orientation,parent)
+    {
+        return;
+    }
+    void loadTextLabels(QStringList &list);
+protected:
+    void paintEvent(QPaintEvent* p_event) override;
+};
+
 class GViewTimeTool : public QObject
 {
     Q_OBJECT
 private:
-    QGridLayout* _grid_;
-    QSlider* _slider_;
+//    QGridLayout* _grid_;
+//    QSlider* _slider_;
+    TimeSlider* _slider_;
     int _tick_number_;
 public:
     explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
-    [[nodiscard]] QGridLayout* getTimelineWidget();
+    [[nodiscard]] QSlider* getTimelineWidget();
     void setTickNumber(int tick_number);
 signals:
     void timeChanged(int time);

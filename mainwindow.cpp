@@ -1229,7 +1229,9 @@ void MainWindow::changeLanguage(int index)
 
 void MainWindow::updateTimeTool()
 {
-    QGridLayout* t_layout = _timeline_tool_.getTimelineWidget();
+    QSlider * slider = _timeline_tool_.getTimelineWidget();
+    QHBoxLayout * t_layout = new QHBoxLayout();
+    t_layout->addWidget(slider);
     ui->group_forTimeline->setLayout(t_layout);
     return;
 }
