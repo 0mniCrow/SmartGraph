@@ -217,6 +217,7 @@ public:
     void loadTextLabels(QStringList &list);
 protected:
     void paintEvent(QPaintEvent* p_event) override;
+    QSize sizeHint() const override;
 };
 
 class GViewTimeTool : public QObject

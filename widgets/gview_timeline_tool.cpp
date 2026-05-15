@@ -3,7 +3,46 @@
 void TimeSlider::paintEvent(QPaintEvent* p_event)
 {
     QSlider::paintEvent(p_event);
+    if((orientation()!=Qt::Horizontal)||!_text_.size())
+    {
+        return;
+    }
+    QPainter * painter = new QPainter(this);
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::yellow));
+    QRect rec = this->rect();
+    int mid = rec.height()/2;
+    int st = rec.width()/(_text_.size()-1);
+    for(int i = 0; i<_text_.size();i++)
+    {
+        QRect rt(st*i,mid,st,20);
+        //painter->drawRect(rt);
+        painter->drawText(rt,_text_.at(i));
+    }
+    painter->end();
+    delete painter;
+    return;
+    /*
+    QRect s_rect = this->geometry();
+    int t_count = _text_.size()-1;
+    QFontMetrics font_metrics= this->fontMetrics();
 
+    int font_h = font_metrics.height();
+    for(int i = 0; i<_text_.size();i++)
+    {
+        //int value = minimum() + (i * (maximum()- minimum())) / _text_.size();
+        //int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), value, s_rect.width());
+        int x_point = ((s_rect.width()/t_count?t_count:1)*i)-(font_metrics.horizontalAdvance(_text_.at(i))/2);
+        int y_point = s_rect.height()-font_h;
+        //QRect textRect(x_point - 50,y_point - font_metrics.ascent(), 100, font_metrics.height());
+        painter->drawText(QPoint(x_point,y_point),_text_.at(i));
+    }
+    //painter->drawRect(s_rect);
+    painter->end();
+    delete painter;
+    return;
+    */
+    /*
     QStyleOptionSlider opt;
     initStyleOption(&opt);
 
@@ -35,7 +74,16 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
         QRect textRect(x - 50, y - fm.ascent(), 100, fm.height()); // width can be adjusted
         p.drawText(textRect, Qt::AlignHCenter | Qt::AlignTop, _text_.at(i));
     }
+    */
 
+}
+
+QSize TimeSlider::sizeHint() const
+{
+    QSize size = QSlider::sizeHint();
+    size.setHeight(size.height()+20);
+    //size.setWidth(size.width()+20);
+    return size;
 }
 
 GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
@@ -60,6 +108,7 @@ QSlider *GViewTimeTool::getTimelineWidget()
     _slider_->setOrientation(Qt::Horizontal);
     _slider_->setMinimum(0);
     _slider_->setMaximum(_tick_number_-1);
+//    _slider_->setTickPosition(QSlider::TicksAbove);
     QStringList list;
     for(int i = 0; i<_tick_number_;i++)
     {
