@@ -12,6 +12,8 @@
 #include <QLabel>
 #include <QStyleOptionSlider>
 #include <QPainter>
+#include <QStylePainter>
+#include <QPaintEvent>
 /*
 ///______________________________Time Objects__________________________________________________
 

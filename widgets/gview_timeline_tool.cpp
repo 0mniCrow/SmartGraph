@@ -2,20 +2,46 @@
 
 void TimeSlider::paintEvent(QPaintEvent* p_event)
 {
-    QSlider::paintEvent(p_event);
+    p_event->accept();
+    //QSlider::paintEvent(p_event);
     if((orientation()!=Qt::Horizontal)||!_text_.size())
     {
         return;
     }
+    //QStylePainter * s_painter = new QStylePainter(this);
+    QStyleOptionSlider s_option;
+    initStyleOption(&s_option);
+    QRect s_rect = rect();//.adjusted(0,0,0,-20);
+    s_rect.setHeight(s_rect.height()-20);
+    //s_rect.setWidth(s_rect.width()-20);
+    QStyleOptionSlider rect_option(s_option);
+    rect_option.rect=s_rect;
+    rect_option.subControls = QStyle::SC_All;
+    //s_painter->end();
+
     QPainter * painter = new QPainter(this);
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->save();
+    style()->drawComplexControl(QStyle::CC_Slider,&rect_option,painter,this);
+    painter->restore();
     painter->setPen(QPen(Qt::black));
     painter->setBrush(QBrush(Qt::yellow));
     QRect rec = this->rect();
     int mid = rec.height()/2;
     int st = rec.width()/(_text_.size()-1);
+    QFontMetrics fm = painter->fontMetrics();
     for(int i = 0; i<_text_.size();i++)
     {
-        QRect rt(st*i,mid,st,20);
+        int t_pos = st*i;
+        if(i==_text_.size()-1)
+        {
+            t_pos -=fm.horizontalAdvance(_text_.at(i));
+        }
+        else if(t_pos)
+        {
+            t_pos -=fm.horizontalAdvance(_text_.at(i))/2;
+        }
+        QRect rt(t_pos,mid,st,20);
         //painter->drawRect(rt);
         painter->drawText(rt,_text_.at(i));
     }
@@ -82,7 +108,7 @@ QSize TimeSlider::sizeHint() const
 {
     QSize size = QSlider::sizeHint();
     size.setHeight(size.height()+20);
-    //size.setWidth(size.width()+20);
+    size.setWidth(size.width()+20);
     return size;
 }
 
