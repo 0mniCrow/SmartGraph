@@ -14,15 +14,24 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     QRect s_rect = rect();//.adjusted(0,0,0,-20);
     s_rect.setHeight(s_rect.height()-20);
     //s_rect.setWidth(s_rect.width()-20);
-    QStyleOptionSlider rect_option(s_option);
-    rect_option.rect=s_rect;
-    rect_option.subControls = QStyle::SC_All;
+    //QStyleOptionSlider rect_option(s_option);
+    s_option.rect=s_rect;
+    s_option.subControls = QStyle::SC_All;
     //s_painter->end();
 
     QPainter * painter = new QPainter(this);
     painter->setRenderHint(QPainter::Antialiasing,true);
     painter->save();
-    style()->drawComplexControl(QStyle::CC_Slider,&rect_option,painter,this);
+    QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+    style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
+    int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
+    int groove_h = groove_rect.height()/4;
+    QRect left_gr_rect = QRect(groove_rect.left(),groove_rect.top()+(groove_h*1.5),
+                               left_gr_side-groove_rect.left(),groove_rect.height()-(groove_h*2.5));
+    painter->setBrush(QColor(QColorConstants::Svg::orange));
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(left_gr_rect);
     painter->restore();
     painter->setPen(QPen(Qt::black));
     painter->setBrush(QBrush(Qt::yellow));
@@ -33,11 +42,11 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     for(int i = 0; i<_text_.size();i++)
     {
         int t_pos = st*i;
-        if(i==_text_.size()-1)
+        /*if(i==_text_.size()-1)
         {
             t_pos -=fm.horizontalAdvance(_text_.at(i));
         }
-        else if(t_pos)
+        else */if(t_pos)
         {
             t_pos -=fm.horizontalAdvance(_text_.at(i))/2;
         }
@@ -108,7 +117,7 @@ QSize TimeSlider::sizeHint() const
 {
     QSize size = QSlider::sizeHint();
     size.setHeight(size.height()+20);
-    size.setWidth(size.width()+20);
+    //size.setWidth(size.width()+20);
     return size;
 }
 
@@ -135,12 +144,21 @@ QSlider *GViewTimeTool::getTimelineWidget()
     _slider_->setMinimum(0);
     _slider_->setMaximum(_tick_number_-1);
 //    _slider_->setTickPosition(QSlider::TicksAbove);
+    if(_labels_.isEmpty())
+    {
     QStringList list;
     for(int i = 0; i<_tick_number_;i++)
     {
         list.append(QString::number(i));
     }
+
     _slider_->loadTextLabels(list);
+    }
+    else
+    {
+        QStringList list = _labels_;
+        _slider_->loadTextLabels(list);
+    }
     return _slider_;
     /*
 //    if(_grid_)
@@ -229,6 +247,24 @@ void GViewTimeTool::setTickNumber(int tick_number)
             _slider_->setMaximum(tick_number);
             emit widgetRequireUpdate();
         }
+    }
+    return;
+}
+
+void GViewTimeTool::loadValues(const QStringList& values)
+{
+    if(!values.size())
+    {
+        return;
+    }
+    _tick_number_=values.size();
+    _labels_=values;
+    if(_slider_)
+    {
+        _slider_->setMaximum(_tick_number_-1);
+        QStringList list(values);
+        _slider_->loadTextLabels(list);
+        emit widgetRequireUpdate();
     }
     return;
 }

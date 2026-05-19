@@ -38,7 +38,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->Button_SaveObjList_trsl->hide();
 #endif
 
-    _timeline_tool_.setTickNumber(TEST_TIMELINE_TICKS);
+    //_timeline_tool_.setTickNumber(TEST_TIMELINE_TICKS);
+    QStringList mounthes={"Студзень","Люты",
+                          "Сакавік","Красавік","Травень",
+                          "Чэрвень","Ліпень","Жнівень",
+                         "Верасень","Кастрычнік","Лістапад",
+                         "Снежань"};
+    _timeline_tool_.loadValues(mounthes);
     updateTimeTool();
     loadTranslatableWindows();
     loadTranslatableMessages();

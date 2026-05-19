@@ -226,14 +226,15 @@ class GViewTimeTool : public QObject
 {
     Q_OBJECT
 private:
-//    QGridLayout* _grid_;
-//    QSlider* _slider_;
+
     TimeSlider* _slider_;
     int _tick_number_;
+    QStringList _labels_;
 public:
     explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
     [[nodiscard]] QSlider* getTimelineWidget();
     void setTickNumber(int tick_number);
+    void loadValues(const QStringList& values);
 signals:
     void timeChanged(int time);
     void widgetRequireUpdate();
