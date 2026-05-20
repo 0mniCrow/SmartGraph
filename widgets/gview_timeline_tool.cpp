@@ -22,7 +22,24 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     QPainter * painter = new QPainter(this);
     painter->setRenderHint(QPainter::Antialiasing,true);
     painter->save();
+    painter->setPen(QPen(QBrush(Qt::black),1));
     QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
+    int range_step = groove_rect.width()/(_text_.size()-1);
+    for(int i = 0; i<_text_.size();i++)
+    {
+        if((!i)||(i==_text_.size()-1))
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-20,
+                              i*range_step,groove_rect.bottom()+10);
+        }
+        else
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-10,
+                              i*range_step,groove_rect.bottom()+5);
+        }
+    }
+    painter->restore();
+    painter->save();
     QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
     style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
     int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
@@ -42,11 +59,11 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     for(int i = 0; i<_text_.size();i++)
     {
         int t_pos = st*i;
-        /*if(i==_text_.size()-1)
+        if(i==_text_.size()-1)
         {
             t_pos -=fm.horizontalAdvance(_text_.at(i));
         }
-        else */if(t_pos)
+        else if(t_pos)
         {
             t_pos -=fm.horizontalAdvance(_text_.at(i))/2;
         }
@@ -119,6 +136,43 @@ QSize TimeSlider::sizeHint() const
     size.setHeight(size.height()+20);
     //size.setWidth(size.width()+20);
     return size;
+}
+
+void TimeSlider::mousePressEvent(QMouseEvent* m_event)
+{
+    if(_text_.size()<1)
+    {
+        return QSlider::mousePressEvent(m_event);
+    }
+    QStyleOptionSlider sl_options;
+    initStyleOption(&sl_options);
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider, &sl_options,
+                                                   QStyle::SC_SliderHandle, this);
+    if(handle_rect.contains(m_event->pos()))
+    {
+        return QSlider::mousePressEvent(m_event);
+        setSliderDown(true);
+        return;
+    }
+    int m_pos = m_event->pos().x();
+    QRect loc_rect = this->rect();
+    int rect_step = loc_rect.width()/(_text_.size()-1);
+    int abs_val = INT_MAX;
+    int closest_val = -1;
+    for(int i = 0; i<_text_.size();i++)
+    {
+        if(std::abs(rect_step*i-m_pos)<abs_val)
+        {
+            closest_val = i;
+            abs_val = std::abs(rect_step*i-m_pos);
+        }
+    }
+    if(closest_val>=0)
+    {
+        setValue(closest_val);
+        emit sliderPressed();
+    }
+    return;
 }
 
 GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)

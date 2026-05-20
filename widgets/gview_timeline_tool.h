@@ -220,6 +220,7 @@ public:
 protected:
     void paintEvent(QPaintEvent* p_event) override;
     QSize sizeHint() const override;
+    void mousePressEvent(QMouseEvent* m_event) override;
 };
 
 class GViewTimeTool : public QObject
