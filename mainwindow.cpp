@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->Button_ViewSave_trsl,&QPushButton::clicked,this,&MainWindow::SaveProject);
     connect(ui->Button_ViewLoad_trsl,&QPushButton::clicked,this,&MainWindow::LoadProject);
     connect(ui->Button_UI_Hide,&QPushButton::clicked,this,&MainWindow::HideShowUI);
+    connect(ui->Button_timeline_hide,&QPushButton::clicked,this,&MainWindow::HideShowTimeLine);
     connect(ui->check_Zoom_mode_trsl,&QCheckBox::stateChanged,this,&MainWindow::setZoomMode);
     connect(ui->check_DragScene_mode_trsl,&QCheckBox::stateChanged,this,&MainWindow::setDragMode);
 
