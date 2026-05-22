@@ -2,11 +2,11 @@
 
 void TimeSlider::paintEvent(QPaintEvent* p_event)
 {
-    p_event->accept();
     if((orientation()!=Qt::Horizontal)||!_text_.size())
     {
-        return;
+        return QSlider::paintEvent(p_event);
     }
+    p_event->accept();
     //QStylePainter * s_painter = new QStylePainter(this);
     QStyleOptionSlider s_option;
     initStyleOption(&s_option);
@@ -54,23 +54,87 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     int mid = rec.height()/2;
     int st = rec.width()/(_text_.size()-1);
     QFontMetrics fm = painter->fontMetrics();
-    for(int i = 0; i<_text_.size();i++)
+    QStringList adj_list(adjustLabels(st,fm));
+    for(int i = 0; i<adj_list.size();i++)
     {
         int t_pos = st*i;
-        if(i==_text_.size()-1)
+        if(i==adj_list.size()-1)
         {
-            t_pos -=fm.horizontalAdvance(_text_.at(i));
+            t_pos -=fm.horizontalAdvance(adj_list.at(i));
         }
         else if(t_pos)
         {
-            t_pos -=fm.horizontalAdvance(_text_.at(i))/2;
+            t_pos -=fm.horizontalAdvance(adj_list.at(i))/2;
         }
         QRect rt(t_pos,mid,st,20);
-        painter->drawText(rt,_text_.at(i));
+        painter->drawText(rt,adj_list.at(i));
     }
     painter->end();
     delete painter;
     return;
+}
+
+
+void TimeSlider::collectPositions(QList<QPair<int,int>>& container, const QStringList &list,
+                                  int step_x, const QFontMetrics &f_metrix) const
+{
+    container.clear();
+    for(int i = 0; i<list.size();i++)
+    {
+        int s_pos = step_x*i;
+        if(i==list.size()-1)
+        {
+            s_pos -=f_metrix.horizontalAdvance(list.at(i));
+        }
+        else if(s_pos)
+        {
+            s_pos -=f_metrix.horizontalAdvance(list.at(i))/2;
+        }
+        int e_pos = s_pos+f_metrix.horizontalAdvance(list.at(i));
+        container.append(std::make_pair(s_pos,e_pos));
+    }
+    return;
+}
+
+int TimeSlider::areLabelsAdjusted(const QList<QPair<int,int>>& text_metrix) const
+{
+    int num = -1;
+    for(int i = 0; i<text_metrix.size();i++)
+    {
+        if(i==text_metrix.size()-1)
+        {
+            continue;
+        }
+        if(text_metrix.at(i).second>=text_metrix.at(i+1).first)
+        {
+            num = i;
+            break;
+        }
+    }
+    return num;
+}
+
+QStringList TimeSlider::adjustLabels(int step_x, const QFontMetrics &f_metrix) const
+{
+    QList<QPair<int,int>> text_metrix;
+    QStringList final_list(_text_);
+    final_list.detach();
+    while(true)
+    {
+        collectPositions(text_metrix,final_list,step_x,f_metrix);
+        int pos = areLabelsAdjusted(text_metrix);
+        if((pos<0)||(final_list.at(pos).size()<=3))
+        {
+            break;
+        }
+        int adj_size = final_list.at(pos).size()-2;
+        for(QString& label:final_list)
+        {
+            label.truncate(adj_size);
+            label.append('.');
+        }
+    }
+    return final_list;
 }
 
 QSize TimeSlider::sizeHint() const
