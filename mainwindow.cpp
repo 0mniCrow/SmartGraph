@@ -1081,12 +1081,12 @@ void MainWindow::HideShowTimeLine()
     if(ui->group_forTimeline->isVisible())
     {
         ui->Button_timeline_hide->setText("ʌ ʌ ʌ ʌ ʌ");
-        ui->group_forTimeline->setVisible(false);
+        ui->group_for_timetool->setVisible(false);
     }
     else
     {
         ui->Button_timeline_hide->setText("v v v v v");
-        ui->group_forTimeline->setVisible(true);
+        ui->group_for_timetool->setVisible(true);
     }
     return;
 }

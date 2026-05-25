@@ -1,0 +1,182 @@
+#include "gview_time_slider.h"
+void TimeSlider::paintEvent(QPaintEvent* p_event)
+{
+    if((orientation()!=Qt::Horizontal)||!_text_.size())
+    {
+        return QSlider::paintEvent(p_event);
+    }
+    p_event->accept();
+    //QStylePainter * s_painter = new QStylePainter(this);
+    QStyleOptionSlider s_option;
+    initStyleOption(&s_option);
+    QRect s_rect = rect();
+    s_rect.setHeight(s_rect.height()-20);
+    //QStyleOptionSlider rect_option(s_option);
+    s_option.rect=s_rect;
+    s_option.subControls = QStyle::SC_All;
+    //s_painter->end();
+
+    QPainter * painter = new QPainter(this);
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->save();
+    painter->setPen(QPen(QBrush(Qt::black),1));
+    QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
+    int range_step = groove_rect.width()/(_text_.size()-1);
+    for(int i = 0; i<_text_.size();i++)
+    {
+        if((!i)||(i==_text_.size()-1))
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-20,
+                              i*range_step,groove_rect.bottom()+10);
+        }
+        else
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-10,
+                              i*range_step,groove_rect.bottom()+5);
+        }
+    }
+    painter->restore();
+    painter->save();
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+    style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
+    int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
+    int groove_h = groove_rect.height()/4;
+    QRect left_gr_rect = QRect(groove_rect.left(),groove_rect.top()+(groove_h*1.5),
+                               left_gr_side-groove_rect.left(),groove_rect.height()-(groove_h*2.5));
+    painter->setBrush(QColor(QColorConstants::Svg::orange));
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(left_gr_rect);
+    painter->restore();
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::yellow));
+    QRect rec = this->rect();
+    int mid = rec.height()/2;
+    int st = rec.width()/(_text_.size()-1);
+    QFontMetrics fm = painter->fontMetrics();
+    QStringList adj_list(adjustLabels(st,fm));
+    for(int i = 0; i<adj_list.size();i++)
+    {
+        int t_pos = st*i;
+        if(i==adj_list.size()-1)
+        {
+            t_pos -=fm.horizontalAdvance(adj_list.at(i));
+        }
+        else if(t_pos)
+        {
+            t_pos -=fm.horizontalAdvance(adj_list.at(i))/2;
+        }
+        QRect rt(t_pos,mid,st,20);
+        painter->drawText(rt,adj_list.at(i));
+    }
+    painter->end();
+    delete painter;
+    return;
+}
+
+
+void TimeSlider::collectPositions(QList<QPair<int,int>>& container, const QStringList &list,
+                                  int step_x, const QFontMetrics &f_metrix) const
+{
+    container.clear();
+    for(int i = 0; i<list.size();i++)
+    {
+        int s_pos = step_x*i;
+        if(i==list.size()-1)
+        {
+            s_pos -=f_metrix.horizontalAdvance(list.at(i));
+        }
+        else if(s_pos)
+        {
+            s_pos -=f_metrix.horizontalAdvance(list.at(i))/2;
+        }
+        int e_pos = s_pos+f_metrix.horizontalAdvance(list.at(i));
+        container.append(std::make_pair(s_pos,e_pos));
+    }
+    return;
+}
+
+int TimeSlider::areLabelsAdjusted(const QList<QPair<int,int>>& text_metrix) const
+{
+    int num = -1;
+    for(int i = 0; i<text_metrix.size();i++)
+    {
+        if(i==text_metrix.size()-1)
+        {
+            continue;
+        }
+        if(text_metrix.at(i).second>=text_metrix.at(i+1).first)
+        {
+            num = i;
+            break;
+        }
+    }
+    return num;
+}
+
+QStringList TimeSlider::adjustLabels(int step_x, const QFontMetrics &f_metrix) const
+{
+    QList<QPair<int,int>> text_metrix;
+    QStringList final_list(_text_);
+    final_list.detach();
+    while(true)
+    {
+        collectPositions(text_metrix,final_list,step_x,f_metrix);
+        int pos = areLabelsAdjusted(text_metrix);
+        if((pos<0)||(final_list.at(pos).size()<=3))
+        {
+            break;
+        }
+        int adj_size = final_list.at(pos).size()-2;
+        for(QString& label:final_list)
+        {
+            label.truncate(adj_size);
+            label.append('.');
+        }
+    }
+    return final_list;
+}
+
+QSize TimeSlider::sizeHint() const
+{
+    QSize size = QSlider::sizeHint();
+    size.setHeight(size.height()+20);
+    //size.setWidth(size.width()+20);
+    return size;
+}
+
+void TimeSlider::mousePressEvent(QMouseEvent* m_event)
+{
+    if(_text_.size()<1)
+    {
+        return QSlider::mousePressEvent(m_event);
+    }
+    QStyleOptionSlider sl_options;
+    initStyleOption(&sl_options);
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider, &sl_options,
+                                                   QStyle::SC_SliderHandle, this);
+    if(handle_rect.contains(m_event->pos()))
+    {
+        return QSlider::mousePressEvent(m_event);
+        setSliderDown(true);
+        return;
+    }
+    int m_pos = m_event->pos().x();
+    QRect loc_rect = this->rect();
+    int rect_step = loc_rect.width()/(_text_.size()-1);
+    int abs_val = INT_MAX;
+    int closest_val = -1;
+    for(int i = 0; i<_text_.size();i++)
+    {
+        if(std::abs(rect_step*i-m_pos)<abs_val)
+        {
+            closest_val = i;
+            abs_val = std::abs(rect_step*i-m_pos);
+        }
+    }
+    if(closest_val>=0)
+    {
+        setValue(closest_val);
+        emit sliderPressed();
+    }
+    return;
+}
