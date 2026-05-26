@@ -8,26 +8,53 @@
 using gview_time_t = quint64;
 
 
-class GViewAbstractTimeObject                               //Абстрактны тып для адзінкі часовага прамежку
+class GViewBaseTObject                               //Абстрактны тып для адзінкі часовага прамежку
 {
 protected:
     static inline gview_time_t _time_ = TO_GVIEW_TIME(0);
-    QString _name_;                                                      //Імя бягучага прамежку
-    QSet<GViewAbstractTimeObject*>              _big_relatives_;         //Імя наступнага статычнага прамежку
-    QMap<GViewAbstractTimeObject*,gview_time_t> _small_relatives_;
+    gview_time_t _modifier_;                                     //Мадыфікатар ад грунтоўнай вялічыні
+    QString _name_;                                              //Імя аб'екту
+    //QSet<GViewBaseTObject*>              _contained_in_;       //Імя наступнага статычнага прамежку
+    //QMap<GViewBaseTObject*,gview_time_t> _contains_;
 public:
-    enum timespace_type{TS_NoType = 0};
+    enum tobj_type{TObj_NoType = 0};
 
-    explicit GViewAbstractTimeObject(const QString& name):_name_(name){};
+    explicit GViewBaseTObject(const QString& name,
+                              const gview_time_t& modifier = TO_GVIEW_TIME(0));
+    explicit GViewBaseTObject(const GViewBaseTObject& other);
+    explicit GViewBaseTObject(GViewBaseTObject&& other);
+    virtual ~GViewBaseTObject() {}
     static void setGeneralTime(gview_time_t time){ _time_ = time;}
-    virtual quint64 childTime(const QString& subtime_name =
-            QString()) const = 0;
-    virtual QList<QString> children() const = 0;
+    virtual gview_time_t countOfSubTObj(const QString& sub_tobject_name) const = 0;
+    virtual QStringList subTObjects() const = 0;
+    virtual QStringList superTObjects() const = 0;
+    virtual QStringList valLabels() const = 0;
+    virtual gview_time_t valToTime(int val) const = 0;
+    virtual void curScale(int & min_v, int &max_v) const = 0;
+    virtual QString name() const;
+    virtual gview_time_t modifier() const;
+    virtual void setModifier(const gview_time_t& modifier);
+    virtual bool addSuperTObject(GViewBaseTObject* t_obj) = 0;
+    virtual bool addSubTObject(GViewBaseTObject* t_obj,const gview_time_t& count) =0;
+    virtual char type() const {return TObj_NoType;}
+    GViewBaseTObject& operator=(const GViewBaseTObject& other);
+    GViewBaseTObject& operator=(GViewBaseTObject&& other);
+};
 
-    virtual QString name() const = 0;
-    virtual QString parent() const = 0;
-    virtual void setParentName(const QString& parent_name) = 0;
-    virtual char type() const {return TS_NoType;}
+
+class LinearTObject: public GViewBaseTObject
+{
+private:
+    QSet<GViewBaseTObject*> _contained_in_;
+    QMap<GViewBaseTObject*,gview_time_t> _contains_;
+public:
+    explicit LinearTObject(const QString& name,
+                           const gview_time_t& modifier = TO_GVIEW_TIME(0));
+    explicit LinearTObject(const LinearTObject& other);
+    explicit LinearTObject(LinearTObject&& other);
+    ~LinearTObject(){}
+    LinearTObject& operator=(const LinearTObject& other);
+    LinearTObject& operator=(LinearTObject&& other);
 };
 
 /*
