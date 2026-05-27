@@ -21,6 +21,19 @@ GViewBaseTObject::GViewBaseTObject(GViewBaseTObject&& obj)
     return;
 }
 
+gview_time_t GViewBaseTObject::extractCurrentValue()
+{
+    if(!_modifier_)
+    {
+        return TO_GVIEW_TIME(1);
+    }
+    if(!subTObjCount())
+    {
+        return _modifier_;
+    }
+    return _modifier_ * getSupTObj()->extractCurrentValue();
+}
+
 QString GViewBaseTObject::name() const
 {
     return _name_;

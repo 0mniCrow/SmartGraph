@@ -12,10 +12,16 @@ class GViewBaseTObject                               //Абстрактны ты
 {
 protected:
     static inline gview_time_t _time_ = TO_GVIEW_TIME(0);
+    struct TimeContext{int year, month, day;};
     gview_time_t _modifier_;                                     //Мадыфікатар ад грунтоўнай вялічыні
     QString _name_;                                              //Імя аб'екту
     //QSet<GViewBaseTObject*>              _contained_in_;       //Імя наступнага статычнага прамежку
     //QMap<GViewBaseTObject*,gview_time_t> _contains_;
+    GViewBaseTObject * _greater_unit_;
+    GViewBaseTObject * _lesser_unit_;
+    virtual GViewBaseTObject* getSupTObj() =0;
+    virtual gview_time_t extractCurrentValue();
+
 public:
     enum tobj_type{TObj_NoType = 0};
 
@@ -26,6 +32,8 @@ public:
     virtual ~GViewBaseTObject() {}
     static void setGeneralTime(gview_time_t time){ _time_ = time;}
     virtual gview_time_t countOfSubTObj(const QString& sub_tobject_name) const = 0;
+    virtual int subTObjCount() const = 0;
+    virtual int superTObjCount() const = 0;
     virtual QStringList subTObjects() const = 0;
     virtual QStringList superTObjects() const = 0;
     virtual QStringList valLabels() const = 0;
@@ -42,19 +50,29 @@ public:
 };
 
 
-class LinearTObject: public GViewBaseTObject
+class FixedTObject: public GViewBaseTObject
 {
 private:
     QSet<GViewBaseTObject*> _contained_in_;
-    QMap<GViewBaseTObject*,gview_time_t> _contains_;
+    //QMap<GViewBaseTObject*,gview_time_t> _contains_;
 public:
-    explicit LinearTObject(const QString& name,
+    explicit FixedTObject(const QString& name,
                            const gview_time_t& modifier = TO_GVIEW_TIME(0));
-    explicit LinearTObject(const LinearTObject& other);
-    explicit LinearTObject(LinearTObject&& other);
-    ~LinearTObject(){}
-    LinearTObject& operator=(const LinearTObject& other);
-    LinearTObject& operator=(LinearTObject&& other);
+    explicit FixedTObject(const FixedTObject& other);
+    explicit FixedTObject(FixedTObject&& other);
+    ~FixedTObject(){}
+    FixedTObject& operator=(const FixedTObject& other);
+    FixedTObject& operator=(FixedTObject&& other);
+};
+
+class VariantTObject: public GViewBaseTObject
+{
+
+};
+
+class WrapTObject: public FixedTObject
+{
+
 };
 
 /*
