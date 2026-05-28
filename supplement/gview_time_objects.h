@@ -2,6 +2,7 @@
 #define GVIEW_TIME_OBJECTS_H
 #include <QString>
 #include <QList>
+#include <QStringList>
 #include <QMap>
 #include <QSet>
 #define TO_GVIEW_TIME(val) Q_UINT64_C(val)
@@ -12,41 +13,35 @@ class GViewBaseTObject                               //Абстрактны ты
 {
 protected:
     static inline gview_time_t _time_ = TO_GVIEW_TIME(0);
-    struct TimeContext{int year, month, day;};
-    gview_time_t _modifier_;                                     //Мадыфікатар ад грунтоўнай вялічыні
-    QString _name_;                                              //Імя аб'екту
-    //QSet<GViewBaseTObject*>              _contained_in_;       //Імя наступнага статычнага прамежку
-    //QMap<GViewBaseTObject*,gview_time_t> _contains_;
-    GViewBaseTObject * _greater_unit_;
-    GViewBaseTObject * _lesser_unit_;
-    virtual GViewBaseTObject* getSupTObj() =0;
-    virtual gview_time_t extractCurrentValue();
-
+    virtual gview_time_t getScalingFactor();
+private:
+    gview_time_t _modifier_;                                        //Мадыфікатар (колькасць падпарадкаваных прамежкаў)
+    QString _name_;                                                 //Імя аб'екту
+    GViewBaseTObject * _greater_unit_;                              //Загадны прамежак часу
+    GViewBaseTObject * _lesser_unit_;                               //Падпарадкоўны прамежак часу
 public:
-    enum tobj_type{TObj_NoType = 0};
+    enum TimeUnit_type{TUnit_NoType = 0};
 
     explicit GViewBaseTObject(const QString& name,
-                              const gview_time_t& modifier = TO_GVIEW_TIME(0));
-    explicit GViewBaseTObject(const GViewBaseTObject& other);
-    explicit GViewBaseTObject(GViewBaseTObject&& other);
+                              const gview_time_t& modifier = TO_GVIEW_TIME(0),
+                              GViewBaseTObject* greater_unit = nullptr,
+                              GViewBaseTObject* lesser_unit = nullptr);
     virtual ~GViewBaseTObject() {}
     static void setGeneralTime(gview_time_t time){ _time_ = time;}
-    virtual gview_time_t countOfSubTObj(const QString& sub_tobject_name) const = 0;
-    virtual int subTObjCount() const = 0;
-    virtual int superTObjCount() const = 0;
-    virtual QStringList subTObjects() const = 0;
-    virtual QStringList superTObjects() const = 0;
-    virtual QStringList valLabels() const = 0;
-    virtual gview_time_t valToTime(int val) const = 0;
-    virtual void curScale(int & min_v, int &max_v) const = 0;
-    virtual QString name() const;
-    virtual gview_time_t modifier() const;
+    virtual QStringList getScaleLabels() = 0;                 //Сьпіс значэнняў гэтага прамежку
+    virtual gview_time_t scaleUnitToTime(int val) const = 0;        //Пераўтварыць значэнне слайдэру ў сапраўдны час гэтага прамежку часу
+    virtual int scaleTimeToVal() const = 0;                         //Пераўтварыць значэнне часу ў значэнне слайдэра
+    QString name() const;
+    virtual gview_time_t modifier() const;                          //Прыблізны бо ў нашчадкаў можа залежыць ад бягучага часу
+    GViewBaseTObject* greaterUnit() const;
+    GViewBaseTObject* lesserUnit() const;
+    bool isBasicUnit() const;
+    virtual void setName(const QString& name);
     virtual void setModifier(const gview_time_t& modifier);
-    virtual bool addSuperTObject(GViewBaseTObject* t_obj) = 0;
-    virtual bool addSubTObject(GViewBaseTObject* t_obj,const gview_time_t& count) =0;
-    virtual char type() const {return TObj_NoType;}
-    GViewBaseTObject& operator=(const GViewBaseTObject& other);
-    GViewBaseTObject& operator=(GViewBaseTObject&& other);
+    virtual void setGreaterUnit(GViewBaseTObject* greater_unit);
+    virtual void setLesserUnit(GViewBaseTObject* lesser_unit);
+    virtual char type() const {return TUnit_NoType;}
+
 };
 
 
@@ -54,24 +49,35 @@ class FixedTObject: public GViewBaseTObject
 {
 private:
     QSet<GViewBaseTObject*> _contained_in_;
-    //QMap<GViewBaseTObject*,gview_time_t> _contains_;
+    QList<QString> _text_labels_;
 public:
+    enum TimeUnit_type{TUnit_Fixed = 1};
     explicit FixedTObject(const QString& name,
-                           const gview_time_t& modifier = TO_GVIEW_TIME(0));
-    explicit FixedTObject(const FixedTObject& other);
-    explicit FixedTObject(FixedTObject&& other);
+                          const gview_time_t& modifier = TO_GVIEW_TIME(0),
+                          GViewBaseTObject* greater_unit = nullptr,
+                          GViewBaseTObject* lesser_unit = nullptr);
+    bool addContainingUnit(GViewBaseTObject* containing_unit);
+    bool setTextLabels(const QStringList& text_labels);
+    virtual QStringList getScaleLabels() override;
+    virtual gview_time_t scaleUnitToTime(int val) const override;
+    virtual int scaleTimeToVal() const override;
     ~FixedTObject(){}
-    FixedTObject& operator=(const FixedTObject& other);
-    FixedTObject& operator=(FixedTObject&& other);
+    virtual char type() const override {return TUnit_Fixed;}
 };
 
 class VariantTObject: public GViewBaseTObject
 {
-
+protected:
+    gview_time_t _cycle_;
+    QSet<GViewBaseTObject*> _related_objs_;
 };
 
-class WrapTObject: public FixedTObject
+class WrapTObject: public GViewBaseTObject
 {
+protected:
+    GViewBaseTObject* _main_tobj_;
+    QSet<GViewBaseTObject*> _related_objs_;
+public:
 
 };
 

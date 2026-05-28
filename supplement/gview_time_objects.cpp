@@ -1,37 +1,23 @@
 #include "gview_time_objects.h"
 
 GViewBaseTObject::GViewBaseTObject(const QString& name,
-                                   const gview_time_t& modifier):
-    _modifier_(modifier),_name_(name)
+                                   const gview_time_t& modifier,
+                                   GViewBaseTObject* greater_unit,
+                                   GViewBaseTObject* lesser_unit):
+    _modifier_(modifier),_name_(name),
+    _greater_unit_(greater_unit),
+    _lesser_unit_(lesser_unit)
 {
     return;
 }
 
-GViewBaseTObject::GViewBaseTObject(const GViewBaseTObject& obj)
+gview_time_t GViewBaseTObject::getScalingFactor()
 {
-    _name_ = obj._name_;
-    _modifier_ = obj._modifier_;
-    return;
-}
-
-GViewBaseTObject::GViewBaseTObject(GViewBaseTObject&& obj)
-{
-    std::swap(_name_,obj._name_);
-    std::swap(_modifier_,obj._modifier_);
-    return;
-}
-
-gview_time_t GViewBaseTObject::extractCurrentValue()
-{
-    if(!_modifier_)
+    if(!_modifier_ || !_lesser_unit_)
     {
         return TO_GVIEW_TIME(1);
     }
-    if(!subTObjCount())
-    {
-        return _modifier_;
-    }
-    return _modifier_ * getSupTObj()->extractCurrentValue();
+    return _modifier_ * _lesser_unit_->getScalingFactor();
 }
 
 QString GViewBaseTObject::name() const
@@ -50,16 +36,98 @@ void GViewBaseTObject::setModifier(const gview_time_t& modifier)
     return;
 }
 
-GViewBaseTObject& GViewBaseTObject::operator=(const GViewBaseTObject& obj)
+void GViewBaseTObject::setName(const QString& name)
 {
-    _name_ = obj._name_;
-    _modifier_ = obj._modifier_;
-    return *this;
+    _name_ = name;
+    return;
 }
 
-GViewBaseTObject& GViewBaseTObject::operator=(GViewBaseTObject&& obj)
+GViewBaseTObject* GViewBaseTObject::greaterUnit() const
 {
-    std::swap(_name_,obj._name_);
-    std::swap(_modifier_,obj._modifier_);
-    return *this;
+    return _greater_unit_;
+}
+
+GViewBaseTObject* GViewBaseTObject::lesserUnit() const
+{
+    return _lesser_unit_;
+}
+
+void GViewBaseTObject::setGreaterUnit(GViewBaseTObject* greater_unit)
+{
+    _greater_unit_ = greater_unit;
+    return;
+}
+
+void GViewBaseTObject::setLesserUnit(GViewBaseTObject* lesser_unit)
+{
+    _lesser_unit_ = lesser_unit;
+    return;
+}
+
+bool GViewBaseTObject::isBasicUnit() const
+{
+    return !_modifier_ && !_lesser_unit_;
+}
+
+FixedTObject::FixedTObject(const QString& name,
+                      const gview_time_t& modifier,
+                      GViewBaseTObject* greater_unit,
+                      GViewBaseTObject* lesser_unit):
+    GViewBaseTObject(name,modifier,greater_unit,lesser_unit)
+{
+    return;
+}
+
+bool FixedTObject::addContainingUnit(GViewBaseTObject* containing_unit)
+{
+    if(!containing_unit)
+    {
+        return false;
+    }
+    if(_contained_in_.contains(containing_unit))
+    {
+        return false;
+    }
+    QSet<GViewBaseTObject*>::ConstIterator it = _contained_in_.cbegin();
+    while(it!=_contained_in_.cend())
+    {
+        if((*it)->name()==containing_unit->name())
+        {
+            return false;
+        }
+        ++it;
+    }
+    _contained_in_.insert(containing_unit);
+    return true;
+}
+
+bool FixedTObject::setTextLabels(const QStringList& text_labels)
+{
+    if(text_labels.size()!=static_cast<int>(modifier()))
+    {
+        return false;
+    }
+    _text_labels_ = text_labels;
+    return true;
+}
+
+QStringList FixedTObject::getScaleLabels()
+{
+    if(_text_labels_.isEmpty())
+    {
+        for(int i = 0; i<static_cast<int>(modifier());++i)
+        {
+            _text_labels_.append(QString::number(i+1));
+        }
+    }
+    return _text_labels_;
+}
+
+gview_time_t FixedTObject::scaleUnitToTime(int val) const
+{
+
+}
+int FixedTObject::scaleTimeToVal() const
+{
+
 }
