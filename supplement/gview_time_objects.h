@@ -13,7 +13,12 @@ class GViewBaseTObject                               //Абстрактны ты
 {
 protected:
     static inline gview_time_t _time_ = TO_GVIEW_TIME(0);
-    virtual gview_time_t getScalingFactor();
+/*    virtual gview_time_t getScalingFactor();                        //Атрымаць поўны мадыфікатар для бягучага аб'екта
+    virtual gview_time_t getScalingShorting(
+            const gview_time_t& time);   */                           //Атрымаць мадыфікатар загаднага прамежку для адсячэння;
+    virtual gview_time_t accumulateUpperVal(const gview_time_t& time);
+    virtual gview_time_t accumulateLowerVal(const gview_time_t& time);
+    virtual gview_time_t getUpperReminder(const gview_time_t& time);
 private:
     gview_time_t _modifier_;                                        //Мадыфікатар (колькасць падпарадкаваных прамежкаў)
     QString _name_;                                                 //Імя аб'екту
@@ -28,9 +33,10 @@ public:
                               GViewBaseTObject* lesser_unit = nullptr);
     virtual ~GViewBaseTObject() {}
     static void setGeneralTime(gview_time_t time){ _time_ = time;}
-    virtual QStringList getScaleLabels() = 0;                 //Сьпіс значэнняў гэтага прамежку
-    virtual gview_time_t scaleUnitToTime(int val) const = 0;        //Пераўтварыць значэнне слайдэру ў сапраўдны час гэтага прамежку часу
-    virtual int scaleTimeToVal() const = 0;                         //Пераўтварыць значэнне часу ў значэнне слайдэра
+    virtual QStringList getScaleLabels() const = 0;                 //Сьпіс значэнняў гэтага прамежку
+    virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const = 0;        //Пераўтварыць значэнне слайдэру ў сапраўдны час гэтага прамежку часу
+    virtual int scaleTimeToVal(const gview_time_t& time) const = 0;                         //Пераўтварыць значэнне часу ў значэнне слайдэра
+    virtual gview_time_t getUnitVal(const gview_time_t& time) const = 0;
     QString name() const;
     virtual gview_time_t modifier() const;                          //Прыблізны бо ў нашчадкаў можа залежыць ад бягучага часу
     GViewBaseTObject* greaterUnit() const;
@@ -48,7 +54,6 @@ public:
 class FixedTObject: public GViewBaseTObject
 {
 private:
-    QSet<GViewBaseTObject*> _contained_in_;
     QList<QString> _text_labels_;
 public:
     enum TimeUnit_type{TUnit_Fixed = 1};
@@ -56,20 +61,32 @@ public:
                           const gview_time_t& modifier = TO_GVIEW_TIME(0),
                           GViewBaseTObject* greater_unit = nullptr,
                           GViewBaseTObject* lesser_unit = nullptr);
-    bool addContainingUnit(GViewBaseTObject* containing_unit);
+//    bool addContainingUnit(GViewBaseTObject* containing_unit);
     bool setTextLabels(const QStringList& text_labels);
-    virtual QStringList getScaleLabels() override;
-    virtual gview_time_t scaleUnitToTime(int val) const override;
-    virtual int scaleTimeToVal() const override;
+    virtual QStringList getScaleLabels() const override;
+    virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const override;
+    virtual int scaleTimeToVal(const gview_time_t& time) const override;
     ~FixedTObject(){}
     virtual char type() const override {return TUnit_Fixed;}
 };
 
 class VariantTObject: public GViewBaseTObject
 {
-protected:
-    gview_time_t _cycle_;
-    QSet<GViewBaseTObject*> _related_objs_;
+private:
+    int _leap_cycle_;
+    int _leap_length_;
+    FixedTObject* _leap_unit_;
+    QSet<GViewBaseTObject*> _related_units_;
+public:
+    enum TimeUnit_type{TUnit_Variant = 2};
+    explicit VariantTObject(const QString& name,
+                            const gview_time_t& modifier,
+                            FixedTObject* leap_unit,
+                            int leap_cycle = 4, int leap_length = 1,
+                            GViewBaseTObject* greater_unit = nullptr,
+                            GViewBaseTObject* lesser_unit = nullptr
+                            );
+    virtual char type() const override {return TUnit_Variant;}
 };
 
 class WrapTObject: public GViewBaseTObject
