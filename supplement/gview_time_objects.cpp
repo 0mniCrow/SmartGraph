@@ -11,49 +11,51 @@ GViewBaseTObject::GViewBaseTObject(const QString& name,
     return;
 }
 
-//gview_time_t GViewBaseTObject::getScalingFactor()
-//{
-//    if(!_modifier_ || !_lesser_unit_)
-//    {
-//        return TO_GVIEW_TIME(1);
-//    }
-//    return _modifier_ * _lesser_unit_->getScalingFactor();
-//}
-
-//gview_time_t GViewBaseTObject::getScalingShorting(const gview_time_t& time)
-//{
+gview_time_t GViewBaseTObject::accumulateUpperVal(const gview_time_t& time) const
+{
 //    if(!_greater_unit_)
 //    {
-//        return _modifier_;
+//        return getUnitVal(time);
 //    }
-//    return _greater_unit_->getScalingShorting(time)*_modifier_;
-//}
-
-gview_time_t GViewBaseTObject::accumulateUpperVal(const gview_time_t& time)
-{
-    if(!_greater_unit_)
-    {
-        return getUnitVal(time);
-    }
-    return _greater_unit_->getUnitVal(time)+getUnitVal(time);
+//    return _greater_unit_->accumulateUpperVal(time)+getUnitVal(time);
+    //магчыма тут падыйдзе проста getInteger.
+    return getInteger(time);
 }
 
-gview_time_t GViewBaseTObject::accumulateLowerVal(const gview_time_t& time)
+gview_time_t GViewBaseTObject::accumulateLowerVal(const gview_time_t& time) const
 {
     if(!_lesser_unit_)
     {
-        return getUnitVal(time);
+        return getUnitTime(time);
     }
-    return _lesser_unit_->getUnitVal(time)+getUnitVal(time);
+    return _lesser_unit_->accumulateLowerVal(time)+getUnitTime(time);
 }
 
-gview_time_t GViewBaseTObject::getUpperReminder(const gview_time_t& time)
+gview_time_t GViewBaseTObject::getUpperVal(const gview_time_t& time) const
+{
+    if(!_greater_unit_)
+    {
+        return TO_GVIEW_TIME(0);
+    }
+    return _greater_unit_->accumulateUpperVal(time);
+}
+
+gview_time_t GViewBaseTObject::getLowerVal(const gview_time_t& time) const
+{
+    if(!_lesser_unit_)
+    {
+        return TO_GVIEW_TIME(0);
+    }
+    return _lesser_unit_->accumulateLowerVal(time);
+}
+
+gview_time_t GViewBaseTObject::getUpperReminder(const gview_time_t& time) const
 {
     if(!_greater_unit_)
     {
         return time;
     }
-    return time%_greater_unit_->modifier();
+    return _greater_unit_->getReminder(time);
 }
 
 QString GViewBaseTObject::name() const
@@ -102,7 +104,12 @@ void GViewBaseTObject::setLesserUnit(GViewBaseTObject* lesser_unit)
 
 bool GViewBaseTObject::isBasicUnit() const
 {
-    return !_modifier_ && !_lesser_unit_;
+    return !_lesser_unit_;
+}
+
+bool GViewBaseTObject::isTopUnit() const
+{
+    return !_greater_unit_;
 }
 
 FixedTObject::FixedTObject(const QString& name,
@@ -114,28 +121,15 @@ FixedTObject::FixedTObject(const QString& name,
     return;
 }
 
-//bool FixedTObject::addContainingUnit(GViewBaseTObject* containing_unit)
-//{
-//    if(!containing_unit)
-//    {
-//        return false;
-//    }
-//    if(_contained_in_.contains(containing_unit))
-//    {
-//        return false;
-//    }
-//    QSet<GViewBaseTObject*>::ConstIterator it = _contained_in_.cbegin();
-//    while(it!=_contained_in_.cend())
-//    {
-//        if((*it)->name()==containing_unit->name())
-//        {
-//            return false;
-//        }
-//        ++it;
-//    }
-//    _contained_in_.insert(containing_unit);
-//    return true;
-//}
+gview_time_t FixedTObject::getInteger(const gview_time_t& time) const
+{
+      return time-getReminder(time);
+}
+
+gview_time_t FixedTObject::getReminder(const gview_time_t& time) const
+{
+    return  time % modifier();
+}
 
 bool FixedTObject::setTextLabels(const QStringList& text_labels)
 {
@@ -163,11 +157,34 @@ QStringList FixedTObject::getScaleLabels() const
 
 gview_time_t FixedTObject::scaleUnitToTime(int val, const gview_time_t &time) const
 {
-
+    gview_time_t cur_unit_time = static_cast<gview_time_t>(val) * curModifier(time);
+    gview_time_t modified_time = getUpperVal(time) + cur_unit_time + getLowerVal(time);
+    return modified_time;
 }
-int FixedTObject::scaleTimeToVal(const gview_time_t &time) const
-{
 
+int FixedTObject::scaleTimeToUnit(const gview_time_t &time) const
+{
+    return static_cast<int>(getUnitVal(time));
+}
+
+gview_time_t FixedTObject::curModifier(const gview_time_t& time) const
+{
+    Q_UNUSED(time)
+    return modifier();
+}
+
+gview_time_t FixedTObject::getUnitVal(const gview_time_t& time) const
+{
+    gview_time_t upper_reminder = getUpperReminder(time);
+    return upper_reminder/curModifier(time);
+}
+
+gview_time_t FixedTObject::getUnitTime(const gview_time_t& time) const
+{
+    gview_time_t upper_reminder = getUpperReminder(time);
+    gview_time_t unit_num = upper_reminder/modifier();
+    gview_time_t unit_time = unit_num * modifier();
+    return unit_time;
 }
 
 VariantTObject::VariantTObject(const QString& name,
@@ -183,4 +200,153 @@ VariantTObject::VariantTObject(const QString& name,
 
 {
     return;
+}
+
+
+bool VariantTObject::setTextLabels(const QStringList& text_labels)
+{
+    if(text_labels.size()!=static_cast<int>(modifier()))
+    {
+        return false;
+    }
+    _text_labels_ = text_labels;
+    return true;
+}
+
+void VariantTObject::setLeapCycle(int leap_cycle)
+{
+    if(leap_cycle<1)
+    {
+        leap_cycle = 1;
+    }
+    _leap_cycle_=leap_cycle;
+    return;
+}
+
+int VariantTObject::leapCycle() const
+{
+    return _leap_cycle_;
+}
+
+void VariantTObject::setLeapLength(int leap_length)
+{
+    if(leap_length<1)
+    {
+        leap_length = 1;
+    }
+    _leap_length_ = leap_length;
+    return;
+}
+
+int VariantTObject::leapLength() const
+{
+    return _leap_length_;
+}
+
+void VariantTObject::setLeapUnit(FixedTObject* leap_unit)
+{
+    if(!leap_unit)
+    {
+        return;
+    }
+    _leap_unit_ = leap_unit;
+    return;
+}
+
+FixedTObject* VariantTObject::leapUnit() const
+{
+    return _leap_unit_;
+}
+
+QStringList VariantTObject::getScaleLabels() const
+{
+    if(_text_labels_.isEmpty())
+    {
+        QStringList text_labels;
+        for(int i = 0; i<static_cast<int>(modifier());++i)
+        {
+            text_labels.append(QString::number(i+1));
+        }
+        return text_labels;
+    }
+    return _text_labels_;
+}
+
+gview_time_t VariantTObject::scaleUnitToTime(int val, const gview_time_t& time) const
+{
+
+}
+
+int VariantTObject::scaleTimeToUnit(const gview_time_t& time) const
+{
+
+}
+
+gview_time_t VariantTObject::curModifier(const gview_time_t& time) const
+{
+    if(!_leap_unit_)
+    {
+        return modifier();
+    }
+    gview_time_t accumulator = TO_GVIEW_TIME(0);
+    int cycle_t = 0;
+    while(true)
+    {
+        ++cycle_t;
+        gview_time_t cur_modifier = TO_GVIEW_TIME(0);
+        if(cycle_t == _leap_cycle_)
+        {
+            cycle_t = 0;
+            cur_modifier = modifier() + (_leap_unit_->modifier()*static_cast<gview_time_t>(_leap_length_));
+        }
+        else
+        {
+            cur_modifier =modifier();
+        }
+        if((accumulator+cur_modifier)>time)
+        {
+            return cur_modifier;
+        }
+        accumulator+=cur_modifier;
+    }
+}
+
+gview_time_t VariantTObject::getInteger(const gview_time_t& time) const
+{
+    if(!_leap_unit_)
+    {
+        return modifier();
+    }
+    gview_time_t accumulator = TO_GVIEW_TIME(0);
+    int cycle_t = 0;
+    while(true)
+    {
+        ++cycle_t;
+        gview_time_t cur_modifier = TO_GVIEW_TIME(0);
+        if(cycle_t == _leap_cycle_)
+        {
+            cycle_t = 0;
+            cur_modifier = modifier() + (_leap_unit_->modifier()*static_cast<gview_time_t>(_leap_length_));
+        }
+        else
+        {
+            cur_modifier =modifier();
+        }
+        if((accumulator+cur_modifier)>=time)
+        {
+            break;
+        }
+        accumulator+=cur_modifier;
+    }
+    return accumulator;
+}
+
+gview_time_t VariantTObject::getReminder(const gview_time_t& time) const
+{
+    return time-getInteger(time);
+}
+
+gview_time_t VariantTObject::getUnitVal(const gview_time_t& time) const
+{
+
 }
