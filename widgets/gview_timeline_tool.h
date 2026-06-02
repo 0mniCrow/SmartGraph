@@ -34,7 +34,7 @@ public:
                                                         emit minTimeChanged();}
     virtual gview_time minTime() const {return _min_time_;}
     virtual QStringList scales() const = 0;
-    virtual bool addTimeObject(GViewAbstractTimeObject* object) = 0;
+    virtual bool addTimeObject(GViewBaseTObject* object) = 0;
     virtual bool removeTimeObject(const QString& timeObject) = 0;
 signals:
     void currentTimeChanged(gview_time time);

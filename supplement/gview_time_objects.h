@@ -75,7 +75,7 @@ public:
     virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const override;
     virtual int scaleTimeToUnit(const gview_time_t& time) const override;
     virtual gview_time_t curModifier(const gview_time_t& time) const override;
-    virtual gview_time_t upperVal(const gview_time_t& time) const override;
+    //virtual gview_time_t upperVal(const gview_time_t& time) const override;
     virtual gview_time_t getUnitVal(const gview_time_t& time) const override;
     virtual gview_time_t getUnitTime(const gview_time_t& time) const override;
     ~FixedTObject(){}
@@ -90,6 +90,7 @@ private:
     FixedTObject* _leap_unit_;
     QSet<GViewBaseTObject*> _related_units_;
     QStringList _text_labels_;
+    gview_time_t variantInteger(const gview_time_t& time, int& number) const;
 protected:
     virtual gview_time_t getInteger(const gview_time_t& time) const override;
     virtual gview_time_t getReminder(const gview_time_t& time) const override;
