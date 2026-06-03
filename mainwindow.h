@@ -29,6 +29,7 @@ using std::string;
 #define DEVELOPER_MODE
 #define MINIMAL_BG_SIZE 1000
 #define TEST_TIMELINE_TICKS 12
+#define TIMELINE_JUMP 10
 
 class MainWindow : public QMainWindow
 {
@@ -56,10 +57,20 @@ private slots:
     void SaveObjectList();
     void LoadLanguageFile();
     void HideShowUI();
-    void HideShowTimeLine();
     void setZoomMode(int state);
     void setDragMode(int state);
     void changeLanguage(int index);
+
+    //____________Timeline control____________;
+    void HideShowTimeLine();
+    void tlPlay();
+    void tlPause();
+    void tlStop();
+    void tlStepBack();
+    void tlJumpBack();
+    void tlStepForward();
+    void tlJumpForward();
+    void tlChangeScale(int index);
 
     //_______________End______________________
 private:
@@ -69,6 +80,7 @@ private:
     MatrixModel * model;
     GviewLangControl _translation_control_;
     GViewTimeTool _timeline_tool_;
+    GViewTimeInterface* _timeline_interface_;
     //____________Visual graph_______________
     GViewScene* _scene_;
     GViewPort* _view_;
@@ -78,6 +90,7 @@ private:
     //______________End________________________
     void keyPressEvent(QKeyEvent* pe) override;
     void initiateGraphicsView();
+    void initiateTimelineTool();
     void LoadBGFromFile(const QString& addr);
     void loadTranslatableMessages();
     void loadTranslatableWindows();

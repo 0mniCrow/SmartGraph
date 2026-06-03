@@ -3,7 +3,7 @@
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),touchform(new TouchForm())//,vis_form(new VisualisationGraphForm())
+    : QMainWindow(parent),touchform(new TouchForm()),_timeline_interface_(nullptr)//,vis_form(new VisualisationGraphForm())
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
     loadTranslatableWindows();
     loadTranslatableMessages();
     initiateGraphicsView();
+    initiateTimelineTool();
     execute();
     return;
 }
@@ -876,6 +877,19 @@ void MainWindow::initiateGraphicsView()
     connect(ui->actionRemove_Edge_trsl,&QAction::triggered,this,&MainWindow::RemoveEdge);
 }
 
+void MainWindow::initiateTimelineTool()
+{
+    connect(ui->button_time_play_trsl,&QPushButton::clicked,this,&MainWindow::tlPlay);
+    connect(ui->button_time_stop_trsl,&QPushButton::clicked,this,&MainWindow::tlStop);
+    connect(ui->button_time_pause_trsl,&QPushButton::clicked,this,&MainWindow::tlPause);
+    connect(ui->button_time_stepback,&QPushButton::clicked,this,&MainWindow::tlStepBack);
+    connect(ui->button_time_stepforward,&QPushButton::clicked,this,&MainWindow::tlStepForward);
+    connect(ui->button_time_jumpback,&QPushButton::clicked,this,&MainWindow::tlJumpBack);
+    connect(ui->button_time_jumpforward,&QPushButton::clicked,this,&MainWindow::tlJumpForward);
+    connect(ui->combo_time_scale,&QComboBox::currentIndexChanged,this,&MainWindow::tlChangeScale);
+    return;
+}
+
 void MainWindow::AddObject()
 {
     if(_view_->mode()==GViewPort::GPort_add)
@@ -1240,5 +1254,91 @@ void MainWindow::updateTimeTool()
     QHBoxLayout * t_layout = new QHBoxLayout();
     t_layout->addWidget(slider);
     ui->group_forTimeline->setLayout(t_layout);
+    return;
+}
+
+void MainWindow::tlPlay()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->play();
+    return;
+}
+void MainWindow::tlPause()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->pause();
+    return;
+}
+
+void MainWindow::tlStop()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->stop();
+    return;
+}
+
+void MainWindow::tlStepBack()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->stepBack();
+    return;
+}
+
+void MainWindow::tlJumpBack()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->jumpBack(TIMELINE_JUMP);
+    return;
+}
+
+void MainWindow::tlStepForward()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->stepForward();
+    return;
+}
+void MainWindow::tlJumpForward()
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->jumpForward(TIMELINE_JUMP);
+    return;
+}
+
+void MainWindow::tlChangeScale(int index)
+{
+    if(!_timeline_interface_)
+    {
+        ui->textEdit->append("Timeline tool hasn't been set.");
+        return;
+    }
+    _timeline_interface_->setScale(ui->combo_time_scale->itemText(index));
     return;
 }
