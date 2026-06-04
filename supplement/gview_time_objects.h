@@ -120,21 +120,53 @@ public:
     virtual char type() const override {return TUnit_Variant;}
 };
 
-class YearTObject:public VariantTObject
-{
 
-};
 
 class MonthTObject:public VariantTObject
 {
-
+private:
+    QList<QPair<QString,gview_time_t>> _months_;
+    QString _leap_month_;
+public:
+    explicit MonthTObject(const QString& name,
+                            const gview_time_t& modifier,
+                            FixedTObject* leap_unit,
+                            const QList<QPair<QString,int>>& months,
+                            const QString& leap_month,
+                            int leap_cycle = 4, int leap_length = 1,
+                            GViewBaseTObject* greater_unit = nullptr,
+                            GViewBaseTObject* lesser_unit = nullptr
+                            );
+    ~MonthTObject();
+    QString getMonth(const gview_time_t& time) const;
+    gview_time_t getMonthLength(const QString& month, const gview_time_t& time) const;
+    int getMonthNum(const gview_time_t& time) const;
 };
 
-class WrapTObject: public GViewBaseTObject
+class YearTObject:public VariantTObject
 {
-protected:
-    GViewBaseTObject* _main_tobj_;
-    QSet<GViewBaseTObject*> _related_objs_;
+private:
+    MonthTObject * _month_unit_;
+    gview_time_t _month_modifier_;
+public:
+    explicit YearTObject(const QString& name,
+                            const gview_time_t& modifier,
+                            FixedTObject* leap_unit,
+                            MonthTObject* month_object,
+                            const gview_time_t& month_modifier,
+                            int leap_cycle = 4, int leap_length = 1,
+                            GViewBaseTObject* greater_unit = nullptr,
+                            GViewBaseTObject* lesser_unit = nullptr
+                            );
+    ~YearTObject();
+};
+
+class WeekTObject: public GViewBaseTObject
+{
+private:
+    QList<QString> _week_days_;
+    MonthTObject* _month_unit_;
+    YearTObject* _year_unit_;
 public:
 
 };

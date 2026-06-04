@@ -53,6 +53,12 @@ public slots:
     virtual void setScale(const QString& sc_name) = 0;
 };
 
+class GViewBaseTool: public GViewTimeInterface
+{
+private:
+    QSet<GViewBaseTObject*> _time_units_;
+};
+
 class GViewTimeTool : public QObject
 {
     Q_OBJECT
