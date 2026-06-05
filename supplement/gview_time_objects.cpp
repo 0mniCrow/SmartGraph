@@ -384,3 +384,50 @@ gview_time_t VariantTObject::getUnitTime(const gview_time_t& time) const
     int unit_val = 0;
     return variantInteger(upper_reminder,unit_val);
 }
+
+
+ MonthTObject::MonthTObject(const QString& name,
+                        const gview_time_t& modifier,
+                        FixedTObject* leap_unit,
+                        const QList<QPair<QString,int>>& months,
+                        const QString& leap_month,
+                        int leap_cycle, int leap_length,
+                        GViewBaseTObject* greater_unit,
+                        GViewBaseTObject* lesser_unit
+                        ):VariantTObject(name,modifier,leap_unit,
+                                         leap_cycle,leap_length,
+                                         greater_unit,lesser_unit),_leap_month_(leap_month)
+ {
+    gview_time_t full_mod = TO_GVIEW_TIME(0);
+    for(const QPair<QString,int>& p:months)
+    {
+        gview_time_t cur_mod = static_cast<gview_time_t>(p.second);
+        full_mod+=cur_mod;
+        _months_.append(std::make_pair(p.first,cur_mod));
+    }
+    if(modifier!=full_mod)
+    {
+        setModifier(full_mod);
+    }
+    return;
+ }
+
+MonthTObject::~MonthTObject()
+{
+
+}
+
+QString  MonthTObject::getMonth(const gview_time_t& time) const
+{
+    gview_time_t l_time = time-getLowerVal(time);
+    l_time = l_time%modifier();
+
+}
+gview_time_t  MonthTObject::getMonthLength(const QString& month, const gview_time_t& time) const
+{
+
+}
+int  MonthTObject::getMonthNum(const gview_time_t& time) const
+{
+
+}
