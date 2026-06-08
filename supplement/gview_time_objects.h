@@ -90,10 +90,11 @@ private:
     FixedTObject* _leap_unit_;
     QSet<GViewBaseTObject*> _related_units_;
     QStringList _text_labels_;
-    gview_time_t variantInteger(const gview_time_t& time, int& number) const;
+    gview_time_t variantInteger(const gview_time_t& time, int& number,bool& is_leap_time) const;
 protected:
     virtual gview_time_t getInteger(const gview_time_t& time) const override;
     virtual gview_time_t getReminder(const gview_time_t& time) const override;
+    virtual gview_time_t getVariantReminder(const gview_time_t& time, bool& is_leap_time) const;
 public:
     enum TimeUnit_type{TUnit_Variant = 2};
     explicit VariantTObject(const QString& name,
@@ -110,6 +111,7 @@ public:
     void setLeapLength(int leap_length);
     int leapLength()const;
     void setLeapUnit(FixedTObject* leap_unit);
+    bool isLeapTime(const gview_time_t& time) const;
     FixedTObject* leapUnit() const;
     virtual QStringList getScaleLabels() const override;
     virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const override;
@@ -127,6 +129,7 @@ class MonthTObject:public VariantTObject
 private:
     QList<QPair<QString,gview_time_t>> _months_;
     QString _leap_month_;
+    int getMonthNum(const gview_time_t& time, bool is_leap_time) const;
 public:
     explicit MonthTObject(const QString& name,
                             const gview_time_t& modifier,

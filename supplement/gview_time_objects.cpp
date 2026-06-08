@@ -330,10 +330,11 @@ gview_time_t VariantTObject::curModifier(const gview_time_t& time) const
 gview_time_t VariantTObject::getInteger(const gview_time_t& time) const
 {
     int num = 0;
-    return variantInteger(time,num);//accumulator;
+    bool leap = false;
+    return variantInteger(time,num,leap);//accumulator;
 }
 
-gview_time_t VariantTObject::variantInteger(const gview_time_t& time, int& number) const
+gview_time_t VariantTObject::variantInteger(const gview_time_t& time, int& number, bool &is_leap_time) const
 {
     if(!_leap_unit_)
     {
@@ -357,6 +358,14 @@ gview_time_t VariantTObject::variantInteger(const gview_time_t& time, int& numbe
         }
         if((accumulator+cur_modifier)>=time)
         {
+            if(!cycle_t)
+            {
+                is_leap_time=true;
+            }
+            else
+            {
+                is_leap_time=false;
+            }
             break;
         }
         ++number;
@@ -370,11 +379,18 @@ gview_time_t VariantTObject::getReminder(const gview_time_t& time) const
     return time-getInteger(time);
 }
 
+gview_time_t VariantTObject::getVariantReminder(const gview_time_t& time, bool& is_leap_time) const
+{
+    int num = 0;
+    return variantInteger(time,num,is_leap_time);
+}
+
 gview_time_t VariantTObject::getUnitVal(const gview_time_t& time) const
 {
     gview_time_t upper_reminder = getUpperReminder(time);
     int unit_val = 0;
-    variantInteger(upper_reminder,unit_val);
+    bool leap = false;
+    variantInteger(upper_reminder,unit_val,leap);
     return static_cast<gview_time_t>(unit_val);
 }
 
@@ -382,7 +398,8 @@ gview_time_t VariantTObject::getUnitTime(const gview_time_t& time) const
 {
     gview_time_t upper_reminder = getUpperReminder(time);
     int unit_val = 0;
-    return variantInteger(upper_reminder,unit_val);
+    bool leap = false;
+    return variantInteger(upper_reminder,unit_val,leap);
 }
 
 
@@ -401,7 +418,7 @@ gview_time_t VariantTObject::getUnitTime(const gview_time_t& time) const
     gview_time_t full_mod = TO_GVIEW_TIME(0);
     for(const QPair<QString,int>& p:months)
     {
-        gview_time_t cur_mod = static_cast<gview_time_t>(p.second);
+        gview_time_t cur_mod = static_cast<gview_time_t>(p.second)*leapUnit()->modifier();
         full_mod+=cur_mod;
         _months_.append(std::make_pair(p.first,cur_mod));
     }
@@ -417,17 +434,57 @@ MonthTObject::~MonthTObject()
 
 }
 
+int MonthTObject::getMonthNum(const gview_time_t& time, bool is_leap_time) const
+{
+    gview_time_t base_mod = lesserUnit()->modifier();
+    gview_time_t accumulator = TO_GVIEW_TIME(0);
+    int i = 0;
+    for(; i<_months_.size();++i)
+    {
+        gview_time_t month_size = _months_.at(i).second;
+        gview_time_t month_accum = TO_GVIEW_TIME(0);
+        if(is_leap_time && (_leap_month_==_months_.at(i).first))
+        {
+            month_size += leapUnit()->modifier()*static_cast<gview_time_t>(leapLength());
+        }
+        while(true)
+        {
+            if(accumulator+base_mod>time)
+            {
+                return i;
+            }
+            accumulator+=base_mod;
+            month_accum+=base_mod;
+            if(month_accum>month_size)
+            {
+                break;
+            }
+        }
+    }
+    return i;
+}
+
 QString  MonthTObject::getMonth(const gview_time_t& time) const
 {
-    gview_time_t l_time = time-getLowerVal(time);
-    l_time = l_time%modifier();
+    bool leap = false;
+    gview_time_t month_time = getVariantReminder(time,leap);
+    return _months_.at(getMonthNum(month_time,leap)).first;
 
 }
 gview_time_t  MonthTObject::getMonthLength(const QString& month, const gview_time_t& time) const
 {
-
+    bool leap = false;
+    getVariantReminder(time,leap);
+    gview_time_t len;
+    auto it_month = std::find_if(_months_.cbegin(),
+                                    _months_.cend(),
+                                    [&month](const QPair<QString,gview_time_t>& cur_month)
+                {return cur_month.first==month;});
+    len = it_month->second;
+    if(leap&&(it_month->first==_leap_month_))
+    {
+        len+=leapUnit()->modifier()*static_cast<gview_time_t>(leapLength());
+    }
+    return len;
 }
-int  MonthTObject::getMonthNum(const gview_time_t& time) const
-{
 
-}
