@@ -10,7 +10,7 @@
 #include "supplement/gview_time_objects.h"
 #include "gview_time_slider.h"
 
-using gview_time = int;
+using gview_time = uint;
 
 class GViewTimeInterface: public QObject
 {
@@ -24,18 +24,21 @@ protected:
     gview_time _min_time_;
 public:
     GViewTimeInterface(QObject* tata = nullptr):QObject(tata){}
+    GViewTimeInterface(gview_time min_time,gview_time max_time,gview_time cur_time,QObject* tata = nullptr):
+        QObject(tata),_current_time_(cur_time),_max_time_(max_time),_min_time_(min_time){}
+    virtual ~GViewTimeInterface(){}
     virtual void setCurrentTime(const gview_time& n_time){ _current_time_ = n_time;
                                                            emit currentTimeChanged(_current_time_);}
-    virtual gview_time currentTime() const {return _current_time_;}
-    virtual void setMaxTime(const gview_time& max_time) {_max_time_ = max_time;
+    virtual gview_time currentTime() const noexcept {return _current_time_;}
+    virtual void setMaxTime(const gview_time& max_time) noexcept {_max_time_ = max_time;
                                                         emit maxTimeChanged();}
-    virtual gview_time maxTime() const {return _max_time_;}
-    virtual void setMinTime(const gview_time& min_time) {_min_time_ = min_time;
+    virtual gview_time maxTime() const noexcept {return _max_time_;}
+    virtual void setMinTime(const gview_time& min_time) noexcept {_min_time_ = min_time;
                                                         emit minTimeChanged();}
-    virtual gview_time minTime() const {return _min_time_;}
+    virtual gview_time minTime() const noexcept {return _min_time_;}
     virtual QStringList scales() const = 0;
     virtual bool addTimeObject(GViewBaseTObject* object) = 0;
-    virtual bool removeTimeObject(const QString& timeObject) = 0;
+    virtual bool deleteTimeObject(const QString& timeObject) = 0;
 signals:
     void currentTimeChanged(gview_time time);
     void sliderStateChanged(int stage);
@@ -53,13 +56,9 @@ public slots:
     virtual void setScale(const QString& sc_name) = 0;
 };
 
-class GViewBaseTool: public GViewTimeInterface
-{
-private:
-    QSet<GViewBaseTObject*> _time_units_;
-};
 
-class GViewTimeTool : public QObject
+
+class GViewTimeTool : public GViewTimeInterface
 {
     Q_OBJECT
 private:
@@ -67,11 +66,21 @@ private:
     TimeSlider* _slider_;
     int _tick_number_;
     QStringList _labels_;
+    QList<GViewBaseTObject*> _time_units_;
+    bool checkWorkState() const noexcept;
 public:
-    explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
+    explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr) noexcept;
+    GViewTimeTool(gview_time min_time,
+                  gview_time max_time,
+                  gview_time cur_time = 0,
+                  QObject* parent = nullptr) noexcept;
+    ~GViewTimeTool();
     [[nodiscard]] QSlider* getTimelineWidget();
     void setTickNumber(int tick_number);
     void loadValues(const QStringList& values);
+    virtual QStringList scales() const override;
+    virtual bool addTimeObject(GViewBaseTObject* object) override;
+    virtual bool deleteTimeObject(const QString& time_object) override;
 signals:
     void stateChanged(int state);
     void widgetRequireUpdate();
@@ -79,6 +88,16 @@ public slots:
     void moveForward();
     void moveBack();
     void jump(int new_state);
+
+    virtual void stepForward() override;
+    virtual void stepBack() override;
+    virtual void jumpForward(int step) override;
+    virtual void jumpBack(int step) override;
+    virtual void moveTo(int value) override;
+    virtual void play() override;
+    virtual void stop() override;
+    virtual void pause() override;
+    virtual void setScale(const QString& sc_name) override;
 };
 
 #endif // GVIEWTIMETOOL_H

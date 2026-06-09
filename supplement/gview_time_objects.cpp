@@ -58,56 +58,56 @@ gview_time_t GViewBaseTObject::getUpperReminder(const gview_time_t& time) const
     return _greater_unit_->getReminder(time);
 }
 
-QString GViewBaseTObject::name() const
+QString GViewBaseTObject::name() const noexcept
 {
     return _name_;
 }
 
-gview_time_t GViewBaseTObject::modifier() const
+gview_time_t GViewBaseTObject::modifier() const noexcept
 {
     return _modifier_;
 }
 
-void GViewBaseTObject::setModifier(const gview_time_t& modifier)
+void GViewBaseTObject::setModifier(const gview_time_t& modifier) noexcept
 {
     _modifier_ = modifier;
     return;
 }
 
-void GViewBaseTObject::setName(const QString& name)
+void GViewBaseTObject::setName(const QString& name) noexcept
 {
     _name_ = name;
     return;
 }
 
-GViewBaseTObject* GViewBaseTObject::greaterUnit() const
+GViewBaseTObject* GViewBaseTObject::greaterUnit() const noexcept
 {
     return _greater_unit_;
 }
 
-GViewBaseTObject* GViewBaseTObject::lesserUnit() const
+GViewBaseTObject* GViewBaseTObject::lesserUnit() const noexcept
 {
     return _lesser_unit_;
 }
 
-void GViewBaseTObject::setGreaterUnit(GViewBaseTObject* greater_unit)
+void GViewBaseTObject::setGreaterUnit(GViewBaseTObject* greater_unit) noexcept
 {
     _greater_unit_ = greater_unit;
     return;
 }
 
-void GViewBaseTObject::setLesserUnit(GViewBaseTObject* lesser_unit)
+void GViewBaseTObject::setLesserUnit(GViewBaseTObject* lesser_unit) noexcept
 {
     _lesser_unit_ = lesser_unit;
     return;
 }
 
-bool GViewBaseTObject::isBasicUnit() const
+bool GViewBaseTObject::isBasicUnit() const noexcept
 {
     return !_lesser_unit_;
 }
 
-bool GViewBaseTObject::isTopUnit() const
+bool GViewBaseTObject::isTopUnit() const noexcept
 {
     return !_greater_unit_;
 }
@@ -213,7 +213,7 @@ bool VariantTObject::setTextLabels(const QStringList& text_labels)
     return true;
 }
 
-void VariantTObject::setLeapCycle(int leap_cycle)
+void VariantTObject::setLeapCycle(int leap_cycle) noexcept
 {
     if(leap_cycle<1)
     {
@@ -223,12 +223,12 @@ void VariantTObject::setLeapCycle(int leap_cycle)
     return;
 }
 
-int VariantTObject::leapCycle() const
+int VariantTObject::leapCycle() const noexcept
 {
     return _leap_cycle_;
 }
 
-void VariantTObject::setLeapLength(int leap_length)
+void VariantTObject::setLeapLength(int leap_length) noexcept
 {
     if(leap_length<1)
     {
@@ -238,12 +238,12 @@ void VariantTObject::setLeapLength(int leap_length)
     return;
 }
 
-int VariantTObject::leapLength() const
+int VariantTObject::leapLength() const noexcept
 {
     return _leap_length_;
 }
 
-void VariantTObject::setLeapUnit(FixedTObject* leap_unit)
+void VariantTObject::setLeapUnit(FixedTObject* leap_unit) noexcept
 {
     if(!leap_unit)
     {
@@ -253,7 +253,7 @@ void VariantTObject::setLeapUnit(FixedTObject* leap_unit)
     return;
 }
 
-FixedTObject* VariantTObject::leapUnit() const
+FixedTObject* VariantTObject::leapUnit() const noexcept
 {
     return _leap_unit_;
 }

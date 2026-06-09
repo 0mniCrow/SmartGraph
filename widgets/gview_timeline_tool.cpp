@@ -2,11 +2,31 @@
 
 
 
-GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
-    : QObject{parent},_slider_(nullptr),//_grid_(nullptr),
+GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent) noexcept
+    : GViewTimeInterface(parent),_slider_(nullptr),
       _tick_number_(tick_number)
 {
+    return;
+}
 
+GViewTimeTool::GViewTimeTool(gview_time min_time,
+                             gview_time max_time,
+                             gview_time cur_time,
+                             QObject* parent) noexcept:
+    GViewTimeInterface(min_time,max_time,cur_time<min_time?min_time:cur_time,parent)
+{
+    return;
+}
+
+GViewTimeTool::~GViewTimeTool()
+{
+    qDeleteAll(_time_units_);
+    return;
+}
+
+bool GViewTimeTool::checkWorkState() const noexcept
+{
+    return !_slider_;                                   // Дадаць праверкі пазней
 }
 
 QSlider *GViewTimeTool::getTimelineWidget()
@@ -125,3 +145,98 @@ void GViewTimeTool::jump(int new_state)
     return;
 }
 
+QStringList GViewTimeTool::scales() const
+{
+    QStringList unit_names;
+    for(const GViewBaseTObject* obj:_time_units_)
+    {
+        unit_names.append(obj->name());
+    }
+    return unit_names;
+}
+
+bool GViewTimeTool::addTimeObject(GViewBaseTObject* object)
+{
+    if(!object)
+    {
+        return false;
+    }
+    auto it = std::find_if(_time_units_.cbegin(),
+                           _time_units_.cend(),
+                           [object](const GViewBaseTObject* obj)
+    {return object->name()==obj->name();});
+    if(it!=_time_units_.cend())
+    {
+        return false;
+    }
+    _time_units_.append(object);
+    return true;
+}
+
+bool GViewTimeTool::deleteTimeObject(const QString& time_object)
+{
+    if(time_object.isEmpty())
+    {
+        return false;
+    }
+    auto it = std::find_if(_time_units_.cbegin(),
+                           _time_units_.cend(),
+                           [time_object](const GViewBaseTObject* obj)
+    {return time_object==obj->name();});
+    if(it==_time_units_.constEnd())
+    {
+        return false;
+    }
+    for(GViewBaseTObject* obj:_time_units_)
+    {
+        ///! Do object deletion for selected object
+    }
+    delete *it;
+    _time_units_.erase(it);
+    return true;
+}
+
+void GViewTimeTool::stepForward()
+{
+
+}
+
+void GViewTimeTool::stepBack()
+{
+
+}
+
+void GViewTimeTool::jumpForward(int step)
+{
+
+}
+
+void GViewTimeTool::jumpBack(int step)
+{
+
+}
+
+void GViewTimeTool::moveTo(int value)
+{
+
+}
+
+void GViewTimeTool::play()
+{
+
+}
+
+void GViewTimeTool::stop()
+{
+
+}
+
+void GViewTimeTool::pause()
+{
+
+}
+
+void GViewTimeTool::setScale(const QString& sc_name)
+{
+
+}
