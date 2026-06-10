@@ -40,7 +40,7 @@ public:
     virtual gview_time_t getUnitTime(const gview_time_t& time) const = 0;
     virtual gview_time_t getUpperVal(const gview_time_t& time) const;
     virtual gview_time_t getLowerVal(const gview_time_t& time) const;
-    QString name() const noexcept;
+    QString name() const;
     gview_time_t modifier() const noexcept;                                                              //Атрымаць базавы мадыфікатар
     virtual gview_time_t curModifier(const gview_time_t& time) const = 0;                       //Атрымаць мадыфікатар, залежны на бягучы час
     virtual gview_time_t upperVal(const gview_time_t& time) const =0;
@@ -48,10 +48,10 @@ public:
     GViewBaseTObject* lesserUnit() const noexcept;
     bool isBasicUnit() const noexcept;                                                                   //Мінімальная адзінка часу (не мае падпарадкаваных адзінак)
     bool isTopUnit() const noexcept;                                                                     //Вярхавая адзінка часу (не максімальная, але не мае загаднай адзінкі)
-    virtual void setName(const QString& name) noexcept;
-    virtual void setModifier(const gview_time_t& modifier) noexcept;
-    virtual void setGreaterUnit(GViewBaseTObject* greater_unit) noexcept;
-    virtual void setLesserUnit(GViewBaseTObject* lesser_unit) noexcept;
+    void setName(const QString& name) ;
+    void setModifier(const gview_time_t& modifier) noexcept;
+    void setGreaterUnit(GViewBaseTObject* greater_unit) noexcept;
+    void setLesserUnit(GViewBaseTObject* lesser_unit) noexcept;
     virtual char type() const noexcept {return TUnit_NoType;}
 
 };

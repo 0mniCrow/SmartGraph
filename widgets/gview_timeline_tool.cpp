@@ -2,7 +2,7 @@
 
 
 
-GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent) noexcept
+GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
     : GViewTimeInterface(parent),_slider_(nullptr),
       _tick_number_(tick_number)
 {
@@ -12,7 +12,7 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent) noexcept
 GViewTimeTool::GViewTimeTool(gview_time min_time,
                              gview_time max_time,
                              gview_time cur_time,
-                             QObject* parent) noexcept:
+                             QObject* parent) :
     GViewTimeInterface(min_time,max_time,cur_time<min_time?min_time:cur_time,parent)
 {
     return;
@@ -153,6 +153,25 @@ QStringList GViewTimeTool::scales() const
         unit_names.append(obj->name());
     }
     return unit_names;
+}
+
+GViewBaseTObject* GViewTimeTool::getObject(const QString& obj_name) const
+{
+    if(_time_units_.empty())
+    {
+        return nullptr;
+    }
+    auto it = std::find_if(_time_units_.cbegin(),
+                           _time_units_.cend(),
+                           [&obj_name](const GViewBaseTObject* obj)
+    {
+        return obj->name()==obj_name;
+    });
+    if(it==_time_units_.cend())
+    {
+        return nullptr;
+    }
+    return *it;
 }
 
 bool GViewTimeTool::addTimeObject(GViewBaseTObject* object)

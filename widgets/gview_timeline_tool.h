@@ -18,27 +18,32 @@ class GViewTimeInterface: public QObject
     Q_PROPERTY(gview_time _current_time_ READ currentTime WRITE setCurrentTime NOTIFY currentTimeChanged)
     Q_PROPERTY(gview_time _max_time_ READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(gview_time _min_time_ READ minTime WRITE setMinTime NOTIFY minTimeChanged)
+    Q_CLASSINFO("info","Interface suppose to be inherited to control alternative time with events")
 protected:
     gview_time _current_time_;
     gview_time _max_time_;
     gview_time _min_time_;
 public:
     GViewTimeInterface(QObject* tata = nullptr):QObject(tata){}
-    GViewTimeInterface(gview_time min_time,gview_time max_time,gview_time cur_time,QObject* tata = nullptr):
+    GViewTimeInterface(gview_time min_time,
+                       gview_time max_time,
+                       gview_time cur_time,
+                       QObject* tata = nullptr):
         QObject(tata),_current_time_(cur_time),_max_time_(max_time),_min_time_(min_time){}
     virtual ~GViewTimeInterface(){}
-    virtual void setCurrentTime(const gview_time& n_time){ _current_time_ = n_time;
+    void setCurrentTime(const gview_time& n_time){ _current_time_ = n_time;
                                                            emit currentTimeChanged(_current_time_);}
-    virtual gview_time currentTime() const noexcept {return _current_time_;}
-    virtual void setMaxTime(const gview_time& max_time) noexcept {_max_time_ = max_time;
+    gview_time currentTime() const noexcept {return _current_time_;}
+    void setMaxTime(const gview_time& max_time) noexcept {_max_time_ = max_time;
                                                         emit maxTimeChanged();}
-    virtual gview_time maxTime() const noexcept {return _max_time_;}
-    virtual void setMinTime(const gview_time& min_time) noexcept {_min_time_ = min_time;
+    gview_time maxTime() const noexcept {return _max_time_;}
+    void setMinTime(const gview_time& min_time) noexcept {_min_time_ = min_time;
                                                         emit minTimeChanged();}
-    virtual gview_time minTime() const noexcept {return _min_time_;}
+    gview_time minTime() const noexcept {return _min_time_;}
     virtual QStringList scales() const = 0;
-    virtual bool addTimeObject(GViewBaseTObject* object) = 0;
-    virtual bool deleteTimeObject(const QString& timeObject) = 0;
+    virtual GViewBaseTObject* getObject(const QString& obj_name) const  = 0;
+    virtual bool addTimeObject(GViewBaseTObject* object)  = 0;
+    virtual bool deleteTimeObject(const QString& timeObject)  = 0;
 signals:
     void currentTimeChanged(gview_time time);
     void sliderStateChanged(int stage);
@@ -69,16 +74,17 @@ private:
     QList<GViewBaseTObject*> _time_units_;
     bool checkWorkState() const noexcept;
 public:
-    explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr) noexcept;
+    explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
     GViewTimeTool(gview_time min_time,
                   gview_time max_time,
                   gview_time cur_time = 0,
-                  QObject* parent = nullptr) noexcept;
+                  QObject* parent = nullptr);
     ~GViewTimeTool();
     [[nodiscard]] QSlider* getTimelineWidget();
     void setTickNumber(int tick_number);
     void loadValues(const QStringList& values);
     virtual QStringList scales() const override;
+    virtual GViewBaseTObject* getObject(const QString& obj_name) const override;
     virtual bool addTimeObject(GViewBaseTObject* object) override;
     virtual bool deleteTimeObject(const QString& time_object) override;
 signals:

@@ -58,7 +58,7 @@ gview_time_t GViewBaseTObject::getUpperReminder(const gview_time_t& time) const
     return _greater_unit_->getReminder(time);
 }
 
-QString GViewBaseTObject::name() const noexcept
+QString GViewBaseTObject::name() const
 {
     return _name_;
 }
@@ -74,7 +74,7 @@ void GViewBaseTObject::setModifier(const gview_time_t& modifier) noexcept
     return;
 }
 
-void GViewBaseTObject::setName(const QString& name) noexcept
+void GViewBaseTObject::setName(const QString& name)
 {
     _name_ = name;
     return;
