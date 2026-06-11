@@ -29,6 +29,11 @@ bool GViewTimeTool::checkWorkState() const noexcept
     return !_slider_;                                   // Дадаць праверкі пазней
 }
 
+void GViewTimeTool::setCurTimeScale()
+{
+
+}
+
 QSlider *GViewTimeTool::getTimelineWidget()
 {
     if(_tick_number_<2)
@@ -155,9 +160,9 @@ QStringList GViewTimeTool::scales() const
     return unit_names;
 }
 
-GViewBaseTObject* GViewTimeTool::getObject(const QString& obj_name) const
+GViewBaseTObject* GViewTimeTool::getUnitInstance(const QString& obj_name) const
 {
-    if(_time_units_.empty())
+    if(_time_units_.empty()||obj_name.isEmpty())
     {
         return nullptr;
     }
@@ -172,6 +177,25 @@ GViewBaseTObject* GViewTimeTool::getObject(const QString& obj_name) const
         return nullptr;
     }
     return *it;
+}
+
+QString GViewTimeTool::currentUnitInstance() const
+{
+    return _cur_unit_;
+}
+
+bool GViewTimeTool::setCurrentUnitInstance(const QString &unit_name)
+{
+    GViewBaseTObject* obj = getUnitInstance(unit_name);
+    if(!obj)
+    {
+        return false;
+    }
+    _cur_unit_ = unit_name;
+    int val = obj->getUnitVal(currentTime());
+    int modifyer = obj->curModifier(currentTime());
+    ///!calculate min and max vals of current time unit
+    return true;
 }
 
 bool GViewTimeTool::addTimeObject(GViewBaseTObject* object)

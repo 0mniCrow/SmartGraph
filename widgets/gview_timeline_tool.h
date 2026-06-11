@@ -10,7 +10,7 @@
 #include "supplement/gview_time_objects.h"
 #include "gview_time_slider.h"
 
-using gview_time = uint;
+using gview_time = gview_time_t;
 
 class GViewTimeInterface: public QObject
 {
@@ -41,7 +41,9 @@ public:
                                                         emit minTimeChanged();}
     gview_time minTime() const noexcept {return _min_time_;}
     virtual QStringList scales() const = 0;
-    virtual GViewBaseTObject* getObject(const QString& obj_name) const  = 0;
+    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const  = 0;
+    virtual QString currentUnitInstance() const = 0;
+    virtual bool setCurrentUnitInstance(const QString& unit_name) = 0;
     virtual bool addTimeObject(GViewBaseTObject* object)  = 0;
     virtual bool deleteTimeObject(const QString& timeObject)  = 0;
 signals:
@@ -58,7 +60,7 @@ public slots:
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void pause() = 0;
-    virtual void setScale(const QString& sc_name) = 0;
+    virtual void setScale(const QString& unit_name) {setCurrentUnitInstance(unit_name);};
 };
 
 
@@ -72,7 +74,12 @@ private:
     int _tick_number_;
     QStringList _labels_;
     QList<GViewBaseTObject*> _time_units_;
+    QString _cur_unit_;
+    QPair<gview_time_t,gview_time_t> _time_scale_;
     bool checkWorkState() const noexcept;
+    void setCurTimeScale();
+
+
 public:
     explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
     GViewTimeTool(gview_time min_time,
@@ -84,7 +91,9 @@ public:
     void setTickNumber(int tick_number);
     void loadValues(const QStringList& values);
     virtual QStringList scales() const override;
-    virtual GViewBaseTObject* getObject(const QString& obj_name) const override;
+    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
+    virtual QString currentUnitInstance() const override;
+    virtual bool setCurrentUnitInstance(const QString& unit_name) override;
     virtual bool addTimeObject(GViewBaseTObject* object) override;
     virtual bool deleteTimeObject(const QString& time_object) override;
 signals:
