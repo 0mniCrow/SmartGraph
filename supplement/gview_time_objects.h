@@ -11,6 +11,11 @@
 using gview_time_t = quint64;
 
 
+/*
+Гэты клас патрэбны як інтэрфэйс і базавы аб'ект часу, які будзе мадыфікаваць
+адзінку часу (gview_time_t). Карыстальніку класа time tool не трэба ведаць, як
+працуе гэтая адзінка, але трэба захоўваць яе як інстанцыю
+*/
 
 class GViewBaseTObject                               //Абстрактны тып для адзінкі часовага прамежку
 {
@@ -21,10 +26,12 @@ protected:
     virtual gview_time_t getInteger(const gview_time_t& time) const = 0;
     virtual gview_time_t getReminder(const gview_time_t& time) const = 0;
 private:
-    gview_time_t _modifier_;                                        //Мадыфікатар (колькасць падпарадкаваных прамежкаў)
-    QString _name_;                                                 //Імя аб'екту
-    GViewBaseTObject * _greater_unit_;                              //Загадны прамежак часу
-    GViewBaseTObject * _lesser_unit_;                               //Падпарадкоўны прамежак часу
+    gview_time_t _modifier_;                                        //Мадыфікатар адзінкі (колькі мінімальных адзінак часу ён атрымлівае)
+    uint _min_val_;                                                 //Мінімальная лічба падпарадкаванай адзінкі часу
+    uint _max_val_;                                                 //Колькасць падпарадкаваных адзінак часу
+    QString _name_;                                                 //Імя бягучай адзінкі
+    GViewBaseTObject * _greater_unit_;                              //Залежная адзінка часу
+    GViewBaseTObject * _lesser_unit_;                               //Падпарадкаваная адзінка часу
 public:
     enum TimeUnit_type{TUnit_NoType = 0};
 
@@ -38,14 +45,15 @@ public:
     virtual int scaleTimeToUnit(const gview_time_t& time) const = 0;                            //Атрымаць значэнне у межах бягучага юніту
     virtual gview_time_t getUnitVal(const gview_time_t& time) const = 0;                        //_modifier_ памножанае на кавалак значэння бягучага часу, адказны за гэты прамежак
     virtual gview_time_t getUnitTime(const gview_time_t& time) const = 0;
+    virtual gview_time_t getLowerUnitCount() const;
     virtual gview_time_t getUpperVal(const gview_time_t& time) const;
     virtual gview_time_t getLowerVal(const gview_time_t& time) const;
     QString name() const;
     gview_time_t modifier() const noexcept;                                                              //Атрымаць базавы мадыфікатар
     virtual gview_time_t curModifier(const gview_time_t& time) const = 0;                       //Атрымаць мадыфікатар, залежны на бягучы час
     virtual gview_time_t upperVal(const gview_time_t& time) const =0;
-    GViewBaseTObject* greaterUnit() const noexcept;
-    GViewBaseTObject* lesserUnit() const noexcept;
+    GViewBaseTObject* getUpperUnit() const noexcept;
+    GViewBaseTObject* getLowerUnit() const noexcept;
     bool isBasicUnit() const noexcept;                                                                   //Мінімальная адзінка часу (не мае падпарадкаваных адзінак)
     bool isTopUnit() const noexcept;                                                                     //Вярхавая адзінка часу (не максімальная, але не мае загаднай адзінкі)
     void setName(const QString& name) ;

@@ -18,11 +18,13 @@ class GViewTimeInterface: public QObject
     Q_PROPERTY(gview_time _current_time_ READ currentTime WRITE setCurrentTime NOTIFY currentTimeChanged)
     Q_PROPERTY(gview_time _max_time_ READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(gview_time _min_time_ READ minTime WRITE setMinTime NOTIFY minTimeChanged)
-    Q_CLASSINFO("info","Interface suppose to be inherited to control alternative time with events")
-protected:
+    Q_CLASSINFO("info","Provides an abstract interface for virtual time control.")
+private:
     gview_time _current_time_;
     gview_time _max_time_;
     gview_time _min_time_;
+protected:
+    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const  = 0;
 public:
     GViewTimeInterface(QObject* tata = nullptr):QObject(tata){}
     GViewTimeInterface(gview_time min_time,
@@ -40,12 +42,12 @@ public:
     void setMinTime(const gview_time& min_time) noexcept {_min_time_ = min_time;
                                                         emit minTimeChanged();}
     gview_time minTime() const noexcept {return _min_time_;}
-    virtual QStringList scales() const = 0;
-    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const  = 0;
-    virtual QString currentUnitInstance() const = 0;
-    virtual bool setCurrentUnitInstance(const QString& unit_name) = 0;
-    virtual bool addTimeObject(GViewBaseTObject* object)  = 0;
-    virtual bool deleteTimeObject(const QString& timeObject)  = 0;
+    virtual QStringList timeUnitNames() const = 0;
+
+    virtual QString currentUnit() const = 0;
+    virtual bool setCurrentUnit(const QString& unit_name) = 0;
+    //virtual bool addTimeUnit(GViewBaseTObject* object)  = 0;
+    //virtual bool deleteTimeUnit(const QString& timeObject)  = 0;
 signals:
     void currentTimeChanged(gview_time time);
     void sliderStateChanged(int stage);
@@ -60,7 +62,7 @@ public slots:
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void pause() = 0;
-    virtual void setScale(const QString& unit_name) {setCurrentUnitInstance(unit_name);};
+    virtual void setScale(const QString& unit_name) {setCurrentUnit(unit_name);};
 };
 
 
@@ -69,17 +71,19 @@ class GViewTimeTool : public GViewTimeInterface
 {
     Q_OBJECT
 private:
-    QTimer _timer_;
+    QTimer _play_timer_;
     TimeSlider* _slider_;
     int _tick_number_;
     QStringList _labels_;
     QList<GViewBaseTObject*> _time_units_;
     QString _cur_unit_;
     QPair<gview_time_t,gview_time_t> _time_scale_;
-    bool checkWorkState() const noexcept;
-    void setCurTimeScale();
-
-
+    bool checkToolState() const noexcept;                               //Праверка, ці магчыма інструменту працягваць працу
+    void setBordersForSlider();                                         //Усталёўвае новыя межы для слайдэра
+    void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
+    void updateSliderValue();
+protected:
+    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
 public:
     explicit GViewTimeTool(int tick_number = 0,QObject *parent = nullptr);
     GViewTimeTool(gview_time min_time,
@@ -90,12 +94,12 @@ public:
     [[nodiscard]] QSlider* getTimelineWidget();
     void setTickNumber(int tick_number);
     void loadValues(const QStringList& values);
-    virtual QStringList scales() const override;
-    virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
-    virtual QString currentUnitInstance() const override;
-    virtual bool setCurrentUnitInstance(const QString& unit_name) override;
-    virtual bool addTimeObject(GViewBaseTObject* object) override;
-    virtual bool deleteTimeObject(const QString& time_object) override;
+    virtual QStringList timeUnitNames() const override;
+
+    virtual QString currentUnit() const override;
+    virtual bool setCurrentUnit(const QString& unit_name) override;
+    bool addTimeUnit(GViewBaseTObject* object);
+    bool deleteTimeUnit(const QString& time_object);
 signals:
     void stateChanged(int state);
     void widgetRequireUpdate();

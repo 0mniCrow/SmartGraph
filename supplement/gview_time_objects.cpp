@@ -13,13 +13,12 @@ GViewBaseTObject::GViewBaseTObject(const QString& name,
 
 gview_time_t GViewBaseTObject::accumulateUpperVal(const gview_time_t& time) const
 {
-//    if(!_greater_unit_)
-//    {
-//        return getUnitVal(time);
-//    }
-//    return _greater_unit_->accumulateUpperVal(time)+getUnitVal(time);
-    //магчыма тут падыйдзе проста getInteger.
     return getInteger(time);
+}
+
+gview_time_t GViewBaseTObject::getLowerUnitCount() const
+{
+    return _lesser_unit_?modifier()/_lesser_unit_->modifier():modifier();
 }
 
 gview_time_t GViewBaseTObject::accumulateLowerVal(const gview_time_t& time) const
@@ -80,12 +79,12 @@ void GViewBaseTObject::setName(const QString& name)
     return;
 }
 
-GViewBaseTObject* GViewBaseTObject::greaterUnit() const noexcept
+GViewBaseTObject* GViewBaseTObject::getUpperUnit() const noexcept
 {
     return _greater_unit_;
 }
 
-GViewBaseTObject* GViewBaseTObject::lesserUnit() const noexcept
+GViewBaseTObject* GViewBaseTObject::getLowerUnit() const noexcept
 {
     return _lesser_unit_;
 }
@@ -181,8 +180,7 @@ gview_time_t FixedTObject::getUnitVal(const gview_time_t& time) const
 
 gview_time_t FixedTObject::getUnitTime(const gview_time_t& time) const
 {
-    //gview_time_t upper_reminder = getUpperReminder(time);
-    gview_time_t unit_num = getUnitVal(time);//upper_reminder/modifier();
+    gview_time_t unit_num = getUnitVal(time);
     gview_time_t unit_time = unit_num * modifier();
     return unit_time;
 }
@@ -436,7 +434,7 @@ MonthTObject::~MonthTObject()
 
 int MonthTObject::getMonthNum(const gview_time_t& time, bool is_leap_time) const
 {
-    gview_time_t base_mod = lesserUnit()->modifier();
+    gview_time_t base_mod = getLowerUnit()->modifier();
     gview_time_t accumulator = TO_GVIEW_TIME(0);
     int i = 0;
     for(; i<_months_.size();++i)

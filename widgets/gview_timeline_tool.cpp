@@ -24,14 +24,50 @@ GViewTimeTool::~GViewTimeTool()
     return;
 }
 
-bool GViewTimeTool::checkWorkState() const noexcept
+bool GViewTimeTool::checkToolState() const noexcept
 {
     return !_slider_;                                   // Дадаць праверкі пазней
 }
 
-void GViewTimeTool::setCurTimeScale()
+void GViewTimeTool::setBordersForSlider()
 {
+    if(!_slider_||_cur_unit_.isEmpty())
+    {
+        return;
+    }
+    GViewBaseTObject* cur_obj = getUnitInstance(_cur_unit_);
+    if(!cur_obj)
+    {
+        return;
+    }
+    int num_of_units = cur_obj->isTopUnit()?
+                cur_obj->getLowerUnitCount():
+                cur_obj->getUpperUnit()->getLowerUnitCount();
+    _slider_->setMinimum(1);
+    _slider_->setMaximum(num_of_units);
+    return;
+}
 
+void GViewTimeTool::setNewTime(int new_val)
+{
+    if(_cur_unit_.isEmpty())
+    {
+        return;
+    }
+    GViewBaseTObject* cur_obj = getUnitInstance(_cur_unit_);
+    if(!cur_obj)
+    {
+        return;
+    }
+    if(cur_obj->isBasicUnit())
+    {
+        setCurrentTime(cur_obj->scaleUnitToTime(new_val,currentTime()));
+    }
+    else
+    {
+        setCurrentTime(cur_obj->getLowerUnit()->scaleUnitToTime(new_val,currentTime()));
+    }
+    return;
 }
 
 QSlider *GViewTimeTool::getTimelineWidget()
@@ -150,7 +186,7 @@ void GViewTimeTool::jump(int new_state)
     return;
 }
 
-QStringList GViewTimeTool::scales() const
+QStringList GViewTimeTool::timeUnitNames() const
 {
     QStringList unit_names;
     for(const GViewBaseTObject* obj:_time_units_)
@@ -179,12 +215,12 @@ GViewBaseTObject* GViewTimeTool::getUnitInstance(const QString& obj_name) const
     return *it;
 }
 
-QString GViewTimeTool::currentUnitInstance() const
+QString GViewTimeTool::currentUnit() const
 {
     return _cur_unit_;
 }
 
-bool GViewTimeTool::setCurrentUnitInstance(const QString &unit_name)
+bool GViewTimeTool::setCurrentUnit(const QString &unit_name)
 {
     GViewBaseTObject* obj = getUnitInstance(unit_name);
     if(!obj)
@@ -192,13 +228,11 @@ bool GViewTimeTool::setCurrentUnitInstance(const QString &unit_name)
         return false;
     }
     _cur_unit_ = unit_name;
-    int val = obj->getUnitVal(currentTime());
-    int modifyer = obj->curModifier(currentTime());
-    ///!calculate min and max vals of current time unit
+    setBordersForSlider();
     return true;
 }
 
-bool GViewTimeTool::addTimeObject(GViewBaseTObject* object)
+bool GViewTimeTool::addTimeUnit(GViewBaseTObject* object)
 {
     if(!object)
     {
@@ -216,7 +250,7 @@ bool GViewTimeTool::addTimeObject(GViewBaseTObject* object)
     return true;
 }
 
-bool GViewTimeTool::deleteTimeObject(const QString& time_object)
+bool GViewTimeTool::deleteTimeUnit(const QString& time_object)
 {
     if(time_object.isEmpty())
     {
@@ -241,12 +275,32 @@ bool GViewTimeTool::deleteTimeObject(const QString& time_object)
 
 void GViewTimeTool::stepForward()
 {
-
+    if(!_slider_||_cur_unit_.isEmpty())
+    {
+        return;
+    }
+    if(_slider_->value()==_slider_->maximum())
+    {
+        return;
+    }
+    _slider_->setValue(_slider_->value()+1);
+    setNewTime(_slider_->value());
+    return;
 }
 
 void GViewTimeTool::stepBack()
 {
-
+    if(!_slider_||_cur_unit_.isEmpty())
+    {
+        return;
+    }
+    if(_slider_->value()==_slider_->minimum())
+    {
+        return;
+    }
+    _slider_->setValue(_slider_->value()-1);
+    setNewTime(_slider_->value());
+    return;
 }
 
 void GViewTimeTool::jumpForward(int step)
