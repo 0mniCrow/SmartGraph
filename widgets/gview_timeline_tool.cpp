@@ -6,6 +6,18 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
     : GViewTimeInterface(parent),_slider_(nullptr),
       _tick_number_(tick_number)
 {
+    FixedTObject* secs = new FixedTObject("Секунды");
+    FixedTObject* min = new FixedTObject("Хвіліны",60,nullptr,secs);
+    secs->setGreaterUnit(min);
+    FixedTObject* hour = new FixedTObject("Гадзіны",60,nullptr,min);
+    min->setGreaterUnit(hour);
+    FixedTObject* day = new FixedTObject("Дні",24,nullptr,hour);
+    hour->setGreaterUnit(day);
+    addTimeUnit(secs);
+    addTimeUnit(min);
+    addTimeUnit(hour);
+    addTimeUnit(day);
+    setCurrentUnit(day->name());
     return;
 }
 
@@ -26,7 +38,7 @@ GViewTimeTool::~GViewTimeTool()
 
 bool GViewTimeTool::checkToolState() const noexcept
 {
-    return !_slider_;                                   // Дадаць праверкі пазней
+    return !_slider_ || _cur_unit_.isEmpty();             // Дадаць праверкі
 }
 
 void GViewTimeTool::setBordersForSlider()
@@ -68,6 +80,25 @@ void GViewTimeTool::setNewTime(int new_val)
         setCurrentTime(cur_obj->getLowerUnit()->scaleUnitToTime(new_val,currentTime()));
     }
     return;
+}
+
+int GViewTimeTool::getCurrentTime()
+{
+    if(_cur_unit_.isEmpty())
+    {
+        return -1;
+    }
+    GViewBaseTObject* cur_obj = getUnitInstance(_cur_unit_);
+    if(!cur_obj)
+    {
+        return -1;
+    }
+    if(cur_obj->isBasicUnit())
+    {
+        return cur_obj->scaleTimeToUnit(currentTime());
+    }
+    return cur_obj->getLowerUnit()->scaleTimeToUnit(currentTime());
+
 }
 
 QSlider *GViewTimeTool::getTimelineWidget()

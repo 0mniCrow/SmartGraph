@@ -82,6 +82,7 @@ private:
     void setBordersForSlider();                                         //Усталёўвае новыя межы для слайдэра
     void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
     void updateSliderValue();
+    int getCurrentTime();
 protected:
     virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
 public:

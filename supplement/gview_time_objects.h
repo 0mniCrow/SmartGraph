@@ -51,7 +51,7 @@ public:
     QString name() const;
     gview_time_t modifier() const noexcept;                                                              //Атрымаць базавы мадыфікатар
     virtual gview_time_t curModifier(const gview_time_t& time) const = 0;                       //Атрымаць мадыфікатар, залежны на бягучы час
-    virtual gview_time_t upperVal(const gview_time_t& time) const =0;
+    //virtual gview_time_t upperVal(const gview_time_t& time) const =0;
     GViewBaseTObject* getUpperUnit() const noexcept;
     GViewBaseTObject* getLowerUnit() const noexcept;
     bool isBasicUnit() const noexcept;                                                                   //Мінімальная адзінка часу (не мае падпарадкаваных адзінак)
