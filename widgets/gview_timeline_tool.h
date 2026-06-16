@@ -1,5 +1,6 @@
 #ifndef GVIEWTIMETOOL_H
 #define GVIEWTIMETOOL_H
+#define GVIEW_TIMER_INTERVAL 1000
 
 #include <QObject>
 #include <QSlider>
@@ -18,8 +19,10 @@ class GViewTimeInterface: public QObject
     Q_PROPERTY(gview_time _current_time_ READ currentTime WRITE setCurrentTime NOTIFY currentTimeChanged)
     Q_PROPERTY(gview_time _max_time_ READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(gview_time _min_time_ READ minTime WRITE setMinTime NOTIFY minTimeChanged)
+    Q_PROPERTY(int _timer_interval_ READ timerInterval WRITE setTimerInterval NOTIFY timerIntervalChanged)
     Q_CLASSINFO("info","Provides an abstract interface for virtual time control.")
 private:
+    int _timer_interval_;
     gview_time _current_time_;
     gview_time _max_time_;
     gview_time _min_time_;
@@ -30,18 +33,24 @@ public:
     GViewTimeInterface(gview_time min_time,
                        gview_time max_time,
                        gview_time cur_time,
+                       int timer_interval = GVIEW_TIMER_INTERVAL,
                        QObject* tata = nullptr):
-        QObject(tata),_current_time_(cur_time),_max_time_(max_time),_min_time_(min_time){}
+        QObject(tata),_timer_interval_(timer_interval),
+        _current_time_(cur_time),
+        _max_time_(max_time),_min_time_(min_time){}
     virtual ~GViewTimeInterface(){}
     void setCurrentTime(const gview_time& n_time){ _current_time_ = n_time;
                                                            emit currentTimeChanged(_current_time_);}
     gview_time currentTime() const noexcept {return _current_time_;}
-    void setMaxTime(const gview_time& max_time) noexcept {_max_time_ = max_time;
+    void setMaxTime(const gview_time& max_time)  {_max_time_ = max_time;
                                                         emit maxTimeChanged();}
     gview_time maxTime() const noexcept {return _max_time_;}
-    void setMinTime(const gview_time& min_time) noexcept {_min_time_ = min_time;
+    void setMinTime(const gview_time& min_time) {_min_time_ = min_time;
                                                         emit minTimeChanged();}
     gview_time minTime() const noexcept {return _min_time_;}
+    int timerInterval()const noexcept {return _timer_interval_;}
+    void setTimerInterval(int time_interval){_timer_interval_=time_interval;
+                                           emit timerIntervalChanged();}
     virtual QStringList timeUnitNames() const = 0;
 
     virtual QString currentUnit() const = 0;
@@ -53,6 +62,7 @@ signals:
     void sliderStateChanged(int stage);
     void maxTimeChanged();
     void minTimeChanged();
+    void timerIntervalChanged();
 public slots:
     virtual void stepForward() = 0;
     virtual void stepBack() = 0;
@@ -72,13 +82,13 @@ class GViewTimeTool : public GViewTimeInterface
     Q_OBJECT
 private:
     QTimer _play_timer_;
-    TimeSlider* _slider_;
+    TimeSlider* _time_slider_;
     int _tick_number_;
     QStringList _labels_;
     QList<GViewBaseTObject*> _time_units_;
     QString _cur_unit_;
     QPair<gview_time_t,gview_time_t> _time_scale_;
-    bool checkToolState() const noexcept;                               //Праверка, ці магчыма інструменту працягваць працу
+    bool isReadyForWork() const noexcept;                               //Праверка, ці магчыма інструменту працягваць працу
     void setBordersForSlider();                                         //Усталёўвае новыя межы для слайдэра
     void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
     void updateSliderValue();

@@ -3,7 +3,7 @@
 
 
 GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
-    : GViewTimeInterface(parent),_slider_(nullptr),
+    : GViewTimeInterface(parent),_time_slider_(nullptr),
       _tick_number_(tick_number)
 {
     FixedTObject* secs = new FixedTObject("Секунды");
@@ -17,7 +17,6 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
     addTimeUnit(min);
     addTimeUnit(hour);
     addTimeUnit(day);
-    setCurrentUnit(day->name());
     return;
 }
 
@@ -36,14 +35,16 @@ GViewTimeTool::~GViewTimeTool()
     return;
 }
 
-bool GViewTimeTool::checkToolState() const noexcept
+bool GViewTimeTool::isReadyForWork() const noexcept
 {
-    return !_slider_ || _cur_unit_.isEmpty();             // Дадаць праверкі
+    return _time_slider_ &&
+            !_time_units_.isEmpty()&&
+            !_cur_unit_.isEmpty();             // Дадаць праверкі
 }
 
 void GViewTimeTool::setBordersForSlider()
 {
-    if(!_slider_||_cur_unit_.isEmpty())
+    if(!_time_slider_||_cur_unit_.isEmpty())
     {
         return;
     }
@@ -55,8 +56,8 @@ void GViewTimeTool::setBordersForSlider()
     int num_of_units = cur_obj->isTopUnit()?
                 cur_obj->getLowerUnitCount():
                 cur_obj->getUpperUnit()->getLowerUnitCount();
-    _slider_->setMinimum(1);
-    _slider_->setMaximum(num_of_units);
+    _time_slider_->setMinimum(1);
+    _time_slider_->setMaximum(num_of_units);
     return;
 }
 
@@ -107,16 +108,16 @@ QSlider *GViewTimeTool::getTimelineWidget()
     {
         return nullptr;
     }
-    if(_slider_)
+    if(_time_slider_)
     {
-        _slider_->deleteLater();
-        _slider_=nullptr;
+        _time_slider_->deleteLater();
+        _time_slider_=nullptr;
     }
-    _slider_ = new TimeSlider();
-    _slider_->setOrientation(Qt::Horizontal);
-    _slider_->setMinimum(0);
-    _slider_->setMaximum(_tick_number_-1);
-//    _slider_->setTickPosition(QSlider::TicksAbove);
+    _time_slider_ = new TimeSlider();
+    _time_slider_->setOrientation(Qt::Horizontal);
+    _time_slider_->setMinimum(0);
+    _time_slider_->setMaximum(_tick_number_-1);
+//    _time_slider_->setTickPosition(QSlider::TicksAbove);
     if(_labels_.isEmpty())
     {
     QStringList list;
@@ -125,14 +126,14 @@ QSlider *GViewTimeTool::getTimelineWidget()
         list.append(QString::number(i));
     }
 
-    _slider_->loadTextLabels(list);
+    _time_slider_->loadTextLabels(list);
     }
     else
     {
         QStringList list = _labels_;
-        _slider_->loadTextLabels(list);
+        _time_slider_->loadTextLabels(list);
     }
-    return _slider_;
+    return _time_slider_;
 }
 
 void TimeSlider::loadTextLabels(QStringList& list)
@@ -150,15 +151,15 @@ void GViewTimeTool::setTickNumber(int tick_number)
     if(tick_number>0)
     {
         _tick_number_=tick_number;
-        if(_slider_)
+        if(_time_slider_)
         {
             QStringList list;
             for(int i = 0; i<tick_number;i++)
             {
                 list.append(QString::number(i));
             }
-            _slider_->loadTextLabels(list);
-            _slider_->setMaximum(tick_number);
+            _time_slider_->loadTextLabels(list);
+            _time_slider_->setMaximum(tick_number);
             emit widgetRequireUpdate();
         }
     }
@@ -173,11 +174,11 @@ void GViewTimeTool::loadValues(const QStringList& values)
     }
     _tick_number_=values.size();
     _labels_=values;
-    if(_slider_)
+    if(_time_slider_)
     {
-        _slider_->setMaximum(_tick_number_-1);
+        _time_slider_->setMaximum(_tick_number_-1);
         QStringList list(values);
-        _slider_->loadTextLabels(list);
+        _time_slider_->loadTextLabels(list);
         emit widgetRequireUpdate();
     }
     return;
@@ -185,35 +186,35 @@ void GViewTimeTool::loadValues(const QStringList& values)
 
 void GViewTimeTool::moveForward()
 {
-    if((!_slider_)||
-            (_slider_->maximum()==_slider_->value()))
+    if((!_time_slider_)||
+            (_time_slider_->maximum()==_time_slider_->value()))
     {
         return;
     }
-    _slider_->setValue(_slider_->value()+1);
+    _time_slider_->setValue(_time_slider_->value()+1);
     return;
 }
 
 void GViewTimeTool::moveBack()
 {
-    if((!_slider_)||
-            (_slider_->minimum()==_slider_->value()))
+    if((!_time_slider_)||
+            (_time_slider_->minimum()==_time_slider_->value()))
     {
         return;
     }
-    _slider_->setValue(_slider_->value()-1);
+    _time_slider_->setValue(_time_slider_->value()-1);
     return;
 }
 
 void GViewTimeTool::jump(int new_state)
 {
-    if((!_slider_)||
-            (new_state>_slider_->maximum())||
-            (new_state<_slider_->minimum()))
+    if((!_time_slider_)||
+            (new_state>_time_slider_->maximum())||
+            (new_state<_time_slider_->minimum()))
     {
         return;
     }
-    _slider_->setValue(new_state);
+    _time_slider_->setValue(new_state);
     return;
 }
 
@@ -306,65 +307,119 @@ bool GViewTimeTool::deleteTimeUnit(const QString& time_object)
 
 void GViewTimeTool::stepForward()
 {
-    if(!_slider_||_cur_unit_.isEmpty())
+    if(!isReadyForWork())
     {
         return;
     }
-    if(_slider_->value()==_slider_->maximum())
+    if(_time_slider_->value()==_time_slider_->maximum())
     {
         return;
     }
-    _slider_->setValue(_slider_->value()+1);
-    setNewTime(_slider_->value());
+    _time_slider_->setValue(_time_slider_->value()+1);
+    setNewTime(_time_slider_->value());
     return;
 }
 
 void GViewTimeTool::stepBack()
 {
-    if(!_slider_||_cur_unit_.isEmpty())
+    if(!isReadyForWork())
     {
         return;
     }
-    if(_slider_->value()==_slider_->minimum())
+    if(_time_slider_->value()==_time_slider_->minimum())
     {
         return;
     }
-    _slider_->setValue(_slider_->value()-1);
-    setNewTime(_slider_->value());
+    _time_slider_->setValue(_time_slider_->value()-1);
+    setNewTime(_time_slider_->value());
     return;
 }
 
 void GViewTimeTool::jumpForward(int step)
 {
-
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    if(_time_slider_->value()+step>_time_slider_->maximum())
+    {
+        _time_slider_->setValue(_time_slider_->maximum());
+    }
+    else
+    {
+        _time_slider_->setValue(_time_slider_->value()+step);
+    }
+    setNewTime(_time_slider_->value());
+    return;
 }
 
 void GViewTimeTool::jumpBack(int step)
 {
-
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    if(_time_slider_->value()-step<_time_slider_->minimum())
+    {
+        _time_slider_->setValue(_time_slider_->minimum());
+    }
+    else
+    {
+        _time_slider_->setValue(_time_slider_->value()-step);
+    }
+    setNewTime(_time_slider_->value());
+    return;
 }
 
 void GViewTimeTool::moveTo(int value)
 {
-
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    if(value<_time_slider_->minimum())
+    {
+        value = _time_slider_->minimum();
+    }
+    else if(value>_time_slider_->maximum())
+    {
+        value = _time_slider_->maximum();
+    }
+    _time_slider_->setValue(value);
+    setNewTime(value);
+    return;
 }
 
 void GViewTimeTool::play()
 {
-
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    if(_play_timer_.isActive())
+    {
+        _play_timer_.stop();
+    }
+    _play_timer_.setInterval(timerInterval());
 }
 
 void GViewTimeTool::stop()
 {
-
+    if(_play_timer_.isActive())
+    {
+        _play_timer_.stop();
+    }
+    return;
 }
 
 void GViewTimeTool::pause()
 {
-
+    stop();
+    return;
 }
 
 void GViewTimeTool::setScale(const QString& sc_name)
 {
-
+    setCurrentUnit(sc_name);
+    return;
 }
