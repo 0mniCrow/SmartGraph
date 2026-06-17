@@ -52,11 +52,9 @@ public:
     void setTimerInterval(int time_interval){_timer_interval_=time_interval;
                                            emit timerIntervalChanged();}
     virtual QStringList timeUnitNames() const = 0;
-
+    virtual bool getTime(QMap<QString,int>& container) const = 0;               //Атрымаць даведнік з бягучым часам, падзелены па аб'ектах часу (назва/значэнне)
     virtual QString currentUnit() const = 0;
     virtual bool setCurrentUnit(const QString& unit_name) = 0;
-    //virtual bool addTimeUnit(GViewBaseTObject* object)  = 0;
-    //virtual bool deleteTimeUnit(const QString& timeObject)  = 0;
 signals:
     void currentTimeChanged(gview_time time);
     void sliderStateChanged(int stage);
@@ -73,6 +71,8 @@ public slots:
     virtual void stop() = 0;
     virtual void pause() = 0;
     virtual void setScale(const QString& unit_name) {setCurrentUnit(unit_name);};
+    virtual void setTime(const QMap<QString,int>& unitname_val) = 0;        //Усталяваць час па назве кожнага аб'екту часу (назва/значэнне)
+    virtual void setTime(const gview_time& time) = 0;                       //Усталяваць час па лічбе.
 };
 
 
@@ -100,6 +100,7 @@ public:
     GViewTimeTool(gview_time min_time,
                   gview_time max_time,
                   gview_time cur_time = 0,
+                  int timer_interval = 0,
                   QObject* parent = nullptr);
     ~GViewTimeTool();
     [[nodiscard]] QSlider* getTimelineWidget();
@@ -109,6 +110,7 @@ public:
 
     virtual QString currentUnit() const override;
     virtual bool setCurrentUnit(const QString& unit_name) override;
+    virtual bool getTime(QMap<QString,int>& container) const override;
     bool addTimeUnit(GViewBaseTObject* object);
     bool deleteTimeUnit(const QString& time_object);
 signals:
@@ -128,6 +130,8 @@ public slots:
     virtual void stop() override;
     virtual void pause() override;
     virtual void setScale(const QString& sc_name) override;
+    virtual void setTime(const QMap<QString,int>& unitname_val) override;
+    virtual void setTime(const gview_time& time) override;
 };
 
 #endif // GVIEWTIMETOOL_H

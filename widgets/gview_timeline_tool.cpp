@@ -23,8 +23,9 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
 GViewTimeTool::GViewTimeTool(gview_time min_time,
                              gview_time max_time,
                              gview_time cur_time,
+                             int timer_interval,
                              QObject* parent) :
-    GViewTimeInterface(min_time,max_time,cur_time<min_time?min_time:cur_time,parent)
+    GViewTimeInterface(min_time,max_time,cur_time<min_time?min_time:cur_time,timer_interval,parent)
 {
     return;
 }
@@ -264,6 +265,20 @@ bool GViewTimeTool::setCurrentUnit(const QString &unit_name)
     return true;
 }
 
+bool GViewTimeTool::getTime(QMap<QString,int>& container) const
+{
+    container.clear();
+    if(!isReadyForWork())
+    {
+        return false;
+    }
+    for(const GViewBaseTObject* obj:_time_units_)
+    {
+        container.insert(obj->name(),obj->scaleTimeToUnit(currentTime()));
+    }
+    return true;
+}
+
 bool GViewTimeTool::addTimeUnit(GViewBaseTObject* object)
 {
     if(!object)
@@ -422,4 +437,33 @@ void GViewTimeTool::setScale(const QString& sc_name)
 {
     setCurrentUnit(sc_name);
     return;
+}
+
+void GViewTimeTool::setTime(const QMap<QString,int>& unitname_val)
+{
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    gview_time new_time = TO_GVIEW_TIME(0);
+    for(const GViewBaseTObject* obj:_time_units_)
+    {
+        auto it = unitname_val.find(obj->name());
+        if(it!=unitname_val.cend())
+        {
+            new_time+=obj->scaleUnitToTime(it.value(),TO_GVIEW_TIME(0));
+        }
+    }
+    setTime(new_time);
+    return;
+}
+
+void GViewTimeTool::setTime(const gview_time& time)
+{
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    setCurrentTime(time);
+    updateSliderValue();
 }

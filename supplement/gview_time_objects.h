@@ -13,8 +13,7 @@ using gview_time_t = quint64;
 
 /*
 Гэты клас патрэбны як інтэрфэйс і базавы аб'ект часу, які будзе мадыфікаваць
-адзінку часу (gview_time_t). Карыстальніку класа time tool не трэба ведаць, як
-працуе гэтая адзінка, але трэба захоўваць яе як інстанцыю
+адзінку часу (gview_time_t). Карыстальніку класа time tool трэба захоўваць яе як пераменную-ключ
 */
 
 class GViewBaseTObject                               //Абстрактны тып для адзінкі часовага прамежку
@@ -172,13 +171,13 @@ public:
     ~YearTObject();
 };
 
-class WeekTObject: public GViewBaseTObject
-{
-private:
-    QList<QString> _week_days_;
-    MonthTObject* _month_unit_;
-    YearTObject* _year_unit_;
-public:
+//class WeekTObject: public GViewBaseTObject
+//{
+//private:
+//    QList<QString> _week_days_;
+//    MonthTObject* _month_unit_;
+//    YearTObject* _year_unit_;
+//public:
 
-};
+//};
 #endif // GVIEW_TIME_OBJECTS_H
