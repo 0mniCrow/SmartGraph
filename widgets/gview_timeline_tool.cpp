@@ -84,6 +84,26 @@ void GViewTimeTool::setNewTime(int new_val)
     return;
 }
 
+void GViewTimeTool::updateSliderValue()
+{
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    GViewBaseTObject* cur_obj = getUnitInstance(_cur_unit_);
+    if(!cur_obj)
+    {
+        return;
+    }
+    int cur_val = cur_obj->scaleTimeToUnit(currentTime());
+    if(cur_val>=_time_slider_->minimum() &&
+            cur_val<=_time_slider_->maximum())
+    {
+        _time_slider_->setValue(cur_val);
+    }
+    return;
+}
+
 int GViewTimeTool::getCurrentTime()
 {
     if(_cur_unit_.isEmpty())
