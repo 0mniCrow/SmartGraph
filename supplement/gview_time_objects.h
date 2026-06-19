@@ -47,10 +47,10 @@ public:
     virtual gview_time_t getLowerUnitCount() const;
     virtual gview_time_t getUpperVal(const gview_time_t& time) const;
     virtual gview_time_t getLowerVal(const gview_time_t& time) const;
+    virtual void removeLinksToUnit(GViewBaseTObject* unit);
     QString name() const;
-    gview_time_t modifier() const noexcept;                                                              //Атрымаць базавы мадыфікатар
+    gview_time_t modifier() const noexcept;                                                     //Атрымаць базавы мадыфікатар
     virtual gview_time_t curModifier(const gview_time_t& time) const = 0;                       //Атрымаць мадыфікатар, залежны на бягучы час
-    //virtual gview_time_t upperVal(const gview_time_t& time) const =0;
     GViewBaseTObject* getUpperUnit() const noexcept;
     GViewBaseTObject* getLowerUnit() const noexcept;
     bool isBasicUnit() const noexcept;                                                                   //Мінімальная адзінка часу (не мае падпарадкаваных адзінак)
@@ -82,7 +82,6 @@ public:
     virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const override;
     virtual int scaleTimeToUnit(const gview_time_t& time) const override;
     virtual gview_time_t curModifier(const gview_time_t& time) const override;
-    //virtual gview_time_t upperVal(const gview_time_t& time) const override;
     virtual gview_time_t getUnitVal(const gview_time_t& time) const override;
     virtual gview_time_t getUnitTime(const gview_time_t& time) const override;
     ~FixedTObject(){}

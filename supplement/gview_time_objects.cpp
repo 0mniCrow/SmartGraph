@@ -111,6 +111,19 @@ bool GViewBaseTObject::isTopUnit() const noexcept
     return !_greater_unit_;
 }
 
+void GViewBaseTObject::removeLinksToUnit(GViewBaseTObject* unit)
+{
+    if(_greater_unit_ == unit)
+    {
+        _greater_unit_=nullptr;
+    }
+    if(_lesser_unit_== unit)
+    {
+        _lesser_unit_=nullptr;
+    }
+    return;
+}
+
 FixedTObject::FixedTObject(const QString& name,
                       const gview_time_t& modifier,
                       GViewBaseTObject* greater_unit,

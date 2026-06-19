@@ -333,7 +333,7 @@ bool GViewTimeTool::deleteTimeUnit(const QString& time_object)
     }
     for(GViewBaseTObject* obj:_time_units_)
     {
-        ///! Do object deletion for selected object
+        obj->removeLinksToUnit(*it);
     }
     delete *it;
     _time_units_.erase(it);
