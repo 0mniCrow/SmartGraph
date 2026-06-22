@@ -879,6 +879,7 @@ void MainWindow::initiateGraphicsView()
 
 void MainWindow::initiateTimelineTool()
 {
+    _timeline_interface_ = new GViewTimeTool(0,10000,200,1000);
     connect(ui->button_time_play_trsl,&QPushButton::clicked,this,&MainWindow::tlPlay);
     connect(ui->button_time_stop_trsl,&QPushButton::clicked,this,&MainWindow::tlStop);
     connect(ui->button_time_pause_trsl,&QPushButton::clicked,this,&MainWindow::tlPause);

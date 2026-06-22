@@ -13,6 +13,11 @@
 
 using gview_time = gview_time_t;
 
+/*
+Гэты абстрактны клас - базавы інтэрфэйс для кіравання віртуальнага часу.
+На дапамогу карыстальніку, якому трэба зразумець, якія функцыі павінны выконваць клас-нашчадак.
+*/
+
 class GViewTimeInterface: public QObject
 {
     Q_OBJECT
@@ -76,7 +81,11 @@ public slots:
 };
 
 
-
+/*
+Галоўны клас для кіравання віртуальнага часу. У адрозненні ад базавага класа мае сапраўдны
+механізм кіравання часу, а таксама здольнасць ствараць карыстальніцкі віджэт-слайдэр
+для дотыкавага кантролю.
+*/
 class GViewTimeTool : public GViewTimeInterface
 {
     Q_OBJECT
@@ -93,6 +102,7 @@ private:
     void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
     void updateSliderValue();
     int getCurrentTime();
+    bool generateTimeSlider();
 protected:
     virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
 public:
@@ -132,6 +142,8 @@ public slots:
     virtual void setScale(const QString& sc_name) override;
     virtual void setTime(const QMap<QString,int>& unitname_val) override;
     virtual void setTime(const gview_time& time) override;
+private slots:
+    void nextStep();
 };
 
 #endif // GVIEWTIMETOOL_H

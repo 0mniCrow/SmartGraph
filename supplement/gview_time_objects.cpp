@@ -16,9 +16,14 @@ gview_time_t GViewBaseTObject::accumulateUpperVal(const gview_time_t& time) cons
     return getInteger(time);
 }
 
-gview_time_t GViewBaseTObject::getLowerUnitCount() const
+uint GViewBaseTObject::getLowerUnitCount(const gview_time_t &time) const
 {
-    return _lesser_unit_?modifier()/_lesser_unit_->modifier():modifier();
+    return static_cast<uint>(_lesser_unit_?curModifier(time)/_lesser_unit_->curModifier(time):1);
+}
+
+uint GViewBaseTObject::getUnitCount(const gview_time_t&time) const
+{
+    return static_cast<uint>(time/curModifier(time));
 }
 
 gview_time_t GViewBaseTObject::accumulateLowerVal(const gview_time_t& time) const

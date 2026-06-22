@@ -25,7 +25,7 @@ public:
     {
         return;
     }
-    void loadTextLabels(QStringList &list);
+    void loadTextLabels(const QStringList &list);
 protected:
     void paintEvent(QPaintEvent* p_event) override;
     QSize sizeHint() const override;
