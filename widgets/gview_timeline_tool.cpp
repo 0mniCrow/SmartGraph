@@ -6,6 +6,19 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
     : GViewTimeInterface(parent),_time_slider_(nullptr),
       _tick_number_(tick_number)
 {
+
+    return;
+}
+
+GViewTimeTool::GViewTimeTool(gview_time min_time,
+                             gview_time max_time,
+                             gview_time cur_time,
+                             int timer_interval,
+                             QObject* parent) :
+    GViewTimeInterface(min_time,max_time,
+                       cur_time<min_time?
+                           min_time:cur_time,timer_interval,parent),_time_slider_(nullptr)
+{
     FixedTObject* secs = new FixedTObject("Секунды");
     FixedTObject* min = new FixedTObject("Хвіліны",60,nullptr,secs);
     secs->setGreaterUnit(min);
@@ -17,16 +30,8 @@ GViewTimeTool::GViewTimeTool(int tick_number,QObject *parent)
     addTimeUnit(min);
     addTimeUnit(hour);
     addTimeUnit(day);
-    return;
-}
-
-GViewTimeTool::GViewTimeTool(gview_time min_time,
-                             gview_time max_time,
-                             gview_time cur_time,
-                             int timer_interval,
-                             QObject* parent) :
-    GViewTimeInterface(min_time,max_time,cur_time<min_time?min_time:cur_time,timer_interval,parent)
-{
+    _cur_unit_ = "Хвіліны";
+    generateTimeSlider();
     return;
 }
 

@@ -40,13 +40,13 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     //_timeline_tool_.setTickNumber(TEST_TIMELINE_TICKS);
-    QStringList mounthes={"Студзень","Люты",
-                          "Сакавік","Красавік","Травень",
-                          "Чэрвень","Ліпень","Жнівень",
-                         "Верасень","Кастрычнік","Лістапад",
-                         "Снежань"};
-    _timeline_tool_.loadValues(mounthes);
-    updateTimeTool();
+//    QStringList mounthes={"Студзень","Люты",
+//                          "Сакавік","Красавік","Травень",
+//                          "Чэрвень","Ліпень","Жнівень",
+//                         "Верасень","Кастрычнік","Лістапад",
+//                         "Снежань"};
+//    _timeline_tool_.loadValues(mounthes);
+//    updateTimeTool();
     loadTranslatableWindows();
     loadTranslatableMessages();
     initiateGraphicsView();
@@ -880,6 +880,8 @@ void MainWindow::initiateGraphicsView()
 void MainWindow::initiateTimelineTool()
 {
     _timeline_interface_ = new GViewTimeTool(0,10000,200,1000);
+    ui->combo_time_scale->insertItems(0,_timeline_interface_->timeUnitNames());
+    updateTimeTool();
     connect(ui->button_time_play_trsl,&QPushButton::clicked,this,&MainWindow::tlPlay);
     connect(ui->button_time_stop_trsl,&QPushButton::clicked,this,&MainWindow::tlStop);
     connect(ui->button_time_pause_trsl,&QPushButton::clicked,this,&MainWindow::tlPause);
@@ -1251,7 +1253,8 @@ void MainWindow::changeLanguage(int index)
 
 void MainWindow::updateTimeTool()
 {
-    QSlider * slider = _timeline_tool_.getTimelineWidget();
+    GViewTimeTool * tool = dynamic_cast<GViewTimeTool*>(_timeline_interface_);
+    QSlider * slider = tool->getTimelineWidget();
     QHBoxLayout * t_layout = new QHBoxLayout();
     t_layout->addWidget(slider);
     ui->group_forTimeline->setLayout(t_layout);
