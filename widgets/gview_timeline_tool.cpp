@@ -62,8 +62,10 @@ void GViewTimeTool::setBordersForSlider()
     int num_of_units = cur_obj->isTopUnit()?
                 cur_obj->getUnitCount(currentTime()):
                 cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
+    QStringList labels = cur_obj->getScaleLabels();
     _time_slider_->setMinimum(1);
     _time_slider_->setMaximum(num_of_units);
+    _time_slider_->loadTextLabels(labels);
     return;
 }
 

@@ -163,7 +163,8 @@ QStringList FixedTObject::getScaleLabels() const
     if(_text_labels_.isEmpty())
     {
         QStringList text_labels;
-        for(int i = 0; i<static_cast<int>(modifier());++i)
+        int mod = isTopUnit()?modifier():getUpperUnit()->modifier()/modifier();
+        for(int i = 0; i<static_cast<int>(mod);++i)
         {
             text_labels.append(QString::number(i+1));
         }
