@@ -54,14 +54,21 @@ void GViewTimeTool::setBordersForSlider()
     {
         return;
     }
-    GViewBaseTObject* cur_obj = getUnitInstance(_cur_unit_);
+    GViewBaseTObject* cur_obj = findUnitInstance(_cur_unit_);
     if(!cur_obj)
     {
         return;
     }
-    int num_of_units = cur_obj->isTopUnit()?
-                cur_obj->getUnitCount(currentTime()):
-                cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
+    if(cur_obj->isTopUnit())
+    {
+        gview_time min_time = cur_obj->modifyUnitTime(-10,currentTime());
+        gview_time max_time = cur_obj->modifyUnitTime(10,currentTime());
+        _time_slider_->setMinimum(0);
+        _time_slider_->setMaximum(20);
+        _time_slider_->loadTextLabels(cur_obj->getScaledBorders(min_time,max_time));
+        return;
+    }
+    int num_of_units = cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
     QStringList labels = cur_obj->getScaleLabels();
     _time_slider_->setMinimum(1);
     _time_slider_->setMaximum(num_of_units);
@@ -138,7 +145,7 @@ bool GViewTimeTool::generateTimeSlider()
     {
         return false;
     }
-    auto unit = getUnitInstance(_cur_unit_);
+    auto unit = findUnitInstance(_cur_unit_);
     if(!unit)
     {
         return false;
@@ -151,37 +158,6 @@ bool GViewTimeTool::generateTimeSlider()
 
 QSlider *GViewTimeTool::getTimelineWidget()
 {
-    /*
-    if(_tick_number_<2)
-    {
-        return nullptr;
-    }
-    if(_time_slider_)
-    {
-        _time_slider_->deleteLater();
-        _time_slider_=nullptr;
-    }
-    _time_slider_ = new TimeSlider();
-    _time_slider_->setOrientation(Qt::Horizontal);
-    _time_slider_->setMinimum(0);
-    _time_slider_->setMaximum(_tick_number_-1);
-//    _time_slider_->setTickPosition(QSlider::TicksAbove);
-    if(_labels_.isEmpty())
-    {
-    QStringList list;
-    for(int i = 0; i<_tick_number_;i++)
-    {
-        list.append(QString::number(i));
-    }
-
-    _time_slider_->loadTextLabels(list);
-    }
-    else
-    {
-        QStringList list = _labels_;
-        _time_slider_->loadTextLabels(list);
-    }
-    */
     if(!_time_slider_)
     {
         if(!generateTimeSlider())
@@ -284,7 +260,7 @@ QStringList GViewTimeTool::timeUnitNames() const
     return unit_names;
 }
 
-GViewBaseTObject* GViewTimeTool::getUnitInstance(const QString& obj_name) const
+GViewBaseTObject* GViewTimeTool::findUnitInstance(const QString& obj_name) const
 {
     if(_time_units_.empty()||obj_name.isEmpty())
     {
@@ -301,6 +277,11 @@ GViewBaseTObject* GViewTimeTool::getUnitInstance(const QString& obj_name) const
         return nullptr;
     }
     return *it;
+}
+
+GViewBaseTObject* GViewTimeTool::getUnitInstance(const QString& obj_name) const
+{
+    return findUnitInstance(obj_name);
 }
 
 QString GViewTimeTool::currentUnit() const

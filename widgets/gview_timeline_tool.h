@@ -103,6 +103,7 @@ private:
     void updateSliderValue();
     int getCurrentTime();
     bool generateTimeSlider();
+    GViewBaseTObject* findUnitInstance(const QString& obj_name) const;
 protected:
     virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
 public:

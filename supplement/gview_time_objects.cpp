@@ -173,6 +173,22 @@ QStringList FixedTObject::getScaleLabels() const
     return _text_labels_;
 }
 
+QStringList FixedTObject::getScaledBorders(const gview_time_t& min, const gview_time_t& max) const
+{
+    QStringList text_labels;
+    if(min>=max)
+    {
+        return text_labels;
+    }
+    int min_mod = min/modifier();
+    int max_mod = max/modifier();
+    for(;min_mod<=max_mod; ++min_mod)
+    {
+        text_labels.append(QString::number(min_mod));
+    }
+    return text_labels;
+}
+
 gview_time_t FixedTObject::scaleUnitToTime(int val, const gview_time_t &time) const
 {
     gview_time_t cur_unit_time = static_cast<gview_time_t>(val) * modifier();
@@ -219,6 +235,19 @@ VariantTObject::VariantTObject(const QString& name,
     return;
 }
 
+gview_time_t FixedTObject::modifyUnitTime(int modifier, const gview_time_t& time) const
+{
+    if(!modifier)
+    {
+        return time;
+    }
+    gview_time_t mod = static_cast<gview_time_t>(std::abs(modifier))*curModifier(time);
+    if(modifier<0)
+    {
+        return mod>time?TO_GVIEW_TIME(0):time-mod;
+    }
+    return time+mod;
+}
 
 bool VariantTObject::setTextLabels(const QStringList& text_labels)
 {
