@@ -38,7 +38,7 @@ public:
                               GViewBaseTObject* lesser_unit = nullptr);
     virtual ~GViewBaseTObject() {}
     virtual QStringList getScaleLabels() const = 0;                                             //Сьпіс значэнняў гэтага прамежку
-    virtual QStringList getScaledBorders(const gview_time_t& min, const gview_time_t& max) const =0;
+    virtual QStringList getScaledBorders(int& counter, const gview_time_t& min, const gview_time_t& max) const =0;
     virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const = 0;          //Пераўтварыць значэнне бягучага юніту ў час
     virtual int scaleTimeToUnit(const gview_time_t& time) const = 0;                            //Атрымаць значэнне у межах бягучага юніту
     virtual gview_time_t getUnitVal(const gview_time_t& time) const = 0;                        //_modifier_ памножанае на кавалак значэння бягучага часу, адказны за гэты прамежак
@@ -80,7 +80,7 @@ public:
                           GViewBaseTObject* lesser_unit = nullptr);
     bool setTextLabels(const QStringList& text_labels);
     virtual QStringList getScaleLabels() const override;
-    virtual QStringList getScaledBorders(const gview_time_t& min, const gview_time_t& max) const override;
+    virtual QStringList getScaledBorders(int& counter,const gview_time_t& min, const gview_time_t& max) const override;
     virtual gview_time_t scaleUnitToTime(int val, const gview_time_t& time) const override;
     virtual int scaleTimeToUnit(const gview_time_t& time) const override;
     virtual gview_time_t curModifier(const gview_time_t& time) const override;

@@ -173,7 +173,7 @@ QStringList FixedTObject::getScaleLabels() const
     return _text_labels_;
 }
 
-QStringList FixedTObject::getScaledBorders(const gview_time_t& min, const gview_time_t& max) const
+QStringList FixedTObject::getScaledBorders(int &counter, const gview_time_t& min, const gview_time_t& max) const
 {
     QStringList text_labels;
     if(min>=max)
@@ -182,6 +182,7 @@ QStringList FixedTObject::getScaledBorders(const gview_time_t& min, const gview_
     }
     int min_mod = min/modifier();
     int max_mod = max/modifier();
+    counter = max_mod - min_mod;
     for(;min_mod<=max_mod; ++min_mod)
     {
         text_labels.append(QString::number(min_mod));

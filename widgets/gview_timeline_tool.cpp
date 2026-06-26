@@ -63,9 +63,10 @@ void GViewTimeTool::setBordersForSlider()
     {
         gview_time min_time = cur_obj->modifyUnitTime(-10,currentTime());
         gview_time max_time = cur_obj->modifyUnitTime(10,currentTime());
+        int counter = 0;
         _time_slider_->setMinimum(0);
-        _time_slider_->setMaximum(20);
-        _time_slider_->loadTextLabels(cur_obj->getScaledBorders(min_time,max_time));
+        _time_slider_->loadTextLabels(cur_obj->getScaledBorders(counter,min_time,max_time));
+        _time_slider_->setMaximum(counter);
         return;
     }
     int num_of_units = cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
