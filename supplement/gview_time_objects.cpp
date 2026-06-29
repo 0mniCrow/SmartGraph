@@ -166,7 +166,7 @@ QStringList FixedTObject::getScaleLabels() const
         int mod = isTopUnit()?modifier():getUpperUnit()->modifier()/modifier();
         for(int i = 0; i<static_cast<int>(mod);++i)
         {
-            text_labels.append(QString::number(i+1));
+            text_labels.append(QString::number(i));
         }
         return text_labels;
     }

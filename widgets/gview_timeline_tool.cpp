@@ -32,6 +32,7 @@ GViewTimeTool::GViewTimeTool(gview_time min_time,
     addTimeUnit(day);
     _cur_unit_ = "Хвіліны";
     generateTimeSlider();
+    connect(&_play_timer_,&QTimer::timeout,this,&GViewTimeTool::nextStep);
     return;
 }
 
@@ -67,13 +68,15 @@ void GViewTimeTool::setBordersForSlider()
         _time_slider_->setMinimum(0);
         _time_slider_->loadTextLabels(cur_obj->getScaledBorders(counter,min_time,max_time));
         _time_slider_->setMaximum(counter);
+        _time_slider_->setValue(cur_obj->scaleTimeToUnit(currentTime()));
         return;
     }
     int num_of_units = cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
     QStringList labels = cur_obj->getScaleLabels();
-    _time_slider_->setMinimum(1);
-    _time_slider_->setMaximum(num_of_units);
+    _time_slider_->setMinimum(0);
+    _time_slider_->setMaximum(num_of_units-1);
     _time_slider_->loadTextLabels(labels);
+    _time_slider_->setValue(cur_obj->scaleTimeToUnit(currentTime()));
     return;
 }
 
@@ -154,6 +157,7 @@ bool GViewTimeTool::generateTimeSlider()
     _time_slider_ = new TimeSlider();
     setBordersForSlider();
     _time_slider_->loadTextLabels(unit->getScaleLabels());
+    connect(_time_slider_,&QSlider::valueChanged,this,&GViewTimeTool::newValue);
     return true;
 }
 
@@ -523,5 +527,15 @@ void GViewTimeTool::nextStep()
         _play_timer_.stop();
     }
     stepForward();
+    return;
+}
+
+void GViewTimeTool::newValue(int val)
+{
+    if(!isReadyForWork())
+    {
+        return;
+    }
+    setNewTime(val);
     return;
 }

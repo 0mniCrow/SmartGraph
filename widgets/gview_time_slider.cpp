@@ -14,30 +14,72 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     //QStyleOptionSlider rect_option(s_option);
     s_option.rect=s_rect;
     s_option.subControls = QStyle::SC_All;
-    //s_painter->end();
 
     QPainter * painter = new QPainter(this);
     painter->setRenderHint(QPainter::Antialiasing,true);
     painter->save();
     painter->setPen(QPen(QBrush(Qt::black),1));
     QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
-    int range_step = groove_rect.width()/(_text_.size()-1);
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
+    int range_mid = _text_.size()/2;
+    qreal handle_mid = static_cast<qreal>(handle_rect.width())/2.0;     //палова шырыні ручкі слайдэра
+    qreal tick_shift = handle_mid/static_cast<qreal>(range_mid);        //зрух адносна колькасці подпісаў
+    qreal tick_sh_accum = 0;
+    qreal label_y_pos = static_cast<qreal>(this->rect().height())/2;
+    QFontMetrics fm = painter->fontMetrics();
+    QStringList adj_list(adjustLabels(this->rect().width()/(_text_.size()-1),fm));
     for(int i = 0; i<_text_.size();i++)
     {
-        if((!i)||(i==_text_.size()-1))
+        QPointF r_st;
+        QPointF r_fn;
+        qreal t_pos = 0.0;
+        qreal tick_adj_to_handle = 0;                                   //ураўнаванне дзеля несупадзення
+                                                                        //ручкі слайдэра і тэкста
+        if((!i)||(i==(_text_.size()-1)))
         {
-            painter->drawLine(i*range_step,groove_rect.top()-20,
-                              i*range_step,groove_rect.bottom()+10);
+            t_pos = static_cast<qreal>(i)*range_step;
+            r_st.setY(groove_rect.top()-20);
+            r_fn.setY(groove_rect.bottom()+10);
         }
         else
         {
-            painter->drawLine(i*range_step,groove_rect.top()-10,
-                              i*range_step,groove_rect.bottom()+5);
+            if(i<range_mid)
+            {
+                tick_adj_to_handle = handle_mid-tick_sh_accum;
+                t_pos = static_cast<qreal>(i)*range_step + tick_adj_to_handle;
+                tick_sh_accum+=handle_mid/static_cast<qreal>(range_mid);//tick_shift;
+            }
+            else if(i==range_mid)
+            {
+                t_pos = static_cast<qreal>(i)*range_step;
+            }
+            else if(i>range_mid)
+            {
+                tick_adj_to_handle = handle_mid-tick_sh_accum;
+                t_pos = static_cast<qreal>(i)*range_step - tick_adj_to_handle;
+                tick_sh_accum-=handle_mid/static_cast<qreal>(range_mid-2);
+            }
+            r_st.setY(groove_rect.top()-10);
+            r_fn.setY(groove_rect.bottom()+5);
         }
+        r_st.setX(t_pos);
+        r_fn.setX(t_pos);
+        if(i==adj_list.size()-1)
+        {
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)));
+        }
+        else if(t_pos)
+        {
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)))/2;
+        }
+        QRectF text_rect(t_pos,label_y_pos,range_step,20.0);
+        painter->drawText(text_rect,adj_list.at(i));
+        painter->drawLine(r_st,r_fn);
     }
     painter->restore();
     painter->save();
-    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+
     style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
     int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
     int groove_h = groove_rect.height()/4;
@@ -47,27 +89,6 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     painter->setPen(Qt::NoPen);
     painter->drawRect(left_gr_rect);
     painter->restore();
-    painter->setPen(QPen(Qt::black));
-    painter->setBrush(QBrush(Qt::yellow));
-    QRect rec = this->rect();
-    int mid = rec.height()/2;
-    int st = rec.width()/(_text_.size()-1);
-    QFontMetrics fm = painter->fontMetrics();
-    QStringList adj_list(adjustLabels(st,fm));
-    for(int i = 0; i<adj_list.size();i++)
-    {
-        int t_pos = st*i;
-        if(i==adj_list.size()-1)
-        {
-            t_pos -=fm.horizontalAdvance(adj_list.at(i));
-        }
-        else if(t_pos)
-        {
-            t_pos -=fm.horizontalAdvance(adj_list.at(i))/2;
-        }
-        QRect rt(t_pos,mid,st,20);
-        painter->drawText(rt,adj_list.at(i));
-    }
     painter->end();
     delete painter;
     return;
