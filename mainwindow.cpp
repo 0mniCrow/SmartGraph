@@ -879,9 +879,12 @@ void MainWindow::initiateGraphicsView()
 
 void MainWindow::initiateTimelineTool()
 {
-    _timeline_interface_ = new GViewTimeTool(0,10000,200,1000);
+    _timeline_interface_ = new GViewTimeTool(0,10000000,388112,1000);
     ui->combo_time_scale->insertItems(0,_timeline_interface_->timeUnitNames());
     updateTimeTool();
+    ui->combo_time_scale->setCurrentIndex(
+                ui->combo_time_scale->findText(
+                    _timeline_interface_->currentUnit()));
     connect(ui->button_time_play_trsl,&QPushButton::clicked,this,&MainWindow::tlPlay);
     connect(ui->button_time_stop_trsl,&QPushButton::clicked,this,&MainWindow::tlStop);
     connect(ui->button_time_pause_trsl,&QPushButton::clicked,this,&MainWindow::tlPause);

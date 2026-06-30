@@ -68,7 +68,8 @@ void GViewTimeTool::setBordersForSlider()
         _time_slider_->setMinimum(0);
         _time_slider_->loadTextLabels(cur_obj->getScaledBorders(counter,min_time,max_time));
         _time_slider_->setMaximum(counter);
-        _time_slider_->setValue(cur_obj->scaleTimeToUnit(currentTime()));
+        int time_unit = cur_obj->scaleTimeToUnit(currentTime());
+        _time_slider_->setValue(time_unit);
         return;
     }
     int num_of_units = cur_obj->getUpperUnit()->getLowerUnitCount(currentTime());
@@ -76,7 +77,8 @@ void GViewTimeTool::setBordersForSlider()
     _time_slider_->setMinimum(0);
     _time_slider_->setMaximum(num_of_units-1);
     _time_slider_->loadTextLabels(labels);
-    _time_slider_->setValue(cur_obj->scaleTimeToUnit(currentTime()));
+    int time_unit = cur_obj->scaleTimeToUnit(currentTime());
+    _time_slider_->setValue(time_unit);
     return;
 }
 
@@ -157,7 +159,7 @@ bool GViewTimeTool::generateTimeSlider()
     _time_slider_ = new TimeSlider();
     setBordersForSlider();
     _time_slider_->loadTextLabels(unit->getScaleLabels());
-    connect(_time_slider_,&QSlider::valueChanged,this,&GViewTimeTool::newValue);
+    connect(_time_slider_,&QSlider::sliderMoved,this,&GViewTimeTool::newValue);
     return true;
 }
 
