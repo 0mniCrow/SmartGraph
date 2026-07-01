@@ -180,14 +180,19 @@ QStringList FixedTObject::getScaledBorders(int &counter, const gview_time_t& min
     {
         return text_labels;
     }
-    int min_mod = min/modifier();
-    int max_mod = max/modifier();
+    int min_mod = static_cast<int>(min/modifier());
+    int max_mod = static_cast<int>(max/modifier());
     counter = max_mod - min_mod;
     for(;min_mod<=max_mod; ++min_mod)
     {
         text_labels.append(QString::number(min_mod));
     }
     return text_labels;
+}
+
+int FixedTObject::getScaledBorderModifier(const gview_time_t& min) const
+{
+    return static_cast<int>(min/modifier());
 }
 
 gview_time_t FixedTObject::scaleUnitToTime(int val, const gview_time_t &time) const
