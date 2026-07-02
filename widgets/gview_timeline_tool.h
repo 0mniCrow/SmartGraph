@@ -97,6 +97,7 @@ private:
     QList<GViewBaseTObject*> _time_units_;
     QString _cur_unit_;
     QPair<gview_time_t,gview_time_t> _time_scale_;
+    mutable bool _internal_val_change_;
     bool isReadyForWork() const noexcept;                               //Праверка, ці магчыма інструменту працягваць працу
     void setBordersForSlider();                                         //Усталёўвае новыя межы для слайдэра
     void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
