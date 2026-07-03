@@ -146,7 +146,8 @@ public slots:
     virtual void setTime(const gview_time& time) override;
 private slots:
     void nextStep();
-    void newValue(int val);
+    //void newValue(int val);
+    void newValue();
 };
 
 #endif // GVIEWTIMETOOL_H

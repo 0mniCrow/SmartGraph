@@ -165,7 +165,7 @@ bool GViewTimeTool::generateTimeSlider()
     _time_slider_ = new TimeSlider();
     setBordersForSlider();
     _time_slider_->loadTextLabels(unit->getScaleLabels());
-    connect(_time_slider_,&QSlider::valueChanged,this,&GViewTimeTool::newValue);
+    connect(_time_slider_,&QSlider::sliderReleased,this,&GViewTimeTool::newValue);
     return true;
 }
 
@@ -547,17 +547,28 @@ void GViewTimeTool::nextStep()
     return;
 }
 
-void GViewTimeTool::newValue(int val)
+//void GViewTimeTool::newValue(int val)
+//{
+//    if(!isReadyForWork())
+//    {
+//        return;
+//    }
+////    if(_internal_val_change_)
+////    {
+////        _internal_val_change_=false;
+////        return;
+////    }
+//    setNewTime(val);
+//    return;
+//}
+
+void GViewTimeTool::newValue()
 {
     if(!isReadyForWork())
     {
         return;
     }
-    if(_internal_val_change_)
-    {
-        _internal_val_change_=false;
-        return;
-    }
-    setNewTime(val);
+    int new_val = _time_slider_->value();
+    setNewTime(new_val);
     return;
 }
