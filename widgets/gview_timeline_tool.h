@@ -97,13 +97,14 @@ private:
     QList<GViewBaseTObject*> _time_units_;
     QString _cur_unit_;
     QPair<gview_time_t,gview_time_t> _time_scale_;
-    mutable bool _internal_val_change_;
+    mutable bool _borders_reset_mode_;
     bool isReadyForWork() const noexcept;                               //Праверка, ці магчыма інструменту працягваць працу
     void setBordersForSlider();                                         //Усталёўвае новыя межы для слайдэра
     void setNewTime(int new_val);                                       //Аднаўляе значэнне бягучага часу згодна з бягучай адзінкай часу
     void updateSliderValue();
     int getCurrentTime();
     bool generateTimeSlider();
+    void vipeTimeSliderP();
     GViewBaseTObject* findUnitInstance(const QString& obj_name) const;
 protected:
     virtual GViewBaseTObject* getUnitInstance(const QString& obj_name) const override;
@@ -116,8 +117,8 @@ public:
                   QObject* parent = nullptr);
     ~GViewTimeTool();
     [[nodiscard]] QSlider* getTimelineWidget();
-    void setTickNumber(int tick_number);
-    void loadValues(const QStringList& values);
+//    void setTickNumber(int tick_number);
+//    void loadValues(const QStringList& values);
     virtual QStringList timeUnitNames() const override;
 
     virtual QString currentUnit() const override;
@@ -129,9 +130,6 @@ signals:
     void stateChanged(int state);
     void widgetRequireUpdate();
 public slots:
-    void moveForward();
-    void moveBack();
-    void jump(int new_state);
 
     virtual void stepForward() override;
     virtual void stepBack() override;
@@ -146,8 +144,7 @@ public slots:
     virtual void setTime(const gview_time& time) override;
 private slots:
     void nextStep();
-    //void newValue(int val);
-    void newValue();
+    void newValue(int val);
 };
 
 #endif // GVIEWTIMETOOL_H
