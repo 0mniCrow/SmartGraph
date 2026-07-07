@@ -7,7 +7,10 @@
 #include <QString>
 #include <QPainter>
 #include <QPaintEvent>
+#include <QWheelEvent>
 #include <QList>
+
+#define WHEEL_STEP 5
 
 class TimeSlider: public QSlider
 {
@@ -38,6 +41,7 @@ protected:
     void paintEvent(QPaintEvent* p_event) override;
     QSize sizeHint() const override;
     void mousePressEvent(QMouseEvent* m_event) override;
+    void wheelEvent(QWheelEvent* w_event) override;
 };
 
 #endif // GVIEW_TIME_SLIDER_H

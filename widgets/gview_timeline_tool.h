@@ -117,8 +117,6 @@ public:
                   QObject* parent = nullptr);
     ~GViewTimeTool();
     [[nodiscard]] QSlider* getTimelineWidget();
-//    void setTickNumber(int tick_number);
-//    void loadValues(const QStringList& values);
     virtual QStringList timeUnitNames() const override;
 
     virtual QString currentUnit() const override;

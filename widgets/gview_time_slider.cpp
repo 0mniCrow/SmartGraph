@@ -205,3 +205,38 @@ void TimeSlider::mousePressEvent(QMouseEvent* m_event)
     }
     return;
 }
+
+void TimeSlider::wheelEvent(QWheelEvent* w_event)
+{
+    if(_text_.size()<1)
+    {
+        return QSlider::wheelEvent(w_event);
+    }
+    w_event->accept();
+    int step = w_event->angleDelta().y()/120;
+    if(step<0)
+    {
+        int new_val = value() - std::abs(step)*WHEEL_STEP;
+        if(new_val<minimum())
+        {
+            setValue(minimum());
+        }
+        else
+        {
+            setValue(new_val);
+        }
+    }
+    else if (step>0)
+    {
+        int new_val = value()+step*WHEEL_STEP;
+        if(new_val>maximum())
+        {
+            setValue(maximum());
+        }
+        else
+        {
+            setValue(new_val);
+        }
+    }
+    return;
+}
