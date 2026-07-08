@@ -201,15 +201,7 @@ QSlider *GViewTimeTool::getTimelineWidget()
     return _time_slider_;
 }
 
-void TimeSlider::loadTextLabels(const QStringList& list)
-{
-    if(!_text_.isEmpty())
-    {
-        _text_.clear();
-    }
-    _text_ = list;
-    repaint();
-}
+
 
 QStringList GViewTimeTool::timeUnitNames() const
 {

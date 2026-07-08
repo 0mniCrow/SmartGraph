@@ -24,7 +24,6 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
     int range_mid = _text_.size()/2;
     qreal handle_mid = static_cast<qreal>(handle_rect.width())/2.0;     //палова шырыні ручкі слайдэра
-    //qreal tick_shift = handle_mid/static_cast<qreal>(range_mid);        //зрух адносна колькасці подпісаў
     qreal tick_sh_accum = 0;
     qreal label_y_pos = static_cast<qreal>(this->rect().height())/2;
     QFontMetrics fm = painter->fontMetrics();
@@ -65,6 +64,7 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
         }
         r_st.setX(t_pos);
         r_fn.setX(t_pos);
+        _positions_[i] = t_pos;
         if(i==adj_list.size()-1)
         {
             t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)));
@@ -161,7 +161,6 @@ QSize TimeSlider::sizeHint() const
 {
     QSize size = QSlider::sizeHint();
     size.setHeight(size.height()+20);
-    //size.setWidth(size.width()+20);
     return size;
 }
 
@@ -182,24 +181,18 @@ void TimeSlider::mousePressEvent(QMouseEvent* m_event)
         return;
     }
     int m_pos = m_event->pos().x();
-    qDebug()<<"Mouse pos:"<<m_pos;
-    QRect loc_rect = this->rect();
-    int rect_step = loc_rect.width()/(_text_.size()-1);
     int abs_val = INT_MAX;
     int closest_val = -1;
-    for(int i = 0; i<_text_.size();i++)
+    for(int i = 0; i<_positions_.size();i++)
     {
-        if(std::abs(rect_step*i-m_pos)<abs_val)
+        if(std::abs(_positions_.at(i)-m_pos)<abs_val)
         {
-            qDebug()<<"["<<rect_step*i<<"] closest pos elem ["<<i<<"];";
             closest_val = i;
-            abs_val = std::abs(rect_step*i-m_pos);
+            abs_val = std::abs(_positions_.at(i)-m_pos);
         }
     }
     if(closest_val>=0)
     {
-        qDebug()<<"Mouse pos:"<<m_pos;
-        qDebug()<<"Closest position:"<<closest_val;
         setValue(closest_val);
         emit sliderPressed();
     }
@@ -239,4 +232,16 @@ void TimeSlider::wheelEvent(QWheelEvent* w_event)
         }
     }
     return;
+}
+
+void TimeSlider::loadTextLabels(const QStringList& list)
+{
+    if(!_text_.isEmpty())
+    {
+        _text_.clear();
+    }
+    _text_ = list;
+    _positions_.resize(_text_.size());
+    _positions_.fill(0);
+    repaint();
 }

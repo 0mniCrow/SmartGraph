@@ -17,6 +17,7 @@ class TimeSlider: public QSlider
     Q_OBJECT
 private:
     QStringList _text_;
+    QVector<int> _positions_;
     int _min_val_;
     int _max_val_;
     int areLabelsAdjusted(const QList<QPair<int, int>>& text_metrix) const;

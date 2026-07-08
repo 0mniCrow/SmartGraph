@@ -126,7 +126,6 @@ public:
     bool deleteTimeUnit(const QString& time_object);
 signals:
     void stateChanged(int state);
-    void widgetRequireUpdate();
 public slots:
 
     virtual void stepForward() override;
