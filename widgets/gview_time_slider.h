@@ -24,6 +24,7 @@ private:
     QStringList adjustLabels(int step_x, const QFontMetrics& f_metrix) const;
     void collectPositions(QList<QPair<int,int>>& container, const QStringList& list,
                           int step_x, const QFontMetrics& f_metrix) const;
+    void alternativeCalculation(QPainter * painter, QRect& groove_rect, QStyleOptionSlider &s_option);
 public:
 
     explicit TimeSlider(Qt::Orientation orientation = Qt::Horizontal,

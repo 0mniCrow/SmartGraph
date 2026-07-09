@@ -20,6 +20,9 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     painter->save();
     painter->setPen(QPen(QBrush(Qt::black),1));
     QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
+
+    alternativeCalculation(painter,groove_rect,s_option);
+    /*
     QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
     qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
     int range_mid = _text_.size()/2;
@@ -88,9 +91,62 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     painter->setBrush(QColor(QColorConstants::Svg::orange));
     painter->setPen(Qt::NoPen);
     painter->drawRect(left_gr_rect);
+    */
     painter->restore();
     painter->end();
     delete painter;
+    return;
+}
+
+void TimeSlider::alternativeCalculation(QPainter * painter,QRect& groove_rect, QStyleOptionSlider& s_option)
+{
+    int range_step = groove_rect.width()/(_text_.size()-1);
+    for(int i = 0; i<_text_.size();i++)
+    {
+        if((!i)||(i==_text_.size()-1))
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-20,
+                              i*range_step,groove_rect.bottom()+10);
+        }
+        else
+        {
+            painter->drawLine(i*range_step,groove_rect.top()-10,
+                              i*range_step,groove_rect.bottom()+5);
+        }
+    }
+    painter->restore();
+    painter->save();
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+    style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
+    int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
+    int groove_h = groove_rect.height()/4;
+    QRect left_gr_rect = QRect(groove_rect.left(),groove_rect.top()+(groove_h*1.5),
+                               left_gr_side-groove_rect.left(),groove_rect.height()-(groove_h*2.5));
+    painter->setBrush(QColor(QColorConstants::Svg::orange));
+    painter->setPen(Qt::NoPen);
+    painter->drawRect(left_gr_rect);
+    painter->restore();
+    painter->setPen(QPen(Qt::black));
+    painter->setBrush(QBrush(Qt::yellow));
+    QRect rec = this->rect();
+    int mid = rec.height()/2;
+    int st = rec.width()/(_text_.size()-1);
+    QFontMetrics fm = painter->fontMetrics();
+    QStringList adj_list(adjustLabels(st,fm));
+    for(int i = 0; i<adj_list.size();i++)
+    {
+        int t_pos = st*i;
+        if(i==adj_list.size()-1)
+        {
+            t_pos -=fm.horizontalAdvance(adj_list.at(i));
+        }
+        else if(t_pos)
+        {
+            t_pos -=fm.horizontalAdvance(adj_list.at(i))/2;
+        }
+        QRect rt(t_pos,mid,st,20);
+        painter->drawText(rt,adj_list.at(i));
+    }
     return;
 }
 
