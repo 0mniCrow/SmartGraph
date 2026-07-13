@@ -489,7 +489,7 @@ void GViewTimeTool::newValue(int val)
     {
         return;
     }
-    qDebug()<<"new val called:"<<val;
+    //qDebug()<<"new val called:"<<val;
     setNewTime(val);
     return;
 }

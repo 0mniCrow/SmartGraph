@@ -12,12 +12,17 @@
 
 #define WHEEL_STEP 5
 
+/*
+ * Спадкавы клас QSlider з асабістым метадам малявання рысак і надпісаў.
+ * Дадаткова клас захоўвае "сапраўдныя" найвышэйшую і найменьшую вялічыні стрыжня слайдэра.
+*/
+
 class TimeSlider: public QSlider
 {
     Q_OBJECT
 private:
     QStringList _text_;
-    QVector<int> _positions_;
+    mutable QVector<int> _positions_;                       //Пазіцыі "рысак" слайдэра для вызначэння бліжэйшай пазіцыі ў mousePressEvent
     int _min_val_;
     int _max_val_;
     int areLabelsAdjusted(const QList<QPair<int, int>>& text_metrix) const;
@@ -25,6 +30,9 @@ private:
     void collectPositions(QList<QPair<int,int>>& container, const QStringList& list,
                           int step_x, const QFontMetrics& f_metrix) const;
     void alternativeCalculation(QPainter * painter, QRect& groove_rect, QStyleOptionSlider &s_option);
+    void drawLabels(QPainter* painter, const QRect& groove_rect, const QRect& handle_rect);
+    void drawSlider(QPainter* painter, QStyleOptionSlider& s_option,
+                    const QRect &groove_rect, const QRect& handle_rect);
 public:
 
     explicit TimeSlider(Qt::Orientation orientation = Qt::Horizontal,
