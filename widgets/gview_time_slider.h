@@ -22,23 +22,28 @@ class TimeSlider: public QSlider
     Q_OBJECT
 private:
     QStringList _text_;
+    QStringList _adj_labels_;
     mutable QVector<int> _positions_;                       //Пазіцыі "рысак" слайдэра для вызначэння бліжэйшай пазіцыі ў mousePressEvent
+    mutable bool _pos_recalc_needed_;
     int _min_val_;
     int _max_val_;
     int areLabelsAdjusted(const QList<QPair<int, int>>& text_metrix) const;
     QStringList adjustLabels(int step_x, const QFontMetrics& f_metrix) const;
     void collectPositions(QList<QPair<int,int>>& container, const QStringList& list,
                           int step_x, const QFontMetrics& f_metrix) const;
-    void alternativeCalculation(QPainter * painter, QRect& groove_rect, QStyleOptionSlider &s_option);
-    void drawLabels(QPainter* painter, const QRect& groove_rect, const QRect& handle_rect);
+    void alternativeCalculation(QPainter * painter, const QRect &groove_rect, const QRect &handle_rect, QStyleOptionSlider &s_option);
+    void drawLabels(QPainter* painter, const QRect& groove_rect);
     void drawSlider(QPainter* painter, QStyleOptionSlider& s_option,
                     const QRect &groove_rect, const QRect& handle_rect);
+    void invalidateLabelPos() {_pos_recalc_needed_=true; update();};
+    void recalculateLabelPos();
 public:
 
     explicit TimeSlider(Qt::Orientation orientation = Qt::Horizontal,
                         QWidget*parent = nullptr):QSlider(orientation,parent),
-        _min_val_(0),_max_val_(0)
+        _pos_recalc_needed_(true),_min_val_(0),_max_val_(0)
     {
+        connect(this,&QAbstractSlider::rangeChanged,this,[this](int,int){invalidateLabelPos();});
         return;
     }
     void loadTextLabels(const QStringList &list);
@@ -52,6 +57,9 @@ protected:
     QSize sizeHint() const override;
     void mousePressEvent(QMouseEvent* m_event) override;
     void wheelEvent(QWheelEvent* w_event) override;
+    void changeEvent(QEvent* c_event) override;
+    void resizeEvent(QResizeEvent* r_event) override;
+
 };
 
 #endif // GVIEW_TIME_SLIDER_H

@@ -16,141 +16,89 @@ void TimeSlider::paintEvent(QPaintEvent* p_event)
     painter->setRenderHint(QPainter::Antialiasing,true);
     QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
     QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
-    drawLabels(painter,groove_rect,handle_rect);
+    recalculateLabelPos();
+    drawLabels(painter,groove_rect);
     drawSlider(painter,s_option,groove_rect,handle_rect);
-    //alternativeCalculation(painter,groove_rect,s_option);
-    /*
-    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
-    int range_mid = _text_.size()/2;
-    qreal handle_mid = static_cast<qreal>(handle_rect.width())/2.0;     //палова шырыні ручкі слайдэра
-    qreal tick_sh_accum = 0;
-    qreal label_y_pos = static_cast<qreal>(this->rect().height())/2;
-    QFontMetrics fm = painter->fontMetrics();
-    QStringList adj_list(adjustLabels(this->rect().width()/(_text_.size()-1),fm));
-    for(int i = 0; i<_text_.size();i++)
-    {
-        QPointF r_st;
-        QPointF r_fn;
-        qreal t_pos = 0.0;
-        qreal tick_adj_to_handle = 0;                                   //ураўнаванне дзеля несупадзення
-                                                                        //ручкі слайдэра і тэкста
-        if((!i)||(i==(_text_.size()-1)))
-        {
-            t_pos = static_cast<qreal>(i)*range_step;
-            r_st.setY(groove_rect.top()-20);
-            r_fn.setY(groove_rect.bottom()+10);
-        }
-        else
-        {
-            if(i<range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step + tick_adj_to_handle;
-                tick_sh_accum+=handle_mid/static_cast<qreal>(range_mid);//tick_shift;
-            }
-            else if(i==range_mid)
-            {
-                t_pos = static_cast<qreal>(i)*range_step;
-            }
-            else if(i>range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step - tick_adj_to_handle;
-                tick_sh_accum-=handle_mid/static_cast<qreal>(range_mid-2);
-            }
-            r_st.setY(groove_rect.top()-10);
-            r_fn.setY(groove_rect.bottom()+5);
-        }
-        r_st.setX(t_pos);
-        r_fn.setX(t_pos);
-        _positions_[i] = t_pos;
-        if(i==adj_list.size()-1)
-        {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)));
-        }
-        else if(t_pos)
-        {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)))/2;
-        }
-        QRectF text_rect(t_pos,label_y_pos,range_step,20.0);
-        painter->drawText(text_rect,adj_list.at(i));
-        painter->drawLine(r_st,r_fn);
-    }
-    painter->restore();
-    painter->save();
 
-    style()->drawComplexControl(QStyle::CC_Slider,&s_option,painter,this);
-    int left_gr_side = handle_rect.center().x()-(handle_rect.width()/2);
-    int groove_h = groove_rect.height()/4;
-    QRect left_gr_rect = QRect(groove_rect.left(),groove_rect.top()+(groove_h*1.5),
-                               left_gr_side-groove_rect.left(),groove_rect.height()-(groove_h*2.5));
-    painter->setBrush(QColor(QColorConstants::Svg::orange));
-    painter->setPen(Qt::NoPen);
-    painter->drawRect(left_gr_rect);
-    */
+    //alternativeCalculation(painter,groove_rect,handle_rect,s_option);
     painter->end();
     delete painter;
     return;
 }
 
-void TimeSlider::drawLabels(QPainter* painter, const QRect &groove_rect, const QRect& handle_rect)
+void TimeSlider::recalculateLabelPos()
+{
+    if(!_pos_recalc_needed_)
+    {
+        return;
+    }
+    QStyleOptionSlider s_option;
+    initStyleOption(&s_option);
+    QRect groove_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderGroove,this);
+    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
+
+    int slider_len = handle_rect.width();
+    int slider_min = groove_rect.x();
+    int slider_max = groove_rect.right()- slider_len+1;
+    for(int i = 0; i< _text_.size();i++)
+    {
+        int text_pos = QStyle::sliderPositionFromValue(minimum(),maximum(),i,
+                                                       slider_max - slider_min,
+                                                       s_option.upsideDown);
+        if(!i)
+        {
+            _positions_[i] = text_pos;
+        }
+        else if(i==_text_.size()-1)
+        {
+            _positions_[i] = text_pos+slider_min+slider_len;
+        }
+        else
+        {
+            _positions_[i] = text_pos+slider_min+slider_len/2;
+        }
+    }
+    QFontMetrics fm = fontMetrics();
+    _adj_labels_ = adjustLabels(this->rect().width()/(_text_.size()-1),fm);
+    _pos_recalc_needed_=false;
+    return;
+}
+
+void TimeSlider::drawLabels(QPainter* painter, const QRect &groove_rect)
 {
     painter->save();
     painter->setPen(QPen(QBrush(Qt::black),1));
-    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
-    qreal handle_mid = static_cast<qreal>(handle_rect.width())/2.0;     //палова шырыні ручкі слайдэра
-    int range_mid = _text_.size()/2;
-    qreal tick_sh_accum = 0;
-    QFontMetrics fm = painter->fontMetrics();
-    QStringList adj_list(adjustLabels(this->rect().width()/(_text_.size()-1),fm));
     qreal label_y_pos = static_cast<qreal>(this->rect().height())/2;
-    for(int i = 0; i<_text_.size();i++)
+    QFontMetrics fm = painter->fontMetrics();
+    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
+    QPointF r_st;
+    QPointF r_fn;
+    for(int i = 0; i< _text_.size();i++)
     {
-        QPointF r_st;
-        QPointF r_fn;
-        qreal t_pos = 0.0;
-        qreal tick_adj_to_handle = 0;                                   //ураўнаванне дзеля несупадзення
-                                                                        //ручкі слайдэра і тэкста
-        if((!i)||(i==(_text_.size()-1)))
+        qreal t_pos = static_cast<qreal>(_positions_[i]);
+        r_st.setX(t_pos);
+        r_fn.setX(t_pos);
+        if((!i)||(i==_text_.size()-1))
         {
-            t_pos = static_cast<qreal>(i)*range_step;
             r_st.setY(groove_rect.top()-20);
             r_fn.setY(groove_rect.bottom()+10);
         }
         else
         {
-            if(i<range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step + tick_adj_to_handle;
-                tick_sh_accum+=handle_mid/static_cast<qreal>(range_mid);//tick_shift;
-            }
-            else if(i==range_mid)
-            {
-                t_pos = static_cast<qreal>(i)*range_step;
-            }
-            else if(i>range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step - tick_adj_to_handle;
-                tick_sh_accum-=handle_mid/static_cast<qreal>(range_mid-2);
-            }
             r_st.setY(groove_rect.top()-10);
             r_fn.setY(groove_rect.bottom()+5);
         }
-        r_st.setX(t_pos);
-        r_fn.setX(t_pos);
-        _positions_[i] = t_pos;
-        if(i==adj_list.size()-1)
+
+        if(i==_adj_labels_.size()-1)
         {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)));
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(_adj_labels_.at(i)));
         }
         else if(t_pos)
         {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)))/2;
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(_adj_labels_.at(i)))/2;
         }
         QRectF text_rect(t_pos,label_y_pos,range_step,20.0);
-        painter->drawText(text_rect,adj_list.at(i));
+        painter->drawText(text_rect,_adj_labels_.at(i));
         painter->drawLine(r_st,r_fn);
     }
     painter->restore();
@@ -173,63 +121,40 @@ void TimeSlider::drawSlider(QPainter* painter, QStyleOptionSlider &s_option,
     return;
 }
 
-void TimeSlider::alternativeCalculation(QPainter * painter,QRect& groove_rect, QStyleOptionSlider& s_option)
+void TimeSlider::alternativeCalculation(QPainter * painter,const QRect& groove_rect, const QRect &handle_rect, QStyleOptionSlider& s_option)
 {
-    QRect handle_rect = style()->subControlRect(QStyle::CC_Slider,&s_option,QStyle::SC_SliderHandle,this);
-    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
-    int range_mid = _text_.size()/2;
-    qreal handle_mid = static_cast<qreal>(handle_rect.width())/2.0;     //палова шырыні ручкі слайдэра
-    qreal tick_sh_accum = 0;
+    painter->save();
     qreal label_y_pos = static_cast<qreal>(this->rect().height())/2;
     QFontMetrics fm = painter->fontMetrics();
-    QStringList adj_list(adjustLabels(this->rect().width()/(_text_.size()-1),fm));
-
-    for(int i = 0; i<_text_.size();i++)
+    qreal range_step = static_cast<qreal>(groove_rect.width())/static_cast<qreal>(_text_.size()-1);
+    QPointF r_st;
+    QPointF r_fn;
+    for(int i = 0; i< _text_.size();i++)
     {
-        QPointF r_st;
-        QPointF r_fn;
-        qreal t_pos = 0.0;
-        qreal tick_adj_to_handle = 0;
+        qreal t_pos = static_cast<qreal>(_positions_[i]);
+        r_st.setX(t_pos);
+        r_fn.setX(t_pos);
         if((!i)||(i==_text_.size()-1))
         {
-            t_pos = static_cast<qreal>(i)*range_step;
             r_st.setY(groove_rect.top()-20);
             r_fn.setY(groove_rect.bottom()+10);
-
         }
         else
         {
-            if(i<range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step + tick_adj_to_handle;
-                tick_sh_accum+=handle_mid/static_cast<qreal>(range_mid);//tick_shift;
-            }
-            else if(i==range_mid)
-            {
-                t_pos = static_cast<qreal>(i)*range_step;
-            }
-            else if(i>range_mid)
-            {
-                tick_adj_to_handle = handle_mid-tick_sh_accum;
-                t_pos = static_cast<qreal>(i)*range_step - tick_adj_to_handle;
-                tick_sh_accum-=handle_mid/static_cast<qreal>(range_mid-2);
-            }
             r_st.setY(groove_rect.top()-10);
             r_fn.setY(groove_rect.bottom()+5);
         }
-        r_st.setX(t_pos);
-        r_fn.setX(t_pos);
-        if(i==adj_list.size()-1)
+
+        if(i==_adj_labels_.size()-1)
         {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)));
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(_adj_labels_.at(i)));
         }
         else if(t_pos)
         {
-            t_pos -=static_cast<qreal>(fm.horizontalAdvance(adj_list.at(i)))/2;
+            t_pos -=static_cast<qreal>(fm.horizontalAdvance(_adj_labels_.at(i)))/2;
         }
         QRectF text_rect(t_pos,label_y_pos,range_step,20.0);
-        painter->drawText(text_rect,adj_list.at(i));
+        painter->drawText(text_rect,_adj_labels_.at(i));
         painter->drawLine(r_st,r_fn);
     }
     painter->restore();
@@ -395,5 +320,36 @@ void TimeSlider::loadTextLabels(const QStringList& list)
     _text_ = list;
     _positions_.resize(_text_.size());
     _positions_.fill(0);
+    _pos_recalc_needed_ = true;
+    recalculateLabelPos();
     repaint();
+}
+
+void TimeSlider::changeEvent(QEvent* c_event)
+{
+    QSlider::changeEvent(c_event);
+    switch(c_event->type())
+    {
+    case QEvent::StyleChange:
+        [[fallthrough]];
+    case QEvent::FontChange:
+        [[fallthrough]];
+    case QEvent::LayoutDirectionChange:
+    {
+        invalidateLabelPos();
+    }
+        break;
+    default:
+    {
+
+    }
+    }
+    return;
+}
+
+void TimeSlider::resizeEvent(QResizeEvent* r_event)
+{
+    QSlider::resizeEvent(r_event);
+    invalidateLabelPos();
+    return;
 }
