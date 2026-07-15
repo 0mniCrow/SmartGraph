@@ -28,6 +28,7 @@
 #include "widgets/gview_tooltip_window.h"
 #include "widgets/gview_edit_window.h"
 #include "imagecropwindow.h"
+#include "supplement/gview_time_objects.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
 typedef QMap<QString,QString> vert_map;
@@ -51,6 +52,8 @@ private:
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
                   GV_Def_Icon = 0x10};
     QVector<GViewEdge*>     _edges_;
+    QMap<gview_time_t,
+                   QPointF> _states_;
     QPixmap*                _default_pixmap_;
     QPixmap                 _orig_pixmap_;
     QPixmap                 _icon_;
@@ -134,6 +137,8 @@ private slots:
     void loadImageFromDialog();
     void deleteImageDialog();
     void getNewInfo(const QString& new_val);
+public slots:
+    void timeChanged(gview_time_t);
 signals:
     void changedInternally(GViewItem* self);
     void changedExternally(QString new_val);

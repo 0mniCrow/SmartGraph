@@ -93,6 +93,12 @@ public:
     virtual char type() const noexcept override {return TUnit_Fixed;}
 };
 
+class WeekdayTObj: public FixedTObject
+{
+
+};
+
+
 class VariantTObject: public GViewBaseTObject
 {
 private:
