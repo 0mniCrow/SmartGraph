@@ -781,3 +781,61 @@ void GViewItem::deleteImageDialog()
     _pic_load_dialog_->deleteLater();
     _pic_load_dialog_ = nullptr;
 }
+
+void GViewItem::timeChanged(gview_time_t n_time)
+{
+    Q_UNUSED(n_time)
+    return;
+}
+
+void GViewItem::addState(g_time time, ItemState state)
+{
+    auto it = _states_.find(time);
+    if(it!=_states_.end())
+    {
+        it.value()=state;
+    }
+    else
+    {
+        _states_.insert(time,state);
+    }
+    return;
+}
+
+ItemState GViewItem::stateFromCurVal() const
+{
+    ItemState cur_state;
+    cur_state._pos_ = pos();
+    cur_state._val_ = _info_;
+    cur_state._modes_ = ItemState::invalid;
+    return cur_state;
+}
+
+ItemState GViewItem::curState(g_time time) const
+{
+    if(_states_.isEmpty()||
+            time<_states_.firstKey())
+    {
+        return stateFromCurVal();
+    }
+    auto it = _states_.cbegin();
+    while(it!=_states_.cend())
+    {
+        if(it.key()==time)
+        {
+            return it.value();
+        }
+        else if(it.key()>time)
+        {
+            return (--it).value();
+        }
+        ++it;
+    }
+    return _states_.last();
+}
+
+void GViewItem::removeState(g_time time)
+{
+    _states_.remove(time);
+    return;
+}

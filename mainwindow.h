@@ -71,6 +71,7 @@ private slots:
     void tlStepForward();
     void tlJumpForward();
     void tlChangeScale(int index);
+    void tlTimeChanged(gview_time n_time);
 
     //_______________End______________________
 private:

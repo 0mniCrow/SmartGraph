@@ -28,7 +28,7 @@
 #include "widgets/gview_tooltip_window.h"
 #include "widgets/gview_edit_window.h"
 #include "imagecropwindow.h"
-#include "supplement/gview_time_objects.h"
+#include "widgets/gview_timeline_tool.h"
 
 /*#define INFO_COMPLEX_OBJECT*/
 typedef QMap<QString,QString> vert_map;
@@ -39,9 +39,26 @@ typedef QMap<QString,QString> vert_map;
     using info_type = QString;
 #endif
 
+using g_time = gview_time;
+
 #define ICON_SIZE QSize(32,32)
 
 class GViewEdge;
+
+struct ItemState
+{
+    enum ItemStateMode
+    {
+        noMode = 0x00,
+        smoothPosMove = 0x01,
+        posChange = 0x02,
+        valueChange = 0x04,
+        invalid = 0xFF
+    };
+    char _modes_;
+    QPointF _pos_;
+    info_type _val_;
+};
 
 class GViewItem:public QGraphicsObject
 {
@@ -52,8 +69,7 @@ private:
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
                   GV_Def_Icon = 0x10};
     QVector<GViewEdge*>     _edges_;
-    QMap<gview_time_t,
-                   QPointF> _states_;
+    QMap<g_time,ItemState>  _states_;
     QPixmap*                _default_pixmap_;
     QPixmap                 _orig_pixmap_;
     QPixmap                 _icon_;
@@ -79,6 +95,7 @@ private:
     void drawVertexCircle(QPainter* painter);
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
+    ItemState stateFromCurVal() const;
 public:
 
 
@@ -119,6 +136,9 @@ public:
 
     void gatherInfo(vert_map* item_container) const;
     void callPicDialog();
+    void addState(g_time time, ItemState state);
+    ItemState curState(g_time time) const;
+    void removeState(g_time time);
 protected:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -138,7 +158,7 @@ private slots:
     void deleteImageDialog();
     void getNewInfo(const QString& new_val);
 public slots:
-    void timeChanged(gview_time_t);
+    void timeChanged(gview_time_t n_time);
 signals:
     void changedInternally(GViewItem* self);
     void changedExternally(QString new_val);

@@ -879,6 +879,10 @@ void MainWindow::initiateGraphicsView()
 
 void MainWindow::initiateTimelineTool()
 {
+    if(_timeline_interface_)
+    {
+        return;
+    }
     _timeline_interface_ = new GViewTimeTool(0,10000000,388112,1000);
     ui->combo_time_scale->insertItems(0,_timeline_interface_->timeUnitNames());
     updateTimeTool();
@@ -893,6 +897,7 @@ void MainWindow::initiateTimelineTool()
     connect(ui->button_time_jumpback,&QPushButton::clicked,this,&MainWindow::tlJumpBack);
     connect(ui->button_time_jumpforward,&QPushButton::clicked,this,&MainWindow::tlJumpForward);
     connect(ui->combo_time_scale,&QComboBox::currentIndexChanged,this,&MainWindow::tlChangeScale);
+    connect(_timeline_interface_,&GViewTimeInterface::currentTimeChanged,this,&MainWindow::tlTimeChanged);
     return;
 }
 
@@ -1347,5 +1352,22 @@ void MainWindow::tlChangeScale(int index)
         return;
     }
     _timeline_interface_->setScale(ui->combo_time_scale->itemText(index));
+    return;
+}
+
+void MainWindow::tlTimeChanged(gview_time n_time)
+{
+    Q_UNUSED(n_time)
+    QMap<QString,int> time;
+    _timeline_interface_->getTime(time);
+    QString time_str;
+    auto it = time.begin();
+    while(it!=time.end())
+    {
+        time_str.append(it.key()+": "+QString::number(it.value())+",");
+        it++;
+    }
+    time_str.chop(1);
+    ui->line_time_info->setText(time_str);
     return;
 }
