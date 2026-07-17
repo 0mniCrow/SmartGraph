@@ -784,6 +784,7 @@ void GViewItem::deleteImageDialog()
 
 void GViewItem::timeChanged(gview_time_t n_time)
 {
+
     Q_UNUSED(n_time)
     return;
 }
@@ -809,6 +810,24 @@ ItemState GViewItem::stateFromCurVal() const
     cur_state._val_ = _info_;
     cur_state._modes_ = ItemState::invalid;
     return cur_state;
+}
+
+QMap<g_time,ItemState>::Iterator GViewItem::findCurrentTime(g_time time)
+{
+    auto it = _states_.begin();
+    while(it!=_states_.end())
+    {
+        if(it.key()==time)
+        {
+            return it;
+        }
+        else if(it.key()>time)
+        {
+            return --it;
+        }
+        ++it;
+    }
+    return --it;
 }
 
 ItemState GViewItem::curState(g_time time) const

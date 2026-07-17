@@ -70,6 +70,7 @@ private:
                   GV_Def_Icon = 0x10};
     QVector<GViewEdge*>     _edges_;
     QMap<g_time,ItemState>  _states_;
+    QMap<g_time,ItemState>::Iterator _cur_state_;
     QPixmap*                _default_pixmap_;
     QPixmap                 _orig_pixmap_;
     QPixmap                 _icon_;
@@ -96,6 +97,7 @@ private:
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
     ItemState stateFromCurVal() const;
+    QMap<g_time,ItemState>::Iterator findCurrentTime(g_time time);
 public:
 
 
