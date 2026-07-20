@@ -97,7 +97,8 @@ private:
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
     ItemState stateFromCurVal() const;
-    QMap<g_time,ItemState>::Iterator findCurrentTime(g_time time);
+    QMap<g_time,ItemState>::Iterator findCurState(g_time time);
+    g_time getCurTime();
 public:
 
 

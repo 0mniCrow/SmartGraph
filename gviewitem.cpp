@@ -812,7 +812,7 @@ ItemState GViewItem::stateFromCurVal() const
     return cur_state;
 }
 
-QMap<g_time,ItemState>::Iterator GViewItem::findCurrentTime(g_time time)
+QMap<g_time,ItemState>::Iterator GViewItem::findCurState(g_time time)
 {
     auto it = _states_.begin();
     while(it!=_states_.end())
@@ -828,6 +828,17 @@ QMap<g_time,ItemState>::Iterator GViewItem::findCurrentTime(g_time time)
         ++it;
     }
     return --it;
+}
+
+g_time GViewItem::getCurTime()
+{
+    QGraphicsView* view = scene()->views().first();
+    GViewPort* port = dynamic_cast<GViewPort*>(view);
+    if(!port)
+    {
+        return static_cast<g_time>(0);
+    }
+    return port->getCurTime();
 }
 
 ItemState GViewItem::curState(g_time time) const

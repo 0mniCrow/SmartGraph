@@ -52,6 +52,7 @@ HEADERS += \
     graphic_elements/infowidget.h \
     graphic_elements/nameelement.h \
     graphic_elements/nodeobjectinfo.h \
+    graphic_objects/abstractitem.h \
     gview_localization_controller.h \
     gview_tableVertexModel.h \
     gview_tableVertexTableDelegate.h \

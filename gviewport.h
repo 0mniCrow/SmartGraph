@@ -39,8 +39,8 @@ public:
     void setMode(GPort_Mode mode);
     void setControlState(GPort_Controls mode, bool state);
     GPort_Mode mode() const {return _mode_;}
-    char controlState() const {return _controls_state_;}
-    int vertRadius()const {return _vertex_radius_;}
+    char controlState() const noexcept{return _controls_state_;}
+    int vertRadius()const noexcept {return _vertex_radius_;}
     void setRadius(int radius);
     bool loadListGraph(const ListGraph& graph);
     void itemMoved();
@@ -54,6 +54,8 @@ public:
     GviewLangControl* setTranslationTool(GviewLangControl* translation_tool);
     GviewLangControl* getTranslationTool() const;
     QStringList getTranslatableObjects() const;
+    g_time getCurTime() const noexcept{return _cur_time_;};
+    void setCurTime(const g_time& time) noexcept {_cur_time_=time;};
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
@@ -62,6 +64,7 @@ protected:
     void wheelEvent(QWheelEvent* w_event) override;
     void timerEvent(QTimerEvent * t_event) override;
 private:
+    g_time _cur_time_;
     VertexModel * _vertices_;
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
