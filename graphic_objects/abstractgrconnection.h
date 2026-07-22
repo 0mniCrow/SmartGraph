@@ -1,10 +1,14 @@
 #ifndef ABSTRACTGRCONNECTION_H
 #define ABSTRACTGRCONNECTION_H
 #include "abstractGrInterface.h"
-#include "abstractGrItem.h"
+#include <QGraphicsObject>
+#include <QPointF>
+
+class AbstractGrItem;
 
 class AbstractGrConnection:public AbstractGrInterface, public QGraphicsObject
 {
+    Q_OBJECT
 private:
     QPointF _src_point_;
     QPointF _dest_point_;
@@ -15,7 +19,7 @@ private:
     qreal _arrowSize_ = 10;
     qreal _weight_;
 public:
-    AbstractGrConnection();
+    AbstractGrConnection(QGraphicsItem* tata = nullptr);
 };
 
 #endif // ABSTRACTGRCONNECTION_H

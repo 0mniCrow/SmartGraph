@@ -1,6 +1,7 @@
 #include "abstractgrconnection.h"
+#include "abstractGrItem.h"
 
-AbstractGrConnection::AbstractGrConnection()
+AbstractGrConnection::AbstractGrConnection(QGraphicsItem *tata):QGraphicsObject(tata)
 {
 
 }
