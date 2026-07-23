@@ -20,6 +20,7 @@ SOURCES += \
     graphic_elements/nodeobjectinfo.cpp \
     graphic_objects/abstractGrItem.cpp \
     graphic_objects/abstractgrconnection.cpp \
+    graphic_objects/itemcommunicator.cpp \
     gview_localization_controller.cpp \
     gview_tableVertexModel.cpp \
     gview_tableVertexTableDelegate.cpp \
@@ -57,6 +58,7 @@ HEADERS += \
     graphic_objects/abstractGrInterface.h \
     graphic_objects/abstractGrItem.h \
     graphic_objects/abstractgrconnection.h \
+    graphic_objects/itemcommunicator.h \
     gview_localization_controller.h \
     gview_tableVertexModel.h \
     gview_tableVertexTableDelegate.h \

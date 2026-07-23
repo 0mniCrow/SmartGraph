@@ -20,6 +20,7 @@ private:
     qreal _weight_;
 public:
     AbstractGrConnection(QGraphicsItem* tata = nullptr);
+    void recalculate();
 };
 
 #endif // ABSTRACTGRCONNECTION_H
