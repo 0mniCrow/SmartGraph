@@ -38,6 +38,7 @@ private:
     void drawVertexCircle(QPainter* painter);
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
+    void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
 protected:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,

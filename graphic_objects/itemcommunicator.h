@@ -27,11 +27,11 @@ public:
     explicit ItemCommunicator(QObject *parent = nullptr);
     void setCurTime();
     void getCurTime();
-    void startToolTipTimer(AbstractGrItem* gr_sender);
+    void startToolTipTimer(AbstractGrItem* gr_sender, const QPoint& pos);
     void stopToolTipTimer();
     void setDefImage(const QString& imgAddr);
     const QPixmap& getDefImage() const;
-    void callEditWindow(AbstractGrItem* gr_sender);
+    void callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos);
     void itemIsMoved();
 
 signals:

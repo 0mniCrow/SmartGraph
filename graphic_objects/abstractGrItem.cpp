@@ -18,9 +18,6 @@ AbstractGrItem::~AbstractGrItem()
 
 }
 
-/* Метад вызначае й перамалёўвае іконку на аб'екце
-   Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
-
 void AbstractGrItem::keepInBorders()
 {
     QRectF sceneRect = scene()->sceneRect();
@@ -31,6 +28,8 @@ void AbstractGrItem::keepInBorders()
     return;
 }
 
+/* Метад вызначае й перамалёўвае іконку на аб'екце
+   Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
 void AbstractGrItem::iconUpdate()
 {
     if(_orig_pixmap_.isNull() &&
@@ -72,21 +71,64 @@ void AbstractGrItem::iconUpdate()
     return;
 }
 
+/*Метад вызначае новую пазіцыю аб'екта з улікам
+ * штучнага запавольвання (калі карыстальнік націсквае
+ * на аб'ект і перасоўвае яго). У выпадку, калі рэальны (нябачны)
+ * курсор выйшаў за мяжы віджэта (wrapped), метад пераносіць курсор
+ * назад да аб'екта.*/
+void AbstractGrItem::calculateObjectPosition(const QPointF &event_pos, const QPointF &prev_pos)
+{
+    QPointF delta = (event_pos-prev_pos) * MOUSE_SENSE_ITEM_DECR;
+    QPointF new_pos(pos()+delta);
+
+    QRect vpRect = scene()->views().first()->viewport()->rect();
+    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
+    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
+    QPoint globalPos(QCursor::pos());
+    bool wrapped = false;
+    if (globalPos.x() <= topLeft.x())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.x() >= bottomRight.x())
+    {
+        wrapped = true;
+    }
+    if (globalPos.y() <= topLeft.y())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.y() >= bottomRight.y())
+    {
+        wrapped = true;
+    }
+
+    if (wrapped)
+    {
+        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
+        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+        QCursor::setPos(gl_pos);
+        setGrFlag(GV_Ignore_Next_Move,true);
+    }
+    setPos(new_pos);
+    return;
+}
+
 QRectF AbstractGrItem::boundingRect() const
 {
     int select_inflate = isSelected()?SELECTED_ITEM_RISE:0.0;
     double borders = 0;
     if(_flags_&GV_Is_Clicked)
     {
-        borders = LINE_ITEM_CLICKED_WIDTH;
+        borders = LINE_ITEM_CLICKED_WIDTH;              //Памер для націснутага элемента
     }
     else if(isSelected())
     {
-        borders = LINE_ITEM_SELECT_WIDTH;
+        borders = LINE_ITEM_SELECT_WIDTH;               //Памер для вызначанага элемента
     }
     else
     {
-        borders = LINE_ITEM_BASE_WIDTH;
+        borders = LINE_ITEM_BASE_WIDTH;                 //Стандартны памер
     }
     return QRectF(-_radius_ - borders - select_inflate,
                   -_radius_ - borders - select_inflate,
@@ -179,7 +221,7 @@ void AbstractGrItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
 {
     if(_communicator_)
     {
-        _communicator_->callEditWindow(this);
+        _communicator_->callEditWindow(this, m_event->screenPos());
     //callEditWindow(m_event);
     }
     m_event->accept();
@@ -205,17 +247,79 @@ void AbstractGrItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 
 void AbstractGrItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
+    if(!(flags()&ItemIsMovable))
+    {
+        m_event->ignore();
+        return;
+    }
+    if(_flags_&GV_Ignore_Next_Move)
+    {
+        setGrFlag(GV_Ignore_Next_Move,false);
+        m_event->ignore();
+        return;
+    }
+    calculateObjectPosition(m_event->scenePos(),m_event->lastScenePos());
+    /*
+    QPointF delta = (m_event->scenePos()-m_event->lastScenePos()) * MOUSE_SENSE_ITEM_DECR;
+    QPointF new_pos(pos()+delta);
 
+    QRect vpRect = scene()->views().first()->viewport()->rect();
+    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
+    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
+    QPoint globalPos(QCursor::pos());
+    bool wrapped = false;
+    if (globalPos.x() <= topLeft.x())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.x() >= bottomRight.x())
+    {
+        wrapped = true;
+    }
+    if (globalPos.y() <= topLeft.y())
+    {
+        wrapped = true;
+    }
+    else if (globalPos.y() >= bottomRight.y())
+    {
+        wrapped = true;
+    }
+
+    if (wrapped)
+    {
+        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
+        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+        QCursor::setPos(gl_pos);
+        setGrFlag(GV_Ignore_Next_Move,true);
+    }
+    setPos(new_pos);
+    */
+    m_event->accept();
+    return;
 }
 
 void AbstractGrItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
 {
-
+    _last_screen_pos_ = h_event->screenPos();
+    if(_communicator_)
+    {
+        _communicator_->startToolTipTimer(this,h_event->screenPos());
+    }
+    //startTipTimer();
+    update();
+    return QGraphicsItem::hoverEnterEvent(h_event);
 }
 
 void AbstractGrItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
-
+    _last_screen_pos_ = QPoint();
+    if(_communicator_)
+    {
+        _communicator_->stopToolTipTimer();
+    }
+    //breakTipTimer();
+    update();
+    return QGraphicsItem::hoverLeaveEvent(h_event);
 }
 
 void AbstractGrItem::setItemCommunicator(ItemCommunicator* communicator)
