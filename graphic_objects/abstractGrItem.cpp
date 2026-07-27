@@ -71,6 +71,146 @@ void AbstractGrItem::iconUpdate()
     return;
 }
 
+void AbstractGrItem::drawVertexCircle(QPainter* painter)
+{
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    QColor cur_color;
+    QPen cur_pen;
+    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
+    {
+        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        cur_color = QColorConstants::Svg::orange;
+    }
+    else
+    {
+        if(isUnderMouse())
+        {
+            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        Qt::yellow:
+                        QColorConstants::Svg::lightcyan;
+        }
+        else if(isSelected())
+        {
+            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::palegoldenrod:
+                        QColorConstants::Svg::lightskyblue;
+        }
+        else
+        {
+            cur_pen.setColor(QColorConstants::Svg::white);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::slategray:
+                        QColorConstants::Svg::powderblue;
+        }
+    }
+    painter->setBrush(cur_color);
+    painter->setPen(cur_pen);
+
+    painter->drawEllipse(ellipse_rect);
+    return;
+}
+
+void AbstractGrItem::drawVertexIcon(QPainter* painter)
+{
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    QColor mask_color;
+    QPen cur_pen;
+    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
+    {
+        cur_pen.setColor(QColorConstants::Svg::orangered);
+        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        mask_color = QColorConstants::Svg::cyan;
+        if(!(_flags_&GV_Def_Icon))
+        {
+            mask_color.setAlpha(40);
+        }
+    }
+    else
+    {
+        if(isUnderMouse())
+        {
+            cur_pen.setColor(QColorConstants::Svg::yellow);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            mask_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::wheat:
+                        QColorConstants::Svg::tomato;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(50);
+            }
+        }
+        else if(isSelected())
+        {
+            cur_pen.setColor(QColorConstants::Svg::orange);
+            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            mask_color = (flags()&ItemIsMovable)?
+                        QColorConstants::Svg::gold:
+                        QColorConstants::Svg::cornsilk;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(30);
+            }
+        }
+        else
+        {
+            cur_pen.setColor(QColorConstants::Svg::lightslategrey);
+            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            mask_color = Qt::gray;
+            if(!(_flags_&GV_Def_Icon))
+            {
+                mask_color.setAlpha(75);
+            }
+        }
+    }
+    if(_flags_&GV_Def_Icon)
+    {
+        painter->setBrush(mask_color);
+        painter->drawEllipse(ellipse_rect);
+        painter->drawPixmap(-_radius_,-_radius_,_icon_);
+        painter->setBrush(Qt::NoBrush);
+        painter->setPen(cur_pen);
+        painter->drawEllipse(ellipse_rect);
+    }
+    else
+    {
+        painter->drawPixmap(-_radius_,-_radius_,_icon_);
+        painter->setBrush(mask_color);
+        painter->setPen(cur_pen);
+        painter->drawEllipse(ellipse_rect);
+    }
+}
+
+void AbstractGrItem::drawPinNeedle(QPainter* painter)
+{
+    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
+    QPolygonF pin_needle;
+    qreal pin_stem_rad = 220*M_PI/180;
+    QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
+                         ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
+    QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
+    qreal ux = pin_stem_line.dx()/pin_stem_line.length();
+    qreal uy = pin_stem_line.dy()/pin_stem_line.length();
+    qreal vx = -uy;
+    qreal vy = ux;
+    QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
+                              pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
+    QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
+                              pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
+    pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
+    painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
+    painter->setPen(QPen(Qt::black,1));
+    painter->drawPolygon(pin_needle);
+    painter->setBrush(QBrush(Qt::red));
+    painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
+    return;
+}
+
 /*Метад вызначае новую пазіцыю аб'екта з улікам
  * штучнага запавольвання (калі карыстальнік націсквае
  * на аб'ект і перасоўвае яго). У выпадку, калі рэальны (нябачны)
@@ -459,4 +599,90 @@ void AbstractGrItem::drawGr()
 {
     update();
     return;
+}
+
+void AbstractGrItem::calcForce()
+{
+    if(!scene() || scene()->mouseGrabberItem() == this||
+            !(_flags_&GV_Is_Forced))
+    {
+        _adv_pos_ = pos();
+        return;
+    }
+
+    qreal vel_x = 0.0;
+    qreal vel_y = 0.0;
+                                                                    //Пошук зоны каля вяршыні
+    QRectF sceneRect = scene()->sceneRect();
+    QPointF cur_pos = scenePos();
+    QPointF zone_TL,zone_BR;
+    double zone_width = _radius_*5;
+    zone_TL.setX(qMax(cur_pos.x()-zone_width,sceneRect.left()));
+    zone_TL.setY(qMax(cur_pos.y()-zone_width,sceneRect.top()));
+    zone_BR.setX(qMin(mapToScene(boundingRect().bottomRight()).x()
+                      +zone_width,sceneRect.right()));
+    zone_BR.setY(qMin(mapToScene(boundingRect().bottomRight()).y()
+                      +zone_width,sceneRect.bottom()));
+    QRectF zone_rect(zone_TL,zone_BR);
+
+                                                                    //Пошук графічных аб'ектаў у зоне каля вяршыні
+    const QList<QGraphicsItem*> items(scene()->items(zone_rect));
+    for(QGraphicsItem* item:items)
+    {
+        GViewItem* g_item = qgraphicsitem_cast<GViewItem*>(item);
+        if(!g_item)
+        {
+            continue;
+        }
+        QPointF vect = mapToItem(g_item,0.0,0.0);
+        qreal dx = vect.x();
+        qreal dy = vect.y();
+        double len = 2.0 * (std::pow(dx,2.0)+std::pow(dy,2.0));
+        if(len>0)
+        {
+            vel_x+= (dx*150.0)/len;
+            vel_y+= (dy*150.0)/len;
+        }
+    }
+    double weight = (_edges_.size()+1) * 10;
+    for(const AbstractGrConnection* edge: std::as_const(_edges_))
+    {
+        QPointF vect;
+        if(edge->source()==this)
+        {
+            vect = mapToItem(edge->destination(),0,0);
+        }
+        else
+        {
+            vect = mapToItem(edge->source(),0,0);
+        }
+        //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
+        QPointF delta(mapFromItem(edge->source(),0,0) - mapFromItem(edge->destination(),0,0));
+        qreal dist = std::hypot(delta.x(),delta.y());
+        //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
+        if(dist>=edge->grWeight())
+        {
+            vel_x -= vect.x()/weight;
+            vel_y -= vect.y()/weight;
+        }
+    }
+    if(qAbs(vel_x)<0.1 && qAbs(vel_y)<0.1)
+    {
+        vel_x = 0.0;
+        vel_y = 0.0;
+    }
+    _adv_pos_ = pos()+QPointF(vel_x,vel_y);
+    _adv_pos_.setX(qMin(qMax(_adv_pos_.x(), sceneRect.left() + _radius_), sceneRect.right() - _radius_));
+    _adv_pos_.setY(qMin(qMax(_adv_pos_.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
+    return;
+}
+
+bool AbstractGrItem::advPosition()
+{
+    if(_adv_pos_ == pos())
+    {
+        return false;
+    }
+    setPos(_adv_pos_);
+    return true;
 }

@@ -8,8 +8,6 @@
 #include <QPoint>
 #include <QPointF>
 
-
-
 #define DEF_ITEM_RADIUS 20
 #define MIN_ITEM_RADIUS 10
 #define LINE_ITEM_CLICKED_WIDTH 3.0
@@ -33,12 +31,14 @@ private:
     ItemCommunicator*                   _communicator_;
     int                                 _radius_;
     char                                _flags_;
+
     void keepInBorders();
     void iconUpdate();
     void drawVertexCircle(QPainter* painter);
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
     void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
+
 protected:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
@@ -75,6 +75,12 @@ public:
     QList<AbstractGrConnection*> getEdges() const;
     void setImage(const QPixmap& image);
     QPixmap getImage() const { return _orig_pixmap_; }
+
+    bool isForceCalc()const {return _flags_&GV_Is_Forced;}
+    void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}
+    void calcForce();
+    bool advPosition();
+
 
     virtual void setGrX(coord_real x) override;
     virtual void setGrY(coord_real y) override;

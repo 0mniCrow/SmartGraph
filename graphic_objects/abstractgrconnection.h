@@ -21,6 +21,12 @@ private:
 public:
     AbstractGrConnection(QGraphicsItem* tata = nullptr);
     void recalculate();
+    AbstractGrItem* source()const noexcept{return _src_item_;}
+    AbstractGrItem* destination() const noexcept{return _dest_item_;}
+    void setSource(AbstractGrItem* src);
+    void setDestination(AbstractGrItem* dest);
+    qreal grWeight() const noexcept{return _weight_;}
+    void setGrWeight(qreal weight) noexcept {_weight_ = weight;}
 };
 
 #endif // ABSTRACTGRCONNECTION_H
