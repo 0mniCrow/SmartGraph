@@ -10,20 +10,11 @@ CONFIG += c++17
 
 SOURCES += \
     Graph_algorithms.cpp \
-    graphic_elements/abstractelement.cpp \
-    graphic_elements/abstractobjectinfo.cpp \
-    graphic_elements/dateelement.cpp \
-    graphic_elements/imageelement.cpp \
-    graphic_elements/infoelement.cpp \
-    graphic_elements/infowidget.cpp \
-    graphic_elements/nameelement.cpp \
-    graphic_elements/nodeobjectinfo.cpp \
     graphic_objects/abstractGrItem.cpp \
     graphic_objects/abstractgrconnection.cpp \
     graphic_objects/itemcommunicator.cpp \
     gview_localization_controller.cpp \
     gview_tableVertexModel.cpp \
-    gview_tableVertexTableDelegate.cpp \
     gview_tableVertexView.cpp \
     gviewedge.cpp \
     gviewitem.cpp \
@@ -47,14 +38,6 @@ SOURCES += \
 HEADERS += \
     Graph_algorithms.h \
     Graph_algorithms_supply.h \
-    graphic_elements/abstractelement.h \
-    graphic_elements/abstractobjectinfo.h \
-    graphic_elements/dateelement.h \
-    graphic_elements/imageelement.h \
-    graphic_elements/infoelement.h \
-    graphic_elements/infowidget.h \
-    graphic_elements/nameelement.h \
-    graphic_elements/nodeobjectinfo.h \
     graphic_objects/abstractGrInterface.h \
     graphic_objects/abstractGrItem.h \
     graphic_objects/abstractgrconnection.h \
@@ -62,7 +45,6 @@ HEADERS += \
     graphic_objects/templateItemData.h \
     gview_localization_controller.h \
     gview_tableVertexModel.h \
-    gview_tableVertexTableDelegate.h \
     gview_tableVertexView.h \
     gviewedge.h \
     gviewitem.h \

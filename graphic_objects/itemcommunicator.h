@@ -8,6 +8,7 @@
 #include "widgets/gview_edit_window.h"
 #include "imagecropwindow.h"
 
+#define TIMER_DELAY 2000
 
 class AbstractGrItem;
 
@@ -23,10 +24,11 @@ private:
     GViewEdit *             _edit_window_;
     ImageCropWindow *       _pic_load_dialog_;
     AbstractGrItem*         _cur_working_item_;
+    QPoint                  _tip_pos_;
 public:
-    explicit ItemCommunicator(QObject *parent = nullptr);
-    void setCurTime();
-    void getCurTime();
+    explicit ItemCommunicator(GViewPort* port, QObject *parent = nullptr);
+    void setCurTime(unsigned long long new_time);
+    unsigned long long getCurTime() const noexcept;
     void startToolTipTimer(AbstractGrItem* gr_sender, const QPoint& pos);
     void stopToolTipTimer();
     void setDefImage(const QString& imgAddr);
@@ -34,7 +36,7 @@ public:
     void callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos);
     void itemIsMoved();
 
-signals:
+private slots:
     void timeOut();
 };
 

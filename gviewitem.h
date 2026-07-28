@@ -24,7 +24,7 @@
 #include <QMenu>
 #include <QIcon>
 #include <QTimer>
-#include "graphic_elements/nodeobjectinfo.h"
+//#include "graphic_elements/nodeobjectinfo.h"
 #include "widgets/gview_tooltip_window.h"
 #include "widgets/gview_edit_window.h"
 #include "imagecropwindow.h"
