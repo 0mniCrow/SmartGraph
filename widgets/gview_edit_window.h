@@ -19,6 +19,7 @@ private:
     QPushButton* _apply_button_;
 public:
     GViewEdit(const QString& data, QWidget* tata = nullptr);
+    void setData(const QMap<QString,QString>& fields);
 private slots:
     void manualSave();
     void manualClose();

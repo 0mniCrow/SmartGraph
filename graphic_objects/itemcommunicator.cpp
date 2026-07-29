@@ -65,27 +65,63 @@ void ItemCommunicator::setDefImage(const QString& imgAddr)
 
 const QPixmap& ItemCommunicator::getDefImage() const
 {
-
+    return _def_image_;
 }
 
 void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos)
 {
+    if(!_edit_window_)
+    {
+        QString data;
+        //!TODO - get data from Item and save it in variable 'data'
+        _edit_window_ = new GViewEdit(data);
+        //connect(_edit_window_,&GViewEdit::valueChanged,this,&GViewItem::getNewInfo);
+        //connect(this,&GViewItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
+    }
+    if(!pos.isNull())
+    {
+        _edit_window_->move(pos);
+    }
+    else if(!_tip_pos_.isNull())
+    {
+        _edit_window_->move(_tip_pos_);
+    }
+    _edit_window_->show();
+    return;
+}
 
+void ItemCommunicator::callToolTipWindow(AbstractGrItem* gr_sender, const QPoint& pos)
+{
+    if(!_tooltip_window_)
+    {
+        QString gr_data;
+        //!TODO fill gr_data with abstract Item data
+        _tooltip_window_ = new GViewToolTip(gr_data);
+        //connect(this,&GViewItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
+    }
+    if(!pos.isNull())
+    {
+        _tooltip_window_->move(pos);
+    }
+    else if(!_tip_pos_.isNull())
+    {
+        _tooltip_window_->move(_tip_pos_);
+    }
+    _tooltip_window_->show();
+    return;
 }
 
 void ItemCommunicator::itemIsMoved()
 {
-
+    if(_main_port_)
+    {
+        _main_port_->itemMoved();
+    }
+    return;
 }
 
-
-/*
-    GViewPort*              _main_port_;
-    unsigned long long      _cur_time_;
-    QPixmap                 _def_image_;
-    QTimer                  _tip_timer_;
-    GViewToolTip *          _tooltip_window_;
-    GViewEdit *             _edit_window_;
-    ImageCropWindow *       _pic_load_dialog_;
-    AbstractGrItem*         _cur_working_item_;
-*/
+void ItemCommunicator::timeOut()
+{
+    callToolTipWindow(_cur_working_item_,_tip_pos_);
+    return;
+}

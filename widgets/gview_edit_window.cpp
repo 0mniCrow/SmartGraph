@@ -99,3 +99,9 @@ void GViewEdit::updateFields(const QString& new_val)
     _text_->setText(_original_text_);
     return;
 }
+
+void GViewEdit::setData(const QMap<QString,QString>& fields)
+{
+    Q_UNUSED(fields)
+    //!TODO - for further design of fields.
+}

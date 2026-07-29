@@ -34,6 +34,7 @@ public:
     void setDefImage(const QString& imgAddr);
     const QPixmap& getDefImage() const;
     void callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos);
+    void callToolTipWindow(AbstractGrItem* gr_sender, const QPoint& pos);
     void itemIsMoved();
 
 private slots:

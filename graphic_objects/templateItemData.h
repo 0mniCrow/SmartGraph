@@ -2,7 +2,7 @@
 #define TEMPLATEITEMDATA_H
 
 template <typename T>
-class itemDataAccessInterface
+class ItemDataInterface
 {
 public:
     virtual T getData() const = 0;
