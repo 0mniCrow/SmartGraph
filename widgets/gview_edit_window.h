@@ -20,6 +20,8 @@ private:
 public:
     GViewEdit(const QString& data, QWidget* tata = nullptr);
     void setData(const QMap<QString,QString>& fields);
+    void setData(const QString& data);
+    QString getData() const;
 private slots:
     void manualSave();
     void manualClose();

@@ -1,6 +1,7 @@
 #ifndef ABSTRACTGRITEM_H
 #define ABSTRACTGRITEM_H
 #include "abstractGrInterface.h"
+#include "templateItemData.h"
 #include "QGraphicsObject"
 #include "QGraphicsScene"
 #include "itemcommunicator.h"
@@ -17,9 +18,11 @@
 #define MOUSE_SENSE_ITEM_DECR 0.5
 #define PIN_HEAD_ITEM_RADIUS 3
 
+typedef QString GrItemData;
+
 class AbstractGrConnection;
 
-class AbstractGrItem:public AbstractGrInterface, public QGraphicsObject
+class AbstractGrItem:public AbstractGrInterface, public QGraphicsObject, public ItemDataInterface<GrItemData>
 {
     Q_OBJECT
 private:
@@ -93,6 +96,9 @@ public:
     virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
     virtual char graphicType() const noexcept override{return AbstractItem;}
+signals:
+    void changedInternally(AbstractGrItem* self);
+    void changedExternally(GrItemData new_val);
 };
 
 #endif // ABSTRACTGRITEM_H

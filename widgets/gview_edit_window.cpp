@@ -86,8 +86,9 @@ void GViewEdit::manualClose()
 void GViewEdit::manualApply()
 {
     if(_original_text_==_text_->toPlainText())
+    {
         return;
-
+    }
     _original_text_ = _text_->toPlainText();
     emit valueChanged(_original_text_);
     return;
@@ -104,4 +105,16 @@ void GViewEdit::setData(const QMap<QString,QString>& fields)
 {
     Q_UNUSED(fields)
     //!TODO - for further design of fields.
+}
+
+void GViewEdit::setData(const QString& data)
+{
+    _original_text_ = data;
+    _text_->setText(data);
+    return;
+}
+
+QString GViewEdit::getData() const
+{
+    return _original_text_;
 }

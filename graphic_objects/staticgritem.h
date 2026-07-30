@@ -1,11 +1,8 @@
 #ifndef STATICGRITEM_H
 #define STATICGRITEM_H
 #include "abstractGrItem.h"
-#include "templateItemData.h"
 
-typedef QString GrItemData;
-
-class StaticGrItem:public AbstractGrItem, public ItemDataInterface<GrItemData>
+class StaticGrItem:public AbstractGrItem
 {
     Q_OBJECT
 private:

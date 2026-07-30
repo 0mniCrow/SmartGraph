@@ -72,11 +72,11 @@ void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& p
 {
     if(!_edit_window_)
     {
-        QString data;
+        QString data (gr_sender->getGrData());
         //!TODO - get data from Item and save it in variable 'data'
         _edit_window_ = new GViewEdit(data);
-        //connect(_edit_window_,&GViewEdit::valueChanged,this,&GViewItem::getNewInfo);
-        //connect(this,&GViewItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
+        connect(_edit_window_,&GViewEdit::valueChanged,this,&ItemCommunicator::editWindowUpdated);
+        connect(gr_sender,&AbstractGrItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
     }
     if(!pos.isNull())
     {
@@ -86,6 +86,15 @@ void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& p
     {
         _edit_window_->move(_tip_pos_);
     }
+    if(_tip_timer_.isActive())
+    {
+        stopToolTipTimer();
+    }
+    if(_tooltip_window_ && _tooltip_window_->isVisible())
+    {
+        _tooltip_window_->close();
+    }
+    _cur_working_item_ = gr_sender;
     _edit_window_->show();
     return;
 }
@@ -94,10 +103,9 @@ void ItemCommunicator::callToolTipWindow(AbstractGrItem* gr_sender, const QPoint
 {
     if(!_tooltip_window_)
     {
-        QString gr_data;
-        //!TODO fill gr_data with abstract Item data
+        QString gr_data(gr_sender->getGrData());
         _tooltip_window_ = new GViewToolTip(gr_data);
-        //connect(this,&GViewItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
+        connect(gr_sender,&AbstractGrItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
     }
     if(!pos.isNull())
     {
@@ -123,5 +131,15 @@ void ItemCommunicator::itemIsMoved()
 void ItemCommunicator::timeOut()
 {
     callToolTipWindow(_cur_working_item_,_tip_pos_);
+    return;
+}
+
+void ItemCommunicator::editWindowUpdated()
+{
+    if(!_cur_working_item_ || !_edit_window_)
+    {
+        return;
+    }
+    _cur_working_item_->setGrData(_edit_window_->getData());
     return;
 }

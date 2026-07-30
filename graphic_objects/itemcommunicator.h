@@ -39,6 +39,7 @@ public:
 
 private slots:
     void timeOut();
+    void editWindowUpdated();
 };
 
 #endif // ITEMCOMMUNICATOR_H

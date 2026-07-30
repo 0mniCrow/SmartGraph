@@ -5,8 +5,8 @@ template <typename T>
 class ItemDataInterface
 {
 public:
-    virtual T getData() const = 0;
-    virtual void setData(const T& data) = 0;
+    virtual T getGrData() const = 0;
+    virtual void setGrData(const T& data) = 0;
 };
 
 
