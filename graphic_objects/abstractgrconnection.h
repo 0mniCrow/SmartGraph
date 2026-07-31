@@ -20,6 +20,7 @@ private:
     qreal _weight_;
 public:
     AbstractGrConnection(QGraphicsItem* tata = nullptr);
+    virtual ~AbstractGrConnection(){}
     void recalculate();
     AbstractGrItem* source()const noexcept{return _src_item_;}
     AbstractGrItem* destination() const noexcept{return _dest_item_;}

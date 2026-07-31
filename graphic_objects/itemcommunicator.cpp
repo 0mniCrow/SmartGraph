@@ -73,10 +73,13 @@ void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& p
     if(!_edit_window_)
     {
         QString data (gr_sender->getGrData());
-        //!TODO - get data from Item and save it in variable 'data'
         _edit_window_ = new GViewEdit(data);
         connect(_edit_window_,&GViewEdit::valueChanged,this,&ItemCommunicator::editWindowUpdated);
         connect(gr_sender,&AbstractGrItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
+    }
+    else
+    {
+        _edit_window_->setData(gr_sender->getGrData());
     }
     if(!pos.isNull())
     {
@@ -106,6 +109,10 @@ void ItemCommunicator::callToolTipWindow(AbstractGrItem* gr_sender, const QPoint
         QString gr_data(gr_sender->getGrData());
         _tooltip_window_ = new GViewToolTip(gr_data);
         connect(gr_sender,&AbstractGrItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
+    }
+    else
+    {
+        _tooltip_window_->updateFields(gr_sender->getGrData());
     }
     if(!pos.isNull())
     {
@@ -140,6 +147,6 @@ void ItemCommunicator::editWindowUpdated()
     {
         return;
     }
-    _cur_working_item_->setGrData(_edit_window_->getData());
+    _cur_working_item_->setGrData(_edit_window_->getData(),AbstractGrItem::DC_Internal);
     return;
 }
