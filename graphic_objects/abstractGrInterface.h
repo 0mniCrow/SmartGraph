@@ -12,7 +12,7 @@ private:
 public:
     enum GraphicItemType{NoType = 0};
     AbstractGrInterface(const item_id_t& id=item_id_t()):_id_(id) {};
-    virtual ~AbstractGrInterface(){};
+    virtual ~AbstractGrInterface() = default;
     virtual void setGrID(item_id_t& id){_id_=id;}
     virtual item_id_t getGrID() const {return _id_;}
     virtual void setGrX(coord_real x) = 0;

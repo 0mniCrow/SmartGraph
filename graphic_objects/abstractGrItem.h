@@ -22,7 +22,7 @@ typedef QString GrItemData;
 
 class AbstractGrConnection;
 
-class AbstractGrItem:public AbstractGrInterface, public QGraphicsObject, public ItemDataInterface<GrItemData>
+class AbstractGrItem:public QGraphicsObject, public AbstractGrInterface, public ItemDataInterface<GrItemData>
 {
     Q_OBJECT
 private:
@@ -65,7 +65,7 @@ public:
     enum GraphicItemType{AbstractItem = 1};
     AbstractGrItem(const item_id_t& id=item_id_t(),
                    int radius = DEF_ITEM_RADIUS,
-                   QGraphicsItem* tata = nullptr);
+                   QGraphicsObject *tata = nullptr);
     virtual ~AbstractGrItem();
     void setItemCommunicator(ItemCommunicator* communicator);
     void setRadius(int radius);

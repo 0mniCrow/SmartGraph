@@ -8,11 +8,11 @@ class StaticGrItem:public AbstractGrItem
 private:
     GrItemData _data_;
 public:
-    enum GraphicItemType{StaticItem = 1};
+    enum GraphicItemType{StaticItem = 2};
     explicit StaticGrItem(const item_id_t& gr_id=item_id_t(),
                  const GrItemData& gr_data = GrItemData(),
                  int gr_radius = DEF_ITEM_RADIUS,
-                 QGraphicsItem* tata = nullptr);
+                 QGraphicsObject *tata = nullptr);
     virtual void setGrData(const GrItemData& data, dataChangeType gr_type) override final;
     virtual GrItemData getGrData() const override final;
     virtual char graphicType() const noexcept override{return StaticItem;}

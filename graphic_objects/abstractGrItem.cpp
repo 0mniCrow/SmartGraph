@@ -2,9 +2,9 @@
 #include "graphic_objects/abstractgrconnection.h"
 AbstractGrItem::AbstractGrItem(const item_id_t &id,
                                int radius,
-                               QGraphicsItem *tata):
-    AbstractGrInterface(id),
+                               QGraphicsObject *tata):
     QGraphicsObject(tata),
+    AbstractGrInterface(id),
     _radius_(radius)
 {
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
