@@ -38,7 +38,65 @@ void AbstractGrConnection::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)
 {
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+    if(_mode_ == GrEdge_incomplete||
+            _mode_ == GrEdge_deletion)
+    {
+        if(!_src_item_)
+        {
+            return;
+        }
+    }
+    else
+    {
+        if(!_src_item_||!_dest_item_)
+        {
+            return;
+        }
+    }
+    QLineF line(_src_point_,_dest_point_);
+    if(qFuzzyCompare(line.length(),qreal(0.0)))
+    {
+        return;
+    }
+    painter->setPen(QPen(
+                        (_mode_==GrEdge_deletion)?
+                            Qt::darkRed:
+                            Qt::black,
+                        EDGE_WIDTH,
+                        Qt::SolidLine,
+                        Qt::RoundCap,
+                        Qt::RoundJoin));
+    painter->drawLine(line);
+    painter->setBrush(Qt::black);
+    double angle = std::atan2(-line.dy(),line.dx());
+    if(!_directed_ && _mode_==GrEdge_regular)
+    {
+        QPointF sourceArrowP1 =
+                _src_point_ +
+                QPointF(sin(angle+M_PI/3)*_arrowSize_,
+                        cos(angle+M_PI/3)*_arrowSize_);
 
+        QPointF sourceArrowP2 =
+                _src_point_ +
+                QPointF(sin(angle+M_PI - M_PI/3)*_arrowSize_,
+                        cos(angle+M_PI-M_PI/3)*_arrowSize_);
+
+        painter->drawPolygon(
+                    QPolygonF()<<line.p1()<<sourceArrowP1<<sourceArrowP2);
+    }
+    QPointF destArrowP1 =
+            _dest_point_ +
+            QPointF(sin(angle-M_PI/3)*_arrowSize_,
+                    cos(angle-M_PI/3)*_arrowSize_);
+    QPointF destArrowP2 =
+            _dest_point_ +
+            QPointF(sin(angle-M_PI+M_PI/3)*_arrowSize_,
+                    cos(angle-M_PI+M_PI/3)*_arrowSize_);
+    painter->drawPolygon(
+                QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
+    return;
 }
 
 void AbstractGrConnection::recalculate()
@@ -71,59 +129,63 @@ void AbstractGrConnection::recalculate()
 
 void AbstractGrConnection::setSource(AbstractGrItem* src)
 {
-
+    _src_item_ = src;
 }
 
 void AbstractGrConnection::setDestination(AbstractGrItem* dest)
 {
-
+    _dest_item_ = dest;
 }
 
 void AbstractGrConnection::setGrX(coord_real x)
 {
-
+    Q_UNUSED(x);
+    return;
 }
 
 void AbstractGrConnection::setGrY(coord_real y)
 {
-
+    Q_UNUSED(y);
+    return;
 }
 
 coord_real AbstractGrConnection::getGrX() const
 {
-
+    return x();
 }
 coord_real AbstractGrConnection::getGrY() const
 {
-
+    return y();
 }
 
 void AbstractGrConnection::setGrWidth(coord_real width)
 {
-
+    Q_UNUSED(width);
 }
 
 void AbstractGrConnection::setGrHeight(coord_real height)
 {
-
+    Q_UNUSED(height);
 }
 
 coord_real AbstractGrConnection::getGrWidth() const
 {
-
+    return boundingRect().width();
 }
 
 coord_real AbstractGrConnection::getGrHeight() const
 {
-
+    return boundingRect().height();
 }
 
 void AbstractGrConnection::moveGr(coord_real x, coord_real y)
 {
-
+    Q_UNUSED(x) Q_UNUSED(y)
+            return;
 }
 
 void AbstractGrConnection::drawGr()
 {
-
+    update();
+    return;
 }

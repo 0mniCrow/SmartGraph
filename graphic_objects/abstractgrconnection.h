@@ -34,7 +34,7 @@ public:
                          QGraphicsObject* tata = nullptr);
     virtual ~AbstractGrConnection() = default;
     void recalculate();
-    AbstractGrItem* source()const noexcept{return _src_item_;}
+    AbstractGrItem* source() const noexcept{return _src_item_;}
     AbstractGrItem* destination() const noexcept{return _dest_item_;}
     void setSource(AbstractGrItem* src);
     void setDestination(AbstractGrItem* dest);
