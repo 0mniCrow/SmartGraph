@@ -48,7 +48,7 @@ protected:
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
                   GV_Def_Icon = 0x10};
     virtual QRectF boundingRect() const override;
-    virtual QPainterPath shape() const override;
+
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
@@ -84,6 +84,9 @@ public:
     void calcForce();
     bool advPosition();
 
+    enum {Type = UserType+1};
+    int type() const override{return Type;}
+    virtual QPainterPath shape() const override;
 
     virtual void setGrX(coord_real x) override;
     virtual void setGrY(coord_real y) override;

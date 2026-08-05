@@ -648,16 +648,16 @@ void AbstractGrItem::calcForce()
     for(const AbstractGrConnection* edge: std::as_const(_edges_))
     {
         QPointF vect;
-        if(edge->source()==this)
+        if(edge->getSource()==this)
         {
-            vect = mapToItem(edge->destination(),0,0);
+            vect = mapToItem(edge->getDestination(),0,0);
         }
         else
         {
-            vect = mapToItem(edge->source(),0,0);
+            vect = mapToItem(edge->getSource(),0,0);
         }
         //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
-        QPointF delta(mapFromItem(edge->source(),0,0) - mapFromItem(edge->destination(),0,0));
+        QPointF delta(mapFromItem(edge->getSource(),0,0) - mapFromItem(edge->getDestination(),0,0));
         qreal dist = std::hypot(delta.x(),delta.y());
         //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
         if(dist>=edge->grWeight())

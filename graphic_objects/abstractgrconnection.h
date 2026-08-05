@@ -34,13 +34,16 @@ public:
                          QGraphicsObject* tata = nullptr);
     virtual ~AbstractGrConnection() = default;
     void recalculate();
-    AbstractGrItem* source() const noexcept{return _src_item_;}
-    AbstractGrItem* destination() const noexcept{return _dest_item_;}
+    AbstractGrItem* getSource() const noexcept{return _src_item_;}
+    AbstractGrItem* getDestination() const noexcept{return _dest_item_;}
     void setSource(AbstractGrItem* src);
     void setDestination(AbstractGrItem* dest);
     qreal grWeight() const noexcept{return _weight_;}
     void setGrWeight(qreal weight) noexcept {_weight_ = weight;}
 
+    enum {Type = UserType+2};
+    int type() const override {return Type;}
+    QPainterPath shape() const override;
 
     virtual void setGrX(coord_real x) override;
     virtual void setGrY(coord_real y) override;

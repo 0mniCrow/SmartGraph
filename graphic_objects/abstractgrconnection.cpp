@@ -5,7 +5,7 @@ AbstractGrConnection::AbstractGrConnection(const item_id_t &id, bool directed, Q
     QGraphicsObject(tata),AbstractGrInterface(id),_src_item_(nullptr),_dest_item_(nullptr),
     _directed_(directed),_weight_(0),_mode_(GrEdge_Null)
 {
-
+    return;
 }
 
 QRectF AbstractGrConnection::boundingRect() const
@@ -99,6 +99,18 @@ void AbstractGrConnection::paint(QPainter* painter,
     return;
 }
 
+QPainterPath AbstractGrConnection::shape() const
+{
+    QPainterPath path(_src_point_);
+    QLineF line(_src_point_,_dest_point_);
+    if(line.length()>qreal(_src_item_->getRadius()))
+    {
+        line.setLength(line.length()-qreal(_src_item_->getRadius())*2);
+    }
+    path.lineTo(line.p2());
+    return path;
+}
+
 void AbstractGrConnection::recalculate()
 {
     if(!_src_item_||!_dest_item_)
@@ -130,11 +142,13 @@ void AbstractGrConnection::recalculate()
 void AbstractGrConnection::setSource(AbstractGrItem* src)
 {
     _src_item_ = src;
+    return;
 }
 
 void AbstractGrConnection::setDestination(AbstractGrItem* dest)
 {
     _dest_item_ = dest;
+    return;
 }
 
 void AbstractGrConnection::setGrX(coord_real x)
