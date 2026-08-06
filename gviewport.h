@@ -44,6 +44,7 @@ public:
     void setRadius(int radius);
     bool loadListGraph(const ListGraph& graph);
     void itemMoved();
+    void arrowSizeChanged();
     void setForceCalc(bool state, bool fixateEdgeLength = true);
     void clear();
     void gatherInfo(nest_vert_map& vertices,

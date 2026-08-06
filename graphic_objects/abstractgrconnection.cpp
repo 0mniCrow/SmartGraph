@@ -3,141 +3,83 @@
 
 AbstractGrConnection::AbstractGrConnection(const item_id_t &id, bool directed, QGraphicsObject *tata):
     QGraphicsObject(tata),AbstractGrInterface(id),_src_item_(nullptr),_dest_item_(nullptr),
-    _directed_(directed),_weight_(0),_mode_(GrEdge_Null)
+    _communicator_(nullptr),_directed_(directed),_mode_(GrEdge_Null)
 {
     return;
 }
 
-QRectF AbstractGrConnection::boundingRect() const
+void AbstractGrConnection::setArrowSize(qreal ar_size)
 {
-    if(_mode_ == GrEdge_incomplete||
-            _mode_ == GrEdge_deletion)
-    {
-        if(!_src_item_)
-        {
-            return QRectF();
-        }
-    }
-    else
-    {
-        if(!_src_item_||!_dest_item_)
-        {
-            return QRectF();
-        }
-    }
-    qreal extra = (ABSTRACT_EDGE_WIDTH+_arrowSize_)/2.0;
-    return QRectF(_src_point_,
-                  QSizeF(_dest_point_.x()-_src_point_.x(),
-                         _dest_point_.y()-_src_point_.y())
-                  ).
-            normalized().
-            adjusted(-extra,-extra,extra,extra);
-}
-
-void AbstractGrConnection::paint(QPainter* painter,
-           const QStyleOptionGraphicsItem* option,
-           QWidget* widget)
-{
-    Q_UNUSED(option)
-    Q_UNUSED(widget)
-    if(_mode_ == GrEdge_incomplete||
-            _mode_ == GrEdge_deletion)
-    {
-        if(!_src_item_)
-        {
-            return;
-        }
-    }
-    else
-    {
-        if(!_src_item_||!_dest_item_)
-        {
-            return;
-        }
-    }
-    QLineF line(_src_point_,_dest_point_);
-    if(qFuzzyCompare(line.length(),qreal(0.0)))
+    if(!_communicator_)
     {
         return;
     }
-    painter->setPen(QPen(
-                        (_mode_==GrEdge_deletion)?
-                            Qt::darkRed:
-                            Qt::black,
-                        EDGE_WIDTH,
-                        Qt::SolidLine,
-                        Qt::RoundCap,
-                        Qt::RoundJoin));
-    painter->drawLine(line);
-    painter->setBrush(Qt::black);
-    double angle = std::atan2(-line.dy(),line.dx());
-    if(!_directed_ && _mode_==GrEdge_regular)
-    {
-        QPointF sourceArrowP1 =
-                _src_point_ +
-                QPointF(sin(angle+M_PI/3)*_arrowSize_,
-                        cos(angle+M_PI/3)*_arrowSize_);
-
-        QPointF sourceArrowP2 =
-                _src_point_ +
-                QPointF(sin(angle+M_PI - M_PI/3)*_arrowSize_,
-                        cos(angle+M_PI-M_PI/3)*_arrowSize_);
-
-        painter->drawPolygon(
-                    QPolygonF()<<line.p1()<<sourceArrowP1<<sourceArrowP2);
-    }
-    QPointF destArrowP1 =
-            _dest_point_ +
-            QPointF(sin(angle-M_PI/3)*_arrowSize_,
-                    cos(angle-M_PI/3)*_arrowSize_);
-    QPointF destArrowP2 =
-            _dest_point_ +
-            QPointF(sin(angle-M_PI+M_PI/3)*_arrowSize_,
-                    cos(angle-M_PI+M_PI/3)*_arrowSize_);
-    painter->drawPolygon(
-                QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
+    _communicator_->setArrowSize(ar_size);
     return;
 }
 
-QPainterPath AbstractGrConnection::shape() const
+qreal AbstractGrConnection::getArrowSize()
 {
-    QPainterPath path(_src_point_);
-    QLineF line(_src_point_,_dest_point_);
-    if(line.length()>qreal(_src_item_->getRadius()))
+    if(!_communicator_)
     {
-        line.setLength(line.length()-qreal(_src_item_->getRadius())*2);
+        return DEFAULT_ARROW_SIZE;
     }
-    path.lineTo(line.p2());
-    return path;
+    return _communicator_->getArrowSize();
 }
 
-void AbstractGrConnection::recalculate()
+AbstractGrItem* AbstractGrConnection::getSource() const noexcept
 {
-    if(!_src_item_||!_dest_item_)
-    {
-        return;
-    }
+    return _src_item_;
+}
 
-    QLineF line(mapFromItem(_src_item_,0,0),mapFromItem(_dest_item_,0,0));
-    qreal length = line.length();
-    qreal src_radius = static_cast<qreal>(_src_item_->getRadius());
-    qreal dest_radius = static_cast<qreal>(_dest_item_->getRadius());
-    prepareGeometryChange();
-    if(length>(src_radius>dest_radius?src_radius:dest_radius))
+AbstractGrItem* AbstractGrConnection::getDestination() const noexcept
+{
+    return _dest_item_;
+}
+
+void AbstractGrConnection::setDirected(bool state)
+{
+    _directed_ = state;
+    redraw();
+    return;
+}
+
+bool AbstractGrConnection::isDirected() const noexcept
+{
+    return _directed_;
+}
+
+int AbstractGrConnection::type() const
+{
+    return Type;
+}
+
+char AbstractGrConnection::graphicType() const noexcept
+{
+    return AbstractConnection;
+}
+
+void AbstractGrConnection::setMode(char mode)
+{
+    _mode_=mode;
+    return;
+}
+
+char AbstractGrConnection::getMode() const noexcept
+{
+    return _mode_;
+}
+
+void AbstractGrConnection::setCommunicator(ItemCommunicator* communicator)
+{
+    if(communicator)
     {
-        QPointF edgeOffsetSrc((line.dx()*src_radius)/length,
-                           (line.dy()*src_radius)/length);
-        QPointF edgeOffsetDest((line.dx()*dest_radius)/length,
-                           (line.dy()*dest_radius)/length);
-        _src_point_ = line.p1() + edgeOffsetSrc;
-        _dest_point_ = line.p2() - edgeOffsetDest;
-    }
-    else
-    {
-        _src_point_ = _dest_point_ = line.p1();
+        _communicator_= communicator;
     }
     return;
 }
+
+
 
 void AbstractGrConnection::setSource(AbstractGrItem* src)
 {
@@ -200,6 +142,6 @@ void AbstractGrConnection::moveGr(coord_real x, coord_real y)
 
 void AbstractGrConnection::drawGr()
 {
-    update();
+    redraw();
     return;
 }

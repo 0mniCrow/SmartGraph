@@ -13,10 +13,6 @@ AbstractGrItem::AbstractGrItem(const item_id_t &id,
     iconUpdate();
 }
 
-AbstractGrItem::~AbstractGrItem()
-{
-
-}
 
 void AbstractGrItem::keepInBorders()
 {

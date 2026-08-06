@@ -8,7 +8,7 @@ class StaticGrItem:public AbstractGrItem
 private:
     GrItemData _data_;
 public:
-    enum GraphicItemType{StaticItem = 2};
+    enum GraphicItemType{StaticItem = GR_STATIC_ITEM};
     explicit StaticGrItem(const item_id_t& gr_id=item_id_t(),
                  const GrItemData& gr_data = GrItemData(),
                  int gr_radius = DEF_ITEM_RADIUS,

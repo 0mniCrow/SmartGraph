@@ -1,10 +1,12 @@
 #ifndef ABSTRACTGRCONNECTION_H
 #define ABSTRACTGRCONNECTION_H
 #include "abstractGrInterface.h"
+#include "itemcommunicator.h"
 #include <QGraphicsObject>
 #include <QPointF>
 
 #define ABSTRACT_EDGE_WIDTH 2.0
+
 
 class AbstractGrItem;
 
@@ -12,50 +14,69 @@ class AbstractGrConnection:public QGraphicsObject, public AbstractGrInterface
 {
     Q_OBJECT
 private:
-    QPointF _src_point_;
-    QPointF _dest_point_;
-    AbstractGrItem* _src_item_;
-    AbstractGrItem* _dest_item_;
-    //int _vertex_radius_;
-    bool _directed_;
-    qreal _arrowSize_ = 10;
-    qreal _weight_;
-    char _mode_;
+    //QPointF _src_point_;
+    //QPointF _dest_point_;
+    AbstractGrItem*         _src_item_;
+    AbstractGrItem*         _dest_item_;
+    ItemCommunicator*       _communicator_;
+    bool                    _directed_;
+    char                    _mode_;
 protected:
-    QRectF boundingRect() const override;
-    void paint(QPainter* painter,
+    virtual QRectF boundingRect() const override = 0;                           //!virtual
+    virtual void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
+               QWidget* widget) override = 0;                                   //!virtual
+    virtual void redraw() = 0;                                                  //!virtual
 public:
-    enum GraphicItemType{AbstractConnection = 3};
-    enum ConnectionMode{GrEdge_Null, GrEdge_regular, GrEdge_incomplete, GrEdge_deletion};
+    enum GraphicItemType{AbstractConnection = GR_ABSTRACT_CONNECTION};
+    enum ConnectionMode{GrEdge_Null=0,
+                        GrEdge_regular,
+                        GrEdge_incomplete,
+                        GrEdge_deletion,
+                        GrEdge_userMode};
+    enum {Type = UserType+GR_ABSTRACT_CONNECTION};                          //Для QtGraphics завочнай трансфармацыі
+
     AbstractGrConnection(const item_id_t& id=item_id_t(),
                          bool directed = false,
                          QGraphicsObject* tata = nullptr);
     virtual ~AbstractGrConnection() = default;
-    void recalculate();
-    AbstractGrItem* getSource() const noexcept{return _src_item_;}
-    AbstractGrItem* getDestination() const noexcept{return _dest_item_;}
+
+    void setArrowSize(qreal ar_size);
+    qreal getArrowSize();
+    AbstractGrItem* getSource() const noexcept;
+    AbstractGrItem* getDestination() const noexcept;
     void setSource(AbstractGrItem* src);
     void setDestination(AbstractGrItem* dest);
-    qreal grWeight() const noexcept{return _weight_;}
-    void setGrWeight(qreal weight) noexcept {_weight_ = weight;}
+    void setDirected(bool state);
+    bool isDirected() const noexcept;
+    void setMode(char mode);
+    char getMode() const noexcept;
+    void setCommunicator(ItemCommunicator* communicator);
+    virtual int type() const override;
+    virtual char graphicType() const noexcept override;
 
-    enum {Type = UserType+2};
-    int type() const override {return Type;}
-    QPainterPath shape() const override;
 
-    virtual void setGrX(coord_real x) override;
-    virtual void setGrY(coord_real y) override;
-    virtual coord_real getGrX() const override;
-    virtual coord_real getGrY() const override;
-    virtual void setGrWidth(coord_real width) override;
-    virtual void setGrHeight(coord_real height) override;
-    virtual coord_real getGrWidth() const override;
-    virtual coord_real getGrHeight() const override;
+    virtual QPainterPath shape() const override = 0;                            //!virtual
+
+    virtual void recalculate() = 0;                                             //!virtual
+    virtual void setStartPoint(coord_real x, coord_real y) = 0;                 //!virtual
+    virtual void setEndPoint(coord_real x, coord_real y) = 0;                   //!virtual
+    virtual coord_real getStartX() const = 0;                                   //!virtual
+    virtual coord_real getStartY() const = 0;                                   //!virtual
+    virtual coord_real getFinX() const = 0;                                     //!virtual
+    virtual coord_real getFinY() const = 0;
+
+    virtual void setGrX(coord_real x) override final;
+    virtual void setGrY(coord_real y) override final;
+    virtual coord_real getGrX() const override final;
+    virtual coord_real getGrY() const override final;
+    virtual void setGrWidth(coord_real width) override final;
+    virtual void setGrHeight(coord_real height) override final;
+    virtual coord_real getGrWidth() const override final;
+    virtual coord_real getGrHeight() const override final;
     virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
-    virtual char graphicType() const noexcept override{return AbstractConnection;}
+
 };
 
 #endif // ABSTRACTGRCONNECTION_H

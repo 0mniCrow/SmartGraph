@@ -9,6 +9,7 @@
 #include "imagecropwindow.h"
 
 #define TIMER_DELAY 2000
+#define DEFAULT_ARROW_SIZE 10
 
 class AbstractGrItem;
 
@@ -25,6 +26,8 @@ private:
     ImageCropWindow *       _pic_load_dialog_;
     AbstractGrItem*         _cur_working_item_;
     QPoint                  _tip_pos_;
+    qreal                   _arrow_size_;
+
 public:
     explicit ItemCommunicator(GViewPort* port, QObject *parent = nullptr);
     void setCurTime(unsigned long long new_time);
@@ -36,6 +39,9 @@ public:
     void callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos);
     void callToolTipWindow(AbstractGrItem* gr_sender, const QPoint& pos);
     void itemIsMoved();
+    void setArrowSize(qreal arrow_size);
+    qreal getArrowSize() const noexcept;
+    void arrowSizeChanged();
 
 private slots:
     void timeOut();

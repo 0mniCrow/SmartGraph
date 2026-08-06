@@ -866,6 +866,15 @@ void GViewPort::itemMoved()
     return;
 }
 
+void GViewPort::arrowSizeChanged()
+{
+    for(auto edge: _edges_)
+    {
+        edge->update();//!TODO: зьмяніць на наступны тып drawGr();
+    }
+    return;
+}
+
 void GViewPort::timerEvent(QTimerEvent * t_event)
 {
     Q_UNUSED(t_event)

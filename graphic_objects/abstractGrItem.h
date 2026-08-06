@@ -62,11 +62,11 @@ protected:
 
 
 public:
-    enum GraphicItemType{AbstractItem = 1};
+    enum GraphicItemType{AbstractItem = GR_ABSTRACT_ITEM};
     AbstractGrItem(const item_id_t& id=item_id_t(),
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
-    virtual ~AbstractGrItem();
+    virtual ~AbstractGrItem() = default;
     void setItemCommunicator(ItemCommunicator* communicator);
     void setRadius(int radius);
     int getRadius() const noexcept {return _radius_;}

@@ -135,6 +135,21 @@ void ItemCommunicator::itemIsMoved()
     return;
 }
 
+void ItemCommunicator::setArrowSize(qreal arrow_size)
+{
+    _arrow_size_ = arrow_size>DEFAULT_ARROW_SIZE?arrow_size:DEFAULT_ARROW_SIZE;
+    if(_main_port_)
+    {
+        _main_port_->arrowSizeChanged();
+    }
+    return;
+}
+
+qreal ItemCommunicator::getArrowSize() const noexcept
+{
+    return _arrow_size_;
+}
+
 void ItemCommunicator::timeOut()
 {
     callToolTipWindow(_cur_working_item_,_tip_pos_);
