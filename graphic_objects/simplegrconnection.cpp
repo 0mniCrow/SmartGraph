@@ -44,26 +44,61 @@ SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source, char mode,
     return;
 }
 
-
-/*
-QRectF AbstractGrConnection::boundingRect() const
+void SimpleGrConnection::setStartPoint(coord_real x, coord_real y)
 {
-    if(_mode_ == GrEdge_incomplete||
-            _mode_ == GrEdge_deletion)
+    _src_point_.setX(x);
+    _src_point_.setY(y);
+    redraw();
+    return;
+}
+
+void SimpleGrConnection::setEndPoint(coord_real x, coord_real y)
+{
+    _dest_point_.setX(x);
+    _dest_point_.setY(y);
+    redraw();
+    return;
+}
+
+coord_real SimpleGrConnection::getStartX() const
+{
+    return _src_point_.x();
+}
+
+coord_real SimpleGrConnection::getStartY() const
+{
+    return _src_point_.y();
+}
+
+coord_real SimpleGrConnection::getFinX() const
+{
+    return _dest_point_.x();
+}
+
+coord_real SimpleGrConnection::getFinY() const
+{
+    return _dest_point_.y();
+}
+
+QRectF SimpleGrConnection::boundingRect() const
+{
+    char mode(getMode());
+    if(mode == GrEdge_incomplete||
+            mode == GrEdge_deletion)
     {
-        if(!_src_item_)
+        if(!getSource())
         {
             return QRectF();
         }
     }
     else
     {
-        if(!_src_item_||!_dest_item_)
+        if(!getSource()||!getDestination())
         {
             return QRectF();
         }
     }
-    qreal extra = (ABSTRACT_EDGE_WIDTH+_arrowSize_)/2.0;
+    qreal extra = (ABSTRACT_EDGE_WIDTH+getArrowSize())/2.0;
     return QRectF(_src_point_,
                   QSizeF(_dest_point_.x()-_src_point_.x(),
                          _dest_point_.y()-_src_point_.y())
@@ -71,7 +106,7 @@ QRectF AbstractGrConnection::boundingRect() const
             normalized().
             adjusted(-extra,-extra,extra,extra);
 }
-*/
+
 /*
 void AbstractGrConnection::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,

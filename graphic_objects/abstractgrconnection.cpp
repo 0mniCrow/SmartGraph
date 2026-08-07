@@ -18,7 +18,7 @@ void AbstractGrConnection::setArrowSize(qreal ar_size)
     return;
 }
 
-qreal AbstractGrConnection::getArrowSize()
+qreal AbstractGrConnection::getArrowSize() const
 {
     if(!_communicator_)
     {

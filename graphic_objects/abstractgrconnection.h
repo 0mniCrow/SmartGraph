@@ -42,7 +42,7 @@ public:
     virtual ~AbstractGrConnection() = default;
 
     void setArrowSize(qreal ar_size);
-    qreal getArrowSize();
+    qreal getArrowSize() const;
     AbstractGrItem* getSource() const noexcept;
     AbstractGrItem* getDestination() const noexcept;
     void setSource(AbstractGrItem* src);
