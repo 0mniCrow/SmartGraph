@@ -15,6 +15,10 @@ void AbstractGrConnection::setArrowSize(qreal ar_size)
         return;
     }
     _communicator_->setArrowSize(ar_size);
+    if(isVisible())
+    {
+        redraw();
+    }
     return;
 }
 
@@ -40,7 +44,10 @@ AbstractGrItem* AbstractGrConnection::getDestination() const noexcept
 void AbstractGrConnection::setDirected(bool state)
 {
     _directed_ = state;
-    redraw();
+    if(isVisible())
+    {
+        redraw();
+    }
     return;
 }
 
@@ -54,7 +61,12 @@ int AbstractGrConnection::type() const
     return Type;
 }
 
-char AbstractGrConnection::graphicType() const noexcept
+char AbstractGrConnection::grObjectType() const noexcept
+{
+    return AbstractConnection;
+}
+
+char AbstractGrConnection::grConnectionType() const noexcept
 {
     return AbstractConnection;
 }
@@ -79,17 +91,33 @@ void AbstractGrConnection::setCommunicator(ItemCommunicator* communicator)
     return;
 }
 
+bool AbstractGrConnection::hasSourceItem() const noexcept
+{
+    return _src_item_;
+}
 
+bool AbstractGrConnection::hasMainItems() const noexcept
+{
+    return _src_item_&&_dest_item_;
+}
 
 void AbstractGrConnection::setSource(AbstractGrItem* src)
 {
     _src_item_ = src;
+    if(isVisible())
+    {
+       redraw();
+    }
     return;
 }
 
 void AbstractGrConnection::setDestination(AbstractGrItem* dest)
 {
     _dest_item_ = dest;
+    if(isVisible())
+    {
+        redraw();
+    }
     return;
 }
 

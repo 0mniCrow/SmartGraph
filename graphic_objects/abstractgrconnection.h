@@ -14,8 +14,6 @@ class AbstractGrConnection:public QGraphicsObject, public AbstractGrInterface
 {
     Q_OBJECT
 private:
-    //QPointF _src_point_;
-    //QPointF _dest_point_;
     AbstractGrItem*         _src_item_;
     AbstractGrItem*         _dest_item_;
     ItemCommunicator*       _communicator_;
@@ -28,7 +26,7 @@ protected:
                QWidget* widget) override = 0;                                   //!virtual
     virtual void redraw() = 0;                                                  //!virtual
 public:
-    enum GraphicItemType{AbstractConnection = GR_ABSTRACT_CONNECTION};
+    enum GrObjectType{AbstractConnection = GR_ABSTRACT_CONNECTION};
     enum ConnectionMode{GrEdge_Null=0,
                         GrEdge_regular,
                         GrEdge_incomplete,
@@ -52,8 +50,11 @@ public:
     void setMode(char mode);
     char getMode() const noexcept;
     void setCommunicator(ItemCommunicator* communicator);
+    bool hasSourceItem() const noexcept;
+    bool hasMainItems() const noexcept;
     virtual int type() const override;
-    virtual char graphicType() const noexcept override;
+    virtual char grObjectType() const noexcept final override;
+    virtual char grConnectionType() const noexcept;
 
 
     virtual QPainterPath shape() const override = 0;                            //!virtual

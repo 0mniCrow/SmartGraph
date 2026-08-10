@@ -62,7 +62,7 @@ protected:
 
 
 public:
-    enum GraphicItemType{AbstractItem = GR_ABSTRACT_ITEM};
+    enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
     AbstractGrItem(const item_id_t& id=item_id_t(),
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
@@ -98,7 +98,8 @@ public:
     virtual coord_real getGrHeight() const override;
     virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
-    virtual char graphicType() const noexcept override{return AbstractItem;}
+    virtual char grObjectType() const noexcept final override{return AbstractItem;}
+    virtual char grItemType() const noexcept{return AbstractItem;}
 signals:
     void changedInternally(AbstractGrItem* self);
     void changedExternally(GrItemData new_val);

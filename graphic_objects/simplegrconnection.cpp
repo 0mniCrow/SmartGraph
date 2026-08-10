@@ -1,5 +1,5 @@
 #include "simplegrconnection.h"
-
+#include "abstractGrItem.h"
 
 
 SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source,
@@ -107,35 +107,75 @@ QRectF SimpleGrConnection::boundingRect() const
             adjusted(-extra,-extra,extra,extra);
 }
 
-/*
-void AbstractGrConnection::paint(QPainter* painter,
+bool SimpleGrConnection::isOperable() const noexcept
+{
+    char mode = getMode();
+    if(mode == GrEdge_incomplete||
+            mode == GrEdge_deletion)
+    {
+        if(!hasSourceItem())
+        {
+            return false;
+        }
+    }
+    else
+    {
+        if(!hasMainItems())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void SimpleGrConnection::getArrowSholders(double arr_atan, const QPointF& arr_head,
+                      QPointF& first_sholder,QPointF& sec_sholder,bool dest_point)
+{
+    qreal arr_size(getArrowSize());
+
+    double first_point_angle = 0.0;
+    double last_point_angle = 0.0;
+    if(dest_point)
+    {
+        first_point_angle = arr_atan-M_PI/3;
+        last_point_angle = arr_atan-M_PI+M_PI/3;
+    }
+    else
+    {
+        first_point_angle = arr_atan+M_PI/3;
+        last_point_angle = arr_atan+M_PI-M_PI/3;
+    }
+
+    first_sholder =
+            arr_head +
+            QPointF(sin(first_point_angle)*arr_size,
+                    cos(first_point_angle)*arr_size);
+
+    sec_sholder =
+            arr_head +
+            QPointF(sin(last_point_angle)*arr_size,
+                    cos(last_point_angle)*arr_size);
+    return;
+}
+
+void SimpleGrConnection::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    if(_mode_ == GrEdge_incomplete||
-            _mode_ == GrEdge_deletion)
+    if(!isOperable())
     {
-        if(!_src_item_)
-        {
-            return;
-        }
-    }
-    else
-    {
-        if(!_src_item_||!_dest_item_)
-        {
-            return;
-        }
+        return;
     }
     QLineF line(_src_point_,_dest_point_);
     if(qFuzzyCompare(line.length(),qreal(0.0)))
     {
         return;
     }
+    char mode = getMode();
     painter->setPen(QPen(
-                        (_mode_==GrEdge_deletion)?
+                        (mode==GrEdge_deletion)?
                             Qt::darkRed:
                             Qt::black,
                         EDGE_WIDTH,
@@ -145,59 +185,50 @@ void AbstractGrConnection::paint(QPainter* painter,
     painter->drawLine(line);
     painter->setBrush(Qt::black);
     double angle = std::atan2(-line.dy(),line.dx());
-    if(!_directed_ && _mode_==GrEdge_regular)
+
+    if(!isDirected() && mode==GrEdge_regular)
     {
-        QPointF sourceArrowP1 =
-                _src_point_ +
-                QPointF(sin(angle+M_PI/3)*_arrowSize_,
-                        cos(angle+M_PI/3)*_arrowSize_);
-
-        QPointF sourceArrowP2 =
-                _src_point_ +
-                QPointF(sin(angle+M_PI - M_PI/3)*_arrowSize_,
-                        cos(angle+M_PI-M_PI/3)*_arrowSize_);
-
-        painter->drawPolygon(
-                    QPolygonF()<<line.p1()<<sourceArrowP1<<sourceArrowP2);
+        QPointF sourceArrowP1,sourceArrowP2;
+        getArrowSholders(angle,_src_point_,sourceArrowP1,sourceArrowP2, false);
+        painter->drawPolygon(QPolygonF()<<
+                             line.p1()<<
+                             sourceArrowP1<<
+                             sourceArrowP2);
     }
-    QPointF destArrowP1 =
-            _dest_point_ +
-            QPointF(sin(angle-M_PI/3)*_arrowSize_,
-                    cos(angle-M_PI/3)*_arrowSize_);
-    QPointF destArrowP2 =
-            _dest_point_ +
-            QPointF(sin(angle-M_PI+M_PI/3)*_arrowSize_,
-                    cos(angle-M_PI+M_PI/3)*_arrowSize_);
-    painter->drawPolygon(
-                QPolygonF()<<line.p2()<<destArrowP1<<destArrowP2);
+    QPointF destArrowP1,destArrowP2;
+    getArrowSholders(angle,_dest_point_,destArrowP1,destArrowP2,true);
+    painter->drawPolygon(QPolygonF()<<
+                         line.p2()<<
+                         destArrowP1<<
+                         destArrowP2);
     return;
 }
-*/
-/*
-QPainterPath AbstractGrConnection::shape() const
+
+
+QPainterPath SimpleGrConnection::shape() const
 {
     QPainterPath path(_src_point_);
     QLineF line(_src_point_,_dest_point_);
-    if(line.length()>qreal(_src_item_->getRadius()))
+    if(line.length()>qreal(getSource()->getRadius()))
     {
-        line.setLength(line.length()-qreal(_src_item_->getRadius())*2);
+        line.setLength(line.length()-qreal(getSource()->getRadius())*2);
     }
     path.lineTo(line.p2());
     return path;
 }
-*/
-/*
-void AbstractGrConnection::recalculate()
+
+
+void SimpleGrConnection::recalculate()
 {
-    if(!_src_item_||!_dest_item_)
+    if(!hasMainItems())
     {
         return;
     }
 
-    QLineF line(mapFromItem(_src_item_,0,0),mapFromItem(_dest_item_,0,0));
+    QLineF line(mapFromItem(getSource(),0,0),mapFromItem(getDestination(),0,0));
     qreal length = line.length();
-    qreal src_radius = static_cast<qreal>(_src_item_->getRadius());
-    qreal dest_radius = static_cast<qreal>(_dest_item_->getRadius());
+    qreal src_radius = static_cast<qreal>(getSource()->getRadius());
+    qreal dest_radius = static_cast<qreal>(getDestination()->getRadius());
     prepareGeometryChange();
     if(length>(src_radius>dest_radius?src_radius:dest_radius))
     {
@@ -214,4 +245,4 @@ void AbstractGrConnection::recalculate()
     }
     return;
 }
-*/
+

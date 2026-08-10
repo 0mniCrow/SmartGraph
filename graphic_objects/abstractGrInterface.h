@@ -17,7 +17,7 @@ class AbstractGrInterface
 private:
     item_id_t _id_;
 public:
-    enum GraphicItemType{NoType = GR_NO_TYPE};
+    enum GrObjectType{NoType = GR_NO_TYPE};
     AbstractGrInterface(const item_id_t& id=item_id_t()):_id_(id) {};
     virtual ~AbstractGrInterface() = default;
     virtual void setGrID(item_id_t& id){_id_=id;}
@@ -32,7 +32,7 @@ public:
     virtual coord_real getGrHeight() const = 0;
     virtual void moveGr(coord_real x, coord_real y) = 0;
     virtual void drawGr() = 0;
-    virtual char graphicType() const noexcept{return NoType;}
+    virtual char grObjectType() const noexcept{return NoType;}
 };
 
 

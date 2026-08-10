@@ -10,6 +10,9 @@ private:
     QPointF _src_point_;
     QPointF _dest_point_;
     unsigned int _weight_;
+    bool isOperable() const noexcept;
+    void getArrowSholders(double arr_atan, const QPointF& arr_head,
+                          QPointF& first_sholder, QPointF& sec_sholder, bool dest_point = true);
 protected:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter,
@@ -32,7 +35,7 @@ public:
     ~SimpleGrConnection() = default;
 
     virtual int type() const override;
-    virtual char graphicType() const noexcept override;
+    virtual char grConnectionType() const noexcept override;
 
     virtual QPainterPath shape() const override;
 
