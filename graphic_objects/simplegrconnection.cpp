@@ -204,6 +204,14 @@ void SimpleGrConnection::paint(QPainter* painter,
     return;
 }
 
+void SimpleGrConnection::redraw()
+{
+    if(isVisible() && isOperable())
+    {
+        update();
+    }
+    return;
+}
 
 QPainterPath SimpleGrConnection::shape() const
 {
@@ -246,3 +254,12 @@ void SimpleGrConnection::recalculate()
     return;
 }
 
+int SimpleGrConnection::type() const
+{
+    return Type;
+}
+
+char SimpleGrConnection::grConnectionType() const noexcept
+{
+    return SimpleConnection;
+}
