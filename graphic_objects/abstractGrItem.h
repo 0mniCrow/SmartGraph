@@ -41,7 +41,7 @@ private:
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
     void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
-
+    void collectClosestItems(QList<QGraphicsItem*> &item_container);
 protected:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
@@ -63,6 +63,7 @@ protected:
 
 public:
     enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
+    enum {Type = UserType+GR_ABSTRACT_ITEM};
     AbstractGrItem(const item_id_t& id=item_id_t(),
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
@@ -84,7 +85,7 @@ public:
     void calcForce();
     bool advPosition();
 
-    enum {Type = UserType+1};
+
     int type() const override{return Type;}
     virtual QPainterPath shape() const override;
 

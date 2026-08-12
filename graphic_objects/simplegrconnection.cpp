@@ -263,3 +263,13 @@ char SimpleGrConnection::grConnectionType() const noexcept
 {
     return SimpleConnection;
 }
+
+void SimpleGrConnection::setWeight(unsigned int weight)
+{
+    _weight_ = weight;
+    return;
+}
+unsigned int SimpleGrConnection::getWeight() const noexcept
+{
+    return _weight_;
+}

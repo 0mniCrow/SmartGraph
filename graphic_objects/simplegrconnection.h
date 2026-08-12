@@ -34,6 +34,8 @@ public:
                        QGraphicsObject* tata = nullptr);
     ~SimpleGrConnection() = default;
 
+    void setWeight(unsigned int weight);
+    unsigned int getWeight() const noexcept;
     virtual int type() const override;
     virtual char grConnectionType() const noexcept override;
 
