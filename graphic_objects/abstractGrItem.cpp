@@ -1,5 +1,6 @@
 #include "abstractGrItem.h"
 #include "graphic_objects/abstractgrconnection.h"
+#include "graphic_objects/simplegrconnection.h"
 AbstractGrItem::AbstractGrItem(const item_id_t &id,
                                int radius,
                                QGraphicsObject *tata):
@@ -626,6 +627,57 @@ void AbstractGrItem::collectClosestItems(QList<QGraphicsItem*>& item_container)
     return;
 }
 
+void AbstractGrItem::calculateRepulsion(qreal& velocity_x,
+                                        qreal& velocity_y,
+                                        const QList<QGraphicsItem*>& items) const
+{
+    for(QGraphicsItem* item:items)
+    {
+        QPointF vect = mapToItem(item,0.0,0.0);
+        qreal dx = vect.x();
+        qreal dy = vect.y();
+        double len = 2.0 * (std::pow(dx,2.0)+std::pow(dy,2.0));
+        if(len>0)
+        {
+            velocity_x+= (dx*150.0)/len;
+            velocity_y+= (dy*150.0)/len;
+        }
+    }
+    return;
+}
+
+void AbstractGrItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
+                         const QVector<AbstractGrConnection*>& edges) const
+{
+    double weight = (edges.size()+1) * 10;
+    for(const AbstractGrConnection* edge: std::as_const(_edges_))
+    {
+        QPointF vect;
+        if(edge->getSource()==this)
+        {
+            vect = mapToItem(edge->getDestination(),0,0);
+        }
+        else
+        {
+            vect = mapToItem(edge->getSource(),0,0);
+        }
+        //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
+        QPointF delta(mapFromItem(edge->getSource(),0,0) - mapFromItem(edge->getDestination(),0,0));
+        qreal dist = std::hypot(delta.x(),delta.y());
+        //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
+        if(edge->grConnectionType()==GR_ABSTRACT_CONNECTION)
+        {
+            SimpleGrConnection * simple_con = qobject_cast<SimpleGrConnection*>(edge);
+            if(dist>=simple_con->getWeight())
+            {
+                velocity_x -= vect.x()/weight;
+                velocity_y -= vect.y()/weight;
+            }
+        }
+    }
+    return;
+}
+
 void AbstractGrItem::calcForce()
 {
     if(!scene() || scene()->mouseGrabberItem() == this||
@@ -641,6 +693,7 @@ void AbstractGrItem::calcForce()
 
     QList<QGraphicsItem*> items;
     collectClosestItems(items);
+    /*
     for(QGraphicsItem* item:items)
     {
         QPointF vect = mapToItem(item,0.0,0.0);
@@ -653,6 +706,10 @@ void AbstractGrItem::calcForce()
             vel_y+= (dy*150.0)/len;
         }
     }
+    */
+    calculateRepulsion(vel_x,vel_y,items);
+    calculateAttraction(vel_x,vel_y,_edges_);
+    /*
     double weight = (_edges_.size()+1) * 10;
     for(const AbstractGrConnection* edge: std::as_const(_edges_))
     {
@@ -675,6 +732,7 @@ void AbstractGrItem::calcForce()
             vel_y -= vect.y()/weight;
         }
     }
+    */
     if(qAbs(vel_x)<0.1 && qAbs(vel_y)<0.1)
     {
         vel_x = 0.0;

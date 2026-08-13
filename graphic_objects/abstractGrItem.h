@@ -42,6 +42,10 @@ private:
     void drawPinNeedle(QPainter* painter);
     void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
     void collectClosestItems(QList<QGraphicsItem*> &item_container);
+    void calculateRepulsion(qreal& velocity_x, qreal &velocity_y,
+                            const QList<QGraphicsItem *> &items) const;
+    void calculateAttraction(qreal& velocity_x, qreal &velocity_y,
+                             const QVector<AbstractGrConnection*>& edges) const;
 protected:
     enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
                   GV_Ignore_Next_Move = 0x02,
