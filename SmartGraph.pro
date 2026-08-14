@@ -12,6 +12,7 @@ SOURCES += \
     Graph_algorithms.cpp \
     graphic_objects/abstractGrItem.cpp \
     graphic_objects/abstractgrconnection.cpp \
+    graphic_objects/abstractitemmanager.cpp \
     graphic_objects/itemcommunicator.cpp \
     graphic_objects/simplegrconnection.cpp \
     graphic_objects/staticgritem.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     graphic_objects/abstractGrInterface.h \
     graphic_objects/abstractGrItem.h \
     graphic_objects/abstractgrconnection.h \
+    graphic_objects/abstractitemmanager.h \
     graphic_objects/itemcommunicator.h \
     graphic_objects/simplegrconnection.h \
     graphic_objects/staticgritem.h \
