@@ -667,7 +667,7 @@ void AbstractGrItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
         //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
         if(edge->grConnectionType()==GR_ABSTRACT_CONNECTION)
         {
-            SimpleGrConnection * simple_con = qobject_cast<SimpleGrConnection*>(edge);
+            const SimpleGrConnection * simple_con = qobject_cast<const SimpleGrConnection*>(edge);
             if(dist>=simple_con->getWeight())
             {
                 velocity_x -= vect.x()/weight;
