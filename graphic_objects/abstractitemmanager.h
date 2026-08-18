@@ -37,8 +37,8 @@ public:
 
     virtual QString getLastError() const = 0;
 signals:
-    void objectUpdated(AbstractGrInterface* obj);
-    void objectRemoved(AbstractGrInterface* obj);
+    void objectUpdated(uint id);
+    void objectRemoved(uint id);
 };
 
 #endif // ABSTRACTITEMMANAGER_H

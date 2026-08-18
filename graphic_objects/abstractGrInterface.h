@@ -10,7 +10,7 @@
 
 #include <string>
 using coord_real = double;
-using item_id_t = std::string;
+using item_id_t = unsigned int;//std::string;
 
 class AbstractGrInterface
 {
