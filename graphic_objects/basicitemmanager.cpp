@@ -68,21 +68,54 @@ AbstractGrInterface* BasicItemManager::createItem(qreal x_coord, qreal y_coord, 
 
 bool BasicItemManager::deleteItem(AbstractGrInterface* item)
 {
-
+    if(!item)
+    {
+        return false;
+    }
+    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.find(item->getGrID());
+    if(it==_items_.cend())
+    {
+        return false;
+    }
+    emit objectRemoved(item->getGrID());
+    _items_.erase(it);
+    AbstractGrItem* gr_item = dynamic_cast<AbstractGrItem*>(item);
+    if(gr_item)
+    {
+        gr_item->deleteLater();
+    }
+    else
+    {
+        delete item;
+    }
+    return true;
 }
 
 bool BasicItemManager::deleteItem(uint id)
 {
-
+    QMap<uint,AbstractGrItem*>::iterator it = _items_.find(id);
+    if(it==_items_.cend())
+    {
+        return false;
+    }
+    return deleteItem(it.value());
 }
+
 AbstractGrInterface* BasicItemManager::findItem(uint id) const
 {
-
+    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.find(id);
+    if(it==_items_.cend())
+    {
+        return nullptr;
+    }
+    return it.value();
 }
+
 AbstractGrInterface* BasicItemManager::findItem(qreal x_coord, qreal y_coord)
 {
 
 }
+
 AbstractGrConnection* BasicItemManager::createConnection(AbstractGrInterface* source,
                                                AbstractGrInterface* destination,
                                                char type,
