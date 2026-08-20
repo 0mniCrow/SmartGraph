@@ -51,7 +51,7 @@ protected:
                   GV_Ignore_Next_Move = 0x02,
                   GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
                   GV_Def_Icon = 0x10};
-    virtual QRectF boundingRect() const override;
+
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void paint(QPainter* painter,
@@ -89,7 +89,7 @@ public:
     void calcForce();
     bool advPosition();
 
-
+    virtual QRectF boundingRect() const override;
     int type() const override{return Type;}
     virtual QPainterPath shape() const override;
 
