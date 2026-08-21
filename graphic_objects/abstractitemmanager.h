@@ -16,6 +16,7 @@ protected:
     bool isExist(uint id);
     bool addID(uint id);
     bool removeID(uint id);
+    virtual void updateStatus() = 0;
 public:
     explicit AbstractItemManager();
     virtual ~AbstractItemManager() = default;

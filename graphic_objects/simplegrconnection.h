@@ -19,6 +19,7 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
     virtual void redraw() override;
+    virtual bool checkStatus() override;
 public:
     enum GraphicItemType{SimpleConnection = GR_SIMPLE_CONNECTION};
     enum {Type = UserType+GR_SIMPLE_CONNECTION};

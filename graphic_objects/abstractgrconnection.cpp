@@ -74,6 +74,10 @@ char AbstractGrConnection::grConnectionType() const noexcept
 void AbstractGrConnection::setMode(char mode)
 {
     _mode_=mode;
+    if(!checkStatus())
+    {
+        _mode_=GrEdge_Null;
+    }
     return;
 }
 
@@ -89,6 +93,11 @@ void AbstractGrConnection::setCommunicator(ItemCommunicator* communicator)
         _communicator_= communicator;
     }
     return;
+}
+
+ItemCommunicator* AbstractGrConnection::getCommunicator() const noexcept
+{
+    return _communicator_;
 }
 
 bool AbstractGrConnection::hasSourceItem() const noexcept
@@ -145,11 +154,13 @@ coord_real AbstractGrConnection::getGrY() const
 void AbstractGrConnection::setGrWidth(coord_real width)
 {
     Q_UNUSED(width);
+    return;
 }
 
 void AbstractGrConnection::setGrHeight(coord_real height)
 {
     Q_UNUSED(height);
+    return;
 }
 
 coord_real AbstractGrConnection::getGrWidth() const

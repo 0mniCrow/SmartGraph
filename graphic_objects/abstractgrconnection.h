@@ -20,11 +20,12 @@ private:
     bool                    _directed_;
     char                    _mode_;
 protected:
-    virtual QRectF boundingRect() const override = 0;                           //!virtual
+    virtual QRectF boundingRect() const override = 0;
     virtual void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override = 0;                                   //!virtual
-    virtual void redraw() = 0;                                                  //!virtual
+               QWidget* widget) override = 0;
+    virtual void redraw() = 0;
+    virtual bool checkStatus() = 0;
 public:
     enum GrObjectType{AbstractConnection = GR_ABSTRACT_CONNECTION};
     enum ConnectionMode{GrEdge_Null=0,
@@ -50,6 +51,7 @@ public:
     void setMode(char mode);
     char getMode() const noexcept;
     void setCommunicator(ItemCommunicator* communicator);
+    ItemCommunicator* getCommunicator() const noexcept;
     bool hasSourceItem() const noexcept;
     bool hasMainItems() const noexcept;
     virtual int type() const override;

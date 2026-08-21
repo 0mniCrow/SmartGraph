@@ -136,7 +136,47 @@ AbstractGrConnection* BasicItemManager::createConnection(AbstractGrInterface* so
                                                char type,
                                                          uint id)
 {
+    switch(type)
+    {
+    case AbstractGrConnection::GrEdge_regular:
+    {
+        if(!destination)
+        {
+            return nullptr;
+        }
+    }
+    [[fallthrough]];
+    case AbstractGrConnection::GrEdge_incomplete:
+    case AbstractGrConnection::GrEdge_deletion:
+    {
+        if(!source)
+        {
+            return nullptr;
+        }
+    }
+        break;
+    default:
+    {
 
+    }
+    }
+    if(!id)
+    {
+        id = generateID();
+    }
+    else
+    {
+        if(isExist(id))
+        {
+            return nullptr;
+        }
+        addID(id);
+    }
+    SimpleGrConnection* new_conn = new SimpleGrConnection(dynamic_cast<AbstractGrItem*>(source),
+                                                          dynamic_cast<AbstractGrItem*>(destination),
+                                                          nullptr,id);
+    _connections_.insert(id,new_conn);
+    return new_conn;
 }
 
 bool BasicItemManager::deleteConnection(AbstractGrConnection* connection)

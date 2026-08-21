@@ -44,6 +44,35 @@ SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source, char mode,
     return;
 }
 
+bool SimpleGrConnection::checkStatus()
+{
+    switch(getMode())
+    {
+    case GrEdge_regular:
+    {
+        if(!getDestination())
+        {
+            return false;
+        }
+    }
+    [[fallthrough]];
+    case GrEdge_incomplete:
+    case GrEdge_deletion:
+    {
+        if((!getSource())||(!getCommunicator()))
+        {
+            return false;
+        }
+    }
+        break;
+    default:
+    {
+        return false;
+    }
+    }
+    return true;
+}
+
 void SimpleGrConnection::setStartPoint(coord_real x, coord_real y)
 {
     _src_point_.setX(x);
