@@ -508,9 +508,10 @@ void AbstractGrItem::addEdge(AbstractGrConnection* edge)
 
 void AbstractGrItem::delEdge(AbstractGrConnection* edge)
 {
-    if(_edges_.count(edge))
+    auto it = std::find(_edges_.cbegin(),_edges_.cend(),edge);
+    if(it!= _edges_.cend())
     {
-        _edges_.erase(std::find(_edges_.cbegin(),_edges_.cend(),edge));
+        _edges_.erase(it);
     }
     return;
 }

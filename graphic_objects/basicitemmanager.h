@@ -3,9 +3,11 @@
 #include "abstractitemmanager.h"
 #include "simplegrconnection.h"
 #include "staticgritem.h"
+#include <QStringView>
 
-class BasicItemManager:public AbstractItemManager
+class BasicItemManager:public QObject, public AbstractItemManager
 {
+    Q_OBJECT
 private:
     QMap<uint,AbstractGrItem*>          _items_;
     QMap<uint,AbstractGrConnection*>    _connections_;
@@ -31,8 +33,10 @@ public:
     virtual AbstractGrConnection* findConnection(AbstractGrInterface* source,
                                                  AbstractGrInterface* destination) override;
 
-    virtual QString getLastError() const override;
-
+    virtual QStringView getLastError() const override;
+signals:
+    void objectUpdated(uint id);
+    void objectRemoved(uint id);
 };
 
 #endif // BASICITEMMANAGER_H

@@ -5,9 +5,8 @@
 #include "abstractGrItem.h"
 #include <QSet>
 
-class AbstractItemManager:QObject
+class AbstractItemManager
 {
-    Q_OBJECT
 private:
     QSet<uint> _IDs_;
     uint _accumulator_;
@@ -36,10 +35,7 @@ public:
     virtual AbstractGrConnection* findConnection(AbstractGrInterface* source,
                                                  AbstractGrInterface* destination) = 0;
 
-    virtual QString getLastError() const = 0;
-signals:
-    void objectUpdated(uint id);
-    void objectRemoved(uint id);
+    virtual QStringView getLastError() const = 0;
 };
 
 #endif // ABSTRACTITEMMANAGER_H

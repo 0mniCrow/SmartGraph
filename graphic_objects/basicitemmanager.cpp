@@ -181,23 +181,64 @@ AbstractGrConnection* BasicItemManager::createConnection(AbstractGrInterface* so
 
 bool BasicItemManager::deleteConnection(AbstractGrConnection* connection)
 {
-
+    if(!connection)
+    {
+        return false;
+    }
+    QMap<uint,AbstractGrConnection*>::iterator it = _connections_.find(connection->getGrID());
+    if(it==_connections_.end())
+    {
+        return false;
+    }
+    AbstractGrItem* item = (*it)->getSource();
+    item->delEdge(*it);
+    if(item=(*it)->getDestination())
+    {
+        item->delEdge(*it);
+    }
+    (*it)->deleteLater();
+    return true;
 }
+
 bool BasicItemManager::deleteConnection(uint id)
 {
-
+    QMap<uint,AbstractGrConnection*>::iterator it = _connections_.find(id);
+    if(it==_connections_.end())
+    {
+        return false;
+    }
+    return deleteConnection(it.value());
 }
+
 AbstractGrConnection* BasicItemManager::findConnection(uint id) const
 {
-
+    QMap<uint,AbstractGrConnection*>::const_iterator it = _connections_.find(id);
+    if(it==_connections_.cend())
+    {
+        return nullptr;
+    }
+    return it.value();
 }
+
 AbstractGrConnection* BasicItemManager::findConnection(AbstractGrInterface* source,
                                              AbstractGrInterface* destination)
 {
-
+    QMap<uint,AbstractGrConnection*>::iterator it =std::find_if(_connections_.begin(),_connections_.end(),[source,destination](AbstractGrConnection* conn)
+    {
+        if((conn->getSource()==source)&&(conn->getDestination()==destination))
+        {
+            return true;
+        }
+        return false;
+    });
+    if(it==_connections_.end())
+    {
+        return nullptr;
+    }
+    return it.value();
 }
 
-QString BasicItemManager::getLastError() const
+QStringView BasicItemManager::getLastError() const
 {
-
+    return _last_error_;
 }
