@@ -63,6 +63,7 @@ HEADERS += \
     mainwindow.h \
     matrixmodel.h \
     nodegraph.h \
+    supplement/SuperstructForManagableDataModels.h \
     supplement/gview_time_objects.h \
     touchform.h \
     vectorgraph.h \
