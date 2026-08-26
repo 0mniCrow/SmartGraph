@@ -1,9 +1,11 @@
 #include "gview_tableVertexModel.h"
 
 VertexModel::VertexModel(QObject * tata):QAbstractTableModel(tata),
+    SuperSFMDM("Vertex_Model"),
     _vm_flags_(VM_NoFlags),_dragged_row_(INACTIVE_PHANTOM_ROW),
     _phantom_row_(INACTIVE_PHANTOM_ROW)
 {
+
     return;
 }
 
@@ -516,4 +518,48 @@ void VertexModel::objectChangedFromInside(GViewItem* item)
     QModelIndex index = createIndex(row,0);
     emit dataChanged(index,index);
     return;
+}
+
+int VertexModel::getItemNumByID(uint id)
+{
+    for(int item_num = 0; item_num<_vertices2_.size(); item_num++)
+    {
+        if(_vertices2_.at(item_num)->getGrID()==id)
+        {
+            return item_num;
+        }
+    }
+    return -1;
+}
+
+void VertexModel::updateFromStructure(uint id, QStringView sender_model)
+{
+    if(sender_model==this->getModelName())
+    {
+        return;
+    }
+    int item_num = getItemNumByID(id);
+    if(item_num<0)
+    {
+        return;
+    }
+    QModelIndex changed_index(index(item_num,0));
+    emit dataChanged(changed_index,changed_index);
+    return;
+}
+
+std::function<void(unsigned int)> VertexModel::getCallbackFunction()
+{
+    std::function<void(unsigned int)> func = [this](unsigned int id)
+    {
+        int item_num = this->getItemNumByID(id);
+        if(item_num<0)
+        {
+            return;
+        }
+        QModelIndex changed_index(this->index(item_num,0));
+        emit this->dataChanged(changed_index,changed_index);
+        return;
+    };
+    return func;
 }

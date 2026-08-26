@@ -2,7 +2,7 @@
 #define SUPERSTRUCTFORMANAGABLEDATAMODELS_H
 #include "QString"
 #include "QStringView"
-
+#include <functional>
 
 /*Надбудоўка для класаў як графічная мадэль, мадэль табліцы, г.д.
  *  каб яны выклікаліся ў залежнасьці ад крыніцы зьмяненняў*/
@@ -13,9 +13,10 @@ private:
 public:
     SuperstructureForManagableDataModels(const QString& model_name):_model_name_(model_name){return;}
     ~SuperstructureForManagableDataModels() = default;
-    virtual void updateFromStructure(uint id, QStringView sender_model) = 0;
     void setModelName(const QString& name){_model_name_ = name;}
     QStringView getModelName() const {return _model_name_;}
+    virtual void updateFromStructure(uint id, QStringView sender_model) = 0;
+    virtual std::function<void(unsigned int)> getCallbackFunction() = 0;
 };
 
 using SuperSFMDM = SuperstructureForManagableDataModels;

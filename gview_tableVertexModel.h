@@ -7,13 +7,16 @@
 #include <QAbstractTableModel>
 #include <QMimeData>
 #include <QDataStream>
+#include <supplement/SuperstructForManagableDataModels.h>
+#include <graphic_objects/abstractGrInterface.h>
 
 typedef QList<vert_map*> nest_vert_map;
 
-class VertexModel:public QAbstractTableModel
+class VertexModel:public QAbstractTableModel, public SuperSFMDM
 {
     Q_OBJECT
 private:
+    QVector<AbstractGrInterface*> _vertices2_;
     QVector<GViewItem*> _vertices_;
     QVector<GViewItem*> _proxy_vector_;
     char _vm_flags_;
@@ -26,6 +29,7 @@ private:
     QVector<GViewItem*>* getActualList();
     const QVector<GViewItem*>* getActualCList() const;
     bool loadData(int row, const QVariant& data);
+    int getItemNumByID(uint id);
 public:
     enum VM_FLAGS{VM_NoFlags = 0x00,
                   VM_Proxy_isActive = 0x01,
@@ -69,6 +73,10 @@ public:
     void setDraggedRow(int dragged_row);
     void clearDraggedRow();
     void gatherItemInfo(nest_vert_map& vertices) const;
+
+    /*Функцыі надбудовы*/
+    virtual void updateFromStructure(uint id, QStringView sender_model) override;
+    virtual std::function<void(unsigned int)> getCallbackFunction() override;
 protected:
     virtual bool sortVM(GViewItem* left, GViewItem* right);
     virtual bool filter(GViewItem* element);

@@ -242,3 +242,22 @@ QStringView BasicItemManager::getLastError() const
 {
     return _last_error_;
 }
+
+void BasicItemManager::addCallbackFunc(const QString& model_name,
+                                       std::function<void(unsigned int)> callback_func)
+{
+    if(_callbacks_.contains(model_name))
+    {
+        _callbacks_[model_name] = callback_func;
+    }
+    else
+    {
+        _callbacks_.insert(model_name,callback_func);
+    }
+    return;
+}
+void BasicItemManager::removeCallbackFunc(const QString& model_name)
+{
+    _callbacks_.remove(model_name);
+    return;
+}

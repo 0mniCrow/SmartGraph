@@ -4,6 +4,7 @@
 #include "simplegrconnection.h"
 #include "staticgritem.h"
 #include <QStringView>
+#include <functional>
 
 class BasicItemManager:public QObject, public AbstractItemManager
 {
@@ -12,7 +13,7 @@ private:
     QMap<uint,AbstractGrItem*>          _items_;
     QMap<uint,AbstractGrConnection*>    _connections_;
     QString                             _last_error_;
-
+    QMap<QString,std::function<void(unsigned int)>>     _callbacks_;
     bool checkItemType(char gr_type) const;
     bool checkConnectionType(char gr_type) const;
 public:
@@ -34,6 +35,8 @@ public:
                                                  AbstractGrInterface* destination) override;
 
     virtual QStringView getLastError() const override;
+    void addCallbackFunc(const QString& model_name, std::function<void(unsigned int)> callback_func);
+    void removeCallbackFunc(const QString& model_name);
 signals:
     void objectUpdated(uint id);
     void objectRemoved(uint id);
