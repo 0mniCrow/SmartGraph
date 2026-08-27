@@ -548,10 +548,15 @@ void VertexModel::updateFromStructure(uint id, QStringView sender_model)
     return;
 }
 
-std::function<void(unsigned int)> VertexModel::getCallbackFunction()
+std::function<void (unsigned int, QStringView)> VertexModel::getCallbackFunction()
 {
-    std::function<void(unsigned int)> func = [this](unsigned int id)
+
+    std::function<void(unsigned int,QStringView)> func = [this](unsigned int id,QStringView model_name)
     {
+        if(this->getModelName()== model_name)
+        {
+            return;
+        }
         int item_num = this->getItemNumByID(id);
         if(item_num<0)
         {

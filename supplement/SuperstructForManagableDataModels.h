@@ -16,7 +16,7 @@ public:
     void setModelName(const QString& name){_model_name_ = name;}
     QStringView getModelName() const {return _model_name_;}
     virtual void updateFromStructure(uint id, QStringView sender_model) = 0;
-    virtual std::function<void(unsigned int)> getCallbackFunction() = 0;
+    virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() = 0;
 };
 
 using SuperSFMDM = SuperstructureForManagableDataModels;

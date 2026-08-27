@@ -76,7 +76,7 @@ public:
 
     /*Функцыі надбудовы*/
     virtual void updateFromStructure(uint id, QStringView sender_model) override;
-    virtual std::function<void(unsigned int)> getCallbackFunction() override;
+    virtual std::function<void(unsigned int, QStringView)> getCallbackFunction() override;
 protected:
     virtual bool sortVM(GViewItem* left, GViewItem* right);
     virtual bool filter(GViewItem* element);
