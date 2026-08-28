@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QPixmap>
 #include <QTimer>
-#include "gviewport.h"
+
 #include "widgets/gview_tooltip_window.h"
 #include "widgets/gview_edit_window.h"
 #include "imagecropwindow.h"
@@ -11,7 +11,9 @@
 #define TIMER_DELAY 2000
 #define DEFAULT_ARROW_SIZE 10
 
+class GViewPort;
 class AbstractGrItem;
+
 
 class ItemCommunicator : public QObject
 {

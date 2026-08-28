@@ -20,7 +20,11 @@
 #include <chrono>
 #include <QDomNode>
 
-class GViewPort:public QGraphicsView
+#include "supplement/SuperstructForManagableDataModels.h"
+#include "graphic_objects/abstractGrItem.h"
+#include "graphic_objects/abstractgrconnection.h"
+
+class GViewPort:public QGraphicsView, public SuperSFMDM
 {
     Q_OBJECT
 public:
@@ -57,6 +61,15 @@ public:
     QStringList getTranslatableObjects() const;
     g_time getCurTime() const noexcept{return _cur_time_;};
     void setCurTime(const g_time& time) noexcept {_cur_time_=time;};
+
+    bool addGItem(AbstractGrItem * g_item);
+    bool removeGItem(AbstractGrItem * g_item);
+    bool addGConnection(AbstractGrConnection * g_conn);
+    bool removeGConnection(AbstractGrConnection *g_conn);
+
+
+    virtual void updateFromStructure(uint id, QStringView sender_model) override;
+    virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() override;
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;

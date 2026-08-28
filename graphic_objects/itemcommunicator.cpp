@@ -1,5 +1,6 @@
 #include "itemcommunicator.h"
 #include "abstractGrItem.h"
+#include "gviewport.h"
 
 ItemCommunicator::ItemCommunicator(GViewPort *port, QObject *parent)
     : QObject{parent},
