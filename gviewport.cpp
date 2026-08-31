@@ -1104,36 +1104,81 @@ GviewLangControl* GViewPort::getTranslationTool() const
 
 bool GViewPort::addGItem(AbstractGrItem * g_item)
 {
-    if(scene() == g_item->scene())
+    if(_items_.contains(g_item->getGrID()))
     {
         return false;
     }
+    _items_.insert(g_item->getGrID(),g_item);
     scene()->addItem(g_item);
     return true;
 }
 
 bool GViewPort::removeGItem(AbstractGrItem * g_item)
 {
+    return removeGItem(g_item->getGrID());
+}
 
+bool GViewPort::removeGItem(uint item_id)
+{
+    if(!_items_.contains(item_id))
+    {
+        return false;
+    }
+    scene()->removeItem(_items_.value(item_id));
+    _items_.remove(item_id);
+    return true;
 }
 
 bool GViewPort::addGConnection(AbstractGrConnection * g_conn)
 {
-
+    if(_connections_.contains(g_conn->getGrID()))
+    {
+        return false;
+    }
+    _connections_.insert(g_conn->getGrID(),g_conn);
+    scene()->addItem(g_conn);
+    return true;
 }
 
 bool GViewPort::removeGConnection(AbstractGrConnection *g_conn)
 {
-
+    return removeGConnection(g_conn->getGrID());
 }
 
+bool GViewPort::removeGConnection(uint conn_id)
+{
+    if(!_connections_.contains(conn_id))
+    {
+        return false;
+    }
+    scene()->removeItem(_connections_.value(conn_id));
+    _connections_.remove(conn_id);
+    return true;
+}
 
 void GViewPort::updateFromStructure(uint id, QStringView sender_model)
 {
-
+    if(sender_model == getModelName())
+    {
+        return;
+    }
+    if(_items_.contains(id))
+    {
+        _items_.value(id)->update();
+    }
+    else if(_connections_.contains(id))
+    {
+        _connections_.value(id)->update();
+    }
+    return;
 }
 
 std::function<void(unsigned int, QStringView sender_model)> GViewPort::getCallbackFunction()
 {
-
+    std::function<void(unsigned int,QStringView)> func = [this](unsigned int id,QStringView model_name)
+    {
+        this->updateFromStructure(id,model_name);
+        return;
+    };
+    return func;
 }

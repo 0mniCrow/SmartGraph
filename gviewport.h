@@ -64,8 +64,10 @@ public:
 
     bool addGItem(AbstractGrItem * g_item);
     bool removeGItem(AbstractGrItem * g_item);
+
     bool addGConnection(AbstractGrConnection * g_conn);
     bool removeGConnection(AbstractGrConnection *g_conn);
+
 
 
     virtual void updateFromStructure(uint id, QStringView sender_model) override;
@@ -80,6 +82,10 @@ protected:
 private:
     g_time _cur_time_;
     VertexModel * _vertices_;
+
+    QMap<uint,AbstractGrItem*> _items_;
+    QMap<uint,AbstractGrConnection*> _connections_;
+
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;
     GViewItem* _del_edge_;
@@ -117,6 +123,8 @@ signals:
 public slots:
     void outsideNewSelect(GViewItem* selected_item);
 
+    bool removeGItem(uint item_id);
+    bool removeGConnection(uint conn_id);
 };
 
 #endif // GVIEWPORT_H
