@@ -207,7 +207,7 @@ void SimpleGrConnection::paint(QPainter* painter,
                         (mode==GrEdge_deletion)?
                             Qt::darkRed:
                             Qt::black,
-                        EDGE_WIDTH,
+                        CONNECTION_WIDTH,
                         Qt::SolidLine,
                         Qt::RoundCap,
                         Qt::RoundJoin));

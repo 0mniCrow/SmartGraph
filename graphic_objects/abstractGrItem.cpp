@@ -1,6 +1,7 @@
 #include "abstractGrItem.h"
 #include "graphic_objects/abstractgrconnection.h"
 #include "graphic_objects/simplegrconnection.h"
+#include "qgraphicsview.h"
 AbstractGrItem::AbstractGrItem(const item_id_t &id,
                                int radius,
                                QGraphicsObject *tata):
@@ -76,7 +77,7 @@ void AbstractGrItem::drawVertexCircle(QPainter* painter)
     if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
     {
         cur_pen.setColor(QColorConstants::Svg::darkslateblue);
-        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        cur_pen.setWidthF(LINE_ITEM_CLICKED_WIDTH);
         cur_color = QColorConstants::Svg::orange;
     }
     else
@@ -84,7 +85,7 @@ void AbstractGrItem::drawVertexCircle(QPainter* painter)
         if(isUnderMouse())
         {
             cur_pen.setColor(QColorConstants::Svg::yellowgreen);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
             cur_color = (flags()&ItemIsMovable)?
                         Qt::yellow:
                         QColorConstants::Svg::lightcyan;
@@ -92,7 +93,7 @@ void AbstractGrItem::drawVertexCircle(QPainter* painter)
         else if(isSelected())
         {
             cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
-            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_SELECT_WIDTH);
             cur_color = (flags()&ItemIsMovable)?
                         QColorConstants::Svg::palegoldenrod:
                         QColorConstants::Svg::lightskyblue;
@@ -100,7 +101,7 @@ void AbstractGrItem::drawVertexCircle(QPainter* painter)
         else
         {
             cur_pen.setColor(QColorConstants::Svg::white);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
             cur_color = (flags()&ItemIsMovable)?
                         QColorConstants::Svg::slategray:
                         QColorConstants::Svg::powderblue;
@@ -121,7 +122,7 @@ void AbstractGrItem::drawVertexIcon(QPainter* painter)
     if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
     {
         cur_pen.setColor(QColorConstants::Svg::orangered);
-        cur_pen.setWidthF(LINE_CLICKED_WIDTH);
+        cur_pen.setWidthF(LINE_ITEM_CLICKED_WIDTH);
         mask_color = QColorConstants::Svg::cyan;
         if(!(_flags_&GV_Def_Icon))
         {
@@ -133,7 +134,7 @@ void AbstractGrItem::drawVertexIcon(QPainter* painter)
         if(isUnderMouse())
         {
             cur_pen.setColor(QColorConstants::Svg::yellow);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
             mask_color = (flags()&ItemIsMovable)?
                         QColorConstants::Svg::wheat:
                         QColorConstants::Svg::tomato;
@@ -145,7 +146,7 @@ void AbstractGrItem::drawVertexIcon(QPainter* painter)
         else if(isSelected())
         {
             cur_pen.setColor(QColorConstants::Svg::orange);
-            cur_pen.setWidthF(LINE_SELECT_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_SELECT_WIDTH);
             mask_color = (flags()&ItemIsMovable)?
                         QColorConstants::Svg::gold:
                         QColorConstants::Svg::cornsilk;
@@ -157,7 +158,7 @@ void AbstractGrItem::drawVertexIcon(QPainter* painter)
         else
         {
             cur_pen.setColor(QColorConstants::Svg::lightslategrey);
-            cur_pen.setWidthF(LINE_BASE_WIDTH);
+            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
             mask_color = Qt::gray;
             if(!(_flags_&GV_Def_Icon))
             {
@@ -195,16 +196,16 @@ void AbstractGrItem::drawPinNeedle(QPainter* painter)
     qreal uy = pin_stem_line.dy()/pin_stem_line.length();
     qreal vx = -uy;
     qreal vy = ux;
-    QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_RADIUS*vx,
-                              pin_stem_end.y()+PIN_HEAD_RADIUS*vy);
-    QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_RADIUS*vx,
-                              pin_stem_end.y()-PIN_HEAD_RADIUS*vy);
+    QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_ITEM_RADIUS*vx,
+                              pin_stem_end.y()+PIN_HEAD_ITEM_RADIUS*vy);
+    QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_ITEM_RADIUS*vx,
+                              pin_stem_end.y()-PIN_HEAD_ITEM_RADIUS*vy);
     pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
     painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
     painter->setPen(QPen(Qt::black,1));
     painter->drawPolygon(pin_needle);
     painter->setBrush(QBrush(Qt::red));
-    painter->drawEllipse(pin_stem_end,PIN_HEAD_RADIUS+1,PIN_HEAD_RADIUS+1);
+    painter->drawEllipse(pin_stem_end,PIN_HEAD_ITEM_RADIUS+1,PIN_HEAD_ITEM_RADIUS+1);
     return;
 }
 
@@ -217,10 +218,10 @@ void AbstractGrItem::calculateObjectPosition(const QPointF &event_pos, const QPo
 {
     QPointF delta = (event_pos-prev_pos) * MOUSE_SENSE_ITEM_DECR;
     QPointF new_pos(pos()+delta);
-
-    QRect vpRect = scene()->views().first()->viewport()->rect();
-    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
-    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
+    QGraphicsView* main_port = _communicator_->getMainPort();
+    QRect vpRect = main_port->viewport()->rect();
+    QPoint topLeft     = main_port->viewport()->mapToGlobal(vpRect.topLeft());
+    QPoint bottomRight = main_port->viewport()->mapToGlobal(vpRect.bottomRight());
     QPoint globalPos(QCursor::pos());
     bool wrapped = false;
     if (globalPos.x() <= topLeft.x())
@@ -242,8 +243,8 @@ void AbstractGrItem::calculateObjectPosition(const QPointF &event_pos, const QPo
 
     if (wrapped)
     {
-        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
-        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+        QPoint viewPos = main_port->mapFromScene(pos());
+        QPoint gl_pos = main_port->viewport()->mapToGlobal(viewPos);
         QCursor::setPos(gl_pos);
         setGrFlag(GV_Ignore_Next_Move,true);
     }
@@ -371,8 +372,9 @@ void AbstractGrItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
     {
         if(scene() && !scene()->views().isEmpty())
         {
-            QPoint viewPos = scene()->views().first()->mapFromScene(pos());
-            QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
+            QGraphicsView* main_port = _communicator_->getMainPort();
+            QPoint viewPos = main_port->mapFromScene(pos());
+            QPoint gl_pos = main_port->viewport()->mapToGlobal(viewPos);
             QCursor::setPos(gl_pos);
         }
         unsetCursor();

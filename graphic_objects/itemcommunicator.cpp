@@ -166,3 +166,8 @@ void ItemCommunicator::editWindowUpdated()
     _cur_working_item_->setGrData(_edit_window_->getData(),AbstractGrItem::DC_Internal);
     return;
 }
+
+QGraphicsView * ItemCommunicator::getMainPort() const noexcept
+{
+    return _main_port_;
+}

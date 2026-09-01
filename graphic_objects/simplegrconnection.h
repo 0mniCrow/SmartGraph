@@ -3,6 +3,8 @@
 
 #include "abstractgrconnection.h"
 
+#define CONNECTION_WIDTH 2.0
+
 class SimpleGrConnection:public AbstractGrConnection
 {
     Q_OBJECT

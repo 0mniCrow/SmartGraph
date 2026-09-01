@@ -44,7 +44,7 @@ public:
     void setArrowSize(qreal arrow_size);
     qreal getArrowSize() const noexcept;
     void arrowSizeChanged();
-
+    QGraphicsView * getMainPort() const noexcept;
 private slots:
     void timeOut();
     void editWindowUpdated();
