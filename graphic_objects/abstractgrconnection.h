@@ -69,15 +69,15 @@ public:
     virtual coord_real getFinX() const = 0;                                     //!virtual
     virtual coord_real getFinY() const = 0;
 
-    virtual void setGrX(coord_real x) override final;
-    virtual void setGrY(coord_real y) override final;
-    virtual coord_real getGrX() const override final;
-    virtual coord_real getGrY() const override final;
-    virtual void setGrWidth(coord_real width) override final;
-    virtual void setGrHeight(coord_real height) override final;
-    virtual coord_real getGrWidth() const override final;
-    virtual coord_real getGrHeight() const override final;
-    virtual void moveGr(coord_real x, coord_real y) override;
+//    virtual void setGrX(coord_real x) override final;
+//    virtual void setGrY(coord_real y) override final;
+//    virtual coord_real getGrX() const override final;
+//    virtual coord_real getGrY() const override final;
+//    virtual void setGrWidth(coord_real width) override final;
+//    virtual void setGrHeight(coord_real height) override final;
+//    virtual coord_real getGrWidth() const override final;
+//    virtual coord_real getGrHeight() const override final;
+//    virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
 
 };

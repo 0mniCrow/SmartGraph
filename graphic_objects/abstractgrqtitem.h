@@ -1,13 +1,9 @@
-#ifndef ABSTRACTGRITEM_H
-#define ABSTRACTGRITEM_H
-#include "abstractGrInterface.h"
-#include "templateItemData.h"
-#include "QGraphicsObject"
-#include "QGraphicsScene"
-#include "itemcommunicator.h"
+#ifndef ABSTRACTGRQTITEM_H
+#define ABSTRACTGRQTITEM_H
+#include "graphic_objects/itemcommunicator.h"
+#include "graphic_objects/abstractGrItem.h"
 #include <QPixmap>
-#include <QPoint>
-#include <QPointF>
+#include <QGraphicsObject>
 
 #define DEF_ITEM_RADIUS 20
 #define MIN_ITEM_RADIUS 10
@@ -18,15 +14,12 @@
 #define MOUSE_SENSE_ITEM_DECR 0.5
 #define PIN_HEAD_ITEM_RADIUS 3
 
-typedef QString GrItemData;
-
 class AbstractGrConnection;
 
-class AbstractGrItem:public QGraphicsObject, public AbstractGrInterface, public ItemDataInterface<GrItemData>
+class AbstractGrQtItem:public QGraphicsObject, public AbstractGrItem
 {
     Q_OBJECT
 private:
-    QVector<AbstractGrConnection*>      _edges_;
     QPixmap                             _orig_pixmap_;
     QPixmap                             _icon_;
     QPointF                             _adv_pos_;
@@ -63,24 +56,19 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-
-
 public:
-    enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
-    enum {Type = UserType+GR_ABSTRACT_ITEM};
-    AbstractGrItem(const item_id_t& id=item_id_t(),
+    enum GrObjectType{AbstractItem = GR_ABSTRACT_QT_ITEM};
+    enum {Type = UserType+GR_ABSTRACT_QT_ITEM};
+    AbstractGrQtItem(const item_id_t& id=item_id_t(),
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
-    virtual ~AbstractGrItem() = default;
+    virtual ~AbstractGrQtItem() = default;
     void setItemCommunicator(ItemCommunicator* communicator);
     void setRadius(int radius);
     int getRadius() const noexcept {return _radius_;}
     void setGrFlag(char flag, bool state);
     void setGrFlags(char flags);
     char getFlags() const noexcept {return _flags_;}
-    void addEdge(AbstractGrConnection* edge);
-    void delEdge(AbstractGrConnection* edge);
-    QList<AbstractGrConnection*> getEdges() const;
     void setImage(const QPixmap& image);
     QPixmap getImage() const { return _orig_pixmap_; }
 
@@ -93,21 +81,18 @@ public:
     int type() const override{return Type;}
     virtual QPainterPath shape() const override;
 
-    virtual void setGrX(coord_real x) =0;
-    virtual void setGrY(coord_real y) =0;
-    virtual coord_real getGrX() const =0;
-    virtual coord_real getGrY() const =0;
-    virtual void setGrWidth(coord_real width) =0;
-    virtual void setGrHeight(coord_real height) =0;
-    virtual coord_real getGrWidth() const =0;
-    virtual coord_real getGrHeight() const =0;
-    virtual void moveGr(coord_real x, coord_real y) =0;
+    virtual void setGrX(coord_real x) override;
+    virtual void setGrY(coord_real y) override;
+    virtual coord_real getGrX() const override;
+    virtual coord_real getGrY() const override;
+    virtual void setGrWidth(coord_real width) override;
+    virtual void setGrHeight(coord_real height) override;
+    virtual coord_real getGrWidth() const override;
+    virtual coord_real getGrHeight() const override;
+    virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
     virtual char grObjectType() const noexcept final override{return AbstractItem;}
     virtual char grItemType() const noexcept{return AbstractItem;}
-signals:
-    void changedInternally(AbstractGrItem* self);
-    void changedExternally(GrItemData new_val);
 };
 
-#endif // ABSTRACTGRITEM_H
+#endif // ABSTRACTGRQTITEM_H

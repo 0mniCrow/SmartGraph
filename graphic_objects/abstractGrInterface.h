@@ -7,6 +7,7 @@
 #define GR_ABSTRACT_CONNECTION 2        //AbstractGrConnection - incorrect
 #define GR_STATIC_ITEM 3                //StaticGrItem       - correct
 #define GR_SIMPLE_CONNECTION 4          //SimpleGrConnection - correct
+#define GR_ABSTRACT_QT_ITEM 5
 
 #include <string>
 using coord_real = double;
@@ -22,15 +23,15 @@ public:
     virtual ~AbstractGrInterface() = default;
     virtual void setGrID(item_id_t& id){_id_=id;}
     virtual item_id_t getGrID() const {return _id_;}
-    virtual void setGrX(coord_real x) = 0;
-    virtual void setGrY(coord_real y) = 0;
-    virtual coord_real getGrX() const = 0;
-    virtual coord_real getGrY() const = 0;
-    virtual void setGrWidth(coord_real width) = 0;
-    virtual void setGrHeight(coord_real height) = 0;
-    virtual coord_real getGrWidth() const = 0;
-    virtual coord_real getGrHeight() const = 0;
-    virtual void moveGr(coord_real x, coord_real y) = 0;
+//    virtual void setGrX(coord_real x) = 0;
+//    virtual void setGrY(coord_real y) = 0;
+//    virtual coord_real getGrX() const = 0;
+//    virtual coord_real getGrY() const = 0;
+//    virtual void setGrWidth(coord_real width) = 0;
+//    virtual void setGrHeight(coord_real height) = 0;
+//    virtual coord_real getGrWidth() const = 0;
+//    virtual coord_real getGrHeight() const = 0;
+//    virtual void moveGr(coord_real x, coord_real y) = 0;
     virtual void drawGr() = 0;
     virtual char grObjectType() const noexcept{return NoType;}
 };
