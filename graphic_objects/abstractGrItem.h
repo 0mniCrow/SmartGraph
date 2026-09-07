@@ -22,76 +22,21 @@ typedef QString GrItemData;
 
 class AbstractGrConnection;
 
-class AbstractGrItem:public QGraphicsObject, public AbstractGrInterface, public ItemDataInterface<GrItemData>
+class AbstractGrItem: public AbstractGrInterface, public ItemDataInterface<GrItemData>
 {
-    Q_OBJECT
 private:
-    QVector<AbstractGrConnection*>      _edges_;
-    QPixmap                             _orig_pixmap_;
-    QPixmap                             _icon_;
-    QPointF                             _adv_pos_;
-    QPoint                              _last_screen_pos_;
-    ItemCommunicator*                   _communicator_;
-    int                                 _radius_;
-    char                                _flags_;
 
-    void keepInBorders();
-    void iconUpdate();
-    void drawVertexCircle(QPainter* painter);
-    void drawVertexIcon(QPainter* painter);
-    void drawPinNeedle(QPainter* painter);
-    void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
-    void collectClosestItems(QList<QGraphicsItem*> &item_container);
-    void calculateRepulsion(qreal& velocity_x, qreal &velocity_y,
-                            const QList<QGraphicsItem *> &items) const;
-    void calculateAttraction(qreal& velocity_x, qreal &velocity_y,
-                             const QVector<AbstractGrConnection*>& edges) const;
+
 protected:
-    enum ItemFlags{ GV_None = 0x00, GV_Is_Clicked = 0x01,
-                  GV_Ignore_Next_Move = 0x02,
-                  GV_Is_Dragged = 0x04,GV_Is_Forced = 0x08,
-                  GV_Def_Icon = 0x10};
-
-
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    virtual void paint(QPainter* painter,
-               const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event) override;
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent* m_event) override;
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
-    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
-
+    QVector<AbstractGrConnection*>      _edges_;
 
 public:
     enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
-    enum {Type = UserType+GR_ABSTRACT_ITEM};
-    AbstractGrItem(const item_id_t& id=item_id_t(),
-                   int radius = DEF_ITEM_RADIUS,
-                   QGraphicsObject *tata = nullptr);
+    AbstractGrItem(const item_id_t& id=item_id_t());
     virtual ~AbstractGrItem() = default;
-    void setItemCommunicator(ItemCommunicator* communicator);
-    void setRadius(int radius);
-    int getRadius() const noexcept {return _radius_;}
-    void setGrFlag(char flag, bool state);
-    void setGrFlags(char flags);
-    char getFlags() const noexcept {return _flags_;}
     void addEdge(AbstractGrConnection* edge);
     void delEdge(AbstractGrConnection* edge);
     QList<AbstractGrConnection*> getEdges() const;
-    void setImage(const QPixmap& image);
-    QPixmap getImage() const { return _orig_pixmap_; }
-
-    bool isForceCalc()const {return _flags_&GV_Is_Forced;}
-    void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}
-    void calcForce();
-    bool advPosition();
-
-    virtual QRectF boundingRect() const override;
-    int type() const override{return Type;}
-    virtual QPainterPath shape() const override;
 
     virtual void setGrX(coord_real x) =0;
     virtual void setGrY(coord_real y) =0;
@@ -102,12 +47,8 @@ public:
     virtual coord_real getGrWidth() const =0;
     virtual coord_real getGrHeight() const =0;
     virtual void moveGr(coord_real x, coord_real y) =0;
-    virtual void drawGr() override;
-    virtual char grObjectType() const noexcept final override{return AbstractItem;}
-    virtual char grItemType() const noexcept{return AbstractItem;}
-signals:
-    void changedInternally(AbstractGrItem* self);
-    void changedExternally(GrItemData new_val);
+    virtual char grObjectType() const noexcept override{return AbstractItem;}
+
 };
 
 #endif // ABSTRACTGRITEM_H

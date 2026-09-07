@@ -2,20 +2,20 @@
 #include "graphic_objects/abstractgrconnection.h"
 #include "graphic_objects/simplegrconnection.h"
 #include "qgraphicsview.h"
-AbstractGrItem::AbstractGrItem(const item_id_t &id,
-                               int radius,
-                               QGraphicsObject *tata):
-    QGraphicsObject(tata),
-    AbstractGrInterface(id),
-    _radius_(radius)
+AbstractGrItem::AbstractGrItem(const item_id_t &id
+                               /*,int radius,
+                               QGraphicsObject *tata*/):
+    /*QGraphicsObject(tata),*/
+    AbstractGrInterface(id)
+    /*,_radius_(radius)*/
 {
-    setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
-    setCacheMode(QGraphicsItem::DeviceCoordinateCache);
-    setAcceptHoverEvents(true);
-    iconUpdate();
+//  setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
+//  setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+//  setAcceptHoverEvents(true);
+//  iconUpdate();
 }
 
-
+/*
 void AbstractGrItem::keepInBorders()
 {
     QRectF sceneRect = scene()->sceneRect();
@@ -25,9 +25,10 @@ void AbstractGrItem::keepInBorders()
     setPos(newPos);
     return;
 }
-
+*/
 /* Метад вызначае й перамалёўвае іконку на аб'екце
    Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
+/*
 void AbstractGrItem::iconUpdate()
 {
     if(_orig_pixmap_.isNull() &&
@@ -68,7 +69,8 @@ void AbstractGrItem::iconUpdate()
     _icon_ = QPixmap::fromImage(result_icon);
     return;
 }
-
+*/
+/*
 void AbstractGrItem::drawVertexCircle(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -113,7 +115,8 @@ void AbstractGrItem::drawVertexCircle(QPainter* painter)
     painter->drawEllipse(ellipse_rect);
     return;
 }
-
+*/
+/*
 void AbstractGrItem::drawVertexIcon(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -183,7 +186,8 @@ void AbstractGrItem::drawVertexIcon(QPainter* painter)
         painter->drawEllipse(ellipse_rect);
     }
 }
-
+*/
+/*
 void AbstractGrItem::drawPinNeedle(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -208,12 +212,13 @@ void AbstractGrItem::drawPinNeedle(QPainter* painter)
     painter->drawEllipse(pin_stem_end,PIN_HEAD_ITEM_RADIUS+1,PIN_HEAD_ITEM_RADIUS+1);
     return;
 }
-
+*/
 /*Метад вызначае новую пазіцыю аб'екта з улікам
  * штучнага запавольвання (калі карыстальнік націсквае
  * на аб'ект і перасоўвае яго). У выпадку, калі рэальны (нябачны)
  * курсор выйшаў за мяжы віджэта (wrapped), метад пераносіць курсор
  * назад да аб'екта.*/
+/*
 void AbstractGrItem::calculateObjectPosition(const QPointF &event_pos, const QPointF &prev_pos)
 {
     QPointF delta = (event_pos-prev_pos) * MOUSE_SENSE_ITEM_DECR;
@@ -251,7 +256,8 @@ void AbstractGrItem::calculateObjectPosition(const QPointF &event_pos, const QPo
     setPos(new_pos);
     return;
 }
-
+*/
+/*
 QRectF AbstractGrItem::boundingRect() const
 {
     int select_inflate = isSelected()?SELECTED_ITEM_RISE:0.0;
@@ -273,14 +279,16 @@ QRectF AbstractGrItem::boundingRect() const
                   _radius_*2 + borders + select_inflate,
                   _radius_*2 + borders+ select_inflate);
 }
-
+*/
+/*
 QPainterPath AbstractGrItem::shape() const
 {
     QPainterPath path;
     path.addEllipse(boundingRect());
     return path;
 }
-
+*/
+/*
 QVariant AbstractGrItem::itemChange(GraphicsItemChange change, const QVariant& value)
 {
     switch(change)
@@ -314,7 +322,9 @@ QVariant AbstractGrItem::itemChange(GraphicsItemChange change, const QVariant& v
     }
     return QGraphicsItem::itemChange(change,value);
 }
+*/
 
+/*
 void AbstractGrItem::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)
@@ -337,7 +347,8 @@ void AbstractGrItem::paint(QPainter* painter,
     painter->restore();
     return;
 }
-
+*/
+/*
 void AbstractGrItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 {
     if(flags()&ItemIsMovable)
@@ -354,7 +365,8 @@ void AbstractGrItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
 
     QGraphicsItem::mousePressEvent(m_event);
 }
-
+*/
+/*
 void AbstractGrItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
 {
     if(_communicator_)
@@ -365,7 +377,8 @@ void AbstractGrItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event)
     m_event->accept();
     return;
 }
-
+*/
+/*
 void AbstractGrItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
 {
     if(flags()&ItemIsMovable)
@@ -383,7 +396,8 @@ void AbstractGrItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
     update();
     QGraphicsItem::mouseReleaseEvent(m_event);
 }
-
+*/
+/*
 void AbstractGrItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
 {
     if(!(flags()&ItemIsMovable))
@@ -398,45 +412,11 @@ void AbstractGrItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
         return;
     }
     calculateObjectPosition(m_event->scenePos(),m_event->lastScenePos());
-    /*
-    QPointF delta = (m_event->scenePos()-m_event->lastScenePos()) * MOUSE_SENSE_ITEM_DECR;
-    QPointF new_pos(pos()+delta);
-
-    QRect vpRect = scene()->views().first()->viewport()->rect();
-    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
-    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
-    QPoint globalPos(QCursor::pos());
-    bool wrapped = false;
-    if (globalPos.x() <= topLeft.x())
-    {
-        wrapped = true;
-    }
-    else if (globalPos.x() >= bottomRight.x())
-    {
-        wrapped = true;
-    }
-    if (globalPos.y() <= topLeft.y())
-    {
-        wrapped = true;
-    }
-    else if (globalPos.y() >= bottomRight.y())
-    {
-        wrapped = true;
-    }
-
-    if (wrapped)
-    {
-        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
-        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
-        QCursor::setPos(gl_pos);
-        setGrFlag(GV_Ignore_Next_Move,true);
-    }
-    setPos(new_pos);
-    */
     m_event->accept();
     return;
 }
-
+*/
+/*
 void AbstractGrItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
 {
     _last_screen_pos_ = h_event->screenPos();
@@ -448,7 +428,8 @@ void AbstractGrItem::hoverEnterEvent(QGraphicsSceneHoverEvent * h_event)
     update();
     return QGraphicsItem::hoverEnterEvent(h_event);
 }
-
+*/
+/*
 void AbstractGrItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
 {
     _last_screen_pos_ = QPoint();
@@ -460,7 +441,8 @@ void AbstractGrItem::hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event)
     update();
     return QGraphicsItem::hoverLeaveEvent(h_event);
 }
-
+*/
+/*
 void AbstractGrItem::setItemCommunicator(ItemCommunicator* communicator)
 {
     if(!communicator)
@@ -470,7 +452,8 @@ void AbstractGrItem::setItemCommunicator(ItemCommunicator* communicator)
     _communicator_ = communicator;
     return;
 }
-
+*/
+/*
 void AbstractGrItem::setRadius(int radius)
 {
     if(radius==_radius_)
@@ -488,18 +471,21 @@ void AbstractGrItem::setRadius(int radius)
     }
     iconUpdate();
 }
-
+*/
+/*
 void AbstractGrItem::setGrFlag(char flag, bool state)
 {
     _flags_ = state? _flags_|flag : _flags_&~flag;
     return;
 }
-
+*/
+/*
 void AbstractGrItem::setGrFlags(char flags)
 {
     _flags_ = flags;
     return;
 }
+*/
 
 void AbstractGrItem::addEdge(AbstractGrConnection* edge)
 {
@@ -507,6 +493,7 @@ void AbstractGrItem::addEdge(AbstractGrConnection* edge)
     edge->recalculate();
     return;
 }
+
 
 void AbstractGrItem::delEdge(AbstractGrConnection* edge)
 {
@@ -518,6 +505,7 @@ void AbstractGrItem::delEdge(AbstractGrConnection* edge)
     return;
 }
 
+
 QList<AbstractGrConnection*> AbstractGrItem::getEdges() const
 {
     QList<AbstractGrConnection*> list(_edges_);
@@ -525,6 +513,7 @@ QList<AbstractGrConnection*> AbstractGrItem::getEdges() const
     return list;
 }
 
+/*
 void AbstractGrItem::setImage(const QPixmap& image)
 {
     if(image.isNull())
@@ -536,7 +525,8 @@ void AbstractGrItem::setImage(const QPixmap& image)
     update();
     return;
 }
-
+*/
+/*
 void AbstractGrItem::setGrX(coord_real x)
 {
 //    QPointF sc_pos(mapToScene(pos()));
@@ -545,7 +535,8 @@ void AbstractGrItem::setGrX(coord_real x)
     setX(x);
     return;
 }
-
+*/
+/*
 void AbstractGrItem::setGrY(coord_real y)
 {
 //    QPointF sc_pos(mapToScene(pos()));
@@ -554,53 +545,63 @@ void AbstractGrItem::setGrY(coord_real y)
     setY(y);
     return;
 }
+*/
 
+/*
 coord_real AbstractGrItem::getGrX() const
 {
     //QPointF sc_pos(mapToScene(pos()));
     return x();//sc_pos.x();
 }
-
+*/
+/*
 coord_real AbstractGrItem::getGrY() const
 {
     //QPointF sc_pos(mapToScene(pos()));
     return y();//sc_pos.y();
 }
-
+*/
+/*
 void AbstractGrItem::setGrWidth(coord_real width)
 {
     setRadius(static_cast<int>(width/2));
     return;
 }
-
+*/
+/*
 void AbstractGrItem::setGrHeight(coord_real height)
 {
     setRadius(static_cast<int>(height/2));
     return;
 }
-
+*/
+/*
 coord_real AbstractGrItem::getGrWidth() const
 {
     return boundingRect().width();
 }
-
+*/
+/*
 coord_real AbstractGrItem::getGrHeight() const
 {
     return boundingRect().height();
 }
-
+*/
+/*
 void AbstractGrItem::moveGr(coord_real x, coord_real y)
 {
     setPos(x,y);
     return;
 }
-
+*/
+/*
 void AbstractGrItem::drawGr()
 {
     update();
     return;
 }
-
+*/
+/*
 void AbstractGrItem::collectClosestItems(QList<QGraphicsItem*>& item_container)
 {
     const int LOCAL_ZONE_MOD = 5;
@@ -629,7 +630,8 @@ void AbstractGrItem::collectClosestItems(QList<QGraphicsItem*>& item_container)
     }
     return;
 }
-
+*/
+/*
 void AbstractGrItem::calculateRepulsion(qreal& velocity_x,
                                         qreal& velocity_y,
                                         const QList<QGraphicsItem*>& items) const
@@ -648,7 +650,8 @@ void AbstractGrItem::calculateRepulsion(qreal& velocity_x,
     }
     return;
 }
-
+*/
+/*
 void AbstractGrItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
                          const QVector<AbstractGrConnection*>& edges) const
 {
@@ -680,7 +683,8 @@ void AbstractGrItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
     }
     return;
 }
-
+*/
+/*
 void AbstractGrItem::calcForce()
 {
     if(!scene() || scene()->mouseGrabberItem() == this||
@@ -696,46 +700,8 @@ void AbstractGrItem::calcForce()
 
     QList<QGraphicsItem*> items;
     collectClosestItems(items);
-    /*
-    for(QGraphicsItem* item:items)
-    {
-        QPointF vect = mapToItem(item,0.0,0.0);
-        qreal dx = vect.x();
-        qreal dy = vect.y();
-        double len = 2.0 * (std::pow(dx,2.0)+std::pow(dy,2.0));
-        if(len>0)
-        {
-            vel_x+= (dx*150.0)/len;
-            vel_y+= (dy*150.0)/len;
-        }
-    }
-    */
     calculateRepulsion(vel_x,vel_y,items);
     calculateAttraction(vel_x,vel_y,_edges_);
-    /*
-    double weight = (_edges_.size()+1) * 10;
-    for(const AbstractGrConnection* edge: std::as_const(_edges_))
-    {
-        QPointF vect;
-        if(edge->getSource()==this)
-        {
-            vect = mapToItem(edge->getDestination(),0,0);
-        }
-        else
-        {
-            vect = mapToItem(edge->getSource(),0,0);
-        }
-        //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
-        QPointF delta(mapFromItem(edge->getSource(),0,0) - mapFromItem(edge->getDestination(),0,0));
-        qreal dist = std::hypot(delta.x(),delta.y());
-        //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
-        if(dist>=edge->grWeight())          //!TODO дарабіць аналіз вагі рэбра
-        {
-            vel_x -= vect.x()/weight;
-            vel_y -= vect.y()/weight;
-        }
-    }
-    */
     if(qAbs(vel_x)<0.1 && qAbs(vel_y)<0.1)
     {
         vel_x = 0.0;
@@ -747,7 +713,9 @@ void AbstractGrItem::calcForce()
     _adv_pos_.setY(qMin(qMax(_adv_pos_.y(), sceneRect.top() + _radius_), sceneRect.bottom() - _radius_));
     return;
 }
+*/
 
+/*
 bool AbstractGrItem::advPosition()
 {
     if(_adv_pos_ == pos())
@@ -757,3 +725,4 @@ bool AbstractGrItem::advPosition()
     setPos(_adv_pos_);
     return true;
 }
+*/

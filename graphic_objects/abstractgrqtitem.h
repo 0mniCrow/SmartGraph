@@ -4,6 +4,7 @@
 #include "graphic_objects/abstractGrItem.h"
 #include <QPixmap>
 #include <QGraphicsObject>
+#include <QGraphicsView>
 
 #define DEF_ITEM_RADIUS 20
 #define MIN_ITEM_RADIUS 10
@@ -91,8 +92,10 @@ public:
     virtual coord_real getGrHeight() const override;
     virtual void moveGr(coord_real x, coord_real y) override;
     virtual void drawGr() override;
-    virtual char grObjectType() const noexcept final override{return AbstractItem;}
-    virtual char grItemType() const noexcept{return AbstractItem;}
+    virtual char grObjectType() const noexcept  override{return AbstractItem;}
+signals:
+    void changedInternally(AbstractGrItem* self);
+    void changedExternally(GrItemData new_val);
 };
 
 #endif // ABSTRACTGRQTITEM_H
