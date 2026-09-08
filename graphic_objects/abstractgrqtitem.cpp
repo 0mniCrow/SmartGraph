@@ -1,6 +1,5 @@
 #include "abstractgrqtitem.h"
 #include "graphic_objects/abstractgrconnection.h"
-//#include "graphic_objects/simplegrconnection.h"
 
 AbstractGrQtItem::AbstractGrQtItem(const item_id_t &id,
                                    int radius,
@@ -397,41 +396,6 @@ void AbstractGrQtItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
         return;
     }
     calculateObjectPosition(m_event->scenePos(),m_event->lastScenePos());
-    /*
-    QPointF delta = (m_event->scenePos()-m_event->lastScenePos()) * MOUSE_SENSE_ITEM_DECR;
-    QPointF new_pos(pos()+delta);
-
-    QRect vpRect = scene()->views().first()->viewport()->rect();
-    QPoint topLeft     = scene()->views().first()->viewport()->mapToGlobal(vpRect.topLeft());
-    QPoint bottomRight = scene()->views().first()->viewport()->mapToGlobal(vpRect.bottomRight());
-    QPoint globalPos(QCursor::pos());
-    bool wrapped = false;
-    if (globalPos.x() <= topLeft.x())
-    {
-        wrapped = true;
-    }
-    else if (globalPos.x() >= bottomRight.x())
-    {
-        wrapped = true;
-    }
-    if (globalPos.y() <= topLeft.y())
-    {
-        wrapped = true;
-    }
-    else if (globalPos.y() >= bottomRight.y())
-    {
-        wrapped = true;
-    }
-
-    if (wrapped)
-    {
-        QPoint viewPos = scene()->views().first()->mapFromScene(pos());
-        QPoint gl_pos = scene()->views().first()->viewport()->mapToGlobal(viewPos);
-        QCursor::setPos(gl_pos);
-        setGrFlag(GV_Ignore_Next_Move,true);
-    }
-    setPos(new_pos);
-    */
     m_event->accept();
     return;
 }
@@ -632,19 +596,28 @@ void AbstractGrQtItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
     for(const AbstractGrConnection* edge: std::as_const(_edges_))
     {
         QPointF vect;
-        if(edge->getSource()==this)
+        AbstractGrQtItem * qt_src_item = dynamic_cast<AbstractGrQtItem*>(edge->getSource());
+        AbstractGrQtItem * qt_dest_item = dynamic_cast<AbstractGrQtItem*>(edge->getDestination());
+        if(qt_src_item==this)
         {
-            vect = mapToItem(edge->getDestination(),0,0);
+            vect = mapToItem(qt_dest_item,0,0);
         }
         else
         {
-            vect = mapToItem(edge->getSource(),0,0);
+            vect = mapToItem(qt_src_item,0,0);
         }
         //Тут трэба вымяраць даўжыню рэбра і калі яно даўжэй, дадаваць значэнне
-        QPointF delta(mapFromItem(edge->getSource(),0,0) - mapFromItem(edge->getDestination(),0,0));
+        QPointF delta(mapFromItem(qt_src_item,0,0) - mapFromItem(qt_dest_item,0,0));
         qreal dist = std::hypot(delta.x(),delta.y());
+
         //qreal distance = std::sqrt(std::pow(difference.x(), 2) + std::pow(difference.y(), 2));
-        if(edge->grConnectionType()==GR_ABSTRACT_CONNECTION)
+        if(dist>=edge->getWeight())
+        {
+            velocity_x -= vect.x()/weight;
+            velocity_y -= vect.y()/weight;
+        }
+        /*
+        if(edge->grObjectType==GR_ABSTRACT_CONNECTION)
         {
             const SimpleGrConnection * simple_con = qobject_cast<const SimpleGrConnection*>(edge);
             if(dist>=simple_con->getWeight())
@@ -653,6 +626,7 @@ void AbstractGrQtItem::calculateAttraction(qreal& velocity_x, qreal &velocity_y,
                 velocity_y -= vect.y()/weight;
             }
         }
+        */
     }
     return;
 }

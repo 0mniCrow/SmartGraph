@@ -8,7 +8,7 @@ SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source,
                                        const item_id_t& id,
                                        bool directed,
                                        QGraphicsObject* tata):
-    AbstractGrConnection(id,directed,tata)
+    AbstractGrQtConnection(id,directed,tata)
 {
     if((!source)|| (!destination) || (!communicator))
     {
@@ -29,7 +29,7 @@ SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source, char mode,
                                        bool directed,
                                        const item_id_t& id,
                                        QGraphicsObject* tata):
-    AbstractGrConnection(id,directed,tata)
+    AbstractGrQtConnection(id,directed,tata)
 {
     if((!source)||(!communicator))
     {
@@ -43,9 +43,10 @@ SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source, char mode,
     setCommunicator(communicator);
     return;
 }
-
+/*
 bool SimpleGrConnection::checkStatus()
 {
+
     switch(getMode())
     {
     case GrEdge_regular:
@@ -72,7 +73,8 @@ bool SimpleGrConnection::checkStatus()
     }
     return true;
 }
-
+*/
+/*
 void SimpleGrConnection::setStartPoint(coord_real x, coord_real y)
 {
     _src_point_.setX(x);
@@ -108,7 +110,7 @@ coord_real SimpleGrConnection::getFinY() const
 {
     return _dest_point_.y();
 }
-
+*/
 QRectF SimpleGrConnection::boundingRect() const
 {
     char mode(getMode());
@@ -142,14 +144,14 @@ bool SimpleGrConnection::isOperable() const noexcept
     if(mode == GrEdge_incomplete||
             mode == GrEdge_deletion)
     {
-        if(!hasSourceItem())
+        if(!getSource())
         {
             return false;
         }
     }
     else
     {
-        if(!hasMainItems())
+        if(!(getSource()&&getDestination()))
         {
             return false;
         }

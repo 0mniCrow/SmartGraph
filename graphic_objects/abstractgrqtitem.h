@@ -2,9 +2,12 @@
 #define ABSTRACTGRQTITEM_H
 #include "graphic_objects/itemcommunicator.h"
 #include "graphic_objects/abstractGrItem.h"
+#include <QGraphicsScene>
 #include <QPixmap>
 #include <QGraphicsObject>
 #include <QGraphicsView>
+#include <QPoint>
+#include <QPointF>
 
 #define DEF_ITEM_RADIUS 20
 #define MIN_ITEM_RADIUS 10

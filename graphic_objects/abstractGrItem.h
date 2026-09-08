@@ -2,34 +2,18 @@
 #define ABSTRACTGRITEM_H
 #include "abstractGrInterface.h"
 #include "templateItemData.h"
-#include "QGraphicsObject"
-#include "QGraphicsScene"
-#include "itemcommunicator.h"
-#include <QPixmap>
-#include <QPoint>
-#include <QPointF>
+#include <QVector>
+#include <QString>
 
-#define DEF_ITEM_RADIUS 20
-#define MIN_ITEM_RADIUS 10
-#define LINE_ITEM_CLICKED_WIDTH 3.0
-#define LINE_ITEM_SELECT_WIDTH 2.5
-#define LINE_ITEM_BASE_WIDTH 2.0
-#define SELECTED_ITEM_RISE 5.0
-#define MOUSE_SENSE_ITEM_DECR 0.5
-#define PIN_HEAD_ITEM_RADIUS 3
 
 typedef QString GrItemData;
 
 class AbstractGrConnection;
 
-class AbstractGrItem: public AbstractGrInterface, public ItemDataInterface<GrItemData>
+class AbstractGrItem: public AbstractGrInterface//, public ItemDataInterface<GrItemData>
 {
-private:
-
-
 protected:
     QVector<AbstractGrConnection*>      _edges_;
-
 public:
     enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
     AbstractGrItem(const item_id_t& id=item_id_t());
