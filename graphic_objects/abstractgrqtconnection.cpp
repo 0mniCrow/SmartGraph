@@ -7,6 +7,7 @@ AbstractGrQtConnection::AbstractGrQtConnection(const item_id_t &id,
 {
 
 }
+
 void AbstractGrQtConnection::setArrowSize(qreal ar_size)
 {
     if(!_communicator_)
@@ -18,6 +19,12 @@ void AbstractGrQtConnection::setArrowSize(qreal ar_size)
     {
         redraw();
     }
+    return;
+}
+
+AbstractGrQtConnection::~AbstractGrQtConnection()
+{
+    emit connectionAboutToBeDestroyed(getGrID());
     return;
 }
 

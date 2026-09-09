@@ -7,11 +7,16 @@ AbstractGrItem::AbstractGrItem(const item_id_t &id):
     return;
 }
 
-void AbstractGrItem::addEdge(AbstractGrConnection* edge)
+bool AbstractGrItem::addEdge(AbstractGrConnection* edge)
 {
+    if(!((edge->getSource()==this)||
+            (edge->getDestination()==this)))
+    {
+        return false;
+    }
     _edges_.append(edge);
     edge->recalculate();
-    return;
+    return true;
 }
 
 void AbstractGrItem::delEdge(AbstractGrConnection* edge)

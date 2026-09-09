@@ -27,8 +27,8 @@ public:
                         GrEdge_deletion,
                         GrEdge_userMode};
 
-    AbstractGrConnection(const item_id_t& id=item_id_t(),
-                         bool directed = false);
+    explicit AbstractGrConnection(const item_id_t& id=GR_ITEM_ID_DEF,
+                                  bool directed = false);
     virtual ~AbstractGrConnection() = default;
     AbstractGrItem* getSource() const noexcept;
     AbstractGrItem* getDestination() const noexcept;

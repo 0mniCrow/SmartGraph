@@ -5,20 +5,17 @@
 #include <QVector>
 #include <QString>
 
-
-typedef QString GrItemData;
-
 class AbstractGrConnection;
 
-class AbstractGrItem: public AbstractGrInterface//, public ItemDataInterface<GrItemData>
+class AbstractGrItem: public AbstractGrInterface
 {
 protected:
     QVector<AbstractGrConnection*>      _edges_;
 public:
     enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
-    AbstractGrItem(const item_id_t& id=item_id_t());
+    explicit AbstractGrItem(const item_id_t& id=GR_ITEM_ID_DEF);
     virtual ~AbstractGrItem() = default;
-    void addEdge(AbstractGrConnection* edge);
+    bool addEdge(AbstractGrConnection* edge);
     void delEdge(AbstractGrConnection* edge);
     QList<AbstractGrConnection*> getEdges() const;
 

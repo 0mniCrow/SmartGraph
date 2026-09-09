@@ -25,6 +25,7 @@ protected:
 public:
     enum GraphicItemType{SimpleConnection = GR_SIMPLE_CONNECTION};
     enum {Type = UserType+GR_SIMPLE_CONNECTION};
+    explicit SimpleGrConnection();
     SimpleGrConnection(AbstractGrItem* source, AbstractGrItem* destination,
                        ItemCommunicator* communicator,
                        const item_id_t& id=item_id_t(),
@@ -35,22 +36,13 @@ public:
                        bool directed = false,
                        const item_id_t& id=item_id_t(),
                        QGraphicsObject* tata = nullptr);
-    ~SimpleGrConnection() = default;
+    virtual ~SimpleGrConnection() = default;
 
-//    void setWeight(unsigned int weight);
-//    unsigned int getWeight() const noexcept;
     virtual int type() const override;
-//    virtual char grConnectionType() const noexcept override;
 
     virtual QPainterPath shape() const override;
 
     virtual void recalculate() override;
-/*    virtual void setStartPoint(coord_real x, coord_real y) override;
-    virtual void setEndPoint(coord_real x, coord_real y) override;
-    virtual coord_real getStartX() const override;
-    virtual coord_real getStartY() const override;
-    virtual coord_real getFinX() const override;
-    virtual coord_real getFinY() const override;*/
 
 };
 

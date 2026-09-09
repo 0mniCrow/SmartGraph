@@ -15,10 +15,11 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override = 0;
 public:
-    AbstractGrQtConnection(const item_id_t& id=item_id_t(),
+    explicit AbstractGrQtConnection();
+    explicit AbstractGrQtConnection(const item_id_t& id=item_id_t(),
                            bool directed = false,
                            QGraphicsObject* tata = nullptr);
-    virtual ~AbstractGrQtConnection() = default;
+    virtual ~AbstractGrQtConnection();
     void setArrowSize(qreal ar_size);
     qreal getArrowSize() const;
     void setCommunicator(ItemCommunicator* communicator);
@@ -27,6 +28,8 @@ public:
     virtual int type() const override = 0;
 
     virtual char grObjectType() const noexcept override;
+signals:
+    void connectionAboutToBeDestroyed(uint con_id);
 };
 
 #endif // ABSTRACTGRQTCONNECTION_H

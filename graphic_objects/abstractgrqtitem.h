@@ -98,7 +98,8 @@ public:
     virtual char grObjectType() const noexcept  override{return AbstractItem;}
 signals:
     void changedInternally(AbstractGrItem* self);
-    void changedExternally(GrItemData new_val);
+    //void changedExternally(GrItemData new_val);
+    void itemAboutToBeDestroyed(uint item_id);
 };
 
 #endif // ABSTRACTGRQTITEM_H
