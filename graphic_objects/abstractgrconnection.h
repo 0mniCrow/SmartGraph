@@ -15,7 +15,7 @@ private:
     AbstractGrItem*         _dest_item_;
     bool                    _directed_;
     char                    _mode_;
-    int                     _weight_;
+    qreal                   _weight_;
 protected:
     virtual void redraw() = 0;
     virtual bool checkStatus();                                         //Праверка, ці ўсталяваны ўсе умовы згодна з рэжымам(mode)
@@ -38,11 +38,19 @@ public:
     bool isDirected() const noexcept;
     virtual void setMode(char mode);
     virtual char getMode() const;
-    void setWeight(int weight);
-    int getWeight() const noexcept;
+    virtual void setLengthAsWeigth();
+    void setWeight(qreal weight);
+    qreal getWeight() const noexcept;
     virtual char grObjectType() const noexcept override;
 
-    virtual void recalculate() = 0;                                     //Для будучых дынамічных падзей
+    virtual void recalculate() const = 0;                                     //Для будучых дынамічных падзей
+    virtual qreal getLength() const = 0;
+    virtual qreal getGrStartX() const = 0;
+    virtual qreal getGrEndX() const = 0;
+    virtual qreal getGrStartY() const = 0;
+    virtual qreal getGrEndY() const = 0;
+    virtual void getGrStartCoords(qreal& x, qreal& y) const = 0;
+    virtual void getGrEndCoords(qreal& x, qreal& y) const = 0;
     virtual void drawGr() override;
 
 };

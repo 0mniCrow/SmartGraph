@@ -59,16 +59,22 @@ bool AbstractGrConnection::isDirected() const noexcept
     return _directed_;
 }
 
-void AbstractGrConnection::setWeight(int weight)
+void AbstractGrConnection::setWeight(qreal weight)
 {
     _weight_ = weight;
     redraw();
     return;
 }
 
-int AbstractGrConnection::getWeight() const noexcept
+qreal AbstractGrConnection::getWeight() const noexcept
 {
     return _weight_;
+}
+
+void AbstractGrConnection::setLengthAsWeigth()
+{
+    _weight_ = getLength();
+    return;
 }
 
 char AbstractGrConnection::grObjectType() const noexcept

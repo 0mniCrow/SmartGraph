@@ -1,4 +1,5 @@
 #include "abstractgrqtconnection.h"
+#include "graphic_objects/abstractgrqtitem.h"
 
 AbstractGrQtConnection::AbstractGrQtConnection(const item_id_t &id,
                                                bool directed,
@@ -6,6 +7,23 @@ AbstractGrQtConnection::AbstractGrQtConnection(const item_id_t &id,
     QGraphicsObject(tata),AbstractGrConnection(id,directed)
 {
 
+}
+
+QPointF AbstractGrQtConnection::getStartingPoint() const
+{
+    AbstractGrQtItem* QtGrItem = dynamic_cast<AbstractGrQtItem*>(getSource());
+    return mapFromItem(QtGrItem,0,0);
+}
+
+QPointF AbstractGrQtConnection::getEndPoint() const
+{
+    AbstractGrQtItem* QtGrItem = dynamic_cast<AbstractGrQtItem*>(getDestination());
+    return mapFromItem(QtGrItem,0,0);
+}
+
+QLineF AbstractGrQtConnection::getQLine() const
+{
+    return
 }
 
 void AbstractGrQtConnection::setArrowSize(qreal ar_size)
