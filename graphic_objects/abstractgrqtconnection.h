@@ -8,28 +8,50 @@ class AbstractGrQtConnection:public QGraphicsObject, public AbstractGrConnection
 {
     Q_OBJECT
 private:
+
     /*
-     * пазіцыі пачатку і канчатку лініі не тое ж, што пазіцыі аб'ектаў старту і
-     * фінішу, гэтыя пазіцыі скарочаны ў адпаведнасьці да памеру канчатковых аб'ектаў.
+     * пазіцыя пачатку лініі не тое ж, што пазіцыя аб'екту старту,
+     * гэта пазіцыя скарочана ў адпаведнасьці да памеру стартавага аб'екту.
     */
-    QPointF                 _start_pos_;
-    QPointF                 _end_pos_;
+    QPointF                 _start_endpoint_;
+    /*
+     * пазіцыя канчатку лініі не тое ж, што пазіцыя аб'екту фінішу,
+     * гэта пазіцыя скарочана ў адпаведнасьці да памеру фінішнага аб'екту.
+    */
+    QPointF                 _finish_endpoint_;
+    /*
+     * аб'ект камунікацыі з аб'ектам візуальнага порта
+    */
     ItemCommunicator*       _communicator_;
 protected:
     virtual QRectF boundingRect() const override = 0;
     virtual void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override = 0;
+
+
     /*
-     * фунцыі вяртаюць пазіцыі аб'ектаў старту і фінішу, не пазіцыі пачатку і канчатку лініі
+     * Source\Destination point фунцыі вяртаюць пазіцыі аб'ектаў старту і фінішу,
+     * не пазіцыі пачатку і канчатку лініі
     */
-    QPointF getStartingPoint() const;
-    QPointF getEndPoint() const;
-    QLineF getQLine() const;
+    QPointF getSourcePoint() const;
+    /*
+     * Source\Destination point фунцыі вяртаюць пазіцыі аб'ектаў старту і фінішу,
+     * не пазіцыі пачатку і канчатку лініі
+    */
+    QPointF getDestinationPoint() const;
+
+    virtual void redraw() override;
+
+    /*
+     * Кумулятыўная функцыя, трэба каб вызначыць працоўны стан аб'екту.
+     * !Пры перагрузцы функцыі ў канцы трэба вяртаць выклік той жа функцыі аб'екту продка.
+    */
+    virtual bool checkStatus() override;
+
 
 public:
-    explicit AbstractGrQtConnection();
-    explicit AbstractGrQtConnection(const item_id_t& id=item_id_t(),
+    explicit AbstractGrQtConnection(const item_id_t& id=GR_ITEM_ID_DEF,
                            bool directed = false,
                            QGraphicsObject* tata = nullptr);
     virtual ~AbstractGrQtConnection();
@@ -38,9 +60,31 @@ public:
     void setCommunicator(ItemCommunicator* communicator);
     ItemCommunicator* getCommunicator() const noexcept;
 
+    /*
+     * setStartEndpoint функцыя задае пазіцыю пачатку лініі,
+     * не пазіцыю аб'ектаў старту
+     */
+    void setStartEndpoint(const QPointF& point);
+    /*
+     * getStartEndpoint функцыя вяртае пазіцыю пачатку лініі,
+     * не пазіцыю аб'ектаў старту
+     */
+    QPointF getStartEndpoint() const;
+    /*
+     * setFinishEndpoint функцыя задае пазіцыю канчатку лініі,
+     * не пазіцыю аб'ектаў фінішу
+     */
+    void setFinishEndpoint(const QPointF& point);
+    /*
+     * getFinishEndpoint функцыя вяртае пазіцыю пачатку лініі,,
+     * не пазіцыю аб'ектаў фінішу
+     */
+    QPointF getFinishEndpoint() const;
+
     virtual int type() const override = 0;
     virtual char grObjectType() const noexcept override;
 
+    virtual void recalcEndpoints() override;
     virtual qreal getLength() const override;
     virtual qreal getGrStartX() const override;
     virtual qreal getGrEndX() const override;

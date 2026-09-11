@@ -63,7 +63,7 @@ protected:
 public:
     enum GrObjectType{AbstractItem = GR_ABSTRACT_QT_ITEM};
     enum {Type = UserType+GR_ABSTRACT_QT_ITEM};
-    AbstractGrQtItem(const item_id_t& id=item_id_t(),
+    AbstractGrQtItem(const item_id_t& id=GR_ITEM_ID_DEF,
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
     virtual ~AbstractGrQtItem() = default;

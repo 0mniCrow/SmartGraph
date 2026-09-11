@@ -6,24 +6,41 @@ AbstractGrQtConnection::AbstractGrQtConnection(const item_id_t &id,
                                                QGraphicsObject *tata):
     QGraphicsObject(tata),AbstractGrConnection(id,directed)
 {
-
+    setAcceptedMouseButtons(Qt::NoButton);
+    setZValue(-1);
+    return;
 }
 
-QPointF AbstractGrQtConnection::getStartingPoint() const
+QPointF AbstractGrQtConnection::getSourcePoint() const
 {
     AbstractGrQtItem* QtGrItem = dynamic_cast<AbstractGrQtItem*>(getSource());
     return mapFromItem(QtGrItem,0,0);
 }
 
-QPointF AbstractGrQtConnection::getEndPoint() const
+QPointF AbstractGrQtConnection::getDestinationPoint() const
 {
     AbstractGrQtItem* QtGrItem = dynamic_cast<AbstractGrQtItem*>(getDestination());
     return mapFromItem(QtGrItem,0,0);
 }
 
-QLineF AbstractGrQtConnection::getQLine() const
+void AbstractGrQtConnection::redraw()
 {
-    return
+    update();
+    return;
+}
+
+bool AbstractGrQtConnection::checkStatus()
+{
+    if(!_communicator_)
+    {
+        return false;
+    }
+    return AbstractGrConnection::checkStatus();
+}
+
+void AbstractGrQtConnection::recalcEndpoints()
+{
+
 }
 
 void AbstractGrQtConnection::setArrowSize(qreal ar_size)
@@ -69,3 +86,26 @@ ItemCommunicator* AbstractGrQtConnection::getCommunicator() const noexcept
     return _communicator_;
 }
 
+
+void AbstractGrQtConnection::setStartEndpoint(const QPointF& point)
+{
+    _start_endpoint_ = point;
+    redraw();
+    return;
+}
+
+QPointF AbstractGrQtConnection::getStartEndpoint() const
+{
+    return _start_endpoint_;
+}
+
+void AbstractGrQtConnection::setFinishEndpoint(const QPointF& point)
+{
+    _finish_endpoint_ = point;
+    redraw();
+    return;
+}
+QPointF AbstractGrQtConnection::getFinishEndpoint() const
+{
+    return _finish_endpoint_;
+}

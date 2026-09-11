@@ -97,6 +97,8 @@ char AbstractGrConnection::getMode() const
 void AbstractGrConnection::setSource(AbstractGrItem* src)
 {
     _src_item_ = src;
+    src->addEdge(this);
+    recalcEndpoints();
     redraw();
     return;
 }
@@ -104,6 +106,8 @@ void AbstractGrConnection::setSource(AbstractGrItem* src)
 void AbstractGrConnection::setDestination(AbstractGrItem* dest)
 {
     _dest_item_ = dest;
+    dest->addEdge(this);
+    recalcEndpoints();
     redraw();
     return;
 }
