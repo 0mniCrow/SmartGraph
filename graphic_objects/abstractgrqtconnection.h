@@ -23,6 +23,10 @@ private:
      * аб'ект камунікацыі з аб'ектам візуальнага порта
     */
     ItemCommunicator*       _communicator_;
+    //Даўжыня рэбра паміж дзьвума пунктамі. !Пункты павінны быць пераведзены ў каардынаты бягучага ітэма!
+    qreal getLength(const QPointF& src, const QPointF& dest) const;
+    //Пераразлічванне пазіцый пачатку і канчатку лініі рабра. !Пункты павінны быць пераведзены ў каардынаты бягучага ітэма!
+    void recalculation(const QPointF& start_point, const QPointF& fin_point);
 protected:
     virtual QRectF boundingRect() const override = 0;
     virtual void paint(QPainter* painter,
@@ -85,6 +89,7 @@ public:
     virtual char grObjectType() const noexcept override;
 
     virtual void recalcEndpoints() override;
+    void recalcEndpoints(const QPointF& destination);
     virtual qreal getLength() const override;
     virtual qreal getGrStartX() const override;
     virtual qreal getGrEndX() const override;
