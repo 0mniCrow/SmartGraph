@@ -205,30 +205,46 @@ QPointF AbstractGrQtConnection::getFinishEndpoint() const
 
 qreal AbstractGrQtConnection::getLength() const
 {
+     if(getMode()!=GrEdge_regular)
+     {
+         return 0.0;
+     }
 
+     AbstractGrQtItem* src_item = dynamic_cast<AbstractGrQtItem*>(getSource());
+     AbstractGrQtItem* dest_item = dynamic_cast<AbstractGrQtItem*>(getDestination());
+     if(src_item && dest_item)
+     {
+         return getLength(mapFromItem(src_item,0.0,0.0),mapFromItem(dest_item,0.0,0.0));
+     }
+     return 0.0;
 }
+
 qreal AbstractGrQtConnection::getGrStartX() const
 {
-
+    return _start_endpoint_.x();
 }
 qreal AbstractGrQtConnection::getGrEndX() const
 {
-
+    return _finish_endpoint_.x();
 }
 qreal AbstractGrQtConnection::getGrStartY() const
 {
-
+    return _start_endpoint_.y();
 }
 qreal AbstractGrQtConnection::getGrEndY() const
 {
-
+    return _finish_endpoint_.y();
 }
 
 void AbstractGrQtConnection::getGrStartCoords(qreal& x, qreal& y) const
 {
-
+    x = _start_endpoint_.x();
+    y = _start_endpoint_.y();
+    return;
 }
 void AbstractGrQtConnection::getGrEndCoords(qreal& x, qreal& y) const
 {
-
+    x = _finish_endpoint_.x();
+    y = _finish_endpoint_.y();
+    return;
 }
