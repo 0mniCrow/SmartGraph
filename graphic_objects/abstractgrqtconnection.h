@@ -23,10 +23,9 @@ private:
      * аб'ект камунікацыі з аб'ектам візуальнага порта
     */
     ItemCommunicator*       _communicator_;
-    //Даўжыня рэбра паміж дзьвума пунктамі. !Пункты павінны быць пераведзены ў каардынаты бягучага ітэма!
-    qreal getLength(const QPointF& src, const QPointF& dest) const;
     //Пераразлічванне пазіцый пачатку і канчатку лініі рабра. !Пункты павінны быць пераведзены ў каардынаты бягучага ітэма!
     void recalculation(const QPointF& start_point, const QPointF& fin_point);
+    void setDefaultPreferences();
 protected:
     virtual QRectF boundingRect() const override = 0;
     virtual void paint(QPainter* painter,
@@ -44,19 +43,27 @@ protected:
      * не пазіцыі пачатку і канчатку лініі
     */
     QPointF getDestinationPoint() const;
-
+    //Даўжыня рэбра паміж дзьвума пунктамі. !Пункты павінны быць пераведзены ў каардынаты бягучага ітэма!
+    qreal getLength(const QPointF& src, const QPointF& dest) const;
     virtual void redraw() override;
 
     /*
      * Кумулятыўная функцыя, трэба каб вызначыць працоўны стан аб'екту.
      * !Пры перагрузцы функцыі ў канцы трэба вяртаць выклік той жа функцыі аб'екту продка.
     */
-    virtual bool checkStatus() override;
+    virtual bool checkStatus() const override;
 
 
 public:
     explicit AbstractGrQtConnection(const item_id_t& id=GR_ITEM_ID_DEF,
-                           bool directed = false,
+                                    bool directed = false,
+                                    qreal weight = ABSTRACT_EDGE_DEF_WEIGHT,
+                                    QGraphicsObject* tata = nullptr);
+    AbstractGrQtConnection(AbstractGrItem* source,
+                           AbstractGrItem* destination,
+                           char mode, bool directed = false,
+                           const item_id_t& id= GR_ITEM_ID_DEF,
+                           qreal weight = ABSTRACT_EDGE_DEF_WEIGHT,
                            QGraphicsObject* tata = nullptr);
     virtual ~AbstractGrQtConnection();
     void setArrowSize(qreal ar_size);
@@ -84,7 +91,7 @@ public:
      * не пазіцыю аб'ектаў фінішу
      */
     QPointF getFinishEndpoint() const;
-
+    qreal getEdgeLength() const;
     virtual int type() const override = 0;
     virtual char grObjectType() const noexcept override;
 

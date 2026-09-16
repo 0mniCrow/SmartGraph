@@ -5,158 +5,25 @@
 SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source,
                                        AbstractGrItem* destination,
                                        ItemCommunicator *communicator,
+                                       char mode, bool directed,
                                        const item_id_t& id,
-                                       bool directed,
-                                       QGraphicsObject* tata):
-    AbstractGrQtConnection(id,directed,tata)
+                                       qreal weight, QGraphicsObject* tata):
+    AbstractGrQtConnection(source,destination,mode, directed, id ,weight, tata)
 {
-    if((!source)|| (!destination) || (!communicator))
-    {
-        setMode(GrEdge_Null);
-    }
-    else
-    {
-        setMode(GrEdge_regular);
-    }
-    setSource(source);
-    setDestination(destination);
     setCommunicator(communicator);
     return;
 }
 
-SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source, char mode,
-                                       ItemCommunicator *communicator,
-                                       bool directed,
-                                       const item_id_t& id,
-                                       QGraphicsObject* tata):
-    AbstractGrQtConnection(id,directed,tata)
-{
-    if((!source)||(!communicator))
-    {
-        setMode(GrEdge_Null);
-    }
-    else
-    {
-        setMode(mode);
-    }
-    setSource(source);
-    setCommunicator(communicator);
-    return;
-}
-/*
-bool SimpleGrConnection::checkStatus()
-{
-
-    switch(getMode())
-    {
-    case GrEdge_regular:
-    {
-        if(!getDestination())
-        {
-            return false;
-        }
-    }
-    [[fallthrough]];
-    case GrEdge_incomplete:
-    case GrEdge_deletion:
-    {
-        if((!getSource())||(!getCommunicator()))
-        {
-            return false;
-        }
-    }
-        break;
-    default:
-    {
-        return false;
-    }
-    }
-    return true;
-}
-*/
-/*
-void SimpleGrConnection::setStartPoint(coord_real x, coord_real y)
-{
-    _src_point_.setX(x);
-    _src_point_.setY(y);
-    redraw();
-    return;
-}
-
-void SimpleGrConnection::setEndPoint(coord_real x, coord_real y)
-{
-    _dest_point_.setX(x);
-    _dest_point_.setY(y);
-    redraw();
-    return;
-}
-
-coord_real SimpleGrConnection::getStartX() const
-{
-    return _src_point_.x();
-}
-
-coord_real SimpleGrConnection::getStartY() const
-{
-    return _src_point_.y();
-}
-
-coord_real SimpleGrConnection::getFinX() const
-{
-    return _dest_point_.x();
-}
-
-coord_real SimpleGrConnection::getFinY() const
-{
-    return _dest_point_.y();
-}
-*/
 QRectF SimpleGrConnection::boundingRect() const
 {
-    char mode(getMode());
-    if(mode == GrEdge_incomplete||
-            mode == GrEdge_deletion)
+    if(!checkStatus())
     {
-        if(!getSource())
-        {
-            return QRectF();
-        }
-    }
-    else
-    {
-        if(!getSource()||!getDestination())
-        {
-            return QRectF();
-        }
+        return QRectF();
     }
     qreal extra = (ABSTRACT_EDGE_WIDTH+getArrowSize())/2.0;
-    return QRectF(_src_point_,
-                  QSizeF(_dest_point_.x()-_src_point_.x(),
-                         _dest_point_.y()-_src_point_.y())
-                  ).
-            normalized().
-            adjusted(-extra,-extra,extra,extra);
-}
-
-bool SimpleGrConnection::isOperable() const noexcept
-{
-    char mode = getMode();
-    if(mode == GrEdge_incomplete||
-            mode == GrEdge_deletion)
-    {
-        if(!getSource())
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if(!(getSource()&&getDestination()))
-        {
-            return false;
-        }
-    }
-    return true;
+    QRectF b_rect(getStartEndpoint(),getFinishEndpoint());
+    b_rect = b_rect.normalized().adjusted(-extra,-extra,extra,extra);
+    return b_rect;
 }
 
 void SimpleGrConnection::getArrowSholders(double arr_atan, const QPointF& arr_head,
@@ -195,22 +62,48 @@ void SimpleGrConnection::paint(QPainter* painter,
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    if(!isOperable())
+    if(!checkStatus())
     {
         return;
-    }
-    QLineF line(_src_point_,_dest_point_);
+    };
+    QLineF line(getStartEndpoint(),getFinishEndpoint());
     if(qFuzzyCompare(line.length(),qreal(0.0)))
     {
         return;
     }
     char mode = getMode();
-    painter->setPen(QPen(
-                        (mode==GrEdge_deletion)?
-                            Qt::darkRed:
-                            Qt::black,
+    Qt::GlobalColor colour = Qt::white;
+    Qt::PenStyle line_type = Qt::NoPen;
+
+    switch(mode)
+    {
+    case GrEdge_regular:
+    {
+        colour = Qt::black;
+        line_type = Qt::SolidLine;
+    }
+        break;
+    case GrEdge_deletion:
+    {
+        colour = Qt::darkRed;
+        line_type = Qt::SolidLine;
+    }
+        break;
+    case GrEdge_incomplete:
+    {
+        colour = Qt::black;
+        line_type = Qt::DashLine;
+    }
+        break;
+    default:
+    {
+        qDebug()<<"SimpleGrConnection::paint - impossible state";
+    }
+    }
+
+    painter->setPen(QPen(colour,
                         CONNECTION_WIDTH,
-                        Qt::SolidLine,
+                        line_type,
                         Qt::RoundCap,
                         Qt::RoundJoin));
     painter->drawLine(line);
@@ -220,14 +113,14 @@ void SimpleGrConnection::paint(QPainter* painter,
     if(!isDirected() && mode==GrEdge_regular)
     {
         QPointF sourceArrowP1,sourceArrowP2;
-        getArrowSholders(angle,_src_point_,sourceArrowP1,sourceArrowP2, false);
+        getArrowSholders(angle,getStartEndpoint(),sourceArrowP1,sourceArrowP2, false);
         painter->drawPolygon(QPolygonF()<<
                              line.p1()<<
                              sourceArrowP1<<
                              sourceArrowP2);
     }
     QPointF destArrowP1,destArrowP2;
-    getArrowSholders(angle,_dest_point_,destArrowP1,destArrowP2,true);
+    getArrowSholders(angle,getFinishEndpoint(),destArrowP1,destArrowP2,true);
     painter->drawPolygon(QPolygonF()<<
                          line.p2()<<
                          destArrowP1<<
@@ -237,7 +130,7 @@ void SimpleGrConnection::paint(QPainter* painter,
 
 void SimpleGrConnection::redraw()
 {
-    if(isVisible() && isOperable())
+    if(isVisible() && checkStatus())
     {
         update();
     }
@@ -246,43 +139,13 @@ void SimpleGrConnection::redraw()
 
 QPainterPath SimpleGrConnection::shape() const
 {
-    QPainterPath path(_src_point_);
-    QLineF line(_src_point_,_dest_point_);
-    if(line.length()>qreal(getSource()->getRadius()))
+    if(!getEdgeLength())
     {
-        line.setLength(line.length()-qreal(getSource()->getRadius())*2);
+        return QPainterPath();
     }
-    path.lineTo(line.p2());
+    QPainterPath path(getStartEndpoint());
+    path.lineTo(getFinishEndpoint());
     return path;
-}
-
-
-void SimpleGrConnection::recalculate()
-{
-    if(!hasMainItems())
-    {
-        return;
-    }
-
-    QLineF line(mapFromItem(getSource(),0,0),mapFromItem(getDestination(),0,0));
-    qreal length = line.length();
-    qreal src_radius = static_cast<qreal>(getSource()->getRadius());
-    qreal dest_radius = static_cast<qreal>(getDestination()->getRadius());
-    prepareGeometryChange();
-    if(length>(src_radius>dest_radius?src_radius:dest_radius))
-    {
-        QPointF edgeOffsetSrc((line.dx()*src_radius)/length,
-                           (line.dy()*src_radius)/length);
-        QPointF edgeOffsetDest((line.dx()*dest_radius)/length,
-                           (line.dy()*dest_radius)/length);
-        _src_point_ = line.p1() + edgeOffsetSrc;
-        _dest_point_ = line.p2() - edgeOffsetDest;
-    }
-    else
-    {
-        _src_point_ = _dest_point_ = line.p1();
-    }
-    return;
 }
 
 int SimpleGrConnection::type() const
@@ -290,17 +153,4 @@ int SimpleGrConnection::type() const
     return Type;
 }
 
-char SimpleGrConnection::grConnectionType() const noexcept
-{
-    return SimpleConnection;
-}
 
-void SimpleGrConnection::setWeight(unsigned int weight)
-{
-    _weight_ = weight;
-    return;
-}
-unsigned int SimpleGrConnection::getWeight() const noexcept
-{
-    return _weight_;
-}

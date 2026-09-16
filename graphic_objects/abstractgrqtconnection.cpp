@@ -2,10 +2,32 @@
 #include "graphic_objects/abstractgrqtitem.h"
 
 AbstractGrQtConnection::AbstractGrQtConnection(const item_id_t &id,
-                                               bool directed,
+                                               bool directed, qreal weight,
                                                QGraphicsObject *tata):
-    QGraphicsObject(tata),AbstractGrConnection(id,directed)
+    QGraphicsObject(tata),AbstractGrConnection(id,directed,weight)
 {
+    setDefaultPreferences();
+    return;
+}
+
+AbstractGrQtConnection::AbstractGrQtConnection(
+                       AbstractGrItem* source,
+                       AbstractGrItem* destination,
+                       char mode, bool directed,
+                       const item_id_t& id,
+                       qreal weight,
+                       QGraphicsObject* tata):
+    QGraphicsObject(tata),AbstractGrConnection(source,destination,mode,directed,id,weight)
+{
+    setDefaultPreferences();
+    return;
+}
+
+
+void AbstractGrQtConnection::setDefaultPreferences()
+{
+    recalcEndpoints();
+    redraw();
     setAcceptedMouseButtons(Qt::NoButton);
     setZValue(-1);
     return;
@@ -29,7 +51,7 @@ void AbstractGrQtConnection::redraw()
     return;
 }
 
-bool AbstractGrQtConnection::checkStatus()
+bool AbstractGrQtConnection::checkStatus() const
 {
     if(!_communicator_)
     {
@@ -42,6 +64,11 @@ qreal AbstractGrQtConnection::getLength(const QPointF& src, const QPointF& dest)
 {
     QPointF delta(src - dest);
     return std::hypot(delta.x(),delta.y());
+}
+
+qreal AbstractGrQtConnection::getEdgeLength() const
+{
+    return getLength(_start_endpoint_,_finish_endpoint_);
 }
 
 void AbstractGrQtConnection::recalculation(const QPointF& start_point, const QPointF& fin_point)

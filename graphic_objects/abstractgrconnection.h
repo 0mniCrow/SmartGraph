@@ -4,6 +4,7 @@
 #include <QPointF>
 
 #define ABSTRACT_EDGE_WIDTH 2.0
+#define ABSTRACT_EDGE_DEF_WEIGHT 10
 
 
 class AbstractGrItem;
@@ -16,10 +17,12 @@ private:
     bool                    _directed_;
     char                    _mode_;
     qreal                   _weight_;
+    void setBasicSource(AbstractGrItem* source);
+    void setBasicDestination(AbstractGrItem* destination);
 protected:
     virtual void redraw() = 0;
     //Праверка, ці ўсталяваны ўсе умовы згодна з рэжымам(mode)
-    virtual bool checkStatus();
+    virtual bool checkStatus() const;
 public:
     enum GrObjectType{AbstractConnection = GR_ABSTRACT_CONNECTION};
     enum ConnectionMode{GrEdge_Null=0,
@@ -29,12 +32,18 @@ public:
                         GrEdge_userMode};
 
     explicit AbstractGrConnection(const item_id_t& id=GR_ITEM_ID_DEF,
-                                  bool directed = false);
+                                  bool directed = false,
+                                  qreal weight = ABSTRACT_EDGE_DEF_WEIGHT);
+    AbstractGrConnection(AbstractGrItem* source,
+                         AbstractGrItem* destination,
+                         char mode, bool directed = false,
+                         const item_id_t& id= GR_ITEM_ID_DEF,
+                         qreal weight = ABSTRACT_EDGE_DEF_WEIGHT);
     virtual ~AbstractGrConnection() = default;
     AbstractGrItem* getSource() const noexcept;
     AbstractGrItem* getDestination() const noexcept;
-    void setSource(AbstractGrItem* src);
-    void setDestination(AbstractGrItem* dest);
+    virtual void setSource(AbstractGrItem* src);
+    virtual void setDestination(AbstractGrItem* dest);
     void setDirected(bool state);
     bool isDirected() const noexcept;
     virtual void setMode(char mode);
@@ -42,7 +51,6 @@ public:
     virtual void setLengthAsWeigth();
     void setWeight(qreal weight);
     qreal getWeight() const noexcept;
-    virtual char grObjectType() const noexcept override;
 
     /*
      * recalcEndpoints функцыя удакладняе сапраўдныя пазіцыі

@@ -7,12 +7,7 @@
 
 class SimpleGrConnection:public AbstractGrQtConnection
 {
-
 private:
-    QPointF _src_point_;
-    QPointF _dest_point_;
-//    unsigned int _weight_;
-    bool isOperable() const noexcept;
     void getArrowSholders(double arr_atan, const QPointF& arr_head,
                           QPointF& first_sholder, QPointF& sec_sholder, bool dest_point = true);
 protected:
@@ -21,29 +16,20 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
     virtual void redraw() override;
-    virtual bool checkStatus() override;
 public:
     enum GraphicItemType{SimpleConnection = GR_SIMPLE_CONNECTION};
     enum {Type = UserType+GR_SIMPLE_CONNECTION};
     explicit SimpleGrConnection();
-    SimpleGrConnection(AbstractGrItem* source, AbstractGrItem* destination,
-                       ItemCommunicator* communicator,
-                       const item_id_t& id=item_id_t(),
-                       bool directed = false,
-                       QGraphicsObject* tata = nullptr);
-    SimpleGrConnection(AbstractGrItem* source, char mode,
+    SimpleGrConnection(AbstractGrItem* source,
+                       AbstractGrItem* destination,
                        ItemCommunicator *communicator,
-                       bool directed = false,
-                       const item_id_t& id=item_id_t(),
+                       char mode, bool directed = false,
+                       const item_id_t& id= GR_ITEM_ID_DEF,
+                       qreal weight = ABSTRACT_EDGE_DEF_WEIGHT,
                        QGraphicsObject* tata = nullptr);
     virtual ~SimpleGrConnection() = default;
-
     virtual int type() const override;
-
     virtual QPainterPath shape() const override;
-
-    virtual void recalculate() override;
-
 };
 
 #endif // SIMPLEGRCONNECTION_H
