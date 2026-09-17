@@ -1,34 +1,34 @@
 #include "staticgritem.h"
 
-StaticGrItem::StaticGrItem(const item_id_t& gr_id,
-                           const GrItemData& gr_data,
-                           int gr_radius,
+StaticGrItem::StaticGrItem(const item_id_t& id,
+                           int radius,
+                           const item_data_type &data,
                            QGraphicsObject* tata):
-    AbstractGrItem(gr_id,gr_radius,tata),_data_(gr_data)
+    AbstractGrQtItem(id,radius,tata),_data_(data)
 {
     return;
 }
 
-void StaticGrItem::setGrData(const GrItemData& data, dataChangeType gr_type)
+void StaticGrItem::setGrData(const item_data_type& data, dataChangeType gr_type)
 {
     _data_ = data;
-    switch(gr_type)
-    {
-    case AbstractGrItem::DC_External:
-    {
-        emit changedExternally(data);
-    }
-        break;
-    case AbstractGrItem::DC_Internal:
-    {
-        emit changedInternally(this);
-    }
-        break;
-    }
+//    switch(gr_type)
+//    {
+//    case DC_External:
+//    {
+//        emit changedExternally(data);
+//    }
+//        break;
+//    case DC_Internal:
+//    {
+//        emit changedInternally(this);
+//    }
+//        break;
+//    }
     return;
 }
 
-GrItemData StaticGrItem::getGrData() const
+item_data_type StaticGrItem::getGrData() const
 {
     return _data_;
 }

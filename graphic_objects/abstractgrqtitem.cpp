@@ -288,7 +288,7 @@ QVariant AbstractGrQtItem::itemChange(GraphicsItemChange change, const QVariant&
         keepInBorders();
         for(AbstractGrConnection* edge:_edges_)
         {
-            edge->recalculate();
+            edge->recalcEndpoints();
         }
         if(_flags_&GV_Is_Forced)
         {

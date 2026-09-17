@@ -1,22 +1,23 @@
 #ifndef STATICGRITEM_H
 #define STATICGRITEM_H
-#include "abstractGrItem.h"
+#include "abstractgrqtitem.h"
+#include "templateItemData.h"
 
-class StaticGrItem:public AbstractGrItem
+using item_data_type = QString;
+
+class StaticGrItem:public AbstractGrQtItem,public ItemDataInterface<item_data_type>
 {
-    Q_OBJECT
 private:
-    GrItemData _data_;
+    item_data_type _data_;
 public:
     enum GrItemType{StaticItem = GR_STATIC_ITEM};
     enum {Type = UserType+GR_STATIC_ITEM};
-    explicit StaticGrItem(const item_id_t& gr_id=item_id_t(),
-                 const GrItemData& gr_data = GrItemData(),
-                 int gr_radius = DEF_ITEM_RADIUS,
-                 QGraphicsObject *tata = nullptr);
-    virtual void setGrData(const GrItemData& data, dataChangeType gr_type) override final;
-    virtual GrItemData getGrData() const override final;
-    virtual char grItemType() const noexcept override{return StaticItem;}
+    explicit StaticGrItem(const item_id_t& id=GR_ITEM_ID_DEF,
+                          int radius = DEF_ITEM_RADIUS,
+                          const item_data_type& data = item_data_type(),
+                          QGraphicsObject *tata = nullptr);
+    virtual void setGrData(const item_data_type& data, dataChangeType gr_type) override final;
+    virtual item_data_type getGrData() const override final;
     int type() const override{return Type;}
 };
 

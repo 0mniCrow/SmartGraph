@@ -1,7 +1,6 @@
 #ifndef ABSTRACTGRITEM_H
 #define ABSTRACTGRITEM_H
 #include "abstractGrInterface.h"
-#include "templateItemData.h"
 #include <QVector>
 #include <QString>
 
