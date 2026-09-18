@@ -535,11 +535,11 @@ void AbstractGrQtItem::moveGr(coord_real x, coord_real y)
     return;
 }
 
-void AbstractGrQtItem::drawGr()
-{
-    update();
-    return;
-}
+//void AbstractGrQtItem::drawGr()
+//{
+//    update();
+//    return;
+//}
 
 void AbstractGrQtItem::collectClosestItems(QList<QGraphicsItem*>& item_container)
 {

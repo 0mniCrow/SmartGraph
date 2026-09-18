@@ -94,7 +94,7 @@ public:
     virtual coord_real getGrWidth() const override;
     virtual coord_real getGrHeight() const override;
     virtual void moveGr(coord_real x, coord_real y) override;
-    virtual void drawGr() override;
+    //virtual void drawGr() override;
     virtual char grObjectType() const noexcept  override{return AbstractItem;}
 signals:
     void changedInternally(AbstractGrItem* self);
