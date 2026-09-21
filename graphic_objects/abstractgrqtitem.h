@@ -33,10 +33,10 @@ private:
     char                                _flags_;
 
     void keepInBorders();
-    void iconUpdate();
-    void drawVertexCircle(QPainter* painter);
-    void drawVertexIcon(QPainter* painter);
-    void drawPinNeedle(QPainter* painter);
+//    void iconUpdate();
+//    void drawVertexCircle(QPainter* painter);
+//    void drawVertexIcon(QPainter* painter);
+//    void drawPinNeedle(QPainter* painter);
     void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
     void collectClosestItems(QList<QGraphicsItem*> &item_container);
     void calculateRepulsion(qreal& velocity_x, qreal &velocity_y,
@@ -68,11 +68,12 @@ public:
                    QGraphicsObject *tata = nullptr);
     virtual ~AbstractGrQtItem() = default;
     void setItemCommunicator(ItemCommunicator* communicator);
+    ItemCommunicator* getItemCommunicator() const;
     void setRadius(int radius);
     int getRadius() const noexcept {return _radius_;}
-    void setGrFlag(char flag, bool state);
-    void setGrFlags(char flags);
-    char getFlags() const noexcept {return _flags_;}
+    void setGrItemFlag(char flag, bool state);
+    void setGrItemFlags(char flags);
+    char getGrItemFlags() const noexcept {return _flags_;}
     void setImage(const QPixmap& image);
     QPixmap getImage() const { return _orig_pixmap_; }
 

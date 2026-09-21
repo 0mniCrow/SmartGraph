@@ -5,10 +5,23 @@
 
 using item_data_type = QString;
 
-class StaticGrItem:public AbstractGrQtItem,public ItemDataInterface<item_data_type>
+class QStringItemData:public ItemDataInterface<QString>
 {
 private:
-    item_data_type _data_;
+    QString _data_;
+public:
+    virtual QString getGrData() const override final{return _data_;};
+    virtual void setGrData(const QString& data,dataChangeType gr_type) override final{
+        if(gr_type ==DC_External)
+            _data_=data;
+        return;};
+};
+
+
+class StaticGrItem:public AbstractGrQtItem,public QStringItemData
+{
+private:
+//    item_data_type                      _data_;
     QPixmap                             _orig_pixmap_;
     QPixmap                             _icon_;
     void iconUpdate();
@@ -25,10 +38,9 @@ public:
     enum {Type = UserType+GR_STATIC_ITEM};
     explicit StaticGrItem(const item_id_t& id=GR_ITEM_ID_DEF,
                           int radius = DEF_ITEM_RADIUS,
-                          const item_data_type& data = item_data_type(),
                           QGraphicsObject *tata = nullptr);
-    virtual void setGrData(const item_data_type& data, dataChangeType gr_type) override final;
-    virtual item_data_type getGrData() const override final;
+//    virtual void setGrData(const item_data_type& data, dataChangeType gr_type) override final;
+//    virtual item_data_type getGrData() const override final;
     int type() const override{return Type;}
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

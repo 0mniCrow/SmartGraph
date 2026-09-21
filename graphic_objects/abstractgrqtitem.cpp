@@ -24,8 +24,10 @@ void AbstractGrQtItem::keepInBorders()
     return;
 }
 
+
 /* Метад вызначае й перамалёўвае іконку на аб'екце
    Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
+/*
 void AbstractGrQtItem::iconUpdate()
 {
     if(_orig_pixmap_.isNull() &&
@@ -66,7 +68,8 @@ void AbstractGrQtItem::iconUpdate()
     _icon_ = QPixmap::fromImage(result_icon);
     return;
 }
-
+*/
+/*
 void AbstractGrQtItem::drawVertexCircle(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -111,7 +114,8 @@ void AbstractGrQtItem::drawVertexCircle(QPainter* painter)
     painter->drawEllipse(ellipse_rect);
     return;
 }
-
+*/
+/*
 void AbstractGrQtItem::drawVertexIcon(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -181,7 +185,8 @@ void AbstractGrQtItem::drawVertexIcon(QPainter* painter)
         painter->drawEllipse(ellipse_rect);
     }
 }
-
+*/
+/*
 void AbstractGrQtItem::drawPinNeedle(QPainter* painter)
 {
     QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
@@ -206,7 +211,7 @@ void AbstractGrQtItem::drawPinNeedle(QPainter* painter)
     painter->drawEllipse(pin_stem_end,PIN_HEAD_ITEM_RADIUS+1,PIN_HEAD_ITEM_RADIUS+1);
     return;
 }
-
+*/
 /*Метад вызначае новую пазіцыю аб'екта з улікам
  * штучнага запавольвання (калі карыстальнік націсквае
  * на аб'ект і перасоўвае яго). У выпадку, калі рэальны (нябачны)
@@ -244,7 +249,7 @@ void AbstractGrQtItem::calculateObjectPosition(const QPointF &event_pos, const Q
         QPoint viewPos = main_port->mapFromScene(pos());
         QPoint gl_pos = main_port->viewport()->mapToGlobal(viewPos);
         QCursor::setPos(gl_pos);
-        setGrFlag(GV_Ignore_Next_Move,true);
+        setGrItemFlag(GV_Ignore_Next_Move,true);
     }
     setPos(new_pos);
     return;
@@ -341,7 +346,7 @@ void AbstractGrQtItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
     if(flags()&ItemIsMovable)
     {
         setCursor(Qt::BlankCursor);
-        setGrFlag(GV_Is_Clicked, true);
+        setGrItemFlag(GV_Is_Clicked, true);
         _last_screen_pos_ = QPoint();
         if(_communicator_)
         {
@@ -376,7 +381,7 @@ void AbstractGrQtItem::mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event)
             QCursor::setPos(gl_pos);
         }
         unsetCursor();
-        setGrFlag(GV_Is_Clicked,false);
+        setGrItemFlag(GV_Is_Clicked,false);
     }
     update();
     QGraphicsItem::mouseReleaseEvent(m_event);
@@ -391,7 +396,7 @@ void AbstractGrQtItem::mouseMoveEvent(QGraphicsSceneMouseEvent* m_event)
     }
     if(_flags_&GV_Ignore_Next_Move)
     {
-        setGrFlag(GV_Ignore_Next_Move,false);
+        setGrItemFlag(GV_Ignore_Next_Move,false);
         m_event->ignore();
         return;
     }
@@ -434,6 +439,11 @@ void AbstractGrQtItem::setItemCommunicator(ItemCommunicator* communicator)
     return;
 }
 
+ItemCommunicator* AbstractGrQtItem::getItemCommunicator() const
+{
+    return _communicator_;
+}
+
 void AbstractGrQtItem::setRadius(int radius)
 {
     if(radius==_radius_)
@@ -452,13 +462,13 @@ void AbstractGrQtItem::setRadius(int radius)
     iconUpdate();
 }
 
-void AbstractGrQtItem::setGrFlag(char flag, bool state)
+void AbstractGrQtItem::setGrItemFlag(char flag, bool state)
 {
     _flags_ = state? _flags_|flag : _flags_&~flag;
     return;
 }
 
-void AbstractGrQtItem::setGrFlags(char flags)
+void AbstractGrQtItem::setGrItemFlags(char flags)
 {
     _flags_ = flags;
     return;
