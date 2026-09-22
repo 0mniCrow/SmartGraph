@@ -11,7 +11,6 @@ AbstractGrQtItem::AbstractGrQtItem(const item_id_t &id,
     setFlags(ItemSendsGeometryChanges|ItemIsMovable|ItemIsSelectable);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
-    iconUpdate();
 }
 
 void AbstractGrQtItem::keepInBorders()
@@ -24,194 +23,6 @@ void AbstractGrQtItem::keepInBorders()
     return;
 }
 
-
-/* Метад вызначае й перамалёўвае іконку на аб'екце
-   Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
-/*
-void AbstractGrQtItem::iconUpdate()
-{
-    if(_orig_pixmap_.isNull() &&
-            (!_communicator_||
-             _communicator_->getDefImage().isNull()))
-    {
-        return;
-    }
-    int diameter = _radius_*2;
-    QImage temp_icon(diameter,diameter,QImage::Format_ARGB32_Premultiplied);
-    temp_icon.fill(Qt::transparent);
-    QPainter painter;
-    painter.begin(&temp_icon);
-    painter.setRenderHint(QPainter::Antialiasing,true);
-    //Карэктыроўка асноўнага відарыса, абгрунтаванага радыюсам
-    QPixmap scaled_pxm;
-    if(_orig_pixmap_.isNull())
-    {
-        scaled_pxm = _communicator_->getDefImage().scaled(QSize(diameter,diameter),Qt::IgnoreAspectRatio);
-        setGrFlag(GV_Def_Icon,true);
-    }
-    else
-    {
-        scaled_pxm = _orig_pixmap_.scaled(QSize(diameter,diameter),Qt::IgnoreAspectRatio);
-        setGrFlag(GV_Def_Icon,false);
-    }
-    painter.drawPixmap(0,0,scaled_pxm);
-    painter.end();
-    //Ствараецца маска для адсячэння акружнасці
-    QImage result_icon(diameter,diameter,QImage::Format_ARGB32_Premultiplied);
-    result_icon.fill(Qt::transparent);
-    painter.begin(&result_icon);
-    QPainterPath cut_mask;
-    cut_mask.addEllipse(0,0,diameter,diameter);
-    painter.setClipPath(cut_mask);
-    painter.drawImage(temp_icon.rect(),temp_icon);
-    painter.end();
-    _icon_ = QPixmap::fromImage(result_icon);
-    return;
-}
-*/
-/*
-void AbstractGrQtItem::drawVertexCircle(QPainter* painter)
-{
-    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    QColor cur_color;
-    QPen cur_pen;
-    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
-    {
-        cur_pen.setColor(QColorConstants::Svg::darkslateblue);
-        cur_pen.setWidthF(LINE_ITEM_CLICKED_WIDTH);
-        cur_color = QColorConstants::Svg::orange;
-    }
-    else
-    {
-        if(isUnderMouse())
-        {
-            cur_pen.setColor(QColorConstants::Svg::yellowgreen);
-            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        Qt::yellow:
-                        QColorConstants::Svg::lightcyan;
-        }
-        else if(isSelected())
-        {
-            cur_pen.setColor(QColorConstants::Svg::darkolivegreen);
-            cur_pen.setWidthF(LINE_ITEM_SELECT_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::palegoldenrod:
-                        QColorConstants::Svg::lightskyblue;
-        }
-        else
-        {
-            cur_pen.setColor(QColorConstants::Svg::white);
-            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
-            cur_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::slategray:
-                        QColorConstants::Svg::powderblue;
-        }
-    }
-    painter->setBrush(cur_color);
-    painter->setPen(cur_pen);
-
-    painter->drawEllipse(ellipse_rect);
-    return;
-}
-*/
-/*
-void AbstractGrQtItem::drawVertexIcon(QPainter* painter)
-{
-    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    QColor mask_color;
-    QPen cur_pen;
-    if(flags()&ItemIsMovable && _flags_&GV_Is_Clicked)
-    {
-        cur_pen.setColor(QColorConstants::Svg::orangered);
-        cur_pen.setWidthF(LINE_ITEM_CLICKED_WIDTH);
-        mask_color = QColorConstants::Svg::cyan;
-        if(!(_flags_&GV_Def_Icon))
-        {
-            mask_color.setAlpha(40);
-        }
-    }
-    else
-    {
-        if(isUnderMouse())
-        {
-            cur_pen.setColor(QColorConstants::Svg::yellow);
-            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
-            mask_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::wheat:
-                        QColorConstants::Svg::tomato;
-            if(!(_flags_&GV_Def_Icon))
-            {
-                mask_color.setAlpha(50);
-            }
-        }
-        else if(isSelected())
-        {
-            cur_pen.setColor(QColorConstants::Svg::orange);
-            cur_pen.setWidthF(LINE_ITEM_SELECT_WIDTH);
-            mask_color = (flags()&ItemIsMovable)?
-                        QColorConstants::Svg::gold:
-                        QColorConstants::Svg::cornsilk;
-            if(!(_flags_&GV_Def_Icon))
-            {
-                mask_color.setAlpha(30);
-            }
-        }
-        else
-        {
-            cur_pen.setColor(QColorConstants::Svg::lightslategrey);
-            cur_pen.setWidthF(LINE_ITEM_BASE_WIDTH);
-            mask_color = Qt::gray;
-            if(!(_flags_&GV_Def_Icon))
-            {
-                mask_color.setAlpha(75);
-            }
-        }
-    }
-    if(_flags_&GV_Def_Icon)
-    {
-        painter->setBrush(mask_color);
-        painter->drawEllipse(ellipse_rect);
-        painter->drawPixmap(-_radius_,-_radius_,_icon_);
-        painter->setBrush(Qt::NoBrush);
-        painter->setPen(cur_pen);
-        painter->drawEllipse(ellipse_rect);
-    }
-    else
-    {
-        painter->drawPixmap(-_radius_,-_radius_,_icon_);
-        painter->setBrush(mask_color);
-        painter->setPen(cur_pen);
-        painter->drawEllipse(ellipse_rect);
-    }
-}
-*/
-/*
-void AbstractGrQtItem::drawPinNeedle(QPainter* painter)
-{
-    QRectF ellipse_rect(-_radius_,-_radius_,_radius_*2,_radius_*2);
-    QPolygonF pin_needle;
-    qreal pin_stem_rad = 220*M_PI/180;
-    QPointF pin_stem_end(ellipse_rect.center().x()+_radius_*sin(pin_stem_rad),
-                         ellipse_rect.center().y()+_radius_*cos(pin_stem_rad));
-    QLineF pin_stem_line(ellipse_rect.center(),pin_stem_end);
-    qreal ux = pin_stem_line.dx()/pin_stem_line.length();
-    qreal uy = pin_stem_line.dy()/pin_stem_line.length();
-    qreal vx = -uy;
-    qreal vy = ux;
-    QPointF pin_needle_point1(pin_stem_end.x()+PIN_HEAD_ITEM_RADIUS*vx,
-                              pin_stem_end.y()+PIN_HEAD_ITEM_RADIUS*vy);
-    QPointF pin_needle_point2(pin_stem_end.x()-PIN_HEAD_ITEM_RADIUS*vx,
-                              pin_stem_end.y()-PIN_HEAD_ITEM_RADIUS*vy);
-    pin_needle<<pin_stem_line.pointAt(0.2)<<pin_needle_point1<<pin_needle_point2;
-    painter->setBrush(QBrush(QColorConstants::Svg::gainsboro));
-    painter->setPen(QPen(Qt::black,1));
-    painter->drawPolygon(pin_needle);
-    painter->setBrush(QBrush(Qt::red));
-    painter->drawEllipse(pin_stem_end,PIN_HEAD_ITEM_RADIUS+1,PIN_HEAD_ITEM_RADIUS+1);
-    return;
-}
-*/
 /*Метад вызначае новую пазіцыю аб'екта з улікам
  * штучнага запавольвання (калі карыстальнік націсквае
  * на аб'ект і перасоўвае яго). У выпадку, калі рэальны (нябачны)
@@ -255,35 +66,6 @@ void AbstractGrQtItem::calculateObjectPosition(const QPointF &event_pos, const Q
     return;
 }
 
-QRectF AbstractGrQtItem::boundingRect() const
-{
-    int select_inflate = isSelected()?SELECTED_ITEM_RISE:0.0;
-    double borders = 0;
-    if(_flags_&GV_Is_Clicked)
-    {
-        borders = LINE_ITEM_CLICKED_WIDTH;              //Памер для націснутага элемента
-    }
-    else if(isSelected())
-    {
-        borders = LINE_ITEM_SELECT_WIDTH;               //Памер для вызначанага элемента
-    }
-    else
-    {
-        borders = LINE_ITEM_BASE_WIDTH;                 //Стандартны памер
-    }
-    return QRectF(-_radius_ - borders - select_inflate,
-                  -_radius_ - borders - select_inflate,
-                  _radius_*2 + borders + select_inflate,
-                  _radius_*2 + borders+ select_inflate);
-}
-
-QPainterPath AbstractGrQtItem::shape() const
-{
-    QPainterPath path;
-    path.addEllipse(boundingRect());
-    return path;
-}
-
 QVariant AbstractGrQtItem::itemChange(GraphicsItemChange change, const QVariant& value)
 {
     switch(change)
@@ -316,29 +98,6 @@ QVariant AbstractGrQtItem::itemChange(GraphicsItemChange change, const QVariant&
         break;
     }
     return QGraphicsItem::itemChange(change,value);
-}
-
-void AbstractGrQtItem::paint(QPainter* painter,
-           const QStyleOptionGraphicsItem* option,
-           QWidget* widget)
-{
-    Q_UNUSED(option) Q_UNUSED(widget)
-    painter->save();
-    painter->setRenderHint(QPainter::Antialiasing,true);
-    if(_icon_.isNull())
-    {
-        drawVertexCircle(painter);
-    }
-    else
-    {
-        drawVertexIcon(painter);
-    }
-    if(!(flags()&ItemIsMovable))
-    {
-        drawPinNeedle(painter);
-    }
-    painter->restore();
-    return;
 }
 
 void AbstractGrQtItem::mousePressEvent(QGraphicsSceneMouseEvent * m_event)
@@ -459,7 +218,7 @@ void AbstractGrQtItem::setRadius(int radius)
     {
         _radius_=MIN_ITEM_RADIUS;
     }
-    iconUpdate();
+    return;
 }
 
 void AbstractGrQtItem::setGrItemFlag(char flag, bool state)
@@ -474,18 +233,6 @@ void AbstractGrQtItem::setGrItemFlags(char flags)
     return;
 }
 
-
-void AbstractGrQtItem::setImage(const QPixmap& image)
-{
-    if(image.isNull())
-    {
-        return;
-    }
-    _orig_pixmap_=image;
-    iconUpdate();
-    update();
-    return;
-}
 
 void AbstractGrQtItem::setGrX(coord_real x)
 {
@@ -544,12 +291,6 @@ void AbstractGrQtItem::moveGr(coord_real x, coord_real y)
     setPos(x,y);
     return;
 }
-
-//void AbstractGrQtItem::drawGr()
-//{
-//    update();
-//    return;
-//}
 
 void AbstractGrQtItem::collectClosestItems(QList<QGraphicsItem*>& item_container)
 {

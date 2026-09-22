@@ -72,7 +72,7 @@ public:
     virtual void getGrStartCoords(qreal& x, qreal& y) const = 0;
     //getGrEndCoords вяртае ў дасланых пераменных каардынаты сапраўднага канчатку рэбра.
     virtual void getGrEndCoords(qreal& x, qreal& y) const = 0;
-    virtual void drawGr() override;
+    virtual void drawGrObject() override;
 
 };
 

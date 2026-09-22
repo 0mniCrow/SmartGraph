@@ -72,14 +72,14 @@ bool BasicItemManager::deleteItem(AbstractGrInterface* item)
     {
         return false;
     }
-    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.find(item->getGrID());
+    QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.find(item->getGrID());
     if(it==_items_.cend())
     {
         return false;
     }
     emit objectRemoved(item->getGrID());
     _items_.erase(it);
-    AbstractGrItem* gr_item = dynamic_cast<AbstractGrItem*>(item);
+    AbstractGrQtItem* gr_item = dynamic_cast<AbstractGrQtItem*>(item);
     if(gr_item)
     {
         gr_item->deleteLater();
@@ -93,7 +93,7 @@ bool BasicItemManager::deleteItem(AbstractGrInterface* item)
 
 bool BasicItemManager::deleteItem(uint id)
 {
-    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.find(id);
+    QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.find(id);
     if(it==_items_.cend())
     {
         return false;
@@ -103,7 +103,7 @@ bool BasicItemManager::deleteItem(uint id)
 
 AbstractGrInterface* BasicItemManager::findItem(uint id) const
 {
-    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.find(id);
+    QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.find(id);
     if(it==_items_.cend())
     {
         return nullptr;
@@ -113,10 +113,10 @@ AbstractGrInterface* BasicItemManager::findItem(uint id) const
 
 AbstractGrInterface* BasicItemManager::findItem(qreal x_coord, qreal y_coord)
 {
-    QMap<uint,AbstractGrItem*>::const_iterator it = _items_.cbegin();
+    QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.cbegin();
     while(it!=_items_.cend())
     {
-        AbstractGrItem* gr_item = dynamic_cast<AbstractGrItem*>(it.value());
+        AbstractGrQtItem* gr_item = dynamic_cast<AbstractGrQtItem*>(it.value());
         if(gr_item)
         {
             QPointF gr_point = gr_item->mapFromScene(x_coord,y_coord);
@@ -185,14 +185,15 @@ bool BasicItemManager::deleteConnection(AbstractGrConnection* connection)
     {
         return false;
     }
-    QMap<uint,AbstractGrConnection*>::iterator it = _connections_.find(connection->getGrID());
+    QMap<uint,AbstractGrQtConnection*>::iterator it = _connections_.find(connection->getGrID());
     if(it==_connections_.end())
     {
         return false;
     }
-    AbstractGrItem* item = (*it)->getSource();
+    AbstractGrQtItem* item = dynamic_cast<AbstractGrQtItem*>((*it)->getSource());
     item->delEdge(*it);
-    if(item=(*it)->getDestination())
+    item=dynamic_cast<AbstractGrQtItem*>((*it)->getDestination());
+    if(item)
     {
         item->delEdge(*it);
     }
@@ -202,7 +203,7 @@ bool BasicItemManager::deleteConnection(AbstractGrConnection* connection)
 
 bool BasicItemManager::deleteConnection(uint id)
 {
-    QMap<uint,AbstractGrConnection*>::iterator it = _connections_.find(id);
+    QMap<uint,AbstractGrQtConnection*>::iterator it = _connections_.find(id);
     if(it==_connections_.end())
     {
         return false;
@@ -212,7 +213,7 @@ bool BasicItemManager::deleteConnection(uint id)
 
 AbstractGrConnection* BasicItemManager::findConnection(uint id) const
 {
-    QMap<uint,AbstractGrConnection*>::const_iterator it = _connections_.find(id);
+    QMap<uint,AbstractGrQtConnection*>::const_iterator it = _connections_.find(id);
     if(it==_connections_.cend())
     {
         return nullptr;
@@ -223,7 +224,7 @@ AbstractGrConnection* BasicItemManager::findConnection(uint id) const
 AbstractGrConnection* BasicItemManager::findConnection(AbstractGrInterface* source,
                                              AbstractGrInterface* destination)
 {
-    QMap<uint,AbstractGrConnection*>::iterator it =std::find_if(_connections_.begin(),_connections_.end(),[source,destination](AbstractGrConnection* conn)
+    QMap<uint,AbstractGrQtConnection*>::iterator it =std::find_if(_connections_.begin(),_connections_.end(),[source,destination](AbstractGrConnection* conn)
     {
         if((conn->getSource()==source)&&(conn->getDestination()==destination))
         {

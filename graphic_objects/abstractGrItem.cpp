@@ -15,7 +15,7 @@ bool AbstractGrItem::addEdge(AbstractGrConnection* edge)
         return false;
     }
     _edges_.append(edge);
-    edge->recalculate();
+    edge->recalcEndpoints();
     return true;
 }
 

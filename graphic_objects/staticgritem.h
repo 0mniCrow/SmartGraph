@@ -21,7 +21,6 @@ public:
 class StaticGrItem:public AbstractGrQtItem,public QStringItemData
 {
 private:
-//    item_data_type                      _data_;
     QPixmap                             _orig_pixmap_;
     QPixmap                             _icon_;
     void iconUpdate();
@@ -34,16 +33,19 @@ protected:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
 public:
+    enum GrItemForm{GR_ItemForm_Circle = 1, GR_ItemForm_Square, GR_ItemForm_Triangle};
     enum GrItemType{StaticItem = GR_STATIC_ITEM};
     enum {Type = UserType+GR_STATIC_ITEM};
     explicit StaticGrItem(const item_id_t& id=GR_ITEM_ID_DEF,
                           int radius = DEF_ITEM_RADIUS,
                           QGraphicsObject *tata = nullptr);
-//    virtual void setGrData(const item_data_type& data, dataChangeType gr_type) override final;
-//    virtual item_data_type getGrData() const override final;
     int type() const override{return Type;}
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
+    void setImage(const QPixmap& image);
+    QPixmap getImage() const { return _orig_pixmap_; }
+    virtual void setRadius(int radius) override;
+    virtual void drawGrObject() override;
 };
 
 #endif // STATICGRITEM_H

@@ -5,6 +5,7 @@ StaticGrItem::StaticGrItem(const item_id_t& id,
                            QGraphicsObject* tata):
     AbstractGrQtItem(id,radius,tata)
 {
+    iconUpdate();
     return;
 }
 
@@ -196,37 +197,80 @@ void StaticGrItem::drawPinNeedle(QPainter* painter)
     return;
 }
 
-QVariant StaticGrItem::itemChange(GraphicsItemChange change, const QVariant& value)
-{
-
-}
 void StaticGrItem::paint(QPainter* painter,
            const QStyleOptionGraphicsItem* option,
            QWidget* widget)
 {
-
+    Q_UNUSED(option) Q_UNUSED(widget)
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing,true);
+    if(_icon_.isNull())
+    {
+        drawVertexCircle(painter);
+    }
+    else
+    {
+        drawVertexIcon(painter);
+    }
+    if(!(flags()&ItemIsMovable))
+    {
+        drawPinNeedle(painter);
+    }
+    painter->restore();
+    return;
 }
 
-//void StaticGrItem::setGrData(const item_data_type& data, dataChangeType gr_type)
-//{
-//    _data_ = data;
-//    switch(gr_type)
-//    {
-//    case DC_External:
-//    {
-//        emit changedExternally(data);
-//    }
-//        break;
-//    case DC_Internal:
-//    {
-//        emit changedInternally(this);
-//    }
-//        break;
-//    }
-//    return;
-//}
+QRectF StaticGrItem::boundingRect() const
+{
+    auto gr_radius = getRadius();
+    auto gr_flags = getGrItemFlags();
+    int select_inflate = isSelected()?SELECTED_ITEM_RISE:0.0;
+    double borders = 0;
+    if(gr_flags&GV_Is_Clicked)
+    {
+        borders = LINE_ITEM_CLICKED_WIDTH;              //Памер для націснутага элемента
+    }
+    else if(isSelected())
+    {
+        borders = LINE_ITEM_SELECT_WIDTH;               //Памер для вызначанага элемента
+    }
+    else
+    {
+        borders = LINE_ITEM_BASE_WIDTH;                 //Стандартны памер
+    }
+    return QRectF(-gr_radius - borders - select_inflate,
+                  -gr_radius - borders - select_inflate,
+                  gr_radius*2 + borders + select_inflate,
+                  gr_radius*2 + borders+ select_inflate);
+}
 
-//item_data_type StaticGrItem::getGrData() const
-//{
-//    return _data_;
-//}
+QPainterPath StaticGrItem::shape() const
+{
+    QPainterPath path;
+    path.addEllipse(boundingRect());
+    return path;
+}
+
+void StaticGrItem::setImage(const QPixmap& image)
+{
+    if(image.isNull())
+    {
+        return;
+    }
+    _orig_pixmap_=image;
+    iconUpdate();
+    update();
+    return;
+}
+
+void StaticGrItem::setRadius(int radius)
+{
+    AbstractGrQtItem::setRadius(radius);
+    iconUpdate();
+}
+
+void StaticGrItem::drawGrObject()
+{
+    update();
+    return;
+}

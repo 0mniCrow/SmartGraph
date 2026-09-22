@@ -152,7 +152,7 @@ void AbstractGrConnection::setDestination(AbstractGrItem* dest)
     return;
 }
 
-void AbstractGrConnection::drawGr()
+void AbstractGrConnection::drawGrObject()
 {
     redraw();
     return;

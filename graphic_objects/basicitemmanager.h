@@ -10,8 +10,8 @@ class BasicItemManager:public QObject, public AbstractItemManager
 {
     Q_OBJECT
 private:
-    QMap<uint,AbstractGrItem*>          _items_;
-    QMap<uint,AbstractGrConnection*>    _connections_;
+    QMap<uint,AbstractGrQtItem*>          _items_;
+    QMap<uint,AbstractGrQtConnection*>    _connections_;
     QString                             _last_error_;
     QMap<QString,std::function<void(unsigned int)>>     _callbacks_;
     bool checkItemType(char gr_type) const;

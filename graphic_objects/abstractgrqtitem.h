@@ -24,19 +24,15 @@ class AbstractGrQtItem:public QGraphicsObject, public AbstractGrItem
 {
     Q_OBJECT
 private:
-    QPixmap                             _orig_pixmap_;
-    QPixmap                             _icon_;
+
     QPointF                             _adv_pos_;
     QPoint                              _last_screen_pos_;
     ItemCommunicator*                   _communicator_;
+    //Даўжыня ад цэнтра аб'екта да яго краю
     int                                 _radius_;
     char                                _flags_;
 
     void keepInBorders();
-//    void iconUpdate();
-//    void drawVertexCircle(QPainter* painter);
-//    void drawVertexIcon(QPainter* painter);
-//    void drawPinNeedle(QPainter* painter);
     void calculateObjectPosition(const QPointF& event_pos, const QPointF& prev_pos);
     void collectClosestItems(QList<QGraphicsItem*> &item_container);
     void calculateRepulsion(qreal& velocity_x, qreal &velocity_y,
@@ -51,9 +47,6 @@ protected:
 
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-    virtual void paint(QPainter* painter,
-               const QStyleOptionGraphicsItem* option,
-               QWidget* widget) override;
     virtual void mousePressEvent(QGraphicsSceneMouseEvent * m_event) override;
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* m_event) override;
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent * m_event) override;
@@ -69,22 +62,16 @@ public:
     virtual ~AbstractGrQtItem() = default;
     void setItemCommunicator(ItemCommunicator* communicator);
     ItemCommunicator* getItemCommunicator() const;
-    void setRadius(int radius);
+    virtual void setRadius(int radius);
     int getRadius() const noexcept {return _radius_;}
     void setGrItemFlag(char flag, bool state);
     void setGrItemFlags(char flags);
     char getGrItemFlags() const noexcept {return _flags_;}
-    void setImage(const QPixmap& image);
-    QPixmap getImage() const { return _orig_pixmap_; }
 
     bool isForceCalc()const {return _flags_&GV_Is_Forced;}
     void setForceCalc(bool state){_flags_= state? _flags_|GV_Is_Forced : _flags_ & ~GV_Is_Forced;}
     void calcForce();
     bool advPosition();
-
-    virtual QRectF boundingRect() const override;
-    int type() const override{return Type;}
-    virtual QPainterPath shape() const override;
 
     virtual void setGrX(coord_real x) override;
     virtual void setGrY(coord_real y) override;
@@ -95,8 +82,8 @@ public:
     virtual coord_real getGrWidth() const override;
     virtual coord_real getGrHeight() const override;
     virtual void moveGr(coord_real x, coord_real y) override;
-    //virtual void drawGr() override;
-    virtual char grObjectType() const noexcept  override{return AbstractItem;}
+//    virtual void drawGr() override;
+//    virtual char grObjectType() const noexcept  override{return AbstractItem;}
 signals:
     void changedInternally(AbstractGrItem* self);
     //void changedExternally(GrItemData new_val);

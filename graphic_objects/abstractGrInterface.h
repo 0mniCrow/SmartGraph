@@ -25,7 +25,7 @@ public:
     virtual ~AbstractGrInterface() = default;
     virtual void setGrID(item_id_t& id){_id_=id;}
     virtual item_id_t getGrID() const {return _id_;}
-    virtual void drawGr() = 0;
+    virtual void drawGrObject() = 0;
     virtual char grObjectType() const noexcept{return NoType;}
 };
 
