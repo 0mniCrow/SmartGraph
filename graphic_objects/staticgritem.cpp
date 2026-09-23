@@ -1,5 +1,7 @@
 #include "staticgritem.h"
 
+const QString StaticGrItem::_object_name_ = "StaticGrItem";
+
 StaticGrItem::StaticGrItem(const item_id_t& id,
                            int radius,
                            QGraphicsObject* tata):
@@ -273,4 +275,20 @@ void StaticGrItem::drawGrObject()
 {
     update();
     return;
+}
+
+void StaticGrItem::setGrData(const item_data_type& data, dataChangeType gr_type)
+{
+    QStringItemData::setGrData(data,gr_type);
+    emit grItemDataChanged(getGrID());
+    return;
+}
+
+char StaticGrItem::grObjectType() const noexcept
+{
+    return StaticItem;
+}
+QStringView StaticGrItem::getObjectName() const
+{
+    return _object_name_;
 }

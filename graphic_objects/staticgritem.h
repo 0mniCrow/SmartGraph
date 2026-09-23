@@ -5,13 +5,13 @@
 
 using item_data_type = QString;
 
-class QStringItemData:public ItemDataInterface<QString>
+class QStringItemData:public ItemDataInterface<item_data_type>
 {
 private:
-    QString _data_;
+    item_data_type _data_;
 public:
-    virtual QString getGrData() const override final{return _data_;};
-    virtual void setGrData(const QString& data,dataChangeType gr_type) override final{
+    virtual QString getGrData() const override {return _data_;};
+    virtual void setGrData(const item_data_type& data,dataChangeType gr_type) override {
         if(gr_type ==DC_External)
             _data_=data;
         return;};
@@ -23,6 +23,7 @@ class StaticGrItem:public AbstractGrQtItem,public QStringItemData
 private:
     QPixmap                             _orig_pixmap_;
     QPixmap                             _icon_;
+    static const QString                _object_name_;
     void iconUpdate();
     void drawVertexCircle(QPainter* painter);
     void drawVertexIcon(QPainter* painter);
@@ -46,6 +47,9 @@ public:
     QPixmap getImage() const { return _orig_pixmap_; }
     virtual void setRadius(int radius) override;
     virtual void drawGrObject() override;
+    virtual void setGrData(const item_data_type& data, dataChangeType gr_type)override;
+    virtual char grObjectType() const noexcept override;
+    virtual QStringView getObjectName() const override;
 };
 
 #endif // STATICGRITEM_H

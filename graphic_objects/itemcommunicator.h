@@ -12,7 +12,7 @@
 #define DEFAULT_ARROW_SIZE 10
 
 class GViewPort;
-class AbstractGrItem;
+class AbstractGrQtItem;
 
 
 class ItemCommunicator : public QObject
@@ -26,7 +26,7 @@ private:
     GViewToolTip *          _tooltip_window_;
     GViewEdit *             _edit_window_;
     ImageCropWindow *       _pic_load_dialog_;
-    AbstractGrItem*         _cur_working_item_;
+    AbstractGrQtItem*       _cur_working_item_;
     QPoint                  _tip_pos_;
     qreal                   _arrow_size_;
 
@@ -34,12 +34,12 @@ public:
     explicit ItemCommunicator(GViewPort* port, QObject *parent = nullptr);
     void setCurTime(unsigned long long new_time);
     unsigned long long getCurTime() const noexcept;
-    void startToolTipTimer(AbstractGrItem* gr_sender, const QPoint& pos);
+    void startToolTipTimer(AbstractGrQtItem* gr_sender, const QPoint& pos);
     void stopToolTipTimer();
     void setDefImage(const QString& imgAddr);
     const QPixmap& getDefImage() const;
-    void callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos);
-    void callToolTipWindow(AbstractGrItem* gr_sender, const QPoint& pos);
+    void callEditWindow(AbstractGrQtItem* gr_sender, const QPoint& pos);
+    void callToolTipWindow(AbstractGrQtItem* gr_sender, const QPoint& pos);
     void itemIsMoved();
     void setArrowSize(qreal arrow_size);
     qreal getArrowSize() const noexcept;

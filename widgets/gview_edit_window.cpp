@@ -1,4 +1,5 @@
 #include "gview_edit_window.h"
+#include "graphic_objects/staticgritem.h"
 GViewEdit::GViewEdit(const QString& data, QWidget* tata):QWidget(tata)
 {
     setWindowModality(Qt::WindowModality::ApplicationModal);
@@ -41,6 +42,44 @@ GViewEdit::GViewEdit(const QString& data, QWidget* tata):QWidget(tata)
     return;
 }
 
+GViewEdit::GViewEdit(AbstractGrItem* first_item, QWidget* tata):QWidget(tata)
+{
+    setWindowModality(Qt::WindowModality::ApplicationModal);
+    setWindowFlag(Qt::FramelessWindowHint,true);
+    _save_button_ = new QPushButton("Save 'n Close");
+    _close_button_ = new QPushButton("Close");
+    _apply_button_ = new QPushButton("Apply");
+    connect(_save_button_,&QPushButton::clicked,this,&GViewEdit::manualSave);
+    connect(_close_button_,&QPushButton::clicked,this,&GViewEdit::manualClose);
+    connect(_apply_button_,&QPushButton::clicked,this,&GViewEdit::manualApply);
+    QHBoxLayout * button_line = new QHBoxLayout;
+    button_line->addWidget(_save_button_);
+    button_line->addWidget(_close_button_);
+    button_line->addWidget(_apply_button_);
+    _text_ = new QTextEdit;
+    QVBoxLayout * layout = new QVBoxLayout;
+    layout->addWidget(_text_);
+    layout->addLayout(button_line);
+    setLayout(layout);
+    resize(300,150);
+    if(!first_item)
+    {
+        return;
+    }
+    QStringView item_type = first_item->getObjectName();
+    if(item_type == QString("StaticGrItem"))
+    {
+        StaticGrItem* item = dynamic_cast<StaticGrItem*>(first_item);
+        if(!item)
+        {
+            return;
+        }
+        _original_text_ = item->getGrData();
+        _text_->setText(_original_text_);
+
+    }
+    return;
+}
 
 void GViewEdit::manualSave()
 {

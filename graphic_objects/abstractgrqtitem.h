@@ -54,7 +54,6 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent * h_event) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent * h_event) override;
 public:
-    enum GrObjectType{AbstractItem = GR_ABSTRACT_QT_ITEM};
     enum {Type = UserType+GR_ABSTRACT_QT_ITEM};
     AbstractGrQtItem(const item_id_t& id=GR_ITEM_ID_DEF,
                    int radius = DEF_ITEM_RADIUS,
@@ -82,12 +81,9 @@ public:
     virtual coord_real getGrWidth() const override;
     virtual coord_real getGrHeight() const override;
     virtual void moveGr(coord_real x, coord_real y) override;
-//    virtual void drawGr() override;
-//    virtual char grObjectType() const noexcept  override{return AbstractItem;}
 signals:
-    void changedInternally(AbstractGrItem* self);
-    //void changedExternally(GrItemData new_val);
-    void itemAboutToBeDestroyed(uint item_id);
+    void grItemDataChanged(uint item_id);
+    void grItemAboutToBeDestroyed(uint item_id);
 };
 
 #endif // ABSTRACTGRQTITEM_H

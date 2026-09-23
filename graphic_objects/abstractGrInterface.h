@@ -10,7 +10,7 @@
 #define GR_ABSTRACT_QT_ITEM 5
 #define GR_ITEM_ID_DEF 0
 
-#include <string>
+#include <QStringView>
 using coord_real = double;
 using item_id_t = unsigned int;
 
@@ -27,6 +27,7 @@ public:
     virtual item_id_t getGrID() const {return _id_;}
     virtual void drawGrObject() = 0;
     virtual char grObjectType() const noexcept{return NoType;}
+    virtual QStringView getObjectName() const = 0;
 };
 
 

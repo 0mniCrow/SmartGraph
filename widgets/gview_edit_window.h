@@ -8,6 +8,8 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 
+class AbstractGrItem;
+
 class GViewEdit:public QWidget
 {
     Q_OBJECT
@@ -18,9 +20,11 @@ private:
     QPushButton* _close_button_;
     QPushButton* _apply_button_;
 public:
-    GViewEdit(const QString& data, QWidget* tata = nullptr);
+    explicit GViewEdit(const QString& data, QWidget* tata = nullptr);
+    explicit GViewEdit(AbstractGrItem* first_item = nullptr, QWidget* tata = nullptr);
     void setData(const QMap<QString,QString>& fields);
     void setData(const QString& data);
+    void setWorkingItem(AbstractGrItem* item);
     QString getData() const;
 private slots:
     void manualSave();

@@ -1,5 +1,5 @@
 #include "itemcommunicator.h"
-#include "abstractGrItem.h"
+#include "abstractgrqtitem.h"
 #include "gviewport.h"
 
 ItemCommunicator::ItemCommunicator(GViewPort *port, QObject *parent)
@@ -32,7 +32,7 @@ unsigned long long ItemCommunicator::getCurTime() const noexcept
     return _cur_time_;
 }
 
-void ItemCommunicator::startToolTipTimer(AbstractGrItem* gr_sender, const QPoint& pos)
+void ItemCommunicator::startToolTipTimer(AbstractGrQtItem* gr_sender, const QPoint& pos)
 {
     if(_tooltip_window_ && _tooltip_window_->isVisible())
     {
@@ -69,7 +69,7 @@ const QPixmap& ItemCommunicator::getDefImage() const
     return _def_image_;
 }
 
-void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& pos)
+void ItemCommunicator::callEditWindow(AbstractGrQtItem* gr_sender, const QPoint& pos)
 {
     if(!_edit_window_)
     {
@@ -103,7 +103,7 @@ void ItemCommunicator::callEditWindow(AbstractGrItem* gr_sender, const QPoint& p
     return;
 }
 
-void ItemCommunicator::callToolTipWindow(AbstractGrItem* gr_sender, const QPoint& pos)
+void ItemCommunicator::callToolTipWindow(AbstractGrQtItem* gr_sender, const QPoint& pos)
 {
     if(!_tooltip_window_)
     {
