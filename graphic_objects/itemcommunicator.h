@@ -27,6 +27,7 @@ private:
     GViewEdit *             _edit_window_;
     ImageCropWindow *       _pic_load_dialog_;
     AbstractGrQtItem*       _cur_working_item_;
+    uint                    _woring_item_id_;
     QPoint                  _tip_pos_;
     qreal                   _arrow_size_;
 

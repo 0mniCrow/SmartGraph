@@ -81,17 +81,212 @@ GViewEdit::GViewEdit(AbstractGrItem* first_item, QWidget* tata):QWidget(tata)
     return;
 }
 
+
+
+GViewEdit::GViewEdit(QWidget* tata):QWidget(tata),
+    _save_button_(nullptr),_close_button_(nullptr),_apply_button_(nullptr),
+    _main_layout_(nullptr),_interface_layout_(nullptr)
+{
+    setWindowModality(Qt::WindowModality::ApplicationModal);
+    setWindowFlag(Qt::FramelessWindowHint,true);
+    generateMainInterface();
+    _main_layout_ = new QVBoxLayout();
+    setLayout(_main_layout_);
+    resize(300,150);
+}
+
+void GViewEdit::generateMainInterface()
+{
+    if(_save_button_)
+    {
+        disconnect(_save_button_,&QPushButton::clicked,this,&GViewEdit::manualSave);
+        delete _save_button_;
+    }
+    if(_close_button_)
+    {
+        disconnect(_close_button_,&QPushButton::clicked,this,&GViewEdit::manualClose);
+        delete _close_button_;
+    }
+    if(_apply_button_)
+    {
+        disconnect(_apply_button_,&QPushButton::clicked,this,&GViewEdit::manualApply);
+        delete _apply_button_;
+    }
+    if(_interface_layout_)
+    {
+        delete _interface_layout_;
+    }
+    _save_button_ = new QPushButton("Save 'n Close");
+    _close_button_ = new QPushButton("Close");
+    _apply_button_ = new QPushButton("Apply");
+    connect(_save_button_,&QPushButton::clicked,this,&GViewEdit::manualSave);
+    connect(_close_button_,&QPushButton::clicked,this,&GViewEdit::manualClose);
+    connect(_apply_button_,&QPushButton::clicked,this,&GViewEdit::manualApply);
+    _interface_layout_ = new QHBoxLayout;
+    _interface_layout_->addWidget(_save_button_);
+    _interface_layout_->addWidget(_close_button_);
+    _interface_layout_->addWidget(_apply_button_);
+    return;
+}
+
+void GViewEdit::updateLayout()
+{
+    if(isVisible())
+    {
+        close();
+    }
+    if(_main_layout_&&_interface_layout_)
+    {
+        _main_layout_->removeItem(_interface_layout_);
+        delete _main_layout_;
+    }
+    _main_layout_ = new QVBoxLayout();
+    if(_widget_layer_)
+    {
+        _main_layout_->addWidget(_widget_layer_);
+    }
+    if(_interface_layout_)
+    {
+    _main_layout_->addItem(_interface_layout_);
+    }
+    setLayout(_main_layout_);
+}
+
+void GViewEdit::generateWidgetLayer(QStringView item_type)
+{
+    if(!item_type.compare(QString("StaticGrItem")))
+    {
+        if(_widget_layer_)
+        {
+            delete _widget_layer_;
+        }
+        _widget_layer_ = new QGroupBox();
+        QHBoxLayout* data_layout = new QHBoxLayout();
+        QTextEdit* text_box = new QTextEdit();
+        QString text_box_name = "QTextEdit_text_data";
+        text_box->setObjectName(text_box_name);
+        data_layout->addWidget(text_box);
+        _widget_layer_->setLayout(data_layout);
+        //Каб карыстальнік разумеў, якія палі й у якой паслядоўнасьці будуць адлюстраваны
+        _original_data_.clear();
+        _original_data_.append(std::make_pair(text_box_name,QVariant()));
+    }
+    return;
+}
+
+bool GViewEdit::loadDataList(const QList<QPair<QString,QVariant>>& data)
+{
+    for(int i = 0; i<_original_data_.size();++i)
+    {
+        if(data.at(i).first!=_original_data_.at(i).first)
+        {
+            return false;
+        }
+        _original_data_[i].second=data.at(i).second;
+    }
+    updateValues();
+    return true;
+}
+
+void GViewEdit::updateValues()
+{
+    if(_current_item_type_=="StaticGrItem")
+    {
+        QTextEdit * text_box = _widget_layer_->findChild<QTextEdit*>(_original_data_.first().first);
+        if(text_box)
+        {
+            text_box->setText(_original_data_.first().second.toString());
+        }
+    }
+    return;
+}
+
+void GViewEdit::saveValues()
+{
+    if(_current_item_type_=="StaticGrItem")
+    {
+        QTextEdit * text_box = _widget_layer_->findChild<QTextEdit*>(_original_data_.first().first);
+        if(text_box)
+        {
+            _original_data_.first().second.setValue(text_box->toPlainText());
+        }
+    }
+    return;
+}
+
+bool GViewEdit::checkDataForChanges()
+{
+    if(_current_item_type_=="StaticGrItem")
+    {
+        QTextEdit * text_box = _widget_layer_->findChild<QTextEdit*>(_original_data_.first().first);
+        if(text_box)
+        {
+            if(text_box->toPlainText()!=_original_data_.first().second.toString())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    return true;
+}
+
+void GViewEdit::setItemType(QStringView item_type)
+{
+    if(item_type==_current_item_type_)
+    {
+        return;
+    }
+    generateWidgetLayer(item_type);
+    updateLayout();
+    return;
+}
+QStringView GViewEdit::getCurrentItemType()
+{
+    return _current_item_type_;
+}
+
+bool GViewEdit::setDataList(uint id, QStringView item_type,const QList<QPair<QString,QVariant>>& data)
+{
+    if(item_type!=_current_item_type_)
+    {
+        setItemType(item_type);
+    }
+    _current_item_id_ = id;
+    return loadDataList(data);
+}
+
+uint GViewEdit::getCurrentItemID()const noexcept
+{
+    return _current_item_id_;
+}
+
+const QList<QPair<QString,QVariant>>& GViewEdit::getDataList() const
+{
+    return _original_data_;
+}
+
 void GViewEdit::manualSave()
 {
+    //!Obsolete
     if(_original_text_!=_text_->toPlainText())
     {
         manualApply();
     }
+    //!new
+    /*
+    if(!checkDataForChanges())
+    {
+        saveValues();
+        emit itemValueChanged(_current_item_id_);
+    }
+    */
     close();
     return;
 }
 void GViewEdit::manualClose()
 {
+    //!Obsolete
     if(_original_text_!=_text_->toPlainText())
     {
         QMessageBox mbx(this);
@@ -119,17 +314,57 @@ void GViewEdit::manualClose()
             break;
         }
     }
+    //!New
+    /*
+    if(!checkDataForChanges())
+    {
+        QMessageBox mbx(this);
+        mbx.setText("Зьмяненьні не былі захаваныя.");
+        mbx.setInformativeText("Ці жадаеце Вы захаваць зьмяненьні?");
+        mbx.setStandardButtons(QMessageBox::Save|QMessageBox::Discard|QMessageBox::Cancel);
+        mbx.setDefaultButton(QMessageBox::Save);
+        int ret = mbx.exec();
+        switch(ret)
+        {
+        case QMessageBox::Save:
+        {
+            manualApply();
+        }
+            break;
+        case QMessageBox::Discard:
+        {
+            updateValues();
+        }
+            break;
+        case QMessageBox::Cancel:
+        {
+            return;
+        }
+            break;
+        }
+    }
+    */
     close();
     return;
 }
 void GViewEdit::manualApply()
 {
+    //!Obsolete
     if(_original_text_==_text_->toPlainText())
     {
         return;
     }
     _original_text_ = _text_->toPlainText();
     emit valueChanged(_original_text_);
+    //!New:
+    /*
+    if(checkDataForChanges())
+    {
+        return;
+    }
+    saveValues();
+    emit itemValueChanged(_current_item_id_);
+    */
     return;
 }
 
