@@ -84,8 +84,8 @@ GViewEdit::GViewEdit(AbstractGrItem* first_item, QWidget* tata):QWidget(tata)
 
 
 GViewEdit::GViewEdit(QWidget* tata):QWidget(tata),
-    _save_button_(nullptr),_close_button_(nullptr),_apply_button_(nullptr),
-    _main_layout_(nullptr),_interface_layout_(nullptr)
+    _widget_layer_(nullptr),_current_item_id_(0),_save_button_(nullptr),
+    _close_button_(nullptr),_apply_button_(nullptr),_main_layout_(nullptr),_interface_layout_(nullptr)
 {
     setWindowModality(Qt::WindowModality::ApplicationModal);
     setWindowFlag(Qt::FramelessWindowHint,true);
