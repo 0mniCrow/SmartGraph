@@ -30,7 +30,7 @@ private:
 
     void generateMainInterface();
     bool loadDataList(const QList<QPair<QString,QVariant>>& data);
-    void updateLayout();
+    void updateGrLayout();
 protected:
     virtual void generateWidgetLayer(QStringView item_type);
     virtual void updateValues();

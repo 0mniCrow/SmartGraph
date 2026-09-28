@@ -16,6 +16,7 @@ private:
     QString                             _current_item_type_;
     uint                                _current_item_id_;
     QLabel *                            _info_;
+    void updateGrLayout();
 protected:
     virtual void generateWidgetLayer(QStringView item_type);
     virtual void updateValues();

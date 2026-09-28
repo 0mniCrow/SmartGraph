@@ -16,14 +16,42 @@ GViewToolTip::GViewToolTip(const QString& data, QWidget* tata):QWidget(tata)
     return;
 }
 
-GViewToolTip::GViewToolTip(QWidget* tata)
+GViewToolTip::GViewToolTip(QWidget* tata):QWidget(tata)
 {
     setWindowFlag(Qt::Popup,true);
     resize(200,100);
 }
+
+void GViewToolTip::updateGrLayout()
+{
+    if(isVisible())
+    {
+        close();
+    }
+    QLayout* old_layout = layout();
+    if(old_layout)
+    {
+        if(_widget_layer_)
+        {
+            layout()->removeWidget(_widget_layer_);
+            delete _widget_layer_;
+        }
+        delete old_layout;
+    }
+    QVBoxLayout* new_layout = new QVBoxLayout();
+    _widget_layer_ = new QGroupBox();
+    new_layout->addWidget(_widget_layer_);
+    setLayout(new_layout);
+}
 void GViewToolTip::setItemType(QStringView item_type)
 {
-
+    if(item_type==_current_item_type_)
+    {
+        return;
+    }
+    generateWidgetLayer(item_type);
+    updateGrLayout();
+    return;
 }
 bool GViewToolTip::setDataList(uint id, QStringView item_type,const QList<QPair<QString,QVariant>>& data)
 {

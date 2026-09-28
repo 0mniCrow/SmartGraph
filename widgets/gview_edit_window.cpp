@@ -129,7 +129,7 @@ void GViewEdit::generateMainInterface()
     return;
 }
 
-void GViewEdit::updateLayout()
+void GViewEdit::updateGrLayout()
 {
     if(isVisible())
     {
@@ -238,7 +238,7 @@ void GViewEdit::setItemType(QStringView item_type)
         return;
     }
     generateWidgetLayer(item_type);
-    updateLayout();
+    updateGrLayout();
     return;
 }
 QStringView GViewEdit::getCurrentItemType()
