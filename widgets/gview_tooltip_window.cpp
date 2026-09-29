@@ -16,10 +16,12 @@ GViewToolTip::GViewToolTip(const QString& data, QWidget* tata):QWidget(tata)
     return;
 }
 
-GViewToolTip::GViewToolTip(QWidget* tata):QWidget(tata)
+GViewToolTip::GViewToolTip(QWidget* tata):QWidget(tata),
+    _widget_layer_(nullptr),_current_item_id_(0)
 {
     setWindowFlag(Qt::Popup,true);
     resize(200,100);
+    return;
 }
 
 void GViewToolTip::updateGrLayout()
@@ -34,29 +36,50 @@ void GViewToolTip::updateGrLayout()
         if(_widget_layer_)
         {
             layout()->removeWidget(_widget_layer_);
-            delete _widget_layer_;
         }
         delete old_layout;
     }
     QVBoxLayout* new_layout = new QVBoxLayout();
-    _widget_layer_ = new QGroupBox();
-    new_layout->addWidget(_widget_layer_);
+    generateDataGroup(_current_item_type_);
+    if(_widget_layer_)
+    {
+        new_layout->addWidget(_widget_layer_);
+    }
     setLayout(new_layout);
+    return;
 }
+
 void GViewToolTip::setItemType(QStringView item_type)
 {
     if(item_type==_current_item_type_)
     {
         return;
     }
-    generateWidgetLayer(item_type);
+    generateDataGroup(item_type);
     updateGrLayout();
     return;
 }
+
 bool GViewToolTip::setDataList(uint id, QStringView item_type,const QList<QPair<QString,QVariant>>& data)
+{
+    if(item_type!=_current_item_type_)
+    {
+        setItemType(item_type);
+    }
+    _current_item_id_ = id;
+    return loadDataList(data);
+}
+
+void GViewToolTip::setDataGroup(QGroupBox* widget_group)
 {
 
 }
+
+bool GViewToolTip::loadDataList(const QList<QPair<QString,QVariant>>& data)
+{
+
+}
+
 const QList<QPair<QString,QVariant>>& GViewToolTip::getDataList() const
 {
 
@@ -76,7 +99,7 @@ void GViewToolTip::updateFields(const QString& new_val)
     return;
 }
 
-void GViewToolTip::generateWidgetLayer(QStringView item_type)
+void GViewToolTip::generateDataGroup(QStringView item_type)
 {
 
 }

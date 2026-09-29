@@ -17,8 +17,10 @@ private:
     uint                                _current_item_id_;
     QLabel *                            _info_;
     void updateGrLayout();
+    bool loadDataList(const QList<QPair<QString,QVariant>>& data);
 protected:
-    virtual void generateWidgetLayer(QStringView item_type);
+    void setDataGroup(QGroupBox* widget_group);
+    virtual void generateDataGroup(QStringView item_type);
     virtual void updateValues();
 public:
     explicit GViewToolTip(const QString& data, QWidget* tata = nullptr);
