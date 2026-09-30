@@ -19,6 +19,8 @@ GViewToolTip::GViewToolTip(const QString& data, QWidget* tata):QWidget(tata)
 GViewToolTip::GViewToolTip(QWidget* tata):QWidget(tata),
     _widget_layer_(nullptr),_current_item_id_(0)
 {
+    QVBoxLayout * layout = new QVBoxLayout;
+    setLayout(layout);
     setWindowFlag(Qt::Popup,true);
     resize(200,100);
     return;
