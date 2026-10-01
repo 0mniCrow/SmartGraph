@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
+#include <QTextEdit>
 
 class GViewToolTip:public QWidget
 {

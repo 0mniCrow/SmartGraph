@@ -103,10 +103,32 @@ void GViewToolTip::updateFields(const QString& new_val)
 
 void GViewToolTip::generateDataGroup(QStringView item_type)
 {
-
+    if(!item_type.compare(QString("StaticGrItem")))
+    {
+        if(_widget_layer_)
+        {
+            delete _widget_layer_;
+        }
+        _widget_layer_ = new QGroupBox();
+        QHBoxLayout* data_layout = new QHBoxLayout();
+        QTextEdit* text_box = new QTextEdit();
+        QString text_box_name = "QTextEdit_text_data";
+        text_box->setObjectName(text_box_name);
+        data_layout->addWidget(text_box);
+        _widget_layer_->setLayout(data_layout);
+    }
+    return;
 }
 
 void GViewToolTip::updateValues()
 {
-
+    if(_current_item_type_=="StaticGrItem")
+    {
+        QTextEdit * text_box = _widget_layer_->findChild<QTextEdit*>(_current_data_.first().first);
+        if(text_box)
+        {
+            text_box->setText(_current_data_.first().second.toString());
+        }
+    }
+    return;
 }
