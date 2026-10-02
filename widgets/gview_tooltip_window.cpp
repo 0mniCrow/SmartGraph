@@ -16,80 +16,105 @@ GViewToolTip::GViewToolTip(const QString& data, QWidget* tata):QWidget(tata)
     return;
 }
 
+
+
 GViewToolTip::GViewToolTip(QWidget* tata):QWidget(tata),
-    _widget_layer_(nullptr),_current_item_id_(0)
+    _data_group_(nullptr),_data_layout_(nullptr),_current_item_id_(0)
 {
-    QVBoxLayout * layout = new QVBoxLayout;
-    setLayout(layout);
     setWindowFlag(Qt::Popup,true);
     resize(200,100);
+    generateMainLayout();
     return;
 }
 
-void GViewToolTip::updateGrLayout()
+void GViewToolTip::generateMainLayout()
+{
+    QLayout* main_layout = layout();
+    if(main_layout)
+    {
+        if(_data_group_)
+        {
+            main_layout->removeWidget(_data_group_);
+        }
+        delete main_layout;
+    }
+    main_layout = new QVBoxLayout();
+    if(_data_group_)
+    {
+        main_layout->addWidget(_data_group_);
+    }
+    setLayout(main_layout);
+    return;
+}
+
+bool GViewToolTip::updateGrLayout()
 {
     if(isVisible())
     {
         close();
     }
-    QLayout* old_layout = layout();
-    if(old_layout)
+    if(_data_group_)
     {
-        if(_widget_layer_)
+        if(_data_layout_)
         {
-            layout()->removeWidget(_widget_layer_);
+            delete _data_layout_;
+            _data_layout_ = nullptr;
         }
-        delete old_layout;
+        delete _data_group_;
+        _data_group_ = nullptr;
     }
-    QVBoxLayout* new_layout = new QVBoxLayout();
     generateDataGroup(_current_item_type_);
-    if(_widget_layer_)
+    if(!_data_layout_)
     {
-        new_layout->addWidget(_widget_layer_);
+        return false;
     }
-    setLayout(new_layout);
-    return;
+    _data_group_ = new QGroupBox();
+    _data_group_->setLayout(_data_layout_);
+    layout()->addWidget(_data_group_);
+    return true;
 }
 
-void GViewToolTip::setItemType(QStringView item_type)
+bool GViewToolTip::setItemType(QStringView item_type)
 {
     if(item_type==_current_item_type_)
     {
-        return;
+        return false;
     }
-    generateDataGroup(item_type);
-    updateGrLayout();
-    return;
+    return updateGrLayout();
 }
 
 bool GViewToolTip::setDataList(uint id, QStringView item_type,const QList<QPair<QString,QVariant>>& data)
 {
     if(item_type!=_current_item_type_)
     {
-        setItemType(item_type);
+        if(!setItemType(item_type))
+        {
+            return false;
+        }
     }
     _current_item_id_ = id;
-    return loadDataList(data);
+    loadDataList(data);
+    return true;
 }
 
-void GViewToolTip::setDataGroup(QGroupBox* widget_group)
+void GViewToolTip::loadDataList(const QList<QPair<QString,QVariant>>& data)
 {
-
-}
-
-bool GViewToolTip::loadDataList(const QList<QPair<QString,QVariant>>& data)
-{
-
+    _current_data_.clear();
+    _current_data_ = data;
+    _current_data_.detach();
+    return;
 }
 
 const QList<QPair<QString,QVariant>>& GViewToolTip::getDataList() const
 {
-
+    return _current_data_;
 }
+
 QStringView GViewToolTip::getCurrentItemType()
 {
-
+    return _current_item_type_;
 }
+
 uint GViewToolTip::getCurrentItemID()const noexcept
 {
     return _current_item_id_;
@@ -103,19 +128,25 @@ void GViewToolTip::updateFields(const QString& new_val)
 
 void GViewToolTip::generateDataGroup(QStringView item_type)
 {
+    if(_data_layout_ && item_type == _current_item_type_)
+    {
+        return;
+    }
+
     if(!item_type.compare(QString("StaticGrItem")))
     {
-        if(_widget_layer_)
+        if(_data_layout_)
         {
-            delete _widget_layer_;
+            delete _data_layout_;
         }
-        _widget_layer_ = new QGroupBox();
-        QHBoxLayout* data_layout = new QHBoxLayout();
+        _data_layout_ = new QVBoxLayout();
         QTextEdit* text_box = new QTextEdit();
         QString text_box_name = "QTextEdit_text_data";
+        text_box->setReadOnly(true);
         text_box->setObjectName(text_box_name);
-        data_layout->addWidget(text_box);
-        _widget_layer_->setLayout(data_layout);
+        _data_layout_->addWidget(text_box);
+        QList<QPair<QString,QVariant>> data_list{std::make_pair(text_box_name,QVariant())};
+        loadDataList(data_list);
     }
     return;
 }
@@ -124,7 +155,7 @@ void GViewToolTip::updateValues()
 {
     if(_current_item_type_=="StaticGrItem")
     {
-        QTextEdit * text_box = _widget_layer_->findChild<QTextEdit*>(_current_data_.first().first);
+        QTextEdit * text_box = _data_layout_->findChild<QTextEdit*>(_current_data_.first().first);
         if(text_box)
         {
             text_box->setText(_current_data_.first().second.toString());
