@@ -26,7 +26,7 @@ bool BasicItemManager::checkConnectionType(char gr_type) const
     return true;
 }
 
-AbstractGrInterface* BasicItemManager::createItem(qreal x_coord, qreal y_coord, char type, uint id)
+AbstractGrItem* BasicItemManager::createItem(qreal x_coord, qreal y_coord, qreal z_coord, char type, uint id)
 {
     if(!checkItemType(type))
     {
@@ -66,7 +66,7 @@ AbstractGrInterface* BasicItemManager::createItem(qreal x_coord, qreal y_coord, 
     return new_item;
 }
 
-bool BasicItemManager::deleteItem(AbstractGrInterface* item)
+bool BasicItemManager::deleteItem(AbstractGrItem* item)
 {
     if(!item)
     {
@@ -101,7 +101,7 @@ bool BasicItemManager::deleteItem(uint id)
     return deleteItem(it.value());
 }
 
-AbstractGrInterface* BasicItemManager::findItem(uint id) const
+AbstractGrItem* BasicItemManager::findItem(uint id) const
 {
     QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.find(id);
     if(it==_items_.cend())
@@ -111,7 +111,7 @@ AbstractGrInterface* BasicItemManager::findItem(uint id) const
     return it.value();
 }
 
-AbstractGrInterface* BasicItemManager::findItem(qreal x_coord, qreal y_coord)
+AbstractGrItem* BasicItemManager::findItem(qreal x_coord, qreal y_coord)
 {
     QMap<uint,AbstractGrQtItem*>::const_iterator it = _items_.cbegin();
     while(it!=_items_.cend())
@@ -131,8 +131,8 @@ AbstractGrInterface* BasicItemManager::findItem(qreal x_coord, qreal y_coord)
     return nullptr;
 }
 
-AbstractGrConnection* BasicItemManager::createConnection(AbstractGrInterface* source,
-                                               AbstractGrInterface* destination,
+AbstractGrConnection* BasicItemManager::createConnection(AbstractGrItem* source,
+                                               AbstractGrItem* destination,
                                                char type,
                                                          uint id)
 {
@@ -221,8 +221,8 @@ AbstractGrConnection* BasicItemManager::findConnection(uint id) const
     return it.value();
 }
 
-AbstractGrConnection* BasicItemManager::findConnection(AbstractGrInterface* source,
-                                             AbstractGrInterface* destination)
+AbstractGrConnection* BasicItemManager::findConnection(AbstractGrItem *source,
+                                             AbstractGrItem *destination)
 {
     QMap<uint,AbstractGrQtConnection*>::iterator it =std::find_if(_connections_.begin(),_connections_.end(),[source,destination](AbstractGrConnection* conn)
     {

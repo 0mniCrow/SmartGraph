@@ -9,6 +9,8 @@
 #include "Graph_algorithms.h"
 #include "matrixmodel.h"
 #include "touchform.h"
+//___________________Item management___________________
+#include "graphic_objects/basicitemmanager.h"
 //___________________Visual graph______________________
 #include "gviewport.h"
 #include "gview_tableVertexView.h"
@@ -96,6 +98,9 @@ private:
     void loadTranslatableMessages();
     void loadTranslatableWindows();
     void updateTimeTool();
+
+    bool testItemManager();
+
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

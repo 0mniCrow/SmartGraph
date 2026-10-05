@@ -10,6 +10,7 @@ class SimpleGrConnection:public AbstractGrQtConnection
 private:
     void getArrowSholders(double arr_atan, const QPointF& arr_head,
                           QPointF& first_sholder, QPointF& sec_sholder, bool dest_point = true);
+    static QString _gr_object_name_;
 protected:
     virtual QRectF boundingRect() const override;
     virtual void paint(QPainter* painter,
@@ -30,6 +31,7 @@ public:
     virtual ~SimpleGrConnection() = default;
     virtual int type() const override;
     virtual QPainterPath shape() const override;
+    QStringView getObjectName() const override {return _gr_object_name_;};
 };
 
 #endif // SIMPLEGRCONNECTION_H

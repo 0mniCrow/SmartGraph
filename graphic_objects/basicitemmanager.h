@@ -19,20 +19,20 @@ private:
 public:
     BasicItemManager();
     virtual ~BasicItemManager();
-    virtual AbstractGrInterface* createItem(qreal x_coord, qreal y_coord, char type, uint id = 0) override;
-    virtual bool deleteItem(AbstractGrInterface* item) override;
+    virtual AbstractGrItem* createItem(qreal x_coord, qreal y_coord, qreal z_coord, char type, uint id = 0) override;
+    virtual bool deleteItem(AbstractGrItem* item) override;
     virtual bool deleteItem(uint id) override;
-    virtual AbstractGrInterface* findItem(uint id) const override;
-    virtual AbstractGrInterface* findItem(qreal x_coord, qreal y_coord) override;
-    virtual AbstractGrConnection* createConnection(AbstractGrInterface* source,
-                                                   AbstractGrInterface* destination,
+    virtual AbstractGrItem* findItem(uint id) const override;
+    virtual AbstractGrItem* findItem(qreal x_coord, qreal y_coord) override;
+    virtual AbstractGrConnection* createConnection(AbstractGrItem* source,
+                                                   AbstractGrItem* destination,
                                                    char type,
                                                    uint id = 0) override;
     virtual bool deleteConnection(AbstractGrConnection* connection) override;
     virtual bool deleteConnection(uint id) override;
     virtual AbstractGrConnection* findConnection(uint id) const override;
-    virtual AbstractGrConnection* findConnection(AbstractGrInterface* source,
-                                                 AbstractGrInterface* destination) override;
+    virtual AbstractGrConnection* findConnection(AbstractGrItem* source,
+                                                 AbstractGrItem* destination) override;
 
     virtual QStringView getLastError() const override;
     void addCallbackFunc(const QString& model_name, std::function<void(unsigned int)> callback_func);

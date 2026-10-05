@@ -1,6 +1,6 @@
 #include "simplegrconnection.h"
 #include "abstractGrItem.h"
-
+QString SimpleGrConnection::_gr_object_name_ = "SimpleGrConnection";
 
 SimpleGrConnection::SimpleGrConnection(AbstractGrItem* source,
                                        AbstractGrItem* destination,
