@@ -38,7 +38,7 @@ protected:
     virtual bool checkDataForChanges();
 public:
     [[deprecated("Do not attend to new mechanics of edit window")]]explicit GViewEdit(const QString& data, QWidget* tata = nullptr);
-    [[deprecated("Do not attend to new mechanics of edit window")]]explicit GViewEdit(AbstractGrItem* first_item = nullptr, QWidget* tata = nullptr);
+    //[[deprecated("Do not attend to new mechanics of edit window")]]explicit GViewEdit(AbstractGrItem* first_item = nullptr, QWidget* tata = nullptr);
     explicit GViewEdit(QWidget* tata = nullptr);
     [[deprecated("Do not attend to new mechanics of edit window")]]void setData(const QMap<QString,QString>& fields);
     [[deprecated("Do not attend to new mechanics of edit window")]]void setData(const QString& data);

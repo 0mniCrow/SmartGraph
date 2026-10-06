@@ -42,6 +42,7 @@ GViewEdit::GViewEdit(const QString& data, QWidget* tata):QWidget(tata)
     return;
 }
 
+/*
 GViewEdit::GViewEdit(AbstractGrItem* first_item, QWidget* tata):QWidget(tata)
 {
     setWindowModality(Qt::WindowModality::ApplicationModal);
@@ -80,7 +81,7 @@ GViewEdit::GViewEdit(AbstractGrItem* first_item, QWidget* tata):QWidget(tata)
     }
     return;
 }
-
+*/
 
 
 GViewEdit::GViewEdit(QWidget* tata):QWidget(tata),

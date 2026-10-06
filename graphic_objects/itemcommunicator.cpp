@@ -1,5 +1,6 @@
 #include "itemcommunicator.h"
 #include "abstractgrqtitem.h"
+#include "graphic_objects/staticgritem.h"
 #include "gviewport.h"
 
 ItemCommunicator::ItemCommunicator(GViewPort *port, QObject *parent)
@@ -69,19 +70,44 @@ const QPixmap& ItemCommunicator::getDefImage() const
     return _def_image_;
 }
 
+void ItemCommunicator::parseItemData(AbstractGrQtItem* item, QList<QPair<QString,QVariant>>& container) const
+{
+    container.clear();
+    if(!_edit_window_)
+    {
+        return;
+    }
+    QStringView itemType = item->getObjectName();
+    if(itemType == QString("StaticGrItem"))
+    {
+        StaticGrItem* static_item = dynamic_cast<StaticGrItem*>(item);
+        _edit_window_->setItemType(itemType);
+        container = _edit_window_->getDataList();
+        container.first().second = QVariant(static_item->getGrData());
+    }
+    return;
+}
+
 void ItemCommunicator::callEditWindow(AbstractGrQtItem* gr_sender, const QPoint& pos)
 {
     if(!_edit_window_)
     {
-        QString data (gr_sender->getGrData());
-        _edit_window_ = new GViewEdit(data);
-        connect(_edit_window_,&GViewEdit::valueChanged,this,&ItemCommunicator::editWindowUpdated);
-        connect(gr_sender,&AbstractGrItem::changedExternally,_edit_window_,&GViewEdit::updateFields);
+        _edit_window_ = new GViewEdit;
+        connect(_edit_window_,&GViewEdit::itemValueChanged,this,&ItemCommunicator::editWindowUpdated);
+
     }
-    else
+    if(!gr_sender->getGrID())
     {
-        _edit_window_->setData(gr_sender->getGrData());
+        return;
     }
+    QList<QPair<QString,QVariant>> data_container;
+    parseItemData(gr_sender,data_container);
+    _edit_window_->setDataList(gr_sender->getGrID(),gr_sender->getObjectName(),data_container);
+    if(data_container.isEmpty())
+    {
+        return;
+    }
+
     if(!pos.isNull())
     {
         _edit_window_->move(pos);
@@ -107,13 +133,14 @@ void ItemCommunicator::callToolTipWindow(AbstractGrQtItem* gr_sender, const QPoi
 {
     if(!_tooltip_window_)
     {
-        QString gr_data(gr_sender->getGrData());
-        _tooltip_window_ = new GViewToolTip(gr_data);
-        connect(gr_sender,&AbstractGrItem::changedExternally,_tooltip_window_,&GViewToolTip::updateFields);
+        _tooltip_window_= new GViewToolTip();
     }
-    else
+    QList<QPair<QString,QVariant>> data_container;
+    parseItemData(gr_sender,data_container);
+    _tooltip_window_->setDataList(gr_sender->getGrID(),gr_sender->getObjectName(),data_container);
+    if(data_container.isEmpty())
     {
-        _tooltip_window_->updateFields(gr_sender->getGrData());
+        return;
     }
     if(!pos.isNull())
     {
