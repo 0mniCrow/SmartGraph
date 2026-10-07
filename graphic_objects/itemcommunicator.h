@@ -31,7 +31,8 @@ private:
     QPoint                  _tip_pos_;
     qreal                   _arrow_size_;
 protected:
-    virtual void parseItemData(AbstractGrQtItem* item, QList<QPair<QString, QVariant> > &container) const;
+    virtual void parseItemData(AbstractGrQtItem* item, QList<QPair<QString, QVariant> > &container);
+    virtual void parseEditWindowData(AbstractGrQtItem* item);
 public:
     explicit ItemCommunicator(GViewPort* port, QObject *parent = nullptr);
     void setCurTime(unsigned long long new_time);
@@ -50,6 +51,8 @@ public:
 private slots:
     void timeOut();
     void editWindowUpdated(uint item_id);
+signals:
+    void grItemUpdaded(uint item_id);
 };
 
 #endif // ITEMCOMMUNICATOR_H

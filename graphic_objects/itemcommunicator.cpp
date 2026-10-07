@@ -20,10 +20,6 @@ ItemCommunicator::ItemCommunicator(GViewPort *port, QObject *parent)
 void ItemCommunicator::setCurTime(unsigned long long new_time)
 {
     _cur_time_ = new_time;
-    if(_main_port_)
-    {
-        //_main_port_->time_changed()
-    }
     return;
 
 }
@@ -70,7 +66,7 @@ const QPixmap& ItemCommunicator::getDefImage() const
     return _def_image_;
 }
 
-void ItemCommunicator::parseItemData(AbstractGrQtItem* item, QList<QPair<QString,QVariant>>& container) const
+void ItemCommunicator::parseItemData(AbstractGrQtItem* item, QList<QPair<QString,QVariant>>& container)
 {
     container.clear();
     if(!_edit_window_)
@@ -184,13 +180,41 @@ void ItemCommunicator::timeOut()
     return;
 }
 
-void ItemCommunicator::editWindowUpdated()
+void ItemCommunicator::parseEditWindowData(AbstractGrQtItem* item)
 {
+    if(!_edit_window_)
+    {
+        return;
+    }
+    QStringView itemType = item->getObjectName();
+    if(itemType!=_edit_window_->getCurrentItemType())
+    {
+        return;
+    }
+    if(itemType == QString("StaticGrItem"))
+    {
+        StaticGrItem* static_item = dynamic_cast<StaticGrItem*>(item);
+        const QList<QPair<QString,QVariant>>&data(_edit_window_->getDataList());
+        static_item->setGrData(data.first().second.toString(),ItemDataInterface<QString>::DC_External);
+    }
+    return;
+}
+
+void ItemCommunicator::editWindowUpdated(uint item_id)
+{
+    if(!_edit_window_)
+    {
+        return;
+    }
+    QList<QPair<QString,QVariant>> data_container(_edit_window_->getDataList());
+    _edit_window_->getDataList();
     if(!_cur_working_item_ || !_edit_window_)
     {
         return;
     }
-    _cur_working_item_->setGrData(_edit_window_->getData(),AbstractGrItem::DC_Internal);
+    //!______________________________________TODO_______________________________________
+    //! add callback function from item manager to recieve element by ID
+    //_cur_working_item_->setGrData(_edit_window_->getData(),AbstractGrItem::DC_Internal);
     return;
 }
 
