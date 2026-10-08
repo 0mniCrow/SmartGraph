@@ -21,8 +21,8 @@
 #include <QDomNode>
 
 #include "supplement/SuperstructForManagableDataModels.h"
-#include "graphic_objects/abstractGrItem.h"
-#include "graphic_objects/abstractgrconnection.h"
+#include "graphic_objects/abstractgrqtitem.h"
+#include "graphic_objects/abstractgrqtconnection.h"
 
 class GViewPort:public QGraphicsView, public SuperSFMDM
 {
@@ -72,6 +72,10 @@ public:
 
     virtual void updateFromStructure(uint id, QStringView sender_model) override;
     virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() override;
+
+    /*New functions*/
+    AbstractGrQtItem* getGrItemByID(uint ID);
+    /*End new functions*/
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
     void mouseReleaseEvent(QMouseEvent* m_event) override;
@@ -116,6 +120,8 @@ private:
     void zoomIn();
     void zoomOut();
     QString getTranslObjText(const char * obj_text, const char * def_text);
+
+
 signals:
     void gviewMessage(QString info);
     void viewNewSelect(GViewItem* new_item);

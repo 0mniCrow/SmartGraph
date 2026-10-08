@@ -206,15 +206,10 @@ void ItemCommunicator::editWindowUpdated(uint item_id)
     {
         return;
     }
-    QList<QPair<QString,QVariant>> data_container(_edit_window_->getDataList());
-    _edit_window_->getDataList();
-    if(!_cur_working_item_ || !_edit_window_)
-    {
-        return;
-    }
-    //!______________________________________TODO_______________________________________
-    //! add callback function from item manager to recieve element by ID
-    //_cur_working_item_->setGrData(_edit_window_->getData(),AbstractGrItem::DC_Internal);
+
+    AbstractGrQtItem* item = _main_port_->getGrItemByID(item_id);
+    parseEditWindowData(item);
+    emit grItemUpdaded(item_id);
     return;
 }
 
