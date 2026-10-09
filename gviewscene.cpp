@@ -1,4 +1,6 @@
 #include "gviewscene.h"
+#include "graphic_objects/abstractgrqtitem.h"
+#include "graphic_objects/abstractgrqtconnection.h"
 
 GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata)
 {
@@ -6,6 +8,28 @@ GViewScene::GViewScene(QObject *tata):QGraphicsScene(tata)
     return;
 }
 
+GViewScene::~GViewScene()
+{
+    auto all_items = items();
+    QSet<QGraphicsItem*> for_deletion;
+    //! Гэта патрэбна, пакуль уся сістэма не пераведзена на графічныя аб'екты
+    //! Далей праверку на дынамічную трансфармацыю можна будзе выдаліць.
+    for(QGraphicsItem* s_item:all_items)
+    {
+        if(dynamic_cast<AbstractGrQtItem*>(s_item)||
+                dynamic_cast<AbstractGrQtConnection*>(s_item))
+        {
+            removeItem(s_item);
+        }
+        else
+        {
+            removeItem(s_item);
+            for_deletion.insert(s_item);
+        }
+    }
+    qDeleteAll(for_deletion);
+    return;
+}
 
 void GViewScene::mousePressEvent(QGraphicsSceneMouseEvent* m_event)
 {

@@ -15,6 +15,7 @@ class GViewScene:public QGraphicsScene
 private:
     QPixmap _bg_;
 public:
+    ~GViewScene();
     GViewScene(QObject* tata = nullptr);
     bool setBG(const QPixmap& source_bg);
 protected:

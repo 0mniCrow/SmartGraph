@@ -58,7 +58,7 @@ public:
     AbstractGrQtItem(const item_id_t& id=GR_ITEM_ID_DEF,
                    int radius = DEF_ITEM_RADIUS,
                    QGraphicsObject *tata = nullptr);
-    virtual ~AbstractGrQtItem() = default;
+    virtual ~AbstractGrQtItem();
     void setItemCommunicator(ItemCommunicator* communicator);
     ItemCommunicator* getItemCommunicator() const;
     virtual void setRadius(int radius);

@@ -177,6 +177,11 @@ void AbstractGrQtConnection::setArrowSize(qreal ar_size)
 
 AbstractGrQtConnection::~AbstractGrQtConnection()
 {
+    auto own_scene = scene();
+    if(own_scene)
+    {
+        own_scene->removeItem(this);
+    }
     emit connectionAboutToBeDestroyed(getGrID());
     return;
 }

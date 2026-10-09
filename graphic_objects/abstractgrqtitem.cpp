@@ -13,6 +13,16 @@ AbstractGrQtItem::AbstractGrQtItem(const item_id_t &id,
     setAcceptHoverEvents(true);
 }
 
+AbstractGrQtItem::~AbstractGrQtItem()
+{
+    QGraphicsScene* own_scene = scene();
+    if(own_scene)
+    {
+        own_scene->removeItem(this);
+    }
+    return;
+}
+
 void AbstractGrQtItem::keepInBorders()
 {
     QRectF sceneRect = scene()->sceneRect();
