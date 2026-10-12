@@ -74,13 +74,17 @@ public:
 
     virtual void setGrX(coord_real x) override;
     virtual void setGrY(coord_real y) override;
+    virtual void setGrZ(coord_real z) override;
     virtual coord_real getGrX() const override;
     virtual coord_real getGrY() const override;
+    virtual coord_real getGrZ() const override;
     virtual void setGrWidth(coord_real width) override;
     virtual void setGrHeight(coord_real height) override;
+    virtual void setGrDepth(coord_real depth) override;
     virtual coord_real getGrWidth() const override;
     virtual coord_real getGrHeight() const override;
-    virtual void moveGr(coord_real x, coord_real y) override;
+    virtual coord_real getGrDepth() const override;
+    virtual void moveGr(coord_real x, coord_real y, coord_real z = -1) override;
 signals:
     void grItemDataChanged(uint item_id);
     void grItemAboutToBeDestroyed(uint item_id);

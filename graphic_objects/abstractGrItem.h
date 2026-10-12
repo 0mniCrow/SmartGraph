@@ -20,13 +20,17 @@ public:
 
     virtual void setGrX(coord_real x) =0;
     virtual void setGrY(coord_real y) =0;
+    virtual void setGrZ(coord_real z) =0;
     virtual coord_real getGrX() const =0;
     virtual coord_real getGrY() const =0;
+    virtual coord_real getGrZ() const =0;
     virtual void setGrWidth(coord_real width) =0;
     virtual void setGrHeight(coord_real height) =0;
+    virtual void setGrDepth(coord_real depth) = 0;
     virtual coord_real getGrWidth() const =0;
     virtual coord_real getGrHeight() const =0;
-    virtual void moveGr(coord_real x, coord_real y) =0;
+    virtual coord_real getGrDepth() const =0;
+    virtual void moveGr(coord_real x, coord_real y, coord_real z) =0;
 //    virtual char grObjectType() const noexcept override{return AbstractItem;}
 
 };

@@ -340,6 +340,11 @@ void VertexModel::addItem(GViewItem* item, int row)
     return;
 }
 
+void VertexModel::addItem(AbstractGrInterface* item, int row)
+{
+
+}
+
 void VertexModel::removeItem(GViewItem* item)
 {
 

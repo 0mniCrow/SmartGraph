@@ -262,6 +262,12 @@ void AbstractGrQtItem::setGrY(coord_real y)
     return;
 }
 
+void AbstractGrQtItem::setGrZ(coord_real z)
+{
+    setZValue(z);
+    return;
+}
+
 coord_real AbstractGrQtItem::getGrX() const
 {
     //QPointF sc_pos(mapToScene(pos()));
@@ -272,6 +278,11 @@ coord_real AbstractGrQtItem::getGrY() const
 {
     //QPointF sc_pos(mapToScene(pos()));
     return y();//sc_pos.y();
+}
+
+coord_real AbstractGrQtItem::getGrZ() const
+{
+    return zValue();
 }
 
 void AbstractGrQtItem::setGrWidth(coord_real width)
@@ -286,6 +297,13 @@ void AbstractGrQtItem::setGrHeight(coord_real height)
     return;
 }
 
+//У бягучай ітэрацыі ўсе аб'екты двупамерныя, дадзены метад не выкарыстоўваецца
+void AbstractGrQtItem::setGrDepth(coord_real depth)
+{
+    Q_UNUSED(depth)
+    return;
+}
+
 coord_real AbstractGrQtItem::getGrWidth() const
 {
     return boundingRect().width();
@@ -296,9 +314,20 @@ coord_real AbstractGrQtItem::getGrHeight() const
     return boundingRect().height();
 }
 
-void AbstractGrQtItem::moveGr(coord_real x, coord_real y)
+//У бягучай ітэрацыі ўсе аб'екты двупамерныя, дадзены метад не выкарыстоўваецца
+coord_real AbstractGrQtItem::getGrDepth() const
+{
+    return 0;
+}
+
+void AbstractGrQtItem::moveGr(coord_real x, coord_real y, coord_real z)
 {
     setPos(x,y);
+    if(z==-1)
+    {
+        return;
+    }
+    setZValue(z);
     return;
 }
 
