@@ -527,13 +527,13 @@ void VertexModel::objectChangedFromInside(GViewItem* item)
 
 int VertexModel::getItemNumByID(uint id)
 {
-    for(int item_num = 0; item_num<_vertices2_.size(); item_num++)
-    {
-        if(_vertices2_.at(item_num)->getGrID()==id)
-        {
-            return item_num;
-        }
-    }
+//    for(int item_num = 0; item_num<_vertices2_.size(); item_num++)
+//    {
+//        if(_vertices2_.at(item_num)->getGrID()==id)
+//        {
+//            return item_num;
+//        }
+//    }
     return -1;
 }
 
@@ -572,4 +572,75 @@ std::function<void (unsigned int, QStringView)> VertexModel::getCallbackFunction
         return;
     };
     return func;
+}
+
+//________________________________________________________________________________________________________
+//________________________________________________________________________________________________________
+//!_____________________________Alternative model ________________________________________________________
+//________________________________________________________________________________________________________
+
+AltVertexModel::AltVertexModel(QObject* tata):QAbstractTableModel(tata),
+    _model_flags_(VM_NoFlags),_dragged_row_(INACTIVE_PHANTOM_ROW),
+    _phantom_row_(INACTIVE_PHANTOM_ROW)
+{
+    return;
+}
+
+AltVertexModel::~AltVertexModel()
+{
+    //!Default?
+}
+
+void AltVertexModel::switchDependencies()
+{
+    QMap<int,AbstractGrItem*>::const_iterator start;
+    QMap<int,AbstractGrItem*>::const_iterator end;
+    if(_model_flags_&VM_Proxy_isActive)
+    {
+        start = _proxy_map_.cbegin();
+        end = _proxy_map_.cend();
+    }
+    else
+    {
+        start = _vertices_map_.cbegin();
+        end = _vertices_map_.cend();
+    }
+    _ID_row_dependency_.clear();
+    while(start!=end)
+    {
+        _ID_row_dependency_.insert(start.value()->getGrID(),start.key());
+        ++start;
+    }
+    return;
+}
+
+bool AltVertexModel::isRowValid(int row) const
+{
+    return (row>=0) && (row<_vertices_map_.size());
+}
+
+bool AltVertexModel::uploadData(int row, int column, const QVariant& val)
+{
+    if(_model_flags_&VM_Proxy_isActive)
+    {
+        if(_proxy_map_.contains(row))
+        {
+            //! Зрабіць наступны крок для запампоўкі дадзеных у аб'ект _proxy_map_.value(row)
+            return true;
+        }
+    }
+    else
+    {
+        if(_vertices_map_.contains(row))
+        {
+            //! Зрабіць наступны крок для запампоўкі дадзеных у аб'ект _vertices_map_.value(row)
+            return true;
+        }
+    }
+    return false;
+}
+
+QVariant AltVertexModel::downloadData(int row, int column) const
+{
+
 }

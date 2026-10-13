@@ -12,11 +12,60 @@
 
 typedef QList<vert_map*> nest_vert_map;
 
+class AltVertexModel:public QAbstractTableModel
+{
+    Q_OBJECT
+private:
+    QMap<int,AbstractGrItem*> _vertices_map_;
+    QMap<int,AbstractGrItem*> _proxy_map_;
+    QMap<uint,int>      _ID_row_dependency_;
+    char                _model_flags_;
+    int                 _dragged_row_;
+    int                 _phantom_row_;
+
+    void switchDependencies();              //Выклікаць, калі даведнік зьмяняецца
+    bool isRowValid(int row) const;
+    bool uploadData(int row, int column, const QVariant& val);
+    QVariant downloadData(int row, int column) const;
+
+protected:
+    QList<AbstractGrItem*> getActiveItemList() const;
+    QList<AbstractGrItem*> getDefaultITemList() const;
+    virtual bool isColumnValid(int column) const;     //Дадаць да ітемаў абстрактны метад, вылічаючы колькасьць параметраў
+
+public:
+    enum VMODEL_FLAGS{VM_NoFlags = 0x00,
+                  VM_Proxy_isActive = 0x01,
+                  VM_Sorted = 0x02,
+                  VM_Filtered = 0x04};
+    AltVertexModel(QObject* tata = nullptr);
+    virtual ~AltVertexModel();
+
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex& index,int role = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+    QStringList mimeTypes() const override;
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
+    bool dropMimeData(const QMimeData* data, Qt::DropAction action,
+                      int row, int column, const QModelIndex& parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+
+    bool moveRows(const QModelIndex& sourceParent,
+                  int sourceRow, int count, const
+                  QModelIndex& destParent, int destChild) override;
+    bool insertRows(int row, int count, const QModelIndex& parent) override;
+    bool removeRows(int row, int count, const QModelIndex& parent) override;
+};
+
 class VertexModel:public QAbstractTableModel, public SuperSFMDM
 {
     Q_OBJECT
 private:
-    QVector<AbstractGrInterface*> _vertices2_;
+    //QVector<AbstractGrInterface*> _vertices2_;
     QMap<int,AbstractGrItem*> _vertices_map_;
     QMap<uint,int>      _ID_row_dependency_;
     QVector<GViewItem*> _vertices_;
