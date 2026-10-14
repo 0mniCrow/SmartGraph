@@ -5,7 +5,7 @@
 
 using item_data_type = QString;
 
-class QStringItemData:public ItemDataInterface<item_data_type>
+class QStringItemData:public ItemDataInterface<item_data_type,item_data_type,QString>
 {
 private:
     item_data_type _data_;
@@ -15,6 +15,9 @@ public:
         if(gr_type ==DC_External)
             _data_=data;
         return;};
+    virtual int getGrDataFieldCount() const override {return 1;};
+    virtual QString getGrDataFieldTypeAt(int field_num) const override {Q_UNUSED(field_num) return "QString";};
+    virtual QString getGrDataFieldAt(int field_num) const override{ if(!field_num) return _data_;return QString();};
 };
 
 
