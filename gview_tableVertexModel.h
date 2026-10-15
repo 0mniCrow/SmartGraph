@@ -8,7 +8,7 @@
 #include <QMimeData>
 #include <QDataStream>
 #include <supplement/SuperstructForManagableDataModels.h>
-#include <graphic_objects/abstractGrItem.h>
+#include <graphic_objects/abstractgrqtitem.h>
 
 typedef QList<vert_map*> nest_vert_map;
 
@@ -16,21 +16,23 @@ class AltVertexModel:public QAbstractTableModel
 {
     Q_OBJECT
 private:
-    QMap<int,AbstractGrItem*> _vertices_map_;
-    QMap<int,AbstractGrItem*> _proxy_map_;
+    QMap<int,AbstractGrQtItem*> _vertices_map_;
+    QMap<int,AbstractGrQtItem*> _proxy_map_;
     QMap<uint,int>      _ID_row_dependency_;
     char                _model_flags_;
     int                 _dragged_row_;
     int                 _phantom_row_;
 
+    QMap<int,AbstractGrQtItem*>& getActualMap();
+    const QMap<int,AbstractGrQtItem*>& getActualCMap() const;
     void switchDependencies();              //Выклікаць, калі даведнік зьмяняецца
     bool isRowValid(int row) const;
     bool uploadData(int row, int column, const QVariant& val);
     QVariant downloadData(int row, int column) const;
 
 protected:
-    QList<AbstractGrItem*> getActiveItemList() const;
-    QList<AbstractGrItem*> getDefaultITemList() const;
+    QList<AbstractGrQtItem*> getActiveItemList() const;
+    QList<AbstractGrQtItem*> getDefaultITemList() const;
     virtual bool isColumnValid(int column) const;     //Дадаць да ітемаў абстрактны метад, вылічаючы колькасьць параметраў
 
 public:

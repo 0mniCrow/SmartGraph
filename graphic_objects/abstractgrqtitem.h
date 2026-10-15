@@ -85,6 +85,10 @@ public:
     virtual coord_real getGrHeight() const override;
     virtual coord_real getGrDepth() const override;
     virtual void moveGr(coord_real x, coord_real y, coord_real z = -1) override;
+
+    virtual int getDataFieldsCount() const = 0;
+    virtual QVariant getDataFieldAt(int num) const = 0;
+    virtual void setDataFieldAt(int num, const QVariant& val) = 0;
 signals:
     void grItemDataChanged(uint item_id);
     void grItemAboutToBeDestroyed(uint item_id);

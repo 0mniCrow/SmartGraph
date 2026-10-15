@@ -591,20 +591,25 @@ AltVertexModel::~AltVertexModel()
     //!Default?
 }
 
+QMap<int,AbstractGrQtItem*>& AltVertexModel::getActualMap()
+{
+    if(_model_flags_&VM_Proxy_isActive)
+        return _proxy_map_;
+    return _vertices_map_;
+}
+
+const QMap<int,AbstractGrQtItem*>& AltVertexModel::getActualCMap() const
+{
+    if(_model_flags_&VM_Proxy_isActive)
+        return _proxy_map_;
+    return _vertices_map_;
+}
+
 void AltVertexModel::switchDependencies()
 {
-    QMap<int,AbstractGrItem*>::const_iterator start;
-    QMap<int,AbstractGrItem*>::const_iterator end;
-    if(_model_flags_&VM_Proxy_isActive)
-    {
-        start = _proxy_map_.cbegin();
-        end = _proxy_map_.cend();
-    }
-    else
-    {
-        start = _vertices_map_.cbegin();
-        end = _vertices_map_.cend();
-    }
+    QMap<int,AbstractGrQtItem*>&_cur_map_(getActualMap());
+    QMap<int,AbstractGrQtItem*>::const_iterator start = _cur_map_.constBegin();
+    QMap<int,AbstractGrQtItem*>::const_iterator end = _cur_map_.constEnd();
     _ID_row_dependency_.clear();
     while(start!=end)
     {
@@ -621,26 +626,42 @@ bool AltVertexModel::isRowValid(int row) const
 
 bool AltVertexModel::uploadData(int row, int column, const QVariant& val)
 {
-    if(_model_flags_&VM_Proxy_isActive)
+    QMap<int,AbstractGrQtItem*>&_cur_map_(getActualMap());
+    if(_cur_map_.contains(row))
     {
-        if(_proxy_map_.contains(row))
+        int data_count(_cur_map_[row]->getDataFieldsCount());
+        if((column>= 0) && (column < data_count))
         {
-            //! Зрабіць наступны крок для запампоўкі дадзеных у аб'ект _proxy_map_.value(row)
-            return true;
+            _cur_map_[row]->setDataFieldAt(column,val);
         }
-    }
-    else
-    {
-        if(_vertices_map_.contains(row))
-        {
-            //! Зрабіць наступны крок для запампоўкі дадзеных у аб'ект _vertices_map_.value(row)
-            return true;
-        }
+        return true;
     }
     return false;
 }
 
 QVariant AltVertexModel::downloadData(int row, int column) const
+{
+    const QMap<int,AbstractGrQtItem*>&_cur_map_(getActualCMap());
+    if(_cur_map_.contains(row))
+    {
+        int data_count(_cur_map_[row]->getDataFieldsCount());
+        if((column>= 0) && (column < data_count))
+        {
+            return _cur_map_[row]->getDataFieldAt(column);
+        }
+    }
+    return QVariant();
+}
+
+QList<AbstractGrQtItem*> AltVertexModel::getActiveItemList() const
+{
+
+}
+QList<AbstractGrQtItem*> AltVertexModel::getDefaultITemList() const
+{
+
+}
+bool AltVertexModel::isColumnValid(int column) const
 {
 
 }
