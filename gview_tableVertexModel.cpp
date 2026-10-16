@@ -629,8 +629,12 @@ bool AltVertexModel::uploadData(int row, int column, const QVariant& val)
     QMap<int,AbstractGrQtItem*>&_cur_map_(getActualMap());
     if(_cur_map_.contains(row))
     {
-        int data_count(_cur_map_[row]->getDataFieldsCount());
-        if((column>= 0) && (column < data_count))
+//        int data_count(_cur_map_[row]->getDataFieldsCount());
+//        if((column>= 0) && (column < data_count))
+//        {
+//            _cur_map_[row]->setDataFieldAt(column,val);
+//        }
+        if(isColumnValid(column,_cur_map_[row]))
         {
             _cur_map_[row]->setDataFieldAt(column,val);
         }
@@ -644,8 +648,12 @@ QVariant AltVertexModel::downloadData(int row, int column) const
     const QMap<int,AbstractGrQtItem*>&_cur_map_(getActualCMap());
     if(_cur_map_.contains(row))
     {
-        int data_count(_cur_map_[row]->getDataFieldsCount());
-        if((column>= 0) && (column < data_count))
+//        int data_count(_cur_map_[row]->getDataFieldsCount());
+//        if((column>= 0) && (column < data_count))
+//        {
+//            return _cur_map_[row]->getDataFieldAt(column);
+//        }
+        if(isColumnValid(column,_cur_map_[row]))
         {
             return _cur_map_[row]->getDataFieldAt(column);
         }
@@ -653,15 +661,72 @@ QVariant AltVertexModel::downloadData(int row, int column) const
     return QVariant();
 }
 
+QList<AbstractGrQtItem*> AltVertexModel::convertVertMapToList(const QMap<int,AbstractGrQtItem*>& dict) const
+{
+    QList<AbstractGrQtItem*> list;
+    if(dict.isEmpty())
+    {
+        return list;
+    }
+    int dict_size = dict.size();
+    if(dict.lastKey()!=(dict_size-1))
+    {
+        return list;
+    }
+    list.resize(dict_size);
+    auto it = dict.cbegin();
+    while(it!=dict.cend())
+    {
+        list[it.key()] = it.value();
+        ++it;
+    }
+    return list;
+}
+
 QList<AbstractGrQtItem*> AltVertexModel::getActiveItemList() const
 {
-
+    const QMap<int,AbstractGrQtItem*>&cur_map(getActualCMap());
+    return convertVertMapToList(cur_map);
 }
+
 QList<AbstractGrQtItem*> AltVertexModel::getDefaultITemList() const
+{
+    return convertVertMapToList(_vertices_map_);
+}
+
+bool AltVertexModel::isColumnValid(int column, AbstractGrQtItem * const element) const
+{
+    if(!element)
+    {
+        return false;
+    }
+    return (column>= 0) && (column < element->getDataFieldsCount());
+}
+
+QVariant AltVertexModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(role)
+    return QVariant();
+}
+
+QVariant AltVertexModel::data(const QModelIndex& index,int role) const
 {
 
 }
-bool AltVertexModel::isColumnValid(int column) const
+
+Qt::ItemFlags AltVertexModel::flags(const QModelIndex& index) const
+{
+
+}
+
+int AltVertexModel::rowCount(const QModelIndex& parent) const
+{
+
+}
+
+int AltVertexModel::columnCount(const QModelIndex& parent) const
 {
 
 }

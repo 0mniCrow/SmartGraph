@@ -29,11 +29,11 @@ private:
     bool isRowValid(int row) const;
     bool uploadData(int row, int column, const QVariant& val);
     QVariant downloadData(int row, int column) const;
-
+    QList<AbstractGrQtItem*> convertVertMapToList(const QMap<int,AbstractGrQtItem*>& dict) const;
 protected:
     QList<AbstractGrQtItem*> getActiveItemList() const;
     QList<AbstractGrQtItem*> getDefaultITemList() const;
-    virtual bool isColumnValid(int column) const;     //Дадаць да ітемаў абстрактны метад, вылічаючы колькасьць параметраў
+    virtual bool isColumnValid(int column, AbstractGrQtItem * const element) const;     //Дадаць да ітемаў абстрактны метад, вылічаючы колькасьць параметраў
 
 public:
     enum VMODEL_FLAGS{VM_NoFlags = 0x00,
