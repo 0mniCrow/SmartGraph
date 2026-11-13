@@ -51,8 +51,28 @@ MainWindow::MainWindow(QWidget *parent)
     loadTranslatableMessages();
     initiateGraphicsView();
     initiateTimelineTool();
+    setUpPropertyAnimations();
     execute();
     return;
+}
+
+void MainWindow::setUpPropertyAnimations()
+{
+    _setting_panel_width_ = ui->group_ui->sizeHint().width();
+    _timeline_panel_height_ = ui->group_forTimeline->sizeHint().height();
+    _animation_show_hide_ui_ = new QPropertyAnimation(ui->group_ui,"maximumWidth",this);
+    _animation_show_hide_ui_->setDuration(300);
+    _animation_show_hide_ui_->setEasingCurve(QEasingCurve::InOutCubic);
+
+    connect(_animation_show_hide_ui_,&QPropertyAnimation::finished,this,[this](){
+        ui->group_ui->setMaximumWidth(QWIDGETSIZE_MAX);
+        //Правяраецца, ці была гэта анімацыя хавання інтэрфэйсу (канчатковае значэнне шырыні = 0)
+        if(!_animation_show_hide_ui_->endValue().toInt())
+        {
+            ui->group_ui->setVisible(false);
+        }
+
+    });
 }
 
 void MainWindow::execute()
@@ -1088,16 +1108,25 @@ void MainWindow::LoadProject()
 
 void MainWindow::HideShowUI()
 {
-    if(ui->group_ui->isVisible())
+    _animation_show_hide_ui_->stop();                   //Спыненне бягучай анімацыі
+    bool is_visible = ui->group_ui->isVisible();
+    int start = is_visible?ui->group_ui->width():0;     //Вызначаецца бягучае значэнне скрыні інтэрфэйсу
+    ui->group_ui->setMaximumWidth(start);
+    _animation_show_hide_ui_->setStartValue(start);
+    if(is_visible)
     {
+        _animation_show_hide_ui_->setEndValue(0);
         ui->Button_UI_Hide->setText("<\n<\n<\n<\n<");
-        ui->group_ui->setVisible(false);
     }
     else
     {
+
         ui->Button_UI_Hide->setText(">\n>\n>\n>\n>");
-        ui->group_ui->setVisible(true);
+        ui->group_ui->setVisible(true);                 //Каб скрыня з'явілася перш за пачатак анімацыі
+        _animation_show_hide_ui_->setEndValue(_setting_panel_width_);
+
     }
+    _animation_show_hide_ui_->start();
     return;
 }
 

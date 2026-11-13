@@ -5,7 +5,7 @@
 #include "staticgritem.h"
 #include <QStringView>
 #include <functional>
-
+/*
 class BasicItemManager:public QObject, public AbstractItemManager
 {
     Q_OBJECT
@@ -41,5 +41,5 @@ signals:
     void objectUpdated(uint id);
     void objectRemoved(uint id);
 };
-
+*/
 #endif // BASICITEMMANAGER_H

@@ -76,10 +76,13 @@ void ItemCommunicator::parseItemData(AbstractGrQtItem* item, QList<QPair<QString
     QStringView itemType = item->getObjectName();
     if(itemType == QString("StaticGrItem"))
     {
+//! UNDO!
+        /*
         StaticGrItem* static_item = dynamic_cast<StaticGrItem*>(item);
         _edit_window_->setItemType(itemType);
         container = _edit_window_->getDataList();
         container.first().second = QVariant(static_item->getGrData());
+        */
     }
     return;
 }
@@ -193,9 +196,9 @@ void ItemCommunicator::parseEditWindowData(AbstractGrQtItem* item)
     }
     if(itemType == QString("StaticGrItem"))
     {
-        StaticGrItem* static_item = dynamic_cast<StaticGrItem*>(item);
-        const QList<QPair<QString,QVariant>>&data(_edit_window_->getDataList());
-        static_item->setGrData(data.first().second.toString(),ItemDataInterface<QString>::DC_External);
+//!        StaticGrItem* static_item = dynamic_cast<StaticGrItem*>(item);
+//!        const QList<QPair<QString,QVariant>>&data(_edit_window_->getDataList());
+//!       static_item->setGrData(data.first().second.toString(),ItemDataInterface<QString>::DC_External);
     }
     return;
 }
@@ -207,9 +210,9 @@ void ItemCommunicator::editWindowUpdated(uint item_id)
         return;
     }
 
-    AbstractGrQtItem* item = _main_port_->getGrItemByID(item_id);
-    parseEditWindowData(item);
-    emit grItemUpdaded(item_id);
+//!    AbstractGrQtItem* item = _main_port_->getGrItemByID(item_id);
+//!    parseEditWindowData(item);
+//!    emit grItemUpdaded(item_id);
     return;
 }
 

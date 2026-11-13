@@ -1,5 +1,5 @@
 #include "basicitemmanager.h"
-
+/*
 BasicItemManager::BasicItemManager():AbstractItemManager()
 {
     return;
@@ -51,7 +51,7 @@ AbstractGrItem* BasicItemManager::createItem(qreal x_coord, qreal y_coord, qreal
     {
     case StaticGrItem::StaticItem:
     {
-         new_item = new StaticGrItem(id);
+//!         new_item = new StaticGrItem(id);
     }
         break;
     default:
@@ -61,7 +61,7 @@ AbstractGrItem* BasicItemManager::createItem(qreal x_coord, qreal y_coord, qreal
     }
         break;
     }
-    new_item->moveGr(x_coord,y_coord);
+//!    new_item->moveGr(x_coord,y_coord);
     _items_.insert(id,new_item);
     return new_item;
 }
@@ -262,3 +262,4 @@ void BasicItemManager::removeCallbackFunc(const QString& model_name)
     _callbacks_.remove(model_name);
     return;
 }
+*/

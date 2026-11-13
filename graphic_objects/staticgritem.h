@@ -2,7 +2,7 @@
 #define STATICGRITEM_H
 #include "abstractgrqtitem.h"
 #include "templateItemData.h"
-
+/*
 using item_data_type = QString;
 
 class QStringItemData:public ItemDataInterface<item_data_type,item_data_type,QString>
@@ -54,5 +54,5 @@ public:
     virtual char grObjectType() const noexcept override;
     virtual QStringView getObjectName() const override;
 };
-
+*/
 #endif // STATICGRITEM_H

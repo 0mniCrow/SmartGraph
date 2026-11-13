@@ -1,5 +1,5 @@
 #include "staticgritem.h"
-
+/*
 const QString StaticGrItem::_object_name_ = "StaticGrItem";
 
 StaticGrItem::StaticGrItem(const item_id_t& id,
@@ -10,9 +10,11 @@ StaticGrItem::StaticGrItem(const item_id_t& id,
     iconUpdate();
     return;
 }
-
+*/
 /* Метад вызначае й перамалёўвае іконку на аб'екце
    Залежыць ад наяўнасьці усталяванага відарыса й радыюса*/
+
+/*
 void StaticGrItem::iconUpdate()
 {
     auto communicator = getItemCommunicator();
@@ -292,3 +294,4 @@ QStringView StaticGrItem::getObjectName() const
 {
     return _object_name_;
 }
+*/

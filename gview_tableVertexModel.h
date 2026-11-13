@@ -11,7 +11,7 @@
 #include <graphic_objects/abstractgrqtitem.h>
 
 typedef QList<vert_map*> nest_vert_map;
-
+/*
 class AltVertexModel:public QAbstractTableModel
 {
     Q_OBJECT
@@ -62,14 +62,14 @@ public:
     bool insertRows(int row, int count, const QModelIndex& parent) override;
     bool removeRows(int row, int count, const QModelIndex& parent) override;
 };
-
+*/
 class VertexModel:public QAbstractTableModel, public SuperSFMDM
 {
     Q_OBJECT
 private:
     //QVector<AbstractGrInterface*> _vertices2_;
-    QMap<int,AbstractGrItem*> _vertices_map_;
-    QMap<uint,int>      _ID_row_dependency_;
+    //QMap<int,AbstractGrItem*> _vertices_map_;
+    //QMap<uint,int>      _ID_row_dependency_;
     QVector<GViewItem*> _vertices_;
     QVector<GViewItem*> _proxy_vector_;
     char _vm_flags_;
@@ -108,13 +108,13 @@ public:
     bool insertRows(int row, int count, const QModelIndex& parent) override;
     bool removeRows(int row, int count, const QModelIndex& parent) override;
     void addItem(GViewItem* item, int row = -1);
-    void addItem(AbstractGrInterface* item, int row = -1);
+    //void addItem(AbstractGrInterface* item, int row = -1);
     void removeItem(GViewItem* item);
-    void removeItem(AbstractGrInterface* item);
+    //void removeItem(AbstractGrInterface* item);
     void removeItem(uint ID);
     uint itemID(int row);
     int itemRow(uint id);
-    int itemRow(AbstractGrInterface* item);
+    //int itemRow(AbstractGrInterface* item);
     int size();
     GViewItem* operator[](int num);
     GViewItem* at(int num);
@@ -142,8 +142,8 @@ protected:
 private slots:
     void objectChangedFromInside(GViewItem* item);
 public slots:
-    void objectChanged(uint ID);
-    void objectRemoved(uint ID);
+//!    void objectChanged(uint ID);
+//!    void objectRemoved(uint ID);
 };
 
 

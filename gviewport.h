@@ -24,7 +24,7 @@
 #include "graphic_objects/abstractgrqtitem.h"
 #include "graphic_objects/abstractgrqtconnection.h"
 
-class GViewPort:public QGraphicsView, public SuperSFMDM
+class GViewPort:public QGraphicsView//, public SuperSFMDM
 {
     Q_OBJECT
 public:
@@ -62,19 +62,19 @@ public:
     g_time getCurTime() const noexcept{return _cur_time_;};
     void setCurTime(const g_time& time) noexcept {_cur_time_=time;};
 
-    bool addGItem(AbstractGrItem * g_item);
-    bool removeGItem(AbstractGrItem * g_item);
+//!    bool addGItem(AbstractGrItem * g_item);
+//!    bool removeGItem(AbstractGrItem * g_item);
 
-    bool addGConnection(AbstractGrConnection * g_conn);
-    bool removeGConnection(AbstractGrConnection *g_conn);
+//!    bool addGConnection(AbstractGrConnection * g_conn);
+//!    bool removeGConnection(AbstractGrConnection *g_conn);
 
 
 
-    virtual void updateFromStructure(uint id, QStringView sender_model) override;
-    virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() override;
+//!    virtual void updateFromStructure(uint id, QStringView sender_model) override;
+//!    virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() override;
 
     /*New functions*/
-    AbstractGrQtItem* getGrItemByID(uint ID);
+//!    AbstractGrQtItem* getGrItemByID(uint ID);
     /*End new functions*/
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
@@ -129,8 +129,8 @@ signals:
 public slots:
     void outsideNewSelect(GViewItem* selected_item);
 
-    bool removeGItem(uint item_id);
-    bool removeGConnection(uint conn_id);
+//!    bool removeGItem(uint item_id);
+//!    bool removeGConnection(uint conn_id);
 };
 
 #endif // GVIEWPORT_H

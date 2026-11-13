@@ -93,7 +93,7 @@ public:
     QPointF getFinishEndpoint() const;
     qreal getEdgeLength() const;
     virtual int type() const override = 0;
-    virtual char grObjectType() const noexcept override;
+//    virtual char grObjectType() const noexcept override;
 
     virtual void recalcEndpoints() override;
     void recalcEndpoints(const QPointF& destination);

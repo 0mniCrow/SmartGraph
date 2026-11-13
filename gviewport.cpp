@@ -13,7 +13,7 @@
 */
 GViewPort::GViewPort(int vertex_radius, VertexModel *model, QWidget *tata):
     QGraphicsView(tata),
-    SuperSFMDM("GViewPort"),
+    //!SuperSFMDM("GViewPort"),
     _vertices_(model),
     _translation_tool_(nullptr),
     _vertex_radius_(vertex_radius),
@@ -1101,7 +1101,7 @@ GviewLangControl* GViewPort::getTranslationTool() const
 {
     return _translation_tool_;
 }
-
+/*
 bool GViewPort::addGItem(AbstractGrItem * g_item)
 {
     if(_items_.contains(g_item->getGrID()))
@@ -1117,6 +1117,7 @@ bool GViewPort::removeGItem(AbstractGrItem * g_item)
 {
     return removeGItem(g_item->getGrID());
 }
+
 
 bool GViewPort::removeGItem(uint item_id)
 {
@@ -1173,6 +1174,7 @@ void GViewPort::updateFromStructure(uint id, QStringView sender_model)
     return;
 }
 
+
 std::function<void(unsigned int, QStringView sender_model)> GViewPort::getCallbackFunction()
 {
     std::function<void(unsigned int,QStringView)> func = [this](unsigned int id,QStringView model_name)
@@ -1182,3 +1184,4 @@ std::function<void(unsigned int, QStringView sender_model)> GViewPort::getCallba
     };
     return func;
 }
+*/

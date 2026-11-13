@@ -14,6 +14,8 @@
 //___________________Visual graph______________________
 #include "gviewport.h"
 #include "gview_tableVertexView.h"
+//___________________Animation_________________________
+#include <QPropertyAnimation>
 //______________________End____________________________
 //#include "visualisationgraphform.h"
 #include "imagecropwindow.h"
@@ -90,6 +92,9 @@ private:
     VertexModel* _model_;
     VertexList* _vert_list_;
     QString _bg_filename_;
+    int _setting_panel_width_;
+    int _timeline_panel_height_;
+    QPropertyAnimation * _animation_show_hide_ui_;
     //______________End________________________
     void keyPressEvent(QKeyEvent* pe) override;
     void initiateGraphicsView();
@@ -101,6 +106,7 @@ private:
 
     bool testItemManager();
 
+    void setUpPropertyAnimations();
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

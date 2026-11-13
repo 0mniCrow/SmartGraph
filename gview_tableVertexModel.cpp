@@ -340,11 +340,6 @@ void VertexModel::addItem(GViewItem* item, int row)
     return;
 }
 
-void VertexModel::addItem(AbstractGrInterface* item, int row)
-{
-
-}
-
 void VertexModel::removeItem(GViewItem* item)
 {
 
@@ -578,7 +573,7 @@ std::function<void (unsigned int, QStringView)> VertexModel::getCallbackFunction
 //________________________________________________________________________________________________________
 //!_____________________________Alternative model ________________________________________________________
 //________________________________________________________________________________________________________
-
+/*
 AltVertexModel::AltVertexModel(QObject* tata):QAbstractTableModel(tata),
     _model_flags_(VM_NoFlags),_dragged_row_(INACTIVE_PHANTOM_ROW),
     _phantom_row_(INACTIVE_PHANTOM_ROW)
@@ -730,3 +725,4 @@ int AltVertexModel::columnCount(const QModelIndex& parent) const
 {
 
 }
+*/
