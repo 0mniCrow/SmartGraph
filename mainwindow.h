@@ -94,7 +94,8 @@ private:
     QString _bg_filename_;
     int _setting_panel_width_;
     int _timeline_panel_height_;
-    QPropertyAnimation * _animation_show_hide_ui_;
+    QPropertyAnimation* _animation_show_hide_ui_;
+    QPropertyAnimation* _animation_show_hide_timeline_;
     //______________End________________________
     void keyPressEvent(QKeyEvent* pe) override;
     void initiateGraphicsView();

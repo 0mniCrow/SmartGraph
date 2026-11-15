@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::setUpPropertyAnimations()
 {
     _setting_panel_width_ = ui->group_ui->sizeHint().width();
-    _timeline_panel_height_ = ui->group_forTimeline->sizeHint().height();
     _animation_show_hide_ui_ = new QPropertyAnimation(ui->group_ui,"maximumWidth",this);
     _animation_show_hide_ui_->setDuration(300);
     _animation_show_hide_ui_->setEasingCurve(QEasingCurve::InOutCubic);
@@ -72,6 +71,19 @@ void MainWindow::setUpPropertyAnimations()
             ui->group_ui->setVisible(false);
         }
 
+    });
+
+    _timeline_panel_height_ = ui->group_forTimeline->sizeHint().height();
+    _animation_show_hide_timeline_ = new QPropertyAnimation(ui->group_forTimeline,"maximumHeight",this);
+    _animation_show_hide_timeline_->setDuration(300);
+    _animation_show_hide_timeline_->setEasingCurve(QEasingCurve::InOutCubic);
+
+    connect(_animation_show_hide_timeline_,&QPropertyAnimation::finished,this,[this](){
+        ui->group_forTimeline->setMaximumHeight(QWIDGETSIZE_MAX);
+        if(!_animation_show_hide_timeline_->endValue().toInt())
+        {
+            ui->group_forTimeline->setVisible(false);
+        }
     });
 }
 
@@ -1108,11 +1120,12 @@ void MainWindow::LoadProject()
 
 void MainWindow::HideShowUI()
 {
+    if(!_animation_show_hide_ui_) return;
     _animation_show_hide_ui_->stop();                   //Спыненне бягучай анімацыі
     bool is_visible = ui->group_ui->isVisible();
-    int start = is_visible?ui->group_ui->width():0;     //Вызначаецца бягучае значэнне скрыні інтэрфэйсу
-    ui->group_ui->setMaximumWidth(start);
-    _animation_show_hide_ui_->setStartValue(start);
+    int start_width = is_visible?ui->group_ui->width():0;     //Вызначаецца бягучае значэнне скрыні інтэрфэйсу
+    ui->group_ui->setMaximumWidth(start_width);
+    _animation_show_hide_ui_->setStartValue(start_width);
     if(is_visible)
     {
         _animation_show_hide_ui_->setEndValue(0);
@@ -1132,16 +1145,24 @@ void MainWindow::HideShowUI()
 
 void MainWindow::HideShowTimeLine()
 {
-    if(ui->group_forTimeline->isVisible())
+    if(!_animation_show_hide_timeline_) return;
+    _animation_show_hide_timeline_->stop();
+    bool is_visible = ui->group_forTimeline->isVisible();
+    int start_height = is_visible?ui->group_forTimeline->height():0;
+    ui->group_forTimeline->setMaximumHeight(start_height);
+    _animation_show_hide_timeline_->setStartValue(start_height);
+    if(is_visible)
     {
+        _animation_show_hide_timeline_->setEndValue(0);
         ui->Button_timeline_hide->setText("ʌ ʌ ʌ ʌ ʌ");
-        ui->group_for_timetool->setVisible(false);
     }
     else
     {
         ui->Button_timeline_hide->setText("v v v v v");
-        ui->group_for_timetool->setVisible(true);
+        ui->group_forTimeline->setVisible(true);
+        _animation_show_hide_timeline_->setEndValue(_timeline_panel_height_);
     }
+    _animation_show_hide_timeline_->start();
     return;
 }
 
