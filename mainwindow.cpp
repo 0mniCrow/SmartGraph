@@ -72,17 +72,16 @@ void MainWindow::setUpPropertyAnimations()
         }
 
     });
-
-    _timeline_panel_height_ = ui->group_forTimeline->sizeHint().height();
-    _animation_show_hide_timeline_ = new QPropertyAnimation(ui->group_forTimeline,"maximumHeight",this);
+    _timeline_panel_height_ = ui->group_for_timetool->sizeHint().height();
+    _animation_show_hide_timeline_ = new QPropertyAnimation(ui->group_for_timetool,"maximumHeight",this);
     _animation_show_hide_timeline_->setDuration(300);
     _animation_show_hide_timeline_->setEasingCurve(QEasingCurve::InOutCubic);
 
     connect(_animation_show_hide_timeline_,&QPropertyAnimation::finished,this,[this](){
-        ui->group_forTimeline->setMaximumHeight(QWIDGETSIZE_MAX);
+        ui->group_for_timetool->setMaximumHeight(QWIDGETSIZE_MAX);
         if(!_animation_show_hide_timeline_->endValue().toInt())
         {
-            ui->group_forTimeline->setVisible(false);
+            ui->group_for_timetool->setVisible(false);
         }
     });
 }
@@ -1147,9 +1146,9 @@ void MainWindow::HideShowTimeLine()
 {
     if(!_animation_show_hide_timeline_) return;
     _animation_show_hide_timeline_->stop();
-    bool is_visible = ui->group_forTimeline->isVisible();
-    int start_height = is_visible?ui->group_forTimeline->height():0;
-    ui->group_forTimeline->setMaximumHeight(start_height);
+    bool is_visible = ui->group_for_timetool->isVisible();
+    int start_height = is_visible?ui->group_for_timetool->height():0;
+    ui->group_for_timetool->setMaximumHeight(start_height);
     _animation_show_hide_timeline_->setStartValue(start_height);
     if(is_visible)
     {
@@ -1159,7 +1158,7 @@ void MainWindow::HideShowTimeLine()
     else
     {
         ui->Button_timeline_hide->setText("v v v v v");
-        ui->group_forTimeline->setVisible(true);
+        ui->group_for_timetool->setVisible(true);
         _animation_show_hide_timeline_->setEndValue(_timeline_panel_height_);
     }
     _animation_show_hide_timeline_->start();

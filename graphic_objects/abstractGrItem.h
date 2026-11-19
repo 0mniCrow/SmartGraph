@@ -11,7 +11,6 @@ class AbstractGrItem: public AbstractGrInterface
 protected:
     QVector<AbstractGrConnection*>      _edges_;
 public:
-//    enum GrObjectType{AbstractItem = GR_ABSTRACT_ITEM};
     explicit AbstractGrItem(const item_id_t& id=GR_ITEM_ID_DEF);
     virtual ~AbstractGrItem() = default;
     bool addEdge(AbstractGrConnection* edge);
@@ -31,7 +30,6 @@ public:
     virtual coord_real getGrHeight() const =0;
     virtual coord_real getGrDepth() const =0;
     virtual void moveGr(coord_real x, coord_real y, coord_real z) =0;
-//    virtual char grObjectType() const noexcept override{return AbstractItem;}
 
 };
 

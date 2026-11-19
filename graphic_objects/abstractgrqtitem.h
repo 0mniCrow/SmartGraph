@@ -29,7 +29,7 @@ private:
     QPoint                              _last_screen_pos_;
     ItemCommunicator*                   _communicator_;
     //Даўжыня ад цэнтра аб'екта да яго краю
-    int                                 _radius_;
+    int                                 _radius_;           //!Зрабіць шырыню і даўжыню аб'екта замест радыюса.
     char                                _flags_;
 
     void keepInBorders();

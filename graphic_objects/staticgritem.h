@@ -2,7 +2,7 @@
 #define STATICGRITEM_H
 #include "abstractgrqtitem.h"
 #include "templateItemData.h"
-/*
+
 using item_data_type = QString;
 
 class QStringItemData:public ItemDataInterface<item_data_type,item_data_type,QString>
@@ -17,7 +17,7 @@ public:
         return;};
     virtual int getGrDataFieldCount() const override {return 1;};
     virtual QString getGrDataFieldTypeAt(int field_num) const override {Q_UNUSED(field_num) return "QString";};
-    virtual QString getGrDataFieldAt(int field_num) const override{ if(!field_num) return _data_;return QString();};
+    virtual QString getGrDataFieldAt(int field_num) const override{ return field_num? QString(): _data_;};
 };
 
 
@@ -32,7 +32,6 @@ private:
     void drawVertexIcon(QPainter* painter);
     void drawPinNeedle(QPainter* painter);
 protected:
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
     virtual void paint(QPainter* painter,
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
@@ -54,5 +53,5 @@ public:
     virtual char grObjectType() const noexcept override;
     virtual QStringView getObjectName() const override;
 };
-*/
+
 #endif // STATICGRITEM_H

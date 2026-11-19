@@ -4,7 +4,7 @@
 #include "abstractgrqtconnection.h"
 
 #define CONNECTION_WIDTH 2.0
-/*
+
 class SimpleGrConnection:public AbstractGrQtConnection
 {
 private:
@@ -33,5 +33,4 @@ public:
     virtual QPainterPath shape() const override;
     QStringView getObjectName() const override {return _gr_object_name_;};
 };
-*/
 #endif // SIMPLEGRCONNECTION_H
