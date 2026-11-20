@@ -74,7 +74,7 @@ public:
 //!    virtual std::function<void(unsigned int, QStringView sender_model)> getCallbackFunction() override;
 
     /*New functions*/
-//!    AbstractGrQtItem* getGrItemByID(uint ID);
+    AbstractGrItem* getGrItemByID(uint ID);
     /*End new functions*/
 protected:
     void mousePressEvent(QMouseEvent* m_event) override;
@@ -89,6 +89,11 @@ private:
 
     QMap<uint,AbstractGrItem*> _items_;
     QMap<uint,AbstractGrConnection*> _connections_;
+
+    using gr_item_iter = QMap<uint,AbstractGrItem*>::iterator ;
+    using gr_item_citer = QMap<uint,AbstractGrItem*>::const_iterator;
+    using gr_conn_iter = QMap<uint,AbstractGrConnection*>::iterator;
+    using gr_conn_citer = QMap<uint,AbstractGrConnection*>::const_iterator;
 
     QList<GViewEdge*> _edges_;
     GViewEdge* _new_edge_;

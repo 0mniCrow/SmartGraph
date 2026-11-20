@@ -1185,3 +1185,12 @@ std::function<void(unsigned int, QStringView sender_model)> GViewPort::getCallba
     return func;
 }
 */
+AbstractGrItem *GViewPort::getGrItemByID(uint ID)
+{
+     gr_item_iter iter = _items_.find(ID);
+    if(iter==_items_.end())
+    {
+        return nullptr;
+    }
+    return *iter;
+}
